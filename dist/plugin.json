@@ -1,0 +1,35 @@
+{
+  "name": "ArchiverAppliance",
+  "id": "sasaki77-archiverappliance-datasource",
+  "type": "datasource",
+
+  "partials": {
+    "config": "public/app/plugins/datasource/simplejson/partials/config.html"
+  },
+
+  "metrics": true,
+  "annotations": true,
+
+  "info": {
+    "description": "Archiver Appliance Datasource",
+    "author": {
+      "name": "Shinya Sasaki",
+      "url": "http://www-acc.kek.jp/WWW-ACC-exp/KEKB/control/KEKB-Control-home.html"
+    },
+    "logos": {
+      "small": "img/EPICS_Logo.png",
+      "large": "img/EPICS_Logo.png"
+    },
+    "links": [
+      {"name": "GitHub", "url": "https://github.com/sasaki77/archiverappliance-datasource"},
+      {"name": "MIT License", "url": "https://github.com/sasaki77/archiverappliance-datasource/blob/master/LICENSE"}
+    ],
+    "version": "0.0.1",
+    "updated": "2019-10-31"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "3.x.x",
+    "plugins": [ ]
+  }
+}
