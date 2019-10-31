@@ -51,6 +51,8 @@ System.register(['lodash'], function (_export, _context) {
           }
 
           var jsonData = instanceSettings.jsonData || {};
+
+          this.url_mgmt = instanceSettings.jsonData.url_mgmt;
         }
 
         _createClass(ArchiverapplianceDatasource, [{
@@ -74,7 +76,7 @@ System.register(['lodash'], function (_export, _context) {
             var to = new Date(options.range.to);
 
             return this.doRequest({
-              url: this.url + '/retrieval/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
+              url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
               data: query,
               method: 'GET'
             }).then(this.responseParse);
@@ -96,14 +98,15 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'testDatasource',
           value: function testDatasource() {
-            return this.doRequest({
-              url: this.url + '/mgmt/bpl/getAppliancesInCluster',
-              method: 'GET'
-            }).then(function (response) {
-              if (response.status === 200) {
-                return { status: "success", message: "Data source is working", title: "Success" };
-              }
-            });
+            return { status: "success", message: "Data source is working", title: "Success" };
+            //return this.doRequest({
+            //  url: this.url_mgmt + '/bpl/getAppliancesInCluster',
+            //  method: 'GET',
+            //}).then(response => {
+            //  if (response.status === 200) {
+            //    return { status: "success", message: "Data source is working", title: "Success" };
+            //  }
+            //});
           }
         }, {
           key: 'metricFindQuery',

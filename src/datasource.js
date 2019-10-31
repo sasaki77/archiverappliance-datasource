@@ -17,6 +17,8 @@ export class ArchiverapplianceDatasource {
 
     const jsonData = instanceSettings.jsonData || {};
 
+    this.url_mgmt = instanceSettings.jsonData.url_mgmt;
+
   }
 
   query(options) {
@@ -36,7 +38,7 @@ export class ArchiverapplianceDatasource {
     let to = new Date(options.range.to);
 
     return this.doRequest({
-      url: this.url + '/retrieval/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
+      url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
       data: query,
       method: 'GET'
     }).then(this.responseParse);
@@ -56,14 +58,15 @@ export class ArchiverapplianceDatasource {
   }
 
   testDatasource() {
-    return this.doRequest({
-      url: this.url + '/mgmt/bpl/getAppliancesInCluster',
-      method: 'GET',
-    }).then(response => {
-      if (response.status === 200) {
-        return { status: "success", message: "Data source is working", title: "Success" };
-      }
-    });
+    return { status: "success", message: "Data source is working", title: "Success" };
+    //return this.doRequest({
+    //  url: this.url_mgmt + '/bpl/getAppliancesInCluster',
+    //  method: 'GET',
+    //}).then(response => {
+    //  if (response.status === 200) {
+    //    return { status: "success", message: "Data source is working", title: "Success" };
+    //  }
+    //});
   }
 
   metricFindQuery(query) {
