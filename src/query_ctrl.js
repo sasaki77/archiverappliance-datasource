@@ -7,7 +7,6 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     super($scope, $injector);
 
     this.scope = $scope;
-    this.target.target = this.target.target || 'select metric';
     this.target.type = this.target.type || 'timeserie';
 
   }
@@ -23,6 +22,12 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
 
   onChangeInternal() {
     this.panelCtrl.refresh(); // Asks the panel to refresh data.
+  }
+
+  onKeyup(e) {
+    if(e.keyCode === 13){
+      e.target.blur();
+    }
   }
 }
 

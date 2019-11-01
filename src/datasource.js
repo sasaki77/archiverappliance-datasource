@@ -117,7 +117,7 @@ export class ArchiverapplianceDatasource {
   buildQueryParameters(options) {
     //remove placeholder targets and undefined targets
     options.targets = _.filter(options.targets, target => {
-      return (target.target !== 'select metric' && typeof target.target !== 'undefined');
+      return (target.target !== '' && typeof target.target !== 'undefined');
     });
 
     var targets = _.map(options.targets, target => {

@@ -67,7 +67,6 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           var _this = _possibleConstructorReturn(this, (ArchiverapplianceDatasourceQueryCtrl.__proto__ || Object.getPrototypeOf(ArchiverapplianceDatasourceQueryCtrl)).call(this, $scope, $injector));
 
           _this.scope = $scope;
-          _this.target.target = _this.target.target || 'select metric';
           _this.target.type = _this.target.type || 'timeserie';
 
           return _this;
@@ -88,6 +87,13 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           key: 'onChangeInternal',
           value: function onChangeInternal() {
             this.panelCtrl.refresh(); // Asks the panel to refresh data.
+          }
+        }, {
+          key: 'onKeyup',
+          value: function onKeyup(e) {
+            if (e.keyCode === 13) {
+              e.target.blur();
+            }
           }
         }]);
 
