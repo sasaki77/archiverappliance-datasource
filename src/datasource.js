@@ -18,7 +18,6 @@ export class ArchiverapplianceDatasource {
     const jsonData = instanceSettings.jsonData || {};
 
     this.url_mgmt = instanceSettings.jsonData.url_mgmt;
-
   }
 
   query(options) {
@@ -29,9 +28,8 @@ export class ArchiverapplianceDatasource {
       return this.q.when({data: []});
     }
 
-    let pvs = new Array();
-    query.targets.forEach(function(target) {
-        pvs.push("pv=" + target.target);
+    let pvs = query.targets.map( target => {
+        return ("pv=" + target.target);
     });
 
     let from = new Date(options.range.from);
@@ -45,15 +43,14 @@ export class ArchiverapplianceDatasource {
   }
 
   responseParse(response) {
-    let data = new Array();
-    response.data.forEach(function(td) {
-        let timesiries = new Array();
-        td.data.forEach(function(d) {
-            timesiries.push([d.val, d.secs*1000+Math.floor(d.nanos/1000000)]);
-        });
-        let d = {"target": td.meta["name"], "datapoints": timesiries};
-        data.push(d);
+    let data = response.data.map( td => {
+      let timesiries = td.data.map( d => {
+          return [d.val, d.secs*1000+Math.floor(d.nanos/1000000)];
+      });
+      let d = {"target": td.meta["name"], "datapoints": timesiries};
+      return d;
     });
+
     return {data: data};
   }
 

@@ -67,9 +67,8 @@ System.register(['lodash'], function (_export, _context) {
               return this.q.when({ data: [] });
             }
 
-            var pvs = new Array();
-            query.targets.forEach(function (target) {
-              pvs.push("pv=" + target.target);
+            var pvs = query.targets.map(function (target) {
+              return "pv=" + target.target;
             });
 
             var from = new Date(options.range.from);
@@ -84,15 +83,14 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'responseParse',
           value: function responseParse(response) {
-            var data = new Array();
-            response.data.forEach(function (td) {
-              var timesiries = new Array();
-              td.data.forEach(function (d) {
-                timesiries.push([d.val, d.secs * 1000 + Math.floor(d.nanos / 1000000)]);
+            var data = response.data.map(function (td) {
+              var timesiries = td.data.map(function (d) {
+                return [d.val, d.secs * 1000 + Math.floor(d.nanos / 1000000)];
               });
               var d = { "target": td.meta["name"], "datapoints": timesiries };
-              data.push(d);
+              return d;
             });
+
             return { data: data };
           }
         }, {
