@@ -39,10 +39,10 @@ export class ArchiverapplianceDatasource {
       url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
       data: query,
       method: 'GET'
-    }).then(this.responseParse);
+    }).then(res => this.responseParse(res, query));
   }
 
-  responseParse(response) {
+  responseParse(response, query) {
     let data = response.data.map( td => {
       let timesiries = td.data.map( d => {
           return [d.val, d.secs*1000+Math.floor(d.nanos/1000000)];
@@ -51,7 +51,25 @@ export class ArchiverapplianceDatasource {
       return d;
     });
 
+    this.setAlias(data, query.targets);
+
     return {data: data};
+  }
+
+  setAlias(data, targets) {
+      let aliases = {};
+
+      targets.forEach( target => {
+        if( target.alias !== undefined && target.alias !== "" ) {
+          aliases[target.target] = target.alias;
+        }
+      });
+
+      data.forEach( d => {
+        if( aliases[d.target] !== undefined ) {
+          d.target = aliases[d.target];
+        }
+      });
   }
 
   testDatasource() {
@@ -122,6 +140,7 @@ export class ArchiverapplianceDatasource {
         target: this.templateSrv.replace(target.target, options.scopedVars, 'regex'),
         refId: target.refId,
         hide: target.hide,
+        alias: target.alias,
       };
     });
 

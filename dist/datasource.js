@@ -58,6 +58,8 @@ System.register(['lodash'], function (_export, _context) {
         _createClass(ArchiverapplianceDatasource, [{
           key: 'query',
           value: function query(options) {
+            var _this = this;
+
             var query = this.buildQueryParameters(options);
             query.targets = query.targets.filter(function (t) {
               return !t.hide;
@@ -78,11 +80,13 @@ System.register(['lodash'], function (_export, _context) {
               url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
               data: query,
               method: 'GET'
-            }).then(this.responseParse);
+            }).then(function (res) {
+              return _this.responseParse(res, query);
+            });
           }
         }, {
           key: 'responseParse',
-          value: function responseParse(response) {
+          value: function responseParse(response, query) {
             var data = response.data.map(function (td) {
               var timesiries = td.data.map(function (d) {
                 return [d.val, d.secs * 1000 + Math.floor(d.nanos / 1000000)];
@@ -91,7 +95,26 @@ System.register(['lodash'], function (_export, _context) {
               return d;
             });
 
+            this.setAlias(data, query.targets);
+
             return { data: data };
+          }
+        }, {
+          key: 'setAlias',
+          value: function setAlias(data, targets) {
+            var aliases = {};
+
+            targets.forEach(function (target) {
+              if (target.alias !== undefined && target.alias !== "") {
+                aliases[target.target] = target.alias;
+              }
+            });
+
+            data.forEach(function (d) {
+              if (aliases[d.target] !== undefined) {
+                d.target = aliases[d.target];
+              }
+            });
           }
         }, {
           key: 'testDatasource',
@@ -156,7 +179,7 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'buildQueryParameters',
           value: function buildQueryParameters(options) {
-            var _this = this;
+            var _this2 = this;
 
             //remove placeholder targets and undefined targets
             options.targets = _.filter(options.targets, function (target) {
@@ -165,9 +188,10 @@ System.register(['lodash'], function (_export, _context) {
 
             var targets = _.map(options.targets, function (target) {
               return {
-                target: _this.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+                target: _this2.templateSrv.replace(target.target, options.scopedVars, 'regex'),
                 refId: target.refId,
-                hide: target.hide
+                hide: target.hide,
+                alias: target.alias
               };
             });
 

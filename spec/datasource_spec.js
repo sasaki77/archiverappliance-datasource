@@ -45,7 +45,7 @@ describe('ArchiverapplianceDatasource', function() {
                 _request: request,
                 data: [
                     {
-                        "meta": { "name": "PV" , "PREC": "0" },
+                        "meta": { "name": "PV" , "PREC": "0"},
                         "data": [
                             { "secs": 1262304000, "val": 0, "nanos": 123000000, "severity":0, "status":0 },
                             { "secs": 1262304001, "val": 1, "nanos": 456000000, "severity":0, "status":0 },
@@ -71,6 +71,42 @@ describe('ArchiverapplianceDatasource', function() {
             expect(series.datapoints).to.have.length(3);
             expect(series.datapoints[0][0]).to.equal(0);
             expect(series.datapoints[0][1]).to.equal(1262304000123);
+            done();
+        });
+    });
+
+    it('should return the server results with alias', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    { "meta": { "name": "PV1" , "PREC": "0"}, "data": [] },
+                    { "meta": { "name": "PV2" , "PREC": "0"}, "data": [] },
+                    { "meta": { "name": "PV3" , "PREC": "0"}, "data": [] },
+                    { "meta": { "name": "PV4" , "PREC": "0"}, "data": [] }
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        let query = {
+            targets: [
+                {target: "PV1", refId: "A", alias: "alias"},
+                {target: "PV2", refId: "B", alias: ""},
+                {target: "PV3", refId: "C", alias: undefined},
+                {target: "PV4", refId: "D"}
+            ],
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        ctx.ds.query(query).then(function(result) {
+            expect(result.data[0].target).to.equal("alias");
+            expect(result.data[1].target).to.equal("PV2");
+            expect(result.data[2].target).to.equal("PV3");
+            expect(result.data[3].target).to.equal("PV4");
             done();
         });
     });
