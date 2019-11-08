@@ -19,32 +19,61 @@ describe('ArchiverapplianceDatasource', function() {
         });
     });
 
-    //it('should return the server results when a target is set', function(done) {
-    //    ctx.backendSrv.datasourceRequest = function(request) {
-    //        return ctx.$q.when({
-    //            _request: request,
-    //            data: [
-    //                {
-    //                    target: 'X',
-    //                    datapoints: [1, 2, 3]
-    //                }
-    //            ]
-    //        });
-    //    };
+    it('should return filtered array when target is empty or undefined', function(done) {
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
 
-    //    ctx.templateSrv.replace = function(data) {
-    //      return data;
-    //    }
+        let options = {
+            targets: [
+                {target: "PV",      refId: "A"},
+                {target: "",        refId: "B"},
+                {target: undefined, refId: "C"}
+            ],
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
 
-    //    ctx.ds.query({targets: ['hits']}).then(function(result) {
-    //        expect(result._request.data.targets).to.have.length(1);
+        let query = ctx.ds.buildQueryParameters(options);
 
-    //        var series = result.data[0];
-    //        expect(series.target).to.equal('X');
-    //        expect(series.datapoints).to.have.length(3);
-    //        done();
-    //    });
-    //});
+        expect(query.targets).to.have.length(1);
+        done();
+    });
+
+    it('should return the server results when a target is set', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    {
+                        "meta": { "name": "PV" , "PREC": "0" },
+                        "data": [
+                            { "secs": 1262304000, "val": 0, "nanos": 123000000, "severity":0, "status":0 },
+                            { "secs": 1262304001, "val": 1, "nanos": 456000000, "severity":0, "status":0 },
+                            { "secs": 1262304002, "val": 2, "nanos": 789000000, "severity":0, "status":0 },
+                        ]
+                    }
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        let query = {
+            targets: [{target: "PV", refId: "A"}],
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        ctx.ds.query(query).then(function(result) {
+            var series = result.data[0];
+            expect(series.target).to.equal("PV");
+            expect(series.datapoints).to.have.length(3);
+            expect(series.datapoints[0][0]).to.equal(0);
+            expect(series.datapoints[0][1]).to.equal(1262304000123);
+            done();
+        });
+    });
 
     it ('should return the metric results when a target is null', function(done) {
         ctx.backendSrv.datasourceRequest = function(request) {
