@@ -31,11 +31,18 @@ export class ArchiverapplianceDatasource {
       return this.q.when({data: []});
     }
 
-    return this.doRequest({
-      url: this.buildUrl(query, options),
-      data: query,
-      method: 'GET'
-    }).then(res => this.responseParse(res, query));
+    const urls = this.buildUrl(query, options);
+
+    const requests = urls.map( url => {
+      return this.doRequest({
+        url: url,
+        data: query,
+        method: 'GET'
+      })
+    });
+
+   return this.q.all(requests)
+          .then( res => this.responseParse(res, query) );
   }
 
   buildUrl(query, options) {
@@ -55,19 +62,25 @@ export class ArchiverapplianceDatasource {
 
     const from = new Date(options.range.from);
     const to = new Date(options.range.to);
-    const url = this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+    const urls = pvs.map( pv => {
+      return this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+    });
 
-    return url;
+    return urls;
   }
 
-  responseParse(response, query) {
-    let data = response.data.map( td => {
-      let timesiries = td.data.map( d => {
-          return [d.val, d.secs*1000+Math.floor(d.nanos/1000000)];
+  responseParse(responses, query) {
+    let data = responses.reduce( (data, response) => {
+      let targets_data = response.data.map( target_res => {
+          const timesiries = target_res.data.map( datapoint => {
+              return [datapoint.val, datapoint.secs*1000+Math.floor(datapoint.nanos/1000000)];
+          });
+          const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
+          return target_data;
       });
-      let d = {"target": td.meta["name"], "datapoints": timesiries};
-      return d;
-    });
+      data = data.concat(targets_data);
+      return data;
+    }, []);
 
     this.setAlias(data, query.targets);
 

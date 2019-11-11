@@ -70,11 +70,17 @@ System.register(['lodash'], function (_export, _context) {
               return this.q.when({ data: [] });
             }
 
-            return this.doRequest({
-              url: this.buildUrl(query, options),
-              data: query,
-              method: 'GET'
-            }).then(function (res) {
+            var urls = this.buildUrl(query, options);
+
+            var requests = urls.map(function (url) {
+              return _this.doRequest({
+                url: url,
+                data: query,
+                method: 'GET'
+              });
+            });
+
+            return this.q.all(requests).then(function (res) {
               return _this.responseParse(res, query);
             });
           }
@@ -99,20 +105,26 @@ System.register(['lodash'], function (_export, _context) {
 
             var from = new Date(options.range.from);
             var to = new Date(options.range.to);
-            var url = this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+            var urls = pvs.map(function (pv) {
+              return _this2.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+            });
 
-            return url;
+            return urls;
           }
         }, {
           key: 'responseParse',
-          value: function responseParse(response, query) {
-            var data = response.data.map(function (td) {
-              var timesiries = td.data.map(function (d) {
-                return [d.val, d.secs * 1000 + Math.floor(d.nanos / 1000000)];
+          value: function responseParse(responses, query) {
+            var data = responses.reduce(function (data, response) {
+              var targets_data = response.data.map(function (target_res) {
+                var timesiries = target_res.data.map(function (datapoint) {
+                  return [datapoint.val, datapoint.secs * 1000 + Math.floor(datapoint.nanos / 1000000)];
+                });
+                var target_data = { "target": target_res.meta["name"], "datapoints": timesiries };
+                return target_data;
               });
-              var d = { "target": td.meta["name"], "datapoints": timesiries };
-              return d;
-            });
+              data = data.concat(targets_data);
+              return data;
+            }, []);
 
             this.setAlias(data, query.targets);
 

@@ -30,9 +30,11 @@ describe('ArchiverapplianceDatasource', function() {
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const url = ctx.ds.buildUrl(query, options);
+        const urls = ctx.ds.buildUrl(query, options);
 
-        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=PV1&pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls).to.have.length(2);
+        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
         done();
     });
 
@@ -51,9 +53,13 @@ describe('ArchiverapplianceDatasource', function() {
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const url = ctx.ds.buildUrl(query, options);
+        const urls = ctx.ds.buildUrl(query, options);
 
-        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=mean_9(PV1)&pv=PV2&pv=PV3&pv=PV4&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls).to.have.length(4);
+        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls[2]).to.equal("url_header:/data/getData.json?pv=PV3&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls[3]).to.equal("url_header:/data/getData.json?pv=PV4&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
         done();
     });
 
@@ -68,9 +74,10 @@ describe('ArchiverapplianceDatasource', function() {
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const url = ctx.ds.buildUrl(query, options);
+        const urls = ctx.ds.buildUrl(query, options);
 
-        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        expect(urls).to.have.length(1);
+        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
         done();
     });
 
@@ -121,6 +128,7 @@ describe('ArchiverapplianceDatasource', function() {
         };
 
         ctx.ds.query(query).then(function(result) {
+            expect(result.data).to.have.length(1);
             var series = result.data[0];
             expect(series.target).to.equal("PV");
             expect(series.datapoints).to.have.length(3);
@@ -132,13 +140,11 @@ describe('ArchiverapplianceDatasource', function() {
 
     it('should return the server results with alias', function(done) {
         ctx.backendSrv.datasourceRequest = function(request) {
+            const pv = request.url.slice(33, 36);
             return ctx.$q.when({
                 _request: request,
                 data: [
-                    { "meta": { "name": "PV1" , "PREC": "0"}, "data": [] },
-                    { "meta": { "name": "PV2" , "PREC": "0"}, "data": [] },
-                    { "meta": { "name": "PV3" , "PREC": "0"}, "data": [] },
-                    { "meta": { "name": "PV4" , "PREC": "0"}, "data": [] }
+                    { "meta": { "name": pv , "PREC": "0"}, "data": [] },
                 ]
             });
         };
@@ -158,6 +164,7 @@ describe('ArchiverapplianceDatasource', function() {
         };
 
         ctx.ds.query(query).then(function(result) {
+            expect(result.data).to.have.length(4);
             expect(result.data[0].target).to.equal("alias");
             expect(result.data[1].target).to.equal("PV2");
             expect(result.data[2].target).to.equal("PV3");
