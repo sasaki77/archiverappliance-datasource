@@ -69,20 +69,26 @@ System.register(['lodash'], function (_export, _context) {
               return this.q.when({ data: [] });
             }
 
+            return this.doRequest({
+              url: this.buildUrl(query, options),
+              data: query,
+              method: 'GET'
+            }).then(function (res) {
+              return _this.responseParse(res, query);
+            });
+          }
+        }, {
+          key: 'buildUrl',
+          value: function buildUrl(query, options) {
             var pvs = query.targets.map(function (target) {
               return "pv=" + target.target;
             });
 
             var from = new Date(options.range.from);
             var to = new Date(options.range.to);
+            var url = this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString();
 
-            return this.doRequest({
-              url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
-              data: query,
-              method: 'GET'
-            }).then(function (res) {
-              return _this.responseParse(res, query);
-            });
+            return url;
           }
         }, {
           key: 'responseParse',

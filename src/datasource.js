@@ -28,18 +28,23 @@ export class ArchiverapplianceDatasource {
       return this.q.when({data: []});
     }
 
-    let pvs = query.targets.map( target => {
-        return ("pv=" + target.target);
-    });
-
-    let from = new Date(options.range.from);
-    let to = new Date(options.range.to);
-
     return this.doRequest({
-      url: this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString(),
+      url: this.buildUrl(query, options),
       data: query,
       method: 'GET'
     }).then(res => this.responseParse(res, query));
+  }
+
+  buildUrl(query, options) {
+    const pvs = query.targets.map( target => {
+        return ("pv=" + target.target);
+    });
+
+    const from = new Date(options.range.from);
+    const to = new Date(options.range.to);
+    const url = this.url + '/data/getDataForPVs.json?' + pvs.join('&') + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+
+    return url;
   }
 
   responseParse(response, query) {

@@ -5,7 +5,7 @@ describe('ArchiverapplianceDatasource', function() {
     var ctx = {};
 
     beforeEach(function() {
-        ctx.instanceSettings = {jsonData: { prefix: "prefix", noparams: 1, param_names: ["test"], enbSearch: true}};
+        ctx.instanceSettings = {url: "url_header:", jsonData: { prefix: "prefix", noparams: 1, param_names: ["test"], enbSearch: true}};
         ctx.$q = Q;
         ctx.backendSrv = {};
         ctx.templateSrv = {};
@@ -17,6 +17,23 @@ describe('ArchiverapplianceDatasource', function() {
             expect(result.data).to.have.length(0);
             done();
         });
+    });
+
+    it('should return an valid url', function(done) {
+        const query = {
+            targets: [
+                {target: "PV1"},
+                {target: "PV2"}
+            ]
+        }
+        const options = {
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        const url = ctx.ds.buildUrl(query, options);
+
+        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=PV1&pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        done();
     });
 
     it('should return filtered array when target is empty or undefined', function(done) {
