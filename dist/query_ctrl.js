@@ -69,6 +69,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           _this.scope = $scope;
           _this.target.type = _this.target.type || 'timeserie';
 
+          _this.getOperators = _.bind(_this.getOperators_, _this);
           return _this;
         }
 
@@ -77,6 +78,11 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           value: function getOptions(query, name) {
             //return this.datasource.metricFindQuery(name + '=' + query || '');
             return [];
+          }
+        }, {
+          key: 'getOperators_',
+          value: function getOperators_(query) {
+            return this.datasource.operatorList;
           }
         }, {
           key: 'toggleEditorMode',

@@ -36,6 +36,44 @@ describe('ArchiverapplianceDatasource', function() {
         done();
     });
 
+    it('should return an data processing url', function(done) {
+        const query = {
+            targets: [
+                {target: "PV1", operator: "mean"},
+                {target: "PV2", operator: "raw"},
+                {target: "PV3", operator: ""},
+                {target: "PV4", },
+                {target: "PV5", operator: "dummy"},
+            ]
+        }
+        const options = {
+            intervalMs: 10000,
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        const url = ctx.ds.buildUrl(query, options);
+
+        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=mean_9(PV1)&pv=PV2&pv=PV3&pv=PV4&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        done();
+    });
+
+    it('should return raw data processing url when operator is less than 1 second', function(done) {
+        const query = {
+            targets: [
+                {target: "PV1", operator: "mean"},
+            ]
+        }
+        const options = {
+            intervalMs: 1000,
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        const url = ctx.ds.buildUrl(query, options);
+
+        expect(url).to.equal("url_header:/data/getDataForPVs.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        done();
+    });
+
     it('should return filtered array when target is empty or undefined', function(done) {
         ctx.templateSrv.replace = function(data) {
           return data;

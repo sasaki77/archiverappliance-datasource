@@ -53,6 +53,7 @@ System.register(['lodash'], function (_export, _context) {
           var jsonData = instanceSettings.jsonData || {};
 
           this.url_mgmt = instanceSettings.jsonData.url_mgmt;
+          this.operatorList = ["firstSample", "lastSample", "firstFill", "lastFill", "mean", "min", "max", "count", "ncount", "nth", "median", "std", "jitter", "ignoreflyers", "flyers", "variance", "popvariance", "kurtosis", "skewness", "raw"];
         }
 
         _createClass(ArchiverapplianceDatasource, [{
@@ -80,9 +81,21 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'buildUrl',
           value: function buildUrl(query, options) {
-            var pvs = query.targets.map(function (target) {
-              return "pv=" + target.target;
-            });
+            var _this2 = this;
+
+            var interval = "";
+            if (options.intervalMs > 1000) {
+              interval = String(options.intervalMs / 1000 - 1);
+            }
+
+            var pvs = query.targets.reduce(function (pvs, target) {
+              if (["raw", "", undefined].includes(target.operator) || interval === "") {
+                pvs.push("pv=" + target.target);
+              } else if (_this2.operatorList.includes(target.operator)) {
+                pvs.push("pv=" + target.operator + "_" + interval + "(" + target.target + ")");
+              }
+              return pvs;
+            }, []);
 
             var from = new Date(options.range.from);
             var to = new Date(options.range.to);
@@ -185,7 +198,7 @@ System.register(['lodash'], function (_export, _context) {
         }, {
           key: 'buildQueryParameters',
           value: function buildQueryParameters(options) {
-            var _this2 = this;
+            var _this3 = this;
 
             //remove placeholder targets and undefined targets
             options.targets = _.filter(options.targets, function (target) {
@@ -194,10 +207,11 @@ System.register(['lodash'], function (_export, _context) {
 
             var targets = _.map(options.targets, function (target) {
               return {
-                target: _this2.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+                target: _this3.templateSrv.replace(target.target, options.scopedVars, 'regex'),
                 refId: target.refId,
                 hide: target.hide,
-                alias: target.alias
+                alias: target.alias,
+                operator: target.operator
               };
             });
 

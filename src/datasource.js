@@ -18,6 +18,9 @@ export class ArchiverapplianceDatasource {
     const jsonData = instanceSettings.jsonData || {};
 
     this.url_mgmt = instanceSettings.jsonData.url_mgmt;
+    this.operatorList = [ "firstSample", "lastSample", "firstFill", "lastFill", "mean", "min", "max",
+        "count", "ncount", "nth", "median", "std", "jitter", "ignoreflyers", "flyers", "variance",
+        "popvariance", "kurtosis", "skewness", "raw"];
   }
 
   query(options) {
@@ -36,9 +39,19 @@ export class ArchiverapplianceDatasource {
   }
 
   buildUrl(query, options) {
-    const pvs = query.targets.map( target => {
-        return ("pv=" + target.target);
-    });
+    let interval = "";
+    if ( options.intervalMs > 1000 ) {
+      interval = String(options.intervalMs / 1000 - 1);
+    }
+
+    const pvs = query.targets.reduce( (pvs, target) => {
+      if ( ["raw", "", undefined].includes(target.operator) || interval === "") {
+        pvs.push("pv=" + target.target);
+      } else if ( this.operatorList.includes(target.operator) ) {
+        pvs.push("pv=" + target.operator + "_" + interval + "(" + target.target + ")");
+      }
+      return pvs;
+    }, []);
 
     const from = new Date(options.range.from);
     const to = new Date(options.range.to);
@@ -146,6 +159,7 @@ export class ArchiverapplianceDatasource {
         refId: target.refId,
         hide: target.hide,
         alias: target.alias,
+        operator: target.operator,
       };
     });
 

@@ -15,6 +15,22 @@
 
     <div ng-if="!ctrl.target.rawQuery">
       <div class="gf-form">
+        <label class="gf-form-label width-6 query-keyword">Operator</label>
+        <input type="text"
+          class="gf-form-input max-width-30"
+          ng-model="ctrl.target.operator"
+          bs-typeahead="ctrl.getOperators"
+          data-min-length="0"
+          spellcheck="false"
+          placeholder="raw"
+          ng-blur="ctrl.onChangeInternal()"
+          ng-keyup="ctrl.onKeyup($event)"
+        />
+      </div>
+    </div>
+
+    <div ng-if="!ctrl.target.rawQuery">
+      <div class="gf-form">
         <label class="gf-form-label width-6 query-keyword">Alias</label>
         <input type="text"
           class="gf-form-input max-width-30"
