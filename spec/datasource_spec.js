@@ -75,7 +75,7 @@ describe('ArchiverapplianceDatasource', function() {
         });
     });
 
-    it('should return raw data processing url when operator is less than 1 second', function(done) {
+    it('should return valid interval time in integer', function(done) {
         ctx.templateSrv.replace = function(data) {
           return data;
         }
@@ -84,8 +84,28 @@ describe('ArchiverapplianceDatasource', function() {
             targets: [
                 {target: "PV1", refId: "A"},
             ],
-            range: { "from": "", "to": ""},
-            intervalMs: 1000
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T01:00:01.000Z")},
+            maxDataPoints: 1800
+        };
+
+        let query = ctx.ds.buildQueryParameters(options);
+
+        expect(query.targets).to.have.length(1);
+        expect(query.targets[0].interval).to.equal("2");
+        done();
+    });
+
+    it('should return no interval data when interval time is less than 1 second', function(done) {
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        let options = {
+            targets: [
+                {target: "PV1", refId: "A"},
+            ],
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            maxDataPoints: 1000
         };
 
         let query = ctx.ds.buildQueryParameters(options);
@@ -106,7 +126,8 @@ describe('ArchiverapplianceDatasource', function() {
                 {target: "",        refId: "B"},
                 {target: undefined, refId: "C"}
             ],
-            range: { "from": "", "to": ""}
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            maxDataPoints: 1000
         };
 
         let query = ctx.ds.buildQueryParameters(options);
@@ -138,7 +159,8 @@ describe('ArchiverapplianceDatasource', function() {
 
         let query = {
             targets: [{target: "PV", refId: "A"}],
-            range: { "from": new Date("2010-01-01T00:00:00.000Z"), "to": new Date("2010-01-01T00:00:30.000Z")}
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            maxDataPoints: 1000
         };
 
         ctx.ds.query(query).then(function(result) {
@@ -174,7 +196,8 @@ describe('ArchiverapplianceDatasource', function() {
                 {target: "PV3", refId: "C", alias: undefined},
                 {target: "PV4", refId: "D"}
             ],
-            range: { "from": new Date("2010-01-01T00:00:00.000Z"), "to": new Date("2010-01-01T00:00:30.000Z")}
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            maxDataPoints: 1000
         };
 
         ctx.ds.query(query).then(function(result) {

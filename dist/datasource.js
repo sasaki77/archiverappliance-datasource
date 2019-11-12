@@ -226,9 +226,18 @@ System.register(['lodash'], function (_export, _context) {
               return target.target !== '' && typeof target.target !== 'undefined';
             });
 
+            if (options.targets.length <= 0) {
+              return options;
+            }
+
+            var from = new Date(options.range.from);
+            var to = new Date(options.range.to);
+            var range_msec = to.getTime() - from.getTime();
+            var interval_sec = Math.floor(range_msec / (options.maxDataPoints * 1000));
+
             var interval = "";
-            if (options.intervalMs > 1000) {
-              interval = String(options.intervalMs / 1000 - 1);
+            if (interval_sec >= 1) {
+              interval = String(interval_sec);
             }
 
             var targets = _.map(options.targets, function (target) {
@@ -238,8 +247,8 @@ System.register(['lodash'], function (_export, _context) {
                 hide: target.hide,
                 alias: target.alias,
                 operator: target.operator,
-                from: options.range.from,
-                to: options.range.to,
+                from: from,
+                to: to,
                 interval: interval
               };
             });
