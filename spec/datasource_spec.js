@@ -20,65 +20,67 @@ describe('ArchiverapplianceDatasource', function() {
     });
 
     it('should return an valid url', function(done) {
-        const query = {
-            targets: [
-                {target: "PV1"},
-                {target: "PV2"}
-            ]
-        }
+        const target = {target: "PV1"}
         const options = {
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const urls = ctx.ds.buildUrl(query, options);
-
-        expect(urls).to.have.length(2);
-        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        done();
+        ctx.ds.buildUrl(target, options).then(function(url) {
+          expect(url).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+          done();
+        });
     });
 
-    it('should return an data processing url', function(done) {
-        const query = {
-            targets: [
-                {target: "PV1", operator: "mean"},
-                {target: "PV2", operator: "raw"},
-                {target: "PV3", operator: ""},
-                {target: "PV4", },
-                {target: "PV5", operator: "dummy"},
-            ]
-        }
+    it('should return an Error when invalid data processing is required', function(done) {
+        const target = {target: "PV1", operator: "invalid"}
         const options = {
             intervalMs: 10000,
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const urls = ctx.ds.buildUrl(query, options);
+        ctx.ds.buildUrl(target, options).then(url => {
+        }).catch( error => {
+          done();
+        });
+    });
 
-        expect(urls).to.have.length(4);
-        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        expect(urls[2]).to.equal("url_header:/data/getData.json?pv=PV3&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        expect(urls[3]).to.equal("url_header:/data/getData.json?pv=PV4&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        done();
+    it('should return an data processing url', function(done) {
+        const targets = [
+                {target: "PV1", operator: "mean"},
+                {target: "PV2", operator: "raw"},
+                {target: "PV3", operator: ""},
+                {target: "PV4", },
+            ]
+        const options = {
+            intervalMs: 10000,
+            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        };
+
+        const urls = targets.map( target => {
+            return ctx.ds.buildUrl(target, options);
+        });
+
+        ctx.$q.all(urls).then( urls => {
+            expect(urls).to.have.length(4);
+            expect(urls[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[2]).to.equal("url_header:/data/getData.json?pv=PV3&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[3]).to.equal("url_header:/data/getData.json?pv=PV4&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            done();
+        });
     });
 
     it('should return raw data processing url when operator is less than 1 second', function(done) {
-        const query = {
-            targets: [
-                {target: "PV1", operator: "mean"},
-            ]
-        }
+        const target = {target: "PV1", operator: "mean"};
         const options = {
             intervalMs: 1000,
             range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
         };
 
-        const urls = ctx.ds.buildUrl(query, options);
-
-        expect(urls).to.have.length(1);
-        expect(urls[0]).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-        done();
+        ctx.ds.buildUrl(target, options).then( url => {
+          expect(url).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+          done();
+        });
     });
 
     it('should return filtered array when target is empty or undefined', function(done) {

@@ -31,76 +31,83 @@ export class ArchiverapplianceDatasource {
       return this.q.when({data: []});
     }
 
-    const urls = this.buildUrl(query, options);
-
-    const requests = urls.map( url => {
-      return this.doRequest({
-        url: url,
-        data: query,
-        method: 'GET'
-      })
+    const targets = query.targets.map( target => {
+      return this.targetProcess(target, options);
     });
 
-   return this.q.all(requests)
-          .then( res => this.responseParse(res, query) );
+   return this.q.all(targets).then( data => this.postProcess(data) );
   }
 
-  buildUrl(query, options) {
+  targetProcess(target, options) {
+      return this.buildUrl(target, options)
+          .then( url => this.doRequest({
+                  url: url,
+                  method: 'GET'
+              }))
+          .then( res => this.responseParse(res) )
+          .then( data => this.setAlias(data, target) );
+  }
+
+  postProcess(data) {
+    const d = data.reduce( (result, d) => {
+      result = result.concat(d);
+      return result;
+    }, []);
+
+    return {data: d};
+  }
+
+  buildUrl(target, options) {
+    let deferred = this.q.defer();
+
     let interval = "";
     if ( options.intervalMs > 1000 ) {
       interval = String(options.intervalMs / 1000 - 1);
     }
 
-    const pvs = query.targets.reduce( (pvs, target) => {
-      if ( ["raw", "", undefined].includes(target.operator) || interval === "") {
-        pvs.push("pv=" + target.target);
-      } else if ( this.operatorList.includes(target.operator) ) {
-        pvs.push("pv=" + target.operator + "_" + interval + "(" + target.target + ")");
-      }
-      return pvs;
-    }, []);
+    let pv = ""
+    if ( ["raw", "", undefined].includes(target.operator) || interval === "") {
+      pv = "pv=" + target.target;
+    } else if ( this.operatorList.includes(target.operator) ) {
+      pv = "pv=" + target.operator + "_" + interval + "(" + target.target + ")";
+    } else {
+      deferred.reject(Error("Data Processing Operator is invalid."));
+    }
 
     const from = new Date(options.range.from);
     const to = new Date(options.range.to);
-    const urls = pvs.map( pv => {
-      return this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+    const url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+
+    deferred.resolve(url);
+    return deferred.promise;
+  }
+
+  responseParse(response) {
+    let deferred = this.q.defer();
+
+    const target_data = response.data.map( target_res => {
+      const timesiries = target_res.data.map( datapoint => {
+          return [datapoint.val, datapoint.secs*1000+Math.floor(datapoint.nanos/1000000)];
+      });
+      const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
+      return target_data;
     });
 
-    return urls;
+    deferred.resolve(target_data);
+    return deferred.promise;
   }
 
-  responseParse(responses, query) {
-    let data = responses.reduce( (data, response) => {
-      let targets_data = response.data.map( target_res => {
-          const timesiries = target_res.data.map( datapoint => {
-              return [datapoint.val, datapoint.secs*1000+Math.floor(datapoint.nanos/1000000)];
-          });
-          const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
-          return target_data;
-      });
-      data = data.concat(targets_data);
-      return data;
-    }, []);
+  setAlias(data, target) {
+    let deferred = this.q.defer();
 
-    this.setAlias(data, query.targets);
+    data.forEach( d => {
+      if( target.alias !== undefined && target.alias !== "" ) {
+        d.target = target.alias;
+      }
+    });
 
-    return {data: data};
-  }
-
-  setAlias(data, targets) {
-      let aliases = {};
-
-      targets.forEach( target => {
-        if( target.alias !== undefined && target.alias !== "" ) {
-          aliases[target.target] = target.alias;
-        }
-      });
-
-      data.forEach( d => {
-        if( aliases[d.target] !== undefined ) {
-          d.target = aliases[d.target];
-        }
-      });
+    deferred.resolve(data);
+    return deferred.promise;
   }
 
   testDatasource() {

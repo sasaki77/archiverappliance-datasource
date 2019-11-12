@@ -70,82 +70,95 @@ System.register(['lodash'], function (_export, _context) {
               return this.q.when({ data: [] });
             }
 
-            var urls = this.buildUrl(query, options);
-
-            var requests = urls.map(function (url) {
-              return _this.doRequest({
-                url: url,
-                data: query,
-                method: 'GET'
-              });
+            var targets = query.targets.map(function (target) {
+              return _this.targetProcess(target, options);
             });
 
-            return this.q.all(requests).then(function (res) {
-              return _this.responseParse(res, query);
+            return this.q.all(targets).then(function (data) {
+              return _this.postProcess(data);
             });
           }
         }, {
-          key: 'buildUrl',
-          value: function buildUrl(query, options) {
+          key: 'targetProcess',
+          value: function targetProcess(target, options) {
             var _this2 = this;
+
+            return this.buildUrl(target, options).then(function (url) {
+              return _this2.doRequest({
+                url: url,
+                method: 'GET'
+              });
+            }).then(function (res) {
+              return _this2.responseParse(res);
+            }).then(function (data) {
+              return _this2.setAlias(data, target);
+            });
+          }
+        }, {
+          key: 'postProcess',
+          value: function postProcess(data) {
+            var d = data.reduce(function (result, d) {
+              result = result.concat(d);
+              return result;
+            }, []);
+
+            return { data: d };
+          }
+        }, {
+          key: 'buildUrl',
+          value: function buildUrl(target, options) {
+            var deferred = this.q.defer();
 
             var interval = "";
             if (options.intervalMs > 1000) {
               interval = String(options.intervalMs / 1000 - 1);
             }
 
-            var pvs = query.targets.reduce(function (pvs, target) {
-              if (["raw", "", undefined].includes(target.operator) || interval === "") {
-                pvs.push("pv=" + target.target);
-              } else if (_this2.operatorList.includes(target.operator)) {
-                pvs.push("pv=" + target.operator + "_" + interval + "(" + target.target + ")");
-              }
-              return pvs;
-            }, []);
+            var pv = "";
+            if (["raw", "", undefined].includes(target.operator) || interval === "") {
+              pv = "pv=" + target.target;
+            } else if (this.operatorList.includes(target.operator)) {
+              pv = "pv=" + target.operator + "_" + interval + "(" + target.target + ")";
+            } else {
+              deferred.reject(Error("Data Processing Operator is invalid."));
+            }
 
             var from = new Date(options.range.from);
             var to = new Date(options.range.to);
-            var urls = pvs.map(function (pv) {
-              return _this2.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
-            });
+            var url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
 
-            return urls;
+            deferred.resolve(url);
+            return deferred.promise;
           }
         }, {
           key: 'responseParse',
-          value: function responseParse(responses, query) {
-            var data = responses.reduce(function (data, response) {
-              var targets_data = response.data.map(function (target_res) {
-                var timesiries = target_res.data.map(function (datapoint) {
-                  return [datapoint.val, datapoint.secs * 1000 + Math.floor(datapoint.nanos / 1000000)];
-                });
-                var target_data = { "target": target_res.meta["name"], "datapoints": timesiries };
-                return target_data;
+          value: function responseParse(response) {
+            var deferred = this.q.defer();
+
+            var target_data = response.data.map(function (target_res) {
+              var timesiries = target_res.data.map(function (datapoint) {
+                return [datapoint.val, datapoint.secs * 1000 + Math.floor(datapoint.nanos / 1000000)];
               });
-              data = data.concat(targets_data);
-              return data;
-            }, []);
+              var target_data = { "target": target_res.meta["name"], "datapoints": timesiries };
+              return target_data;
+            });
 
-            this.setAlias(data, query.targets);
-
-            return { data: data };
+            deferred.resolve(target_data);
+            return deferred.promise;
           }
         }, {
           key: 'setAlias',
-          value: function setAlias(data, targets) {
-            var aliases = {};
-
-            targets.forEach(function (target) {
-              if (target.alias !== undefined && target.alias !== "") {
-                aliases[target.target] = target.alias;
-              }
-            });
+          value: function setAlias(data, target) {
+            var deferred = this.q.defer();
 
             data.forEach(function (d) {
-              if (aliases[d.target] !== undefined) {
-                d.target = aliases[d.target];
+              if (target.alias !== undefined && target.alias !== "") {
+                d.target = target.alias;
               }
             });
+
+            deferred.resolve(data);
+            return deferred.promise;
           }
         }, {
           key: 'testDatasource',
