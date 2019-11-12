@@ -4,8 +4,11 @@ import Q from "q";
 describe('ArchiverapplianceDatasource', function() {
     var ctx = {};
 
-    beforeEach(function() {
-        ctx.instanceSettings = {url: "url_header:", jsonData: { prefix: "prefix", noparams: 1, param_names: ["test"], enbSearch: true}};
+    beforeEach( function() {
+        ctx.instanceSettings = {
+            url: "url_header:",
+            jsonData: { prefix: "prefix", noparams: 1, param_names: ["test"], enbSearch: true}
+        };
         ctx.$q = Q;
         ctx.backendSrv = {};
         ctx.templateSrv = {};
@@ -13,7 +16,7 @@ describe('ArchiverapplianceDatasource', function() {
     });
 
     it('should return an empty array when no targets are set', function(done) {
-        ctx.ds.query({targets: []}).then(function(result) {
+        ctx.ds.query({targets: []}).then( function(result) {
             expect(result.data).to.have.length(0);
             done();
         });
@@ -27,9 +30,9 @@ describe('ArchiverapplianceDatasource', function() {
             to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target).then(function(url) {
-          expect(url).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-          done();
+        ctx.ds.buildUrl(target).then( url => {
+            expect(url).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            done();
         });
     });
 
@@ -42,23 +45,22 @@ describe('ArchiverapplianceDatasource', function() {
             to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target).then(url => {
+        ctx.ds.buildUrl(target).then( url => {
         }).catch( error => {
           done();
         });
     });
 
     it('should return an data processing url', function(done) {
-            
         const targets = [
-                {target: "PV1", operator: "mean",
-                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
-                {target: "PV2", operator: "raw",
-                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
-                {target: "PV3", operator: "",
-                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
-                {target: "PV4",
-                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV1", operator: "mean", interval: "9",
+                    from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV2", operator: "raw", interval: "9",
+                    from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV3", operator: "", interval: "9",
+                    from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV4", interval: "9",
+                    from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
             ];
 
         const urls = targets.map( target => {
@@ -78,17 +80,15 @@ describe('ArchiverapplianceDatasource', function() {
     it('should return valid interval time in integer', function(done) {
         ctx.templateSrv.replace = function(data) {
           return data;
-        }
+        };
 
-        let options = {
-            targets: [
-                {target: "PV1", refId: "A"},
-            ],
-            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T01:00:01.000Z")},
+        const options = {
+            targets: [ {target: "PV1", refId: "A"} ],
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T01:00:01.000Z") },
             maxDataPoints: 1800
         };
 
-        let query = ctx.ds.buildQueryParameters(options);
+        const query = ctx.ds.buildQueryParameters(options);
 
         expect(query.targets).to.have.length(1);
         expect(query.targets[0].interval).to.equal("2");
@@ -98,17 +98,15 @@ describe('ArchiverapplianceDatasource', function() {
     it('should return no interval data when interval time is less than 1 second', function(done) {
         ctx.templateSrv.replace = function(data) {
           return data;
-        }
+        };
 
-        let options = {
-            targets: [
-                {target: "PV1", refId: "A"},
-            ],
-            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+        const options = {
+            targets: [ {target: "PV1", refId: "A"} ],
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z") },
             maxDataPoints: 1000
         };
 
-        let query = ctx.ds.buildQueryParameters(options);
+        const query = ctx.ds.buildQueryParameters(options);
 
         expect(query.targets).to.have.length(1);
         expect(query.targets[0].interval).to.equal("");
@@ -120,17 +118,17 @@ describe('ArchiverapplianceDatasource', function() {
           return data;
         }
 
-        let options = {
+        const options = {
             targets: [
                 {target: "PV",      refId: "A"},
                 {target: "",        refId: "B"},
                 {target: undefined, refId: "C"}
             ],
-            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z") },
             maxDataPoints: 1000
         };
 
-        let query = ctx.ds.buildQueryParameters(options);
+        const query = ctx.ds.buildQueryParameters(options);
 
         expect(query.targets).to.have.length(1);
         done();
@@ -157,15 +155,15 @@ describe('ArchiverapplianceDatasource', function() {
           return data;
         }
 
-        let query = {
-            targets: [{target: "PV", refId: "A"}],
+        const query = {
+            targets: [ {target: "PV", refId: "A"} ],
             range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
             maxDataPoints: 1000
         };
 
-        ctx.ds.query(query).then(function(result) {
+        ctx.ds.query(query).then( result => {
             expect(result.data).to.have.length(1);
-            var series = result.data[0];
+            const series = result.data[0];
             expect(series.target).to.equal("PV");
             expect(series.datapoints).to.have.length(3);
             expect(series.datapoints[0][0]).to.equal(0);
@@ -179,9 +177,7 @@ describe('ArchiverapplianceDatasource', function() {
             const pv = request.url.slice(33, 36);
             return ctx.$q.when({
                 _request: request,
-                data: [
-                    { "meta": { "name": pv , "PREC": "0"}, "data": [] },
-                ]
+                data: [ { "meta": { "name": pv , "PREC": "0"}, "data": [] } ]
             });
         };
 
@@ -196,11 +192,11 @@ describe('ArchiverapplianceDatasource', function() {
                 {target: "PV3", refId: "C", alias: undefined},
                 {target: "PV4", refId: "D"}
             ],
-            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z") },
             maxDataPoints: 1000
         };
 
-        ctx.ds.query(query).then(function(result) {
+        ctx.ds.query(query).then( result => {
             expect(result.data).to.have.length(4);
             expect(result.data[0].target).to.equal("alias");
             expect(result.data[1].target).to.equal("PV2");

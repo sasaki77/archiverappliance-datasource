@@ -84,10 +84,7 @@ System.register(['lodash'], function (_export, _context) {
             var _this2 = this;
 
             return this.buildUrl(target, options).then(function (url) {
-              return _this2.doRequest({
-                url: url,
-                method: 'GET'
-              });
+              return _this2.doRequest({ url: url, method: 'GET' });
             }).then(function (res) {
               return _this2.responseParse(res);
             }).then(function (data) {

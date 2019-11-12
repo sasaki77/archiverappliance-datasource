@@ -18,7 +18,7 @@ export class ArchiverapplianceDatasource {
     const jsonData = instanceSettings.jsonData || {};
 
     this.url_mgmt = instanceSettings.jsonData.url_mgmt;
-    this.operatorList = [ "firstSample", "lastSample", "firstFill", "lastFill", "mean", "min", "max",
+    this.operatorList = ["firstSample", "lastSample", "firstFill", "lastFill", "mean", "min", "max",
         "count", "ncount", "nth", "median", "std", "jitter", "ignoreflyers", "flyers", "variance",
         "popvariance", "kurtosis", "skewness", "raw"];
   }
@@ -39,13 +39,12 @@ export class ArchiverapplianceDatasource {
   }
 
   targetProcess(target, options) {
-      return this.buildUrl(target, options)
-          .then( url => this.doRequest({
-                  url: url,
-                  method: 'GET'
-              }))
+      return (
+          this.buildUrl(target, options)
+          .then( url => this.doRequest({ url: url, method: 'GET' }) )
           .then( res => this.responseParse(res) )
-          .then( data => this.setAlias(data, target) );
+          .then( data => this.setAlias(data, target) )
+      );
   }
 
   postProcess(data) {
