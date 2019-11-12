@@ -57,29 +57,22 @@ export class ArchiverapplianceDatasource {
     return {data: d};
   }
 
-  buildUrl(target, options) {
+  buildUrl(target) {
     let deferred = this.q.defer();
 
-    let interval = "";
-    if ( options.intervalMs > 1000 ) {
-      interval = String(options.intervalMs / 1000 - 1);
-    }
-
     let pv = ""
-    if ( target.operator === "raw" || interval === "") {
+    if ( target.operator === "raw" || target.interval === "") {
       pv = "pv=" + target.target;
     } else if ( ["", undefined].includes(target.operator) ) {
       // Default Operator
-      pv = "pv=mean_" + interval + "(" + target.target + ")";
+      pv = "pv=mean_" + target.interval + "(" + target.target + ")";
     } else if ( this.operatorList.includes(target.operator) ) {
-      pv = "pv=" + target.operator + "_" + interval + "(" + target.target + ")";
+      pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
     } else {
       deferred.reject(Error("Data Processing Operator is invalid."));
     }
 
-    const from = new Date(options.range.from);
-    const to = new Date(options.range.to);
-    const url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+    const url = this.url + '/data/getData.json?' + pv + '&from=' + target.from.toISOString() + '&to=' + target.to.toISOString();
 
     deferred.resolve(url);
     return deferred.promise;
@@ -176,6 +169,11 @@ export class ArchiverapplianceDatasource {
       return (target.target !== '' && typeof target.target !== 'undefined');
     });
 
+    let interval = "";
+    if ( options.intervalMs > 1000 ) {
+        interval = String(options.intervalMs / 1000 - 1);
+    }
+
     var targets = _.map(options.targets, target => {
       return {
         target: this.templateSrv.replace(target.target, options.scopedVars, 'regex'),
@@ -183,6 +181,9 @@ export class ArchiverapplianceDatasource {
         hide: target.hide,
         alias: target.alias,
         operator: target.operator,
+        from: options.range.from,
+        to: options.range.to,
+        interval: interval
       };
     });
 

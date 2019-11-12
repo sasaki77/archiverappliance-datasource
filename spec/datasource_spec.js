@@ -20,45 +20,49 @@ describe('ArchiverapplianceDatasource', function() {
     });
 
     it('should return an valid url', function(done) {
-        const target = {target: "PV1"}
-        const options = {
-            intervalMs: 10000,
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        const target = {
+            target: "PV1",
+            interval: "9",
+            from: new Date("2010-01-01T00:00:00.000Z"),
+            to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target, options).then(function(url) {
+        ctx.ds.buildUrl(target).then(function(url) {
           expect(url).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
           done();
         });
     });
 
     it('should return an Error when invalid data processing is required', function(done) {
-        const target = {target: "PV1", operator: "invalid"}
-        const options = {
-            intervalMs: 10000,
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        const target = {
+            target: "PV1",
+            operator: "invalid",
+            interval: "9",
+            from: new Date("2010-01-01T00:00:00.000Z"),
+            to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target, options).then(url => {
+        ctx.ds.buildUrl(target).then(url => {
         }).catch( error => {
           done();
         });
     });
 
     it('should return an data processing url', function(done) {
+            
         const targets = [
-                {target: "PV1", operator: "mean"},
-                {target: "PV2", operator: "raw"},
-                {target: "PV3", operator: ""},
-                {target: "PV4", },
-            ]
-        const options = {
-            intervalMs: 10000,
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
-        };
+                {target: "PV1", operator: "mean",
+                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV2", operator: "raw",
+                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV3", operator: "",
+                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+                {target: "PV4",
+                    interval: "9", from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            ];
 
         const urls = targets.map( target => {
-            return ctx.ds.buildUrl(target, options);
+            return ctx.ds.buildUrl(target);
         });
 
         ctx.$q.all(urls).then( urls => {
@@ -72,16 +76,23 @@ describe('ArchiverapplianceDatasource', function() {
     });
 
     it('should return raw data processing url when operator is less than 1 second', function(done) {
-        const target = {target: "PV1", operator: "mean"};
-        const options = {
-            intervalMs: 1000,
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        let options = {
+            targets: [
+                {target: "PV1", refId: "A"},
+            ],
+            range: { "from": "", "to": ""},
+            intervalMs: 1000
         };
 
-        ctx.ds.buildUrl(target, options).then( url => {
-          expect(url).to.equal("url_header:/data/getData.json?pv=PV1&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-          done();
-        });
+        let query = ctx.ds.buildQueryParameters(options);
+
+        expect(query.targets).to.have.length(1);
+        expect(query.targets[0].interval).to.equal("");
+        done();
     });
 
     it('should return filtered array when target is empty or undefined', function(done) {
@@ -95,7 +106,7 @@ describe('ArchiverapplianceDatasource', function() {
                 {target: "",        refId: "B"},
                 {target: undefined, refId: "C"}
             ],
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+            range: { "from": "", "to": ""}
         };
 
         let query = ctx.ds.buildQueryParameters(options);
@@ -127,7 +138,7 @@ describe('ArchiverapplianceDatasource', function() {
 
         let query = {
             targets: [{target: "PV", refId: "A"}],
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+            range: { "from": new Date("2010-01-01T00:00:00.000Z"), "to": new Date("2010-01-01T00:00:30.000Z")}
         };
 
         ctx.ds.query(query).then(function(result) {
@@ -163,7 +174,7 @@ describe('ArchiverapplianceDatasource', function() {
                 {target: "PV3", refId: "C", alias: undefined},
                 {target: "PV4", refId: "D"}
             ],
-            range: { "from": "2010-01-01T00:00:00.000Z", "to": "2010-01-01T00:00:30.000Z"}
+            range: { "from": new Date("2010-01-01T00:00:00.000Z"), "to": new Date("2010-01-01T00:00:30.000Z")}
         };
 
         ctx.ds.query(query).then(function(result) {

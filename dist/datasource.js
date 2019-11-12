@@ -106,29 +106,22 @@ System.register(['lodash'], function (_export, _context) {
           }
         }, {
           key: 'buildUrl',
-          value: function buildUrl(target, options) {
+          value: function buildUrl(target) {
             var deferred = this.q.defer();
 
-            var interval = "";
-            if (options.intervalMs > 1000) {
-              interval = String(options.intervalMs / 1000 - 1);
-            }
-
             var pv = "";
-            if (target.operator === "raw" || interval === "") {
+            if (target.operator === "raw" || target.interval === "") {
               pv = "pv=" + target.target;
             } else if (["", undefined].includes(target.operator)) {
               // Default Operator
-              pv = "pv=mean_" + interval + "(" + target.target + ")";
+              pv = "pv=mean_" + target.interval + "(" + target.target + ")";
             } else if (this.operatorList.includes(target.operator)) {
-              pv = "pv=" + target.operator + "_" + interval + "(" + target.target + ")";
+              pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
             } else {
               deferred.reject(Error("Data Processing Operator is invalid."));
             }
 
-            var from = new Date(options.range.from);
-            var to = new Date(options.range.to);
-            var url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+            var url = this.url + '/data/getData.json?' + pv + '&from=' + target.from.toISOString() + '&to=' + target.to.toISOString();
 
             deferred.resolve(url);
             return deferred.promise;
@@ -233,13 +226,21 @@ System.register(['lodash'], function (_export, _context) {
               return target.target !== '' && typeof target.target !== 'undefined';
             });
 
+            var interval = "";
+            if (options.intervalMs > 1000) {
+              interval = String(options.intervalMs / 1000 - 1);
+            }
+
             var targets = _.map(options.targets, function (target) {
               return {
                 target: _this3.templateSrv.replace(target.target, options.scopedVars, 'regex'),
                 refId: target.refId,
                 hide: target.hide,
                 alias: target.alias,
-                operator: target.operator
+                operator: target.operator,
+                from: options.range.from,
+                to: options.range.to,
+                interval: interval
               };
             });
 
