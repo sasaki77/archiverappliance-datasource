@@ -115,8 +115,11 @@ System.register(['lodash'], function (_export, _context) {
             }
 
             var pv = "";
-            if (["raw", "", undefined].includes(target.operator) || interval === "") {
+            if (target.operator === "raw" || interval === "") {
               pv = "pv=" + target.target;
+            } else if (["", undefined].includes(target.operator)) {
+              // Default Operator
+              pv = "pv=mean_" + interval + "(" + target.target + ")";
             } else if (this.operatorList.includes(target.operator)) {
               pv = "pv=" + target.operator + "_" + interval + "(" + target.target + ")";
             } else {
