@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  grunt.loadNpmTasks('grunt-execute');
+  grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.initConfig({
@@ -23,19 +23,10 @@ module.exports = function(grunt) {
       }
     },
 
-    watch: {
-      rebuild_all: {
-        files: ['src/**/*'],
-        tasks: ['default'],
-        options: {spawn: false}
-      }
-    },
-
     babel: {
       options: {
         sourceMap: true,
-        presets:  ['env'],
-        plugins:  ['transform-object-rest-spread']
+        presets: ["@babel/preset-env"]
       },
       dist: {
         files: [{

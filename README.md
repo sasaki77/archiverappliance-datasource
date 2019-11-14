@@ -10,7 +10,7 @@ Clone this plugin into grafana plugins directory; the default is /var/lib/grafan
 
 ## Dev setup
 
-This plugin requires node 6.10.0
+It is recommend to use node 12.13.0
 
 ```
 npm install -g yarn

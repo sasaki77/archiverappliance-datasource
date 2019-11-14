@@ -1,60 +1,72 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ArchiverapplianceDatasourceQueryCtrl = undefined;
+exports.ArchiverapplianceDatasourceQueryCtrl = void 0;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _sdk = require("app/plugins/sdk");
 
-var _sdk = require('app/plugins/sdk');
+require("./css/query-editor.css!");
 
-require('./css/query-editor.css!');
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var ArchiverapplianceDatasourceQueryCtrl = exports.ArchiverapplianceDatasourceQueryCtrl = function (_QueryCtrl) {
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var ArchiverapplianceDatasourceQueryCtrl =
+/*#__PURE__*/
+function (_QueryCtrl) {
   _inherits(ArchiverapplianceDatasourceQueryCtrl, _QueryCtrl);
 
   function ArchiverapplianceDatasourceQueryCtrl($scope, $injector) {
+    var _this;
+
     _classCallCheck(this, ArchiverapplianceDatasourceQueryCtrl);
 
-    var _this = _possibleConstructorReturn(this, (ArchiverapplianceDatasourceQueryCtrl.__proto__ || Object.getPrototypeOf(ArchiverapplianceDatasourceQueryCtrl)).call(this, $scope, $injector));
-
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ArchiverapplianceDatasourceQueryCtrl).call(this, $scope, $injector));
     _this.scope = $scope;
     _this.target.type = _this.target.type || 'timeserie';
-
-    _this.getOperators = _.bind(_this.getOperators_, _this);
+    _this.getOperators = _.bind(_this.getOperators_, _assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(ArchiverapplianceDatasourceQueryCtrl, [{
-    key: 'getOptions',
+    key: "getOptions",
     value: function getOptions(query, name) {
       //return this.datasource.metricFindQuery(name + '=' + query || '');
       return [];
     }
   }, {
-    key: 'getOperators_',
+    key: "getOperators_",
     value: function getOperators_(query) {
       return this.datasource.operatorList;
     }
   }, {
-    key: 'toggleEditorMode',
+    key: "toggleEditorMode",
     value: function toggleEditorMode() {
       this.target.rawQuery = !this.target.rawQuery;
     }
   }, {
-    key: 'onChangeInternal',
+    key: "onChangeInternal",
     value: function onChangeInternal() {
       this.panelCtrl.refresh(); // Asks the panel to refresh data.
     }
   }, {
-    key: 'onKeyup',
+    key: "onKeyup",
     value: function onKeyup(e) {
       if (e.keyCode === 13) {
         e.target.blur();
@@ -65,5 +77,6 @@ var ArchiverapplianceDatasourceQueryCtrl = exports.ArchiverapplianceDatasourceQu
   return ArchiverapplianceDatasourceQueryCtrl;
 }(_sdk.QueryCtrl);
 
+exports.ArchiverapplianceDatasourceQueryCtrl = ArchiverapplianceDatasourceQueryCtrl;
 ArchiverapplianceDatasourceQueryCtrl.templateUrl = 'partials/query.editor.html';
 //# sourceMappingURL=query_ctrl.js.map
