@@ -84,10 +84,7 @@ function () {
   }, {
     key: "postProcess",
     value: function postProcess(data) {
-      var d = _lodash["default"].reduce(data, function (result, d) {
-        result = result.concat(d);
-        return result;
-      }, []);
+      var d = _lodash["default"].flatten(data);
 
       return {
         data: d

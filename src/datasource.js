@@ -48,10 +48,7 @@ export class ArchiverapplianceDatasource {
   }
 
   postProcess(data) {
-    const d = _.reduce( data, (result, d) => {
-      result = result.concat(d);
-      return result;
-    }, []);
+    const d = _.flatten( data );
 
     return {data: d};
   }
