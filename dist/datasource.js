@@ -47,7 +47,7 @@ function () {
       var _this = this;
 
       var query = this.buildQueryParameters(options);
-      query.targets = query.targets.filter(function (t) {
+      query.targets = _lodash["default"].filter(query.targets, function (t) {
         return !t.hide;
       });
 
@@ -57,9 +57,10 @@ function () {
         });
       }
 
-      var targets = query.targets.map(function (target) {
+      var targets = _lodash["default"].map(query.targets, function (target) {
         return _this.targetProcess(target, options);
       });
+
       return this.q.all(targets).then(function (data) {
         return _this.postProcess(data);
       });
@@ -83,10 +84,11 @@ function () {
   }, {
     key: "postProcess",
     value: function postProcess(data) {
-      var d = data.reduce(function (result, d) {
+      var d = _lodash["default"].reduce(data, function (result, d) {
         result = result.concat(d);
         return result;
       }, []);
+
       return {
         data: d
       };
@@ -99,10 +101,10 @@ function () {
 
       if (target.operator === "raw" || target.interval === "") {
         pv = "pv=" + target.target;
-      } else if (["", undefined].includes(target.operator)) {
+      } else if (_lodash["default"].includes(["", undefined], target.operator)) {
         // Default Operator
         pv = "pv=mean_" + target.interval + "(" + target.target + ")";
-      } else if (this.operatorList.includes(target.operator)) {
+      } else if (_lodash["default"].includes(this.operatorList, target.operator)) {
         pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
       } else {
         deferred.reject(Error("Data Processing Operator is invalid."));
@@ -116,16 +118,19 @@ function () {
     key: "responseParse",
     value: function responseParse(response) {
       var deferred = this.q.defer();
-      var target_data = response.data.map(function (target_res) {
-        var timesiries = target_res.data.map(function (datapoint) {
-          return [datapoint.val, datapoint.secs * 1000 + Math.floor(datapoint.nanos / 1000000)];
+
+      var target_data = _lodash["default"].map(response.data, function (target_res) {
+        var timesiries = _lodash["default"].map(target_res.data, function (datapoint) {
+          return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
         });
+
         var target_data = {
           "target": target_res.meta["name"],
           "datapoints": timesiries
         };
         return target_data;
       });
+
       deferred.resolve(target_data);
       return deferred.promise;
     }
@@ -133,11 +138,13 @@ function () {
     key: "setAlias",
     value: function setAlias(data, target) {
       var deferred = this.q.defer();
-      data.forEach(function (d) {
+
+      _lodash["default"].forEach(data, function (d) {
         if (target.alias !== undefined && target.alias !== "") {
           d.target = target.alias;
         }
       });
+
       deferred.resolve(data);
       return deferred.promise;
     }
@@ -228,7 +235,9 @@ function () {
       var from = new Date(options.range.from);
       var to = new Date(options.range.to);
       var range_msec = to.getTime() - from.getTime();
-      var interval_sec = Math.floor(range_msec / (options.maxDataPoints * 1000));
+
+      var interval_sec = _lodash["default"].floor(range_msec / (options.maxDataPoints * 1000));
+
       var interval = "";
 
       if (interval_sec >= 1) {

@@ -25,13 +25,13 @@ export class ArchiverapplianceDatasource {
 
   query(options) {
     var query = this.buildQueryParameters(options);
-    query.targets = query.targets.filter(t => !t.hide);
+    query.targets = _.filter(query.targets, t => !t.hide);
 
     if (query.targets.length <= 0) {
       return this.q.when({data: []});
     }
 
-    const targets = query.targets.map( target => {
+    const targets = _.map( query.targets, target => {
       return this.targetProcess(target, options);
     });
 
@@ -48,7 +48,7 @@ export class ArchiverapplianceDatasource {
   }
 
   postProcess(data) {
-    const d = data.reduce( (result, d) => {
+    const d = _.reduce( data, (result, d) => {
       result = result.concat(d);
       return result;
     }, []);
@@ -62,10 +62,10 @@ export class ArchiverapplianceDatasource {
     let pv = ""
     if ( target.operator === "raw" || target.interval === "") {
       pv = "pv=" + target.target;
-    } else if ( ["", undefined].includes(target.operator) ) {
+    } else if ( _.includes(["", undefined], target.operator) ) {
       // Default Operator
       pv = "pv=mean_" + target.interval + "(" + target.target + ")";
-    } else if ( this.operatorList.includes(target.operator) ) {
+    } else if ( _.includes(this.operatorList, target.operator) ) {
       pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
     } else {
       deferred.reject(Error("Data Processing Operator is invalid."));
@@ -80,9 +80,9 @@ export class ArchiverapplianceDatasource {
   responseParse(response) {
     let deferred = this.q.defer();
 
-    const target_data = response.data.map( target_res => {
-      const timesiries = target_res.data.map( datapoint => {
-          return [datapoint.val, datapoint.secs*1000+Math.floor(datapoint.nanos/1000000)];
+    const target_data = _.map( response.data, target_res => {
+      const timesiries = _.map( target_res.data, datapoint => {
+          return [datapoint.val, datapoint.secs*1000+_.floor(datapoint.nanos/1000000)];
       });
       const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
       return target_data;
@@ -95,7 +95,7 @@ export class ArchiverapplianceDatasource {
   setAlias(data, target) {
     let deferred = this.q.defer();
 
-    data.forEach( d => {
+    _.forEach( data, d => {
       if( target.alias !== undefined && target.alias !== "" ) {
         d.target = target.alias;
       }
@@ -175,7 +175,7 @@ export class ArchiverapplianceDatasource {
     const from = new Date(options.range.from);
     const to = new Date(options.range.to);
     const range_msec = to.getTime() - from.getTime();
-    const interval_sec =  Math.floor(range_msec / ( options.maxDataPoints * 1000));
+    const interval_sec =  _.floor(range_msec / ( options.maxDataPoints * 1000));
 
     let interval = "";
     if ( interval_sec >= 1 ) {
