@@ -13,6 +13,8 @@ var _FunctionEditorControls = require("./FunctionEditorControls");
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -52,9 +54,11 @@ var FunctionDescription = _react["default"].lazy(function _callee() {
           rst2html = _ref["default"];
           return _context.abrupt("return", {
             "default": function _default(props) {
-              return <div dangerouslySetInnerHTML={{
-                __html: rst2html(props.description)
-              }} />;
+              return _react["default"].createElement("div", {
+                dangerouslySetInnerHTML: {
+                  __html: rst2html(props.description)
+                }
+              });
             }
           });
 
@@ -83,42 +87,51 @@ function (_React$PureComponent) {
     _defineProperty(_assertThisInitialized(_this), "renderContent", function (_ref2) {
       var updatePopperPosition = _ref2.updatePopperPosition;
       var _this$props = _this.props,
-          onMoveLeft = _this$props.onMoveLeft,
-          onMoveRight = _this$props.onMoveRight,
+          _onMoveLeft = _this$props.onMoveLeft,
+          _onMoveRight = _this$props.onMoveRight,
           _this$props$func$def = _this$props.func.def,
           name = _this$props$func$def.name,
           description = _this$props$func$def.description;
       var showingDescription = _this.state.showingDescription;
 
       if (showingDescription) {
-        return <div style={{
-          overflow: 'auto',
-          maxHeight: '30rem',
-          textAlign: 'left',
-          fontWeight: 'normal'
-        }}>
-          <h4 style={{
+        return _react["default"].createElement("div", {
+          style: {
+            overflow: 'auto',
+            maxHeight: '30rem',
+            textAlign: 'left',
+            fontWeight: 'normal'
+          }
+        }, _react["default"].createElement("h4", {
+          style: {
             color: 'white'
-          }}> {name} </h4>
-          <_react.Suspense fallback={<span>Loading description...</span>}>
-            <FunctionDescription description={description} />
-          </_react.Suspense>
-        </div>;
+          }
+        }, " ", name, " "), _react["default"].createElement(_react.Suspense, {
+          fallback: _react["default"].createElement("span", null, "Loading description...")
+        }, _react["default"].createElement(FunctionDescription, {
+          description: description
+        })));
       }
 
-      return <_FunctionEditorControls.FunctionEditorControls {..._this.props} onMoveLeft={function () {
-        onMoveLeft(_this.props.func);
-        updatePopperPosition();
-      }} onMoveRight={function () {
-        onMoveRight(_this.props.func);
-        updatePopperPosition();
-      }} onDescriptionShow={function () {
-        _this.setState({
-          showingDescription: true
-        }, function () {
+      return _react["default"].createElement(_FunctionEditorControls.FunctionEditorControls, _extends({}, _this.props, {
+        onMoveLeft: function onMoveLeft() {
+          _onMoveLeft(_this.props.func);
+
           updatePopperPosition();
-        });
-      }} />;
+        },
+        onMoveRight: function onMoveRight() {
+          _onMoveRight(_this.props.func);
+
+          updatePopperPosition();
+        },
+        onDescriptionShow: function onDescriptionShow() {
+          _this.setState({
+            showingDescription: true
+          }, function () {
+            updatePopperPosition();
+          });
+        }
+      }));
     });
 
     _this.state = {
@@ -132,35 +145,46 @@ function (_React$PureComponent) {
     value: function render() {
       var _this2 = this;
 
-      return <_ui.PopoverController content={this.renderContent} placement="top" hideAfter={300}>
-        {function (showPopper, hidePopper, popperProps) {
-          return <>
-              {_this2.triggerRef && <_ui.Popover {...popperProps} referenceElement={_this2.triggerRef.current} wrapperClassName="popper" className="popper__background" onMouseLeave={function () {
-              _this2.setState({
-                showingDescription: false
-              });
+      return _react["default"].createElement(_ui.PopoverController, {
+        content: this.renderContent,
+        placement: "top",
+        hideAfter: 300
+      }, function (showPopper, hidePopper, popperProps) {
+        return _react["default"].createElement(_react["default"].Fragment, null, _this2.triggerRef && _react["default"].createElement(_ui.Popover, _extends({}, popperProps, {
+          referenceElement: _this2.triggerRef.current,
+          wrapperClassName: "popper",
+          className: "popper__background",
+          onMouseLeave: function onMouseLeave() {
+            _this2.setState({
+              showingDescription: false
+            });
 
-              hidePopper();
-            }} onMouseEnter={showPopper} renderArrow={function (_ref3) {
-              var arrowProps = _ref3.arrowProps,
-                  placement = _ref3.placement;
-              return <div className="popper__arrow" data-placement={placement} {...arrowProps} />;
-            }} />}
+            hidePopper();
+          },
+          onMouseEnter: showPopper,
+          renderArrow: function renderArrow(_ref3) {
+            var arrowProps = _ref3.arrowProps,
+                placement = _ref3.placement;
+            return _react["default"].createElement("div", _extends({
+              className: "popper__arrow",
+              "data-placement": placement
+            }, arrowProps));
+          }
+        })), _react["default"].createElement("span", {
+          ref: _this2.triggerRef,
+          onClick: popperProps.show ? hidePopper : showPopper,
+          onMouseLeave: function onMouseLeave() {
+            hidePopper();
 
-              <span ref={_this2.triggerRef} onClick={popperProps.show ? hidePopper : showPopper} onMouseLeave={function () {
-              hidePopper();
-
-              _this2.setState({
-                showingDescription: false
-              });
-            }} style={{
-              cursor: 'pointer'
-            }}>
-                {_this2.props.func.def.name}
-              </span>
-            </>;
-        }}
-      </_ui.PopoverController>;
+            _this2.setState({
+              showingDescription: false
+            });
+          },
+          style: {
+            cursor: 'pointer'
+          }
+        }, _this2.props.func.def.name));
+      });
     }
   }]);
 

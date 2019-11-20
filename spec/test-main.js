@@ -16,8 +16,12 @@ prunk.mock('app/core/core_module', {
 // Required for loading angularjs
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-global.document = new JSDOM('<html><head><script></script></head><body></body></html>');
-global.window = global.document.parentWindow;
+
+global.dom = new JSDOM('<!doctype html><html><body></body></html>');
+global.window = dom.window;
+global.document = dom.window.document;
+global.navigator = global.window.navigator;
+global.Element = function(){};
 
 // Setup Chai
 chai.should();

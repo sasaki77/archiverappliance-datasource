@@ -2,11 +2,12 @@ import _ from 'lodash';
 import $ from 'jquery';
 import coreModule from 'app/core/core_module';
 import { TemplateSrv } from 'app/features/templating/template_srv';
+import { FunctionEditor } from './FunctionEditor';
 
 /** @ngInject */
 export function aaFuncEditor($compile: any, templateSrv: TemplateSrv) {
   const funcSpanTemplate = `
-    <function-editor
+    <aa-function-editor
       func="func"
       onRemove="ctrl.handleRemoveFunction"
       onMoveLeft="ctrl.handleMoveLeft"
@@ -251,3 +252,13 @@ export function aaFuncEditor($compile: any, templateSrv: TemplateSrv) {
 }
 
 coreModule.directive('aaFuncEditor', aaFuncEditor);
+react2AngularDirective('aaFunctionEditor', FunctionEditor, ['func', 'onRemove', 'onMoveLeft', 'onMoveRight']);
+
+function react2AngularDirective(name: string, component: any, options: any) {
+  coreModule.directive(name, [
+    'reactDirective',
+    reactDirective => {
+      return reactDirective(component, options);
+    },
+  ]);
+}

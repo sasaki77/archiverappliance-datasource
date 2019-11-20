@@ -11,11 +11,13 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 var _core_module = _interopRequireDefault(require("app/core/core_module"));
 
+var _FunctionEditor = require("./FunctionEditor");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 /** @ngInject */
 function aaFuncEditor($compile, templateSrv) {
-  var funcSpanTemplate = "\n    <function-editor\n      func=\"func\"\n      onRemove=\"ctrl.handleRemoveFunction\"\n      onMoveLeft=\"ctrl.handleMoveLeft\"\n      onMoveRight=\"ctrl.handleMoveRight\"\n    /><span>(</span>\n  ";
+  var funcSpanTemplate = "\n    <aa-function-editor\n      func=\"func\"\n      onRemove=\"ctrl.handleRemoveFunction\"\n      onMoveLeft=\"ctrl.handleMoveLeft\"\n      onMoveRight=\"ctrl.handleMoveRight\"\n    /><span>(</span>\n  ";
   var paramTemplate = '<input type="text" style="display:none"' + ' class="input-small tight-form-func-param"></input>';
   return {
     restrict: 'A',
@@ -239,4 +241,12 @@ function aaFuncEditor($compile, templateSrv) {
 }
 
 _core_module["default"].directive('aaFuncEditor', aaFuncEditor);
+
+react2AngularDirective('aaFunctionEditor', _FunctionEditor.FunctionEditor, ['func', 'onRemove', 'onMoveLeft', 'onMoveRight']);
+
+function react2AngularDirective(name, component, options) {
+  _core_module["default"].directive(name, ['reactDirective', function (reactDirective) {
+    return reactDirective(component, options);
+  }]);
+}
 //# sourceMappingURL=func_editor.js.map
