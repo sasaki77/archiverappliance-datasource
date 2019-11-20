@@ -21,6 +21,7 @@
           ng-model="ctrl.target.operator"
           bs-typeahead="ctrl.getOperators"
           data-min-length="0"
+          data-items=100
           spellcheck="false"
           placeholder="mean"
           ng-blur="ctrl.targetChanged()"
