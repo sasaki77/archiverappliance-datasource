@@ -26,13 +26,14 @@ module.exports = function(grunt) {
     babel: {
       options: {
         sourceMap: true,
-        presets: ["@babel/preset-env"]
+        plugins: ["@babel/plugin-proposal-class-properties"],
+        presets: ["@babel/preset-env", "@babel/preset-typescript"]
       },
       dist: {
         files: [{
           cwd: 'src',
           expand: true,
-          src: ['**/*.js'],
+          src: ['**/*.js', '**/*.ts*', '**/*.tsx'],
           dest: 'dist',
           ext:'.js'
         }]
@@ -41,7 +42,7 @@ module.exports = function(grunt) {
         files: [{
           cwd: 'src',
           expand: true,
-          src: ['**/*.js'],
+          src: ['**/*.js', '**/*.ts*', '**/*.tsx'],
           dest: 'dist/test',
           ext:'.js'
         }]
@@ -50,7 +51,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'spec',
-          src: ['**/*.js'],
+          src: ['**/*.js', '**/*.ts*', '**/*.tsx'],
           dest: 'dist/test/spec',
           ext:'.js'
         }]

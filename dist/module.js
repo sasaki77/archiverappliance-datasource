@@ -37,6 +37,10 @@ var _config_ctrl = require("./config_ctrl");
 
 var _annotation_ctrl = require("./annotation_ctrl");
 
+require("./aa-add-func");
+
+require("./func_editor");
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ArchiverapplianceQueryOptionsCtrl = function ArchiverapplianceQueryOptionsCtrl() {

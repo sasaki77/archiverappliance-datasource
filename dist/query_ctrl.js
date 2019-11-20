@@ -9,6 +9,12 @@ var _sdk = require("app/plugins/sdk");
 
 require("./css/query-editor.css!");
 
+var aafunc = _interopRequireWildcard(require("./aafunc"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40,14 +46,56 @@ function (_QueryCtrl) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(ArchiverapplianceDatasourceQueryCtrl).call(this, $scope, $injector));
     _this.scope = $scope;
     _this.target.type = _this.target.type || 'timeserie';
+    _this.target.functions = _this.target.functions || [];
     _this.getOperators = _.bind(_this.getOperators_, _assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(ArchiverapplianceDatasourceQueryCtrl, [{
+    key: "addFunction",
+    value: function addFunction(funcDef) {
+      var newFunc = aafunc.createFuncInstance(funcDef);
+      newFunc.added = true;
+      this.target.functions.push(newFunc);
+      this.moveAliasFuncLast();
+
+      if (newFunc.params.length && newFunc.added || newFunc.def.params.length === 0) {
+        this.targetChanged();
+      }
+
+      console.log(this.target.functions);
+    }
+  }, {
+    key: "removeFunction",
+    value: function removeFunction(func) {
+      this.target.functions = _.without(this.target.functions, func);
+      this.targetChanged();
+    }
+  }, {
+    key: "moveFunction",
+    value: function moveFunction(func, offset) {
+      var index = this.target.functions.indexOf(func);
+
+      _.move(this.target.functions, index, index + offset);
+
+      this.targetChanged();
+    }
+  }, {
+    key: "moveAliasFuncLast",
+    value: function moveAliasFuncLast() {
+      var aliasFunc = _.find(this.target.functions, function (func) {
+        return func.def.category === 'Alias';
+      });
+
+      if (aliasFunc) {
+        this.target.functions = _.without(this.target.functions, aliasFunc);
+        this.target.functions.push(aliasFunc);
+      }
+    }
+  }, {
     key: "getOptions",
     value: function getOptions(query, name) {
-      //return this.datasource.metricFindQuery(name + '=' + query || '');
+      //return this.datasource.aafunc(name + '=' + query || '');
       return [];
     }
   }, {
@@ -61,8 +109,8 @@ function (_QueryCtrl) {
       this.target.rawQuery = !this.target.rawQuery;
     }
   }, {
-    key: "onChangeInternal",
-    value: function onChangeInternal() {
+    key: "targetChanged",
+    value: function targetChanged() {
       this.panelCtrl.refresh(); // Asks the panel to refresh data.
     }
   }, {

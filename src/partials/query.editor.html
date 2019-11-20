@@ -7,7 +7,7 @@
           ng-model="ctrl.target.target"
           spellcheck="false"
           placeholder="PV name"
-          ng-blur="ctrl.onChangeInternal()"
+          ng-blur="ctrl.targetChanged()"
           ng-keyup="ctrl.onKeyup($event)"
         />
       </div>
@@ -23,7 +23,7 @@
           data-min-length="0"
           spellcheck="false"
           placeholder="mean"
-          ng-blur="ctrl.onChangeInternal()"
+          ng-blur="ctrl.targetChanged()"
           ng-keyup="ctrl.onKeyup($event)"
         />
       </div>
@@ -37,15 +37,35 @@
           ng-model="ctrl.target.alias"
           spellcheck="false"
           placeholder="Alias"
-          ng-blur="ctrl.onChangeInternal()"
+          ng-blur="ctrl.targetChanged()"
           ng-keyup="ctrl.onKeyup($event)"
         />
       </div>
     </div>
 
+    <div ng-if="!ctrl.target.rawQuery">
+      <div class="gf-form-inline">
+        <div class="gf-form">
+          <label class="gf-form-label width-6 query-keyword">Functions</label>
+        </div>
+
+        <div ng-repeat="func in ctrl.target.functions" class="gf-form">
+          <span aa-func-editor class="gf-form-label query-part" ng-hide="func.hidden"></span>
+        </div>
+
+        <div class="gf-form dropdown">
+          <span aa-add-func></span>
+        </div>
+
+        <div class="gf-form gf-form--grow">
+          <div class="gf-form-label gf-form-label--grow"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="gf-form-inline">
     <div class="gf-form" ng-if="ctrl.target.rawQuery">
-      <textarea class="gf-form-input" rows="5" ng-model="ctrl.target.target" spellcheck="false" ng-blur="ctrl.onChangeInternal()" />
+      <textarea class="gf-form-input" rows="5" ng-model="ctrl.target.target" spellcheck="false" ng-blur="ctrl.targetChanged()" />
     </div>
 
     <div class="gf-form gf-form--grow">

@@ -8,6 +8,10 @@ prunk.mock('app/plugins/sdk', {
     QueryCtrl: null
 });
 
+prunk.mock('app/core/core_module', {
+    directive: function() {}
+});
+
 // Setup jsdom
 // Required for loading angularjs
 const jsdom = require("jsdom");
