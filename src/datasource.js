@@ -115,7 +115,10 @@ export class ArchiverapplianceDatasource {
 
     // Apply transformation functions
     const transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-    data = sequence(transformFunctions)(data);
+    data = _.map(data, timeseries => {
+      timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
+      return timeseries;
+    });
 
     deferred.resolve(data);
     return deferred.promise;

@@ -169,7 +169,10 @@ function () {
 
 
       var transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-      data = sequence(transformFunctions)(data);
+      data = _lodash["default"].map(data, function (timeseries) {
+        timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
+        return timeseries;
+      });
       deferred.resolve(data);
       return deferred.promise;
     }

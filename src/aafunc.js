@@ -20,12 +20,28 @@ function addFuncDef(funcDef) {
 // Transform
 
 addFuncDef({
-  name: 'multiply',
+  name: 'scale',
   category: 'Transform',
   params: [
-    {name: 'number', type: 'float'},
+    { name: 'factor', type: 'float', options: [100, 0.01, 10, -1]}
   ],
-  defaultParams: [1]
+  defaultParams: [100],
+});
+
+addFuncDef({
+  name: 'offset',
+  category: 'Transform',
+  params: [
+    { name: 'delta', type: 'float', options: [-100, 100]}
+  ],
+  defaultParams: [100],
+});
+
+addFuncDef({
+  name: 'delta',
+  category: 'Transform',
+  params: [],
+  defaultParams: [],
 });
 
 class FuncInstance {
