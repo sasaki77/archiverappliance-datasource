@@ -165,27 +165,13 @@ function () {
       if (target.functions === undefined) {
         deferred.resolve(data);
         return deferred.promise;
-      }
+      } // Apply transformation functions
 
-      var funcs = _lodash["default"].map(target.functions, function (func) {
-        var funcInstance = aafunc.createFuncInstance(func.def, func.params);
-        return funcInstance.bindFunction(_dataProcessor["default"].aaFunctions);
-      });
 
-      data = this.sequence(funcs)(data);
+      var transformFunctions = bindFunctionDefs(target.functions, 'Transform');
+      data = sequence(transformFunctions)(data);
       deferred.resolve(data);
       return deferred.promise;
-    }
-  }, {
-    key: "sequence",
-    value: function sequence(funcsArray) {
-      return function (result) {
-        for (var i = 0; i < funcsArray.length; i++) {
-          result = funcsArray[i].call(this, result);
-        }
-
-        return result;
-      };
     }
   }, {
     key: "testDatasource",
@@ -306,4 +292,27 @@ function () {
 }();
 
 exports.ArchiverapplianceDatasource = ArchiverapplianceDatasource;
+
+function bindFunctionDefs(functionDefs, category) {
+  var aggregationFunctions = _lodash["default"].map(aafunc.getCategories()[category], 'name');
+
+  var aggFuncDefs = _lodash["default"].filter(functionDefs, function (func) {
+    return _lodash["default"].includes(aggregationFunctions, func.def.name);
+  });
+
+  return _lodash["default"].map(aggFuncDefs, function (func) {
+    var funcInstance = aafunc.createFuncInstance(func.def, func.params);
+    return funcInstance.bindFunction(_dataProcessor["default"].aaFunctions);
+  });
+}
+
+function sequence(funcsArray) {
+  return function (result) {
+    for (var i = 0; i < funcsArray.length; i++) {
+      result = funcsArray[i].call(this, result);
+    }
+
+    return result;
+  };
+}
 //# sourceMappingURL=datasource.js.map

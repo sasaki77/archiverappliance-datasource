@@ -113,24 +113,12 @@ export class ArchiverapplianceDatasource {
       return deferred.promise;
     }
 
-    const funcs = _.map(target.functions, func => {
-      let funcInstance = aafunc.createFuncInstance(func.def, func.params);
-      return funcInstance.bindFunction(dataProcessor.aaFunctions);
-    });
-
-    data = this.sequence(funcs)(data);
+    // Apply transformation functions
+    const transformFunctions = bindFunctionDefs(target.functions, 'Transform');
+    data = sequence(transformFunctions)(data);
 
     deferred.resolve(data);
     return deferred.promise;
-  }
-
-  sequence(funcsArray) {
-    return function(result) {
-        for (var i = 0; i < funcsArray.length; i++) {
-            result = funcsArray[i].call(this, result);
-        }
-        return result;
-    };
   }
 
   testDatasource() {
@@ -228,4 +216,25 @@ export class ArchiverapplianceDatasource {
 
     return options;
   }
+}
+
+function bindFunctionDefs(functionDefs, category) {
+  var aggregationFunctions = _.map(aafunc.getCategories()[category], 'name');
+  var aggFuncDefs = _.filter(functionDefs, function(func) {
+    return _.includes(aggregationFunctions, func.def.name);
+  });
+
+  return _.map(aggFuncDefs, func => {
+    let funcInstance = aafunc.createFuncInstance(func.def, func.params);
+    return funcInstance.bindFunction(dataProcessor.aaFunctions);
+  });
+}
+
+function sequence(funcsArray) {
+  return function(result) {
+      for (let i = 0; i < funcsArray.length; i++) {
+          result = funcsArray[i].call(this, result);
+      }
+      return result;
+  };
 }
