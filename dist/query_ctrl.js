@@ -62,8 +62,6 @@ function (_QueryCtrl) {
       if (newFunc.params.length && newFunc.added || newFunc.def.params.length === 0) {
         this.targetChanged();
       }
-
-      console.log(this.target.functions);
     }
   }, {
     key: "removeFunction",

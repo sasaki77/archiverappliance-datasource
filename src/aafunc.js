@@ -4,12 +4,6 @@ import $ from 'jquery';
 var index = [];
 var categories = {
   Transform: [],
-  Aggregate: [],
-  Filter: [],
-  Trends: [],
-  Time: [],
-  Alias: [],
-  Special: []
 };
 
 function addFuncDef(funcDef) {
@@ -26,13 +20,12 @@ function addFuncDef(funcDef) {
 // Transform
 
 addFuncDef({
-  name: 'groupBy',
+  name: 'multiply',
   category: 'Transform',
   params: [
-    { name: 'interval', type: 'string'},
-    { name: 'function', type: 'string', options: ['avg', 'min', 'max', 'sum', 'count', 'median'] }
+    {name: 'number', type: 'float'},
   ],
-  defaultParams: ['1m', 'avg'],
+  defaultParams: [1]
 });
 
 class FuncInstance {

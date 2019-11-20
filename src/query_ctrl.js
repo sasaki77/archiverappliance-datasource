@@ -25,7 +25,6 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
         newFunc.def.params.length === 0) {
       this.targetChanged();
     }
-    console.log(this.target.functions);
   }
 
   removeFunction(func) {

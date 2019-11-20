@@ -21,13 +21,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var index = [];
 var categories = {
-  Transform: [],
-  Aggregate: [],
-  Filter: [],
-  Trends: [],
-  Time: [],
-  Alias: [],
-  Special: []
+  Transform: []
 };
 
 function addFuncDef(funcDef) {
@@ -44,17 +38,13 @@ function addFuncDef(funcDef) {
 
 
 addFuncDef({
-  name: 'groupBy',
+  name: 'multiply',
   category: 'Transform',
   params: [{
-    name: 'interval',
-    type: 'string'
-  }, {
-    name: 'function',
-    type: 'string',
-    options: ['avg', 'min', 'max', 'sum', 'count', 'median']
+    name: 'number',
+    type: 'float'
   }],
-  defaultParams: ['1m', 'avg']
+  defaultParams: [1]
 });
 
 var FuncInstance =

@@ -1,11 +1,21 @@
 "use strict";
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ArchiverapplianceDatasource = void 0;
 
 var _lodash = _interopRequireDefault(require("lodash"));
+
+var _dataProcessor = _interopRequireDefault(require("./dataProcessor"));
+
+var aafunc = _interopRequireWildcard(require("./aafunc"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -79,6 +89,8 @@ function () {
         return _this2.responseParse(res);
       }).then(function (data) {
         return _this2.setAlias(data, target);
+      }).then(function (data) {
+        return _this2.applyFunctions(data, target);
       });
     }
   }, {
@@ -144,6 +156,36 @@ function () {
 
       deferred.resolve(data);
       return deferred.promise;
+    }
+  }, {
+    key: "applyFunctions",
+    value: function applyFunctions(data, target) {
+      var deferred = this.q.defer();
+
+      if (target.functions === undefined) {
+        deferred.resolve(data);
+        return deferred.promise;
+      }
+
+      var funcs = _lodash["default"].map(target.functions, function (func) {
+        var funcInstance = aafunc.createFuncInstance(func.def, func.params);
+        return funcInstance.bindFunction(_dataProcessor["default"].aaFunctions);
+      });
+
+      data = this.sequence(funcs)(data);
+      deferred.resolve(data);
+      return deferred.promise;
+    }
+  }, {
+    key: "sequence",
+    value: function sequence(funcsArray) {
+      return function (result) {
+        for (var i = 0; i < funcsArray.length; i++) {
+          result = funcsArray[i].call(this, result);
+        }
+
+        return result;
+      };
     }
   }, {
     key: "testDatasource",
@@ -250,7 +292,8 @@ function () {
           operator: target.operator,
           from: from,
           to: to,
-          interval: interval
+          interval: interval,
+          functions: target.functions
         };
       });
 

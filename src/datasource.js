@@ -1,4 +1,6 @@
 import _ from "lodash";
+import dataProcessor from "./dataProcessor";
+import * as aafunc from './aafunc';
 
 export class ArchiverapplianceDatasource {
 
@@ -44,6 +46,7 @@ export class ArchiverapplianceDatasource {
           .then( url => this.doRequest({ url: url, method: 'GET' }) )
           .then( res => this.responseParse(res) )
           .then( data => this.setAlias(data, target) )
+          .then( data => this.applyFunctions(data, target) )
       );
   }
 
@@ -100,6 +103,34 @@ export class ArchiverapplianceDatasource {
 
     deferred.resolve(data);
     return deferred.promise;
+  }
+
+  applyFunctions(data, target) {
+    let deferred = this.q.defer();
+
+    if(target.functions === undefined){
+      deferred.resolve(data);
+      return deferred.promise;
+    }
+
+    const funcs = _.map(target.functions, func => {
+      let funcInstance = aafunc.createFuncInstance(func.def, func.params);
+      return funcInstance.bindFunction(dataProcessor.aaFunctions);
+    });
+
+    data = this.sequence(funcs)(data);
+
+    deferred.resolve(data);
+    return deferred.promise;
+  }
+
+  sequence(funcsArray) {
+    return function(result) {
+        for (var i = 0; i < funcsArray.length; i++) {
+            result = funcsArray[i].call(this, result);
+        }
+        return result;
+    };
   }
 
   testDatasource() {
@@ -188,7 +219,8 @@ export class ArchiverapplianceDatasource {
         operator: target.operator,
         from: from,
         to: to,
-        interval: interval
+        interval: interval,
+        functions: target.functions
       };
     });
 
