@@ -144,7 +144,7 @@ function aaFuncEditor($compile, templateSrv) {
         $input.attr('data-provide', 'typeahead');
         var options = paramDef(paramIndex).options;
 
-        if (paramDef(paramIndex).type === 'int') {
+        if (paramDef(paramIndex).type === 'int' || paramDef(paramIndex).type === 'float') {
           options = _lodash["default"].map(options, function (val) {
             return val.toString();
           });

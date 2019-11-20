@@ -145,7 +145,7 @@ export function aaFuncEditor($compile: any, templateSrv: TemplateSrv) {
         $input.attr('data-provide', 'typeahead');
 
         let options = paramDef(paramIndex).options;
-        if (paramDef(paramIndex).type === 'int') {
+        if (paramDef(paramIndex).type === 'int' || paramDef(paramIndex).type === 'float') {
           options = _.map(options, val => {
             return val.toString();
           });
