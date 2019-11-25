@@ -9,15 +9,6 @@ interface FunctionEditorProps extends FunctionEditorControlsProps {
 interface FunctionEditorState {
   showingDescription: boolean;
 }
-const FunctionDescription = React.lazy(async () => {
-  // @ts-ignore
-  const { default: rst2html } = await import(/* webpackChunkName: "rst2html" */ 'rst2html');
-  return {
-    default: (props: { description: string }) => (
-      <div dangerouslySetInnerHTML={{ __html: rst2html(props.description) }} />
-    ),
-  };
-});
 
 class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEditorState> {
   private triggerRef = React.createRef<HTMLSpanElement>();
@@ -44,9 +35,7 @@ class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEd
       return (
         <div style={{ overflow: 'auto', maxHeight: '30rem', textAlign: 'left', fontWeight: 'normal' }}>
           <h4 style={{ color: 'white' }}> {name} </h4>
-          <Suspense fallback={<span>Loading description...</span>}>
-            <FunctionDescription description={description} />
-          </Suspense>
+          <div>{description}</div>
         </div>
       );
     }
