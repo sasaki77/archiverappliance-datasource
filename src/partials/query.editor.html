@@ -5,6 +5,9 @@
         <input type="text"
           class="gf-form-input max-width-30"
           ng-model="ctrl.target.target"
+          bs-typeahead="ctrl.getPVNames"
+          data-min-length="0"
+          data-items=100
           spellcheck="false"
           placeholder="PV name"
           ng-blur="ctrl.targetChanged()"

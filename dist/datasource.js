@@ -193,6 +193,18 @@ function () {
       //});
     }
   }, {
+    key: "PVNamesFindQuery",
+    value: function PVNamesFindQuery(query) {
+      var str = this.templateSrv.replace(query, null, 'regex');
+      var url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
+      return this.doRequest({
+        url: url,
+        method: 'GET'
+      }).then(function (res) {
+        return res.data;
+      });
+    }
+  }, {
     key: "metricFindQuery",
     value: function metricFindQuery(query) {
       var str = this.templateSrv.replace(query, null, 'regex');

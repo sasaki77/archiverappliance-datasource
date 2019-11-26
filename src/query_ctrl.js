@@ -11,6 +11,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     this.target.type = this.target.type || 'timeserie';
     this.target.functions = this.target.functions || [];
 
+    this.getPVNames = _.bind(this.getPVNames_, this);
     this.getOperators = _.bind(this.getOperators_, this);
   }
 
@@ -49,9 +50,11 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     }
   }
 
-  getOptions(query, name) {
-    //return this.datasource.aafunc(name + '=' + query || '');
-    return [];
+  getPVNames_(query, callback) {
+    const str = "*" + query + "*";
+    this.datasource.PVNamesFindQuery(str).then( res => {
+        callback(res);
+    });
   }
 
   getOperators_(query) {

@@ -47,6 +47,7 @@ function (_QueryCtrl) {
     _this.scope = $scope;
     _this.target.type = _this.target.type || 'timeserie';
     _this.target.functions = _this.target.functions || [];
+    _this.getPVNames = _.bind(_this.getPVNames_, _assertThisInitialized(_this));
     _this.getOperators = _.bind(_this.getOperators_, _assertThisInitialized(_this));
     return _this;
   }
@@ -91,10 +92,12 @@ function (_QueryCtrl) {
       }
     }
   }, {
-    key: "getOptions",
-    value: function getOptions(query, name) {
-      //return this.datasource.aafunc(name + '=' + query || '');
-      return [];
+    key: "getPVNames_",
+    value: function getPVNames_(query, callback) {
+      var str = "*" + query + "*";
+      this.datasource.PVNamesFindQuery(str).then(function (res) {
+        callback(res);
+      });
     }
   }, {
     key: "getOperators_",

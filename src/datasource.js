@@ -136,6 +136,19 @@ export class ArchiverapplianceDatasource {
     //});
   }
 
+  PVNamesFindQuery(query) {
+    const str = this.templateSrv.replace(query, null, 'regex');
+
+    const url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
+
+    return this.doRequest({
+      url: url,
+      method: 'GET',
+    }).then( res => {
+        return res.data;
+    });
+  }
+
   metricFindQuery(query) {
     var str = this.templateSrv.replace(query, null, 'regex');
 
