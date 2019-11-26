@@ -144,7 +144,7 @@ export class ArchiverapplianceDatasource {
         return deferred.promise;
     }
 
-    const url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
+    const url = this.url + "/bpl/getMatchingPVs?limit=100&regex=" + str;
 
     return this.doRequest({
       url: url,

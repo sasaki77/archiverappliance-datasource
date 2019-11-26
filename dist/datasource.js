@@ -202,7 +202,7 @@ function () {
         return deferred.promise;
       }
 
-      var url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
+      var url = this.url + "/bpl/getMatchingPVs?limit=100&regex=" + str;
       return this.doRequest({
         url: url,
         method: 'GET'
