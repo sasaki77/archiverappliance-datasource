@@ -155,43 +155,6 @@ export class ArchiverapplianceDatasource {
     });
   }
 
-  metricFindQuery(query) {
-    var str = this.templateSrv.replace(query, null, 'regex');
-
-    if (str) {
-      var s = str.toString().split('=');
-      var target = (s[1] || '');
-      var name = (s[0] || '');
-    }
-    else{
-      var target = '';
-      var name = '';
-    }
-
-    var interpolated = {
-        target: target
-    };
-
-    interpolated.name = name;
-
-    return this.doRequest({
-      url: this.url + '/search',
-      data: interpolated,
-      method: 'POST',
-    }).then(this.mapToTextValue);
-  }
-
-  mapToTextValue(result) {
-    return _.map(result.data, (d, i) => {
-      if (d && d.text && d.value) {
-        return { text: d.text, value: d.value };
-      } else if (_.isObject(d)) {
-        return { text: d, value: i};
-      }
-      return { text: d, value: d };
-    });
-  }
-
   doRequest(options) {
     options.withCredentials = this.withCredentials;
     options.headers = this.headers;
