@@ -207,6 +207,97 @@ describe('ArchiverapplianceDatasource', function() {
         });
     });
 
+    it ('should return the pv name results when a target is null', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    "metric_0",
+                    "metric_1",
+                    "metric_2",
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+            return data;
+        }
+
+        ctx.ds.PVNamesFindQuery(null).then( result => {
+            expect(result).to.have.length(0);
+            done();
+        });
+    });
+
+    it ('should return the pv name results when a target is undefined', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    "metric_0",
+                    "metric_1",
+                    "metric_2",
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+            return data;
+        }
+
+        ctx.ds.PVNamesFindQuery(undefined).then( result => {
+            expect(result).to.have.length(0);
+            done();
+        });
+    });
+
+    it ('should return the pv name results when a target is empty', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    "metric_0",
+                    "metric_1",
+                    "metric_2",
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+            return data;
+        }
+
+        ctx.ds.PVNamesFindQuery("").then( result => {
+            expect(result).to.have.length(0);
+            done();
+        });
+    });
+
+    it ('should return the pv name results when a target is set', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    "metric_0",
+                    "metric_1",
+                    "metric_2",
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+            return data;
+        }
+
+        ctx.ds.PVNamesFindQuery("metric").then( result => {
+            expect(result).to.have.length(3);
+            expect(result[0]).to.equal('metric_0');
+            expect(result[1]).to.equal('metric_1');
+            expect(result[2]).to.equal('metric_2');
+            done();
+        });
+    });
+
     it ('should return the metric results when a target is null', function(done) {
         ctx.backendSrv.datasourceRequest = function(request) {
             return ctx.$q.when({

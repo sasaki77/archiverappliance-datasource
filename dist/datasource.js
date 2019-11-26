@@ -196,6 +196,13 @@ function () {
     key: "PVNamesFindQuery",
     value: function PVNamesFindQuery(query) {
       var str = this.templateSrv.replace(query, null, 'regex');
+
+      if (!str) {
+        var deferred = this.q.defer();
+        deferred.resolve([]);
+        return deferred.promise;
+      }
+
       var url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
       return this.doRequest({
         url: url,

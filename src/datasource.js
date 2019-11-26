@@ -139,6 +139,12 @@ export class ArchiverapplianceDatasource {
   PVNamesFindQuery(query) {
     const str = this.templateSrv.replace(query, null, 'regex');
 
+    if(!str) {
+        let deferred = this.q.defer();
+        deferred.resolve([]);
+        return deferred.promise;
+    }
+
     const url = this.url + "/bpl/getMatchingPVs?limit=100&pv=" + str;
 
     return this.doRequest({
