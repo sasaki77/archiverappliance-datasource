@@ -199,6 +199,14 @@ export class ArchiverapplianceDatasource {
     });
   }
 
+  metricFindQuery(query) {
+    return this.PVNamesFindQuery(query).then( pvnames => {
+      return _.map(pvnames, pvname => {
+        return {"text": pvname};
+      });
+    });
+  }
+
   doRequest(options) {
     options.withCredentials = this.withCredentials;
     options.headers = this.headers;

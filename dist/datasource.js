@@ -269,6 +269,17 @@ function () {
       });
     }
   }, {
+    key: "metricFindQuery",
+    value: function metricFindQuery(query) {
+      return this.PVNamesFindQuery(query).then(function (pvnames) {
+        return _lodash["default"].map(pvnames, function (pvname) {
+          return {
+            "text": pvname
+          };
+        });
+      });
+    }
+  }, {
     key: "doRequest",
     value: function doRequest(options) {
       options.withCredentials = this.withCredentials;

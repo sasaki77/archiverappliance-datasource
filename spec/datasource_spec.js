@@ -351,4 +351,29 @@ describe('ArchiverapplianceDatasource', function() {
             done();
         });
     });
+
+    it ('should return the pv name results for metricFindQuery', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    "metric_0",
+                    "metric_1",
+                    "metric_2",
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+            return data;
+        }
+
+        ctx.ds.metricFindQuery("metric").then( result => {
+            expect(result).to.have.length(3);
+            expect(result[0].text).to.equal('metric_0');
+            expect(result[1].text).to.equal('metric_1');
+            expect(result[2].text).to.equal('metric_2');
+            done();
+        });
+    });
 });
