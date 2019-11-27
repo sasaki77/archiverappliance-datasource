@@ -247,7 +247,7 @@ function () {
         return deferred.promise;
       }
 
-      var url = this.url + "/bpl/getMatchingPVs?limit=100&regex=" + str;
+      var url = this.url + "/bpl/getMatchingPVs?limit=100&regex=" + encodeURIComponent(str);
       return this.doRequest({
         url: url,
         method: 'GET'
