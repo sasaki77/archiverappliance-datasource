@@ -248,7 +248,7 @@ describe('ArchiverapplianceDatasource', function() {
 
         let query = {
             targets: [
-                {target: "header:PV1", refId: "A", alias: "$2:$1", alias_regexp: "(.*):(.*)"},
+                {target: "header:PV1", refId: "A", alias: "$2:$1", alias_pattern: "(.*):(.*)"},
             ],
             range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z") },
             maxDataPoints: 1000

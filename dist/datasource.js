@@ -199,8 +199,8 @@ function () {
 
       var pattern;
 
-      if (target.alias_regexp) {
-        pattern = new RegExp(target.alias_regexp, "");
+      if (target.alias_pattern) {
+        pattern = new RegExp(target.alias_pattern, "");
       }
 
       _lodash["default"].forEach(data, function (d) {
@@ -325,7 +325,7 @@ function () {
           interval: interval,
           functions: target.functions,
           regex: target.regex,
-          alias_regexp: target.alias_regexp
+          alias_pattern: target.alias_pattern
         };
       });
 

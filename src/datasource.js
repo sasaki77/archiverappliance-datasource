@@ -133,8 +133,8 @@ export class ArchiverapplianceDatasource {
     }
 
     let pattern;
-    if (target.alias_regexp) {
-      pattern = new RegExp(target.alias_regexp, "");
+    if (target.alias_pattern) {
+      pattern = new RegExp(target.alias_pattern, "");
     }
 
     _.forEach( data, d => {
@@ -247,7 +247,7 @@ export class ArchiverapplianceDatasource {
         interval: interval,
         functions: target.functions,
         regex: target.regex,
-        alias_regexp: target.alias_regexp
+        alias_pattern: target.alias_pattern
       };
     });
 
