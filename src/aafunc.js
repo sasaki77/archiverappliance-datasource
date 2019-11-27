@@ -44,6 +44,13 @@ addFuncDef({
   defaultParams: [],
 });
 
+addFuncDef({
+  name: 'fluctuation',
+  category: 'Transform',
+  params: [],
+  defaultParams: [],
+});
+
 class FuncInstance {
   constructor(funcDef, params) {
     this.def = funcDef;

@@ -63,6 +63,12 @@ addFuncDef({
   params: [],
   defaultParams: []
 });
+addFuncDef({
+  name: 'fluctuation',
+  category: 'Transform',
+  params: [],
+  defaultParams: []
+});
 
 var FuncInstance =
 /*#__PURE__*/

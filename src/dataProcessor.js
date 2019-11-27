@@ -5,6 +5,7 @@ let functions = {
   scale: scale,
   offset: offset,
   delta: delta,
+  fluctuation: fluctuation
 };
 
 function scale(factor, datapoints) {
@@ -30,6 +31,16 @@ function delta(datapoints) {
   for (var i = 1; i < datapoints.length; i++) {
     deltaValue = datapoints[i][0] - datapoints[i - 1][0];
     newSeries.push([deltaValue, datapoints[i][1]]);
+  }
+  return newSeries;
+}
+
+function fluctuation(datapoints) {
+  let newSeries = [];
+  let flucValue;
+  for (var i = 0; i < datapoints.length; i++) {
+    flucValue = datapoints[i][0] - datapoints[0][0];
+    newSeries.push([flucValue, datapoints[i][1]]);
   }
   return newSeries;
 }

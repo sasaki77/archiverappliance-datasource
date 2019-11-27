@@ -149,4 +149,50 @@ describe('ArchiverapplianceFunc', function() {
         });
     });
 
+
+    it('should return the server results with fluctuation function', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [
+                    {
+                        "meta": { "name": "PV" , "PREC": "0"},
+                        "data": [
+                            { "secs": 1262304001, "val": 100, "nanos": 456000000, "severity":0, "status":0 },
+                            { "secs": 1262304002, "val": 200, "nanos": 789000000, "severity":0, "status":0 },
+                            { "secs": 1262304002, "val": 300, "nanos": 789000000, "severity":0, "status":0 },
+                        ]
+                    }
+                ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        const query = {
+            targets: [{
+                target: "PV",
+                refId: "A",
+                functions: [
+                    aafunc.createFuncInstance(aafunc.getFuncDef("fluctuation"), [])
+                ]
+            }],
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z")},
+            maxDataPoints: 1000,
+        };
+
+        ctx.ds.query(query).then( result => {
+            expect(result.data).to.have.length(1);
+            const series = result.data[0];
+            expect(series.target).to.equal("PV");
+            expect(series.datapoints).to.have.length(3);
+            expect(series.datapoints[0][0]).to.equal(0);
+            expect(series.datapoints[1][0]).to.equal(100);
+            expect(series.datapoints[2][0]).to.equal(200);
+            done();
+        });
+    });
+
 });
