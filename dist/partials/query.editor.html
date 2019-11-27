@@ -10,6 +10,9 @@
           data-items=100
           spellcheck="false"
           placeholder="PV name"
+          ng-class="{
+            'aa-regex': ctrl.target.regex
+          }"
           ng-blur="ctrl.targetChanged()"
           ng-keyup="ctrl.onKeyup($event)"
         />
