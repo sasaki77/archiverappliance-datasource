@@ -50,6 +50,18 @@
           ng-model="ctrl.target.alias"
           spellcheck="false"
           placeholder="Alias"
+          ng-class="{
+            'aa-regex': ctrl.target.alias_regexp
+          }"
+          ng-blur="ctrl.targetChanged()"
+          ng-keyup="ctrl.onKeyup($event)"
+        />
+        <label class="gf-form-label width-10 query-keyword">Alias pattern</label>
+        <input type="text"
+          class="gf-form-input max-width-30 aa-regex"
+          ng-model="ctrl.target.alias_regexp"
+          spellcheck="false"
+          placeholder="Alias regex pattern"
           ng-blur="ctrl.targetChanged()"
           ng-keyup="ctrl.onKeyup($event)"
         />

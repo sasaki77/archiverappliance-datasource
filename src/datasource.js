@@ -127,8 +127,20 @@ export class ArchiverapplianceDatasource {
   setAlias(data, target) {
     let deferred = this.q.defer();
 
+    if( !target.alias ) {
+      deferred.resolve(data);
+      return deferred.promise;
+    }
+
+    let pattern;
+    if (target.alias_regexp) {
+      pattern = new RegExp(target.alias_regexp, "");
+    }
+
     _.forEach( data, d => {
-      if( target.alias !== undefined && target.alias !== "" ) {
+      if ( pattern ) {
+        d.target = d.target.replace(pattern, target.alias);
+      } else {
         d.target = target.alias;
       }
     });
@@ -226,7 +238,8 @@ export class ArchiverapplianceDatasource {
         to: to,
         interval: interval,
         functions: target.functions,
-        regex: target.regex
+        regex: target.regex,
+        alias_regexp: target.alias_regexp
       };
     });
 

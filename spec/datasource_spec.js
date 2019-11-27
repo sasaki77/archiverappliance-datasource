@@ -234,6 +234,33 @@ describe('ArchiverapplianceDatasource', function() {
         });
     });
 
+    it('should return the server results with alias pattern', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: [ { "meta": { "name": "header:PV1" , "PREC": "0"}, "data": [] } ]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        }
+
+        let query = {
+            targets: [
+                {target: "header:PV1", refId: "A", alias: "$2:$1", alias_regexp: "(.*):(.*)"},
+            ],
+            range: { from: new Date("2010-01-01T00:00:00.000Z"), to: new Date("2010-01-01T00:00:30.000Z") },
+            maxDataPoints: 1000
+        };
+
+        ctx.ds.query(query).then( result => {
+            expect(result.data).to.have.length(1);
+            expect(result.data[0].target).to.equal("PV1:header");
+            done();
+        });
+    });
+
     it ('should return the pv name results when a target is null', function(done) {
         ctx.backendSrv.datasourceRequest = function(request) {
             return ctx.$q.when({
