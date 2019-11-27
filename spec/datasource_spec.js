@@ -31,8 +31,35 @@ describe('ArchiverapplianceDatasource', function() {
             to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target).then( url => {
-            expect(url).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+        ctx.ds.buildUrls(target).then( url => {
+            expect(url[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            done();
+        });
+    });
+
+    it('should return an valid multi urls', function(done) {
+        ctx.backendSrv.datasourceRequest = function(request) {
+            return ctx.$q.when({
+                _request: request,
+                data: ["PV1", "PV2"]
+            });
+        };
+
+        ctx.templateSrv.replace = function(data) {
+          return data;
+        };
+
+        const target = {
+            target: "PV*",
+            interval: "9",
+            from: new Date("2010-01-01T00:00:00.000Z"),
+            to: new Date("2010-01-01T00:00:30.000Z"),
+            regex: true
+        };
+
+        ctx.ds.buildUrls(target).then( url => {
+            expect(url[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(url[1]).to.equal("url_header:/data/getData.json?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
             done();
         });
     });
@@ -46,7 +73,7 @@ describe('ArchiverapplianceDatasource', function() {
             to: new Date("2010-01-01T00:00:30.000Z")
         };
 
-        ctx.ds.buildUrl(target).then( url => {
+        ctx.ds.buildUrls(target).then( url => {
         }).catch( error => {
           done();
         });
@@ -65,15 +92,15 @@ describe('ArchiverapplianceDatasource', function() {
             ];
 
         const urls = targets.map( target => {
-            return ctx.ds.buildUrl(target);
+            return ctx.ds.buildUrls(target);
         });
 
         ctx.$q.all(urls).then( urls => {
             expect(urls).to.have.length(4);
-            expect(urls[0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-            expect(urls[1]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-            expect(urls[2]).to.equal("url_header:/data/getData.json?pv=mean_9(PV3)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
-            expect(urls[3]).to.equal("url_header:/data/getData.json?pv=mean_9(PV4)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[0][0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[1][0]).to.equal("url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[2][0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV3)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
+            expect(urls[3][0]).to.equal("url_header:/data/getData.json?pv=mean_9(PV4)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z");
             done();
         });
     });

@@ -41,9 +41,9 @@ export class ArchiverapplianceDatasource {
 
   targetProcess(target, options) {
       return (
-          this.buildUrl(target, options)
-          .then( url => this.doRequest({ url: url, method: 'GET' }) )
-          .then( res => this.responseParse(res) )
+          this.buildUrls(target, options)
+          .then( urls => this.doMultiUrlRequests(urls) )
+          .then( responses => this.responseParse(responses) )
           .then( data => this.setAlias(data, target) )
           .then( data => this.applyFunctions(data, target) )
       );
@@ -55,39 +55,72 @@ export class ArchiverapplianceDatasource {
     return {data: d};
   }
 
-  buildUrl(target) {
-    let deferred = this.q.defer();
-
-    let pv = ""
-    if ( target.operator === "raw" || target.interval === "") {
-      pv = "pv=" + target.target;
-    } else if ( _.includes(["", undefined], target.operator) ) {
-      // Default Operator
-      pv = "pv=mean_" + target.interval + "(" + target.target + ")";
-    } else if ( _.includes(this.operatorList, target.operator) ) {
-      pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
+  buildUrls(target) {
+    let pvnames_promise;
+    if (target.regex) {
+      pvnames_promise = this.PVNamesFindQuery(target.target);
     } else {
-      deferred.reject(Error("Data Processing Operator is invalid."));
+      let pvnames = this.q.defer();
+      pvnames.resolve([target.target]);
+      pvnames_promise = pvnames.promise;
     }
 
-    const url = this.url + '/data/getData.json?' + pv + '&from=' + target.from.toISOString() + '&to=' + target.to.toISOString();
-
-    deferred.resolve(url);
-    return deferred.promise;
+    return pvnames_promise.then( pvnames => {
+      let deferred = this.q.defer();
+      let urls;
+      try {
+        urls = _.map( pvnames, pvname => {
+          return this.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
+        });
+      } catch (e) {
+        deferred.reject(e);
+      }
+      deferred.resolve(urls);
+      return deferred.promise;
+    });
   }
 
-  responseParse(response) {
-    let deferred = this.q.defer();
+  buildUrl(pvname, operator, interval, from, to) {
+    let pv = ""
+    if ( operator === "raw" || interval === "") {
+      pv = "pv=" + pvname;
+    } else if ( _.includes(["", undefined], operator) ) {
+      // Default Operator
+      pv = "pv=mean_" + interval + "(" + pvname + ")";
+    } else if ( _.includes(this.operatorList, operator) ) {
+      pv = "pv=" + operator + "_" + interval + "(" + pvname + ")";
+    } else {
+      throw new Error("Data Processing Operator is invalid.");
+    }
 
-    const target_data = _.map( response.data, target_res => {
-      const timesiries = _.map( target_res.data, datapoint => {
-          return [datapoint.val, datapoint.secs*1000+_.floor(datapoint.nanos/1000000)];
-      });
-      const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
-      return target_data;
+    const url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+
+    return url;
+  }
+
+  doMultiUrlRequests(urls) {
+    const requests = _.map( urls, url => {
+      return this.doRequest({ url: url, method: "GET" });
     });
 
-    deferred.resolve(target_data);
+    return this.q.all(requests);
+  }
+
+  responseParse(responses) {
+    let deferred = this.q.defer();
+
+    const target_data = _.map( responses, response => {
+      const td = _.map( response.data, target_res => {
+        const timesiries = _.map( target_res.data, datapoint => {
+            return [datapoint.val, datapoint.secs*1000+_.floor(datapoint.nanos/1000000)];
+        });
+        const target_data = {"target": target_res.meta["name"], "datapoints": timesiries};
+        return target_data;
+      });
+      return td;
+    });
+
+    deferred.resolve(_.flatten(target_data));
     return deferred.promise;
   }
 
@@ -192,7 +225,8 @@ export class ArchiverapplianceDatasource {
         from: from,
         to: to,
         interval: interval,
-        functions: target.functions
+        functions: target.functions,
+        regex: target.regex
       };
     });
 

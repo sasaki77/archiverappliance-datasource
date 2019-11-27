@@ -94,6 +94,10 @@ function (_QueryCtrl) {
   }, {
     key: "getPVNames_",
     value: function getPVNames_(query, callback) {
+      if (this.target.regex) {
+        return [];
+      }
+
       var str = ".*" + query + ".*";
       this.datasource.PVNamesFindQuery(str).then(function (res) {
         callback(res);

@@ -79,13 +79,10 @@ function () {
     value: function targetProcess(target, options) {
       var _this2 = this;
 
-      return this.buildUrl(target, options).then(function (url) {
-        return _this2.doRequest({
-          url: url,
-          method: 'GET'
-        });
-      }).then(function (res) {
-        return _this2.responseParse(res);
+      return this.buildUrls(target, options).then(function (urls) {
+        return _this2.doMultiUrlRequests(urls);
+      }).then(function (responses) {
+        return _this2.responseParse(responses);
       }).then(function (data) {
         return _this2.setAlias(data, target);
       }).then(function (data) {
@@ -102,44 +99,92 @@ function () {
       };
     }
   }, {
-    key: "buildUrl",
-    value: function buildUrl(target) {
-      var deferred = this.q.defer();
-      var pv = "";
+    key: "buildUrls",
+    value: function buildUrls(target) {
+      var _this3 = this;
 
-      if (target.operator === "raw" || target.interval === "") {
-        pv = "pv=" + target.target;
-      } else if (_lodash["default"].includes(["", undefined], target.operator)) {
-        // Default Operator
-        pv = "pv=mean_" + target.interval + "(" + target.target + ")";
-      } else if (_lodash["default"].includes(this.operatorList, target.operator)) {
-        pv = "pv=" + target.operator + "_" + target.interval + "(" + target.target + ")";
+      var pvnames_promise;
+
+      if (target.regex) {
+        pvnames_promise = this.PVNamesFindQuery(target.target);
       } else {
-        deferred.reject(Error("Data Processing Operator is invalid."));
+        var pvnames = this.q.defer();
+        pvnames.resolve([target.target]);
+        pvnames_promise = pvnames.promise;
       }
 
-      var url = this.url + '/data/getData.json?' + pv + '&from=' + target.from.toISOString() + '&to=' + target.to.toISOString();
-      deferred.resolve(url);
-      return deferred.promise;
+      return pvnames_promise.then(function (pvnames) {
+        var deferred = _this3.q.defer();
+
+        var urls;
+
+        try {
+          urls = _lodash["default"].map(pvnames, function (pvname) {
+            return _this3.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
+          });
+        } catch (e) {
+          deferred.reject(e);
+        }
+
+        deferred.resolve(urls);
+        return deferred.promise;
+      });
+    }
+  }, {
+    key: "buildUrl",
+    value: function buildUrl(pvname, operator, interval, from, to) {
+      var pv = "";
+
+      if (operator === "raw" || interval === "") {
+        pv = "pv=" + pvname;
+      } else if (_lodash["default"].includes(["", undefined], operator)) {
+        // Default Operator
+        pv = "pv=mean_" + interval + "(" + pvname + ")";
+      } else if (_lodash["default"].includes(this.operatorList, operator)) {
+        pv = "pv=" + operator + "_" + interval + "(" + pvname + ")";
+      } else {
+        throw new Error("Data Processing Operator is invalid.");
+      }
+
+      var url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+      return url;
+    }
+  }, {
+    key: "doMultiUrlRequests",
+    value: function doMultiUrlRequests(urls) {
+      var _this4 = this;
+
+      var requests = _lodash["default"].map(urls, function (url) {
+        return _this4.doRequest({
+          url: url,
+          method: "GET"
+        });
+      });
+
+      return this.q.all(requests);
     }
   }, {
     key: "responseParse",
-    value: function responseParse(response) {
+    value: function responseParse(responses) {
       var deferred = this.q.defer();
 
-      var target_data = _lodash["default"].map(response.data, function (target_res) {
-        var timesiries = _lodash["default"].map(target_res.data, function (datapoint) {
-          return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
+      var target_data = _lodash["default"].map(responses, function (response) {
+        var td = _lodash["default"].map(response.data, function (target_res) {
+          var timesiries = _lodash["default"].map(target_res.data, function (datapoint) {
+            return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
+          });
+
+          var target_data = {
+            "target": target_res.meta["name"],
+            "datapoints": timesiries
+          };
+          return target_data;
         });
 
-        var target_data = {
-          "target": target_res.meta["name"],
-          "datapoints": timesiries
-        };
-        return target_data;
+        return td;
       });
 
-      deferred.resolve(target_data);
+      deferred.resolve(_lodash["default"].flatten(target_data));
       return deferred.promise;
     }
   }, {
@@ -221,7 +266,7 @@ function () {
   }, {
     key: "buildQueryParameters",
     value: function buildQueryParameters(options) {
-      var _this3 = this;
+      var _this5 = this;
 
       //remove placeholder targets and undefined targets
       options.targets = _lodash["default"].filter(options.targets, function (target) {
@@ -246,7 +291,7 @@ function () {
 
       var targets = _lodash["default"].map(options.targets, function (target) {
         return {
-          target: _this3.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+          target: _this5.templateSrv.replace(target.target, options.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
           alias: target.alias,
@@ -254,7 +299,8 @@ function () {
           from: from,
           to: to,
           interval: interval,
-          functions: target.functions
+          functions: target.functions,
+          regex: target.regex
         };
       });
 
