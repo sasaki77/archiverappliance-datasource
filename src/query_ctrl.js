@@ -22,8 +22,11 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
 
     this.moveAliasFuncLast();
 
-    if (newFunc.params.length && newFunc.added ||
-        newFunc.def.params.length === 0) {
+    if (
+        newFunc.params.length
+        && newFunc.added
+        || newFunc.def.params.length === 0
+    ) {
       this.targetChanged();
     }
   }
@@ -51,12 +54,12 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
   }
 
   getPVNames_(query, callback) {
-    if ( this.target.regex ) {
-        return [];
+    if (this.target.regex) {
+      return [];
     }
-    const str = ".*" + query + ".*";
-    this.datasource.PVNamesFindQuery(str).then( res => {
-        callback(res);
+    const str = ['.*', query, '.*'].join('');
+    this.datasource.PVNamesFindQuery(str).then( (res) => {
+      callback(res);
     });
   }
 
@@ -73,7 +76,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
   }
 
   onKeyup(e) {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
       e.target.blur();
     }
   }

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-let functions = {
+const functions = {
   // Transform
   scale: scale,
   offset: offset,
@@ -9,8 +9,8 @@ let functions = {
 };
 
 function scale(factor, datapoints) {
-  return _.map(datapoints, point => {
-    return [ point[0] * factor, point[1] ];
+  return _.map(datapoints, (point) => {
+    return [point[0] * factor, point[1]];
   });
 }
 
@@ -28,7 +28,7 @@ function offset(delta, datapoints) {
 function delta(datapoints) {
   let newSeries = [];
   let deltaValue;
-  for (var i = 1; i < datapoints.length; i++) {
+  for (let i = 1; i < datapoints.length; i++) {
     deltaValue = datapoints[i][0] - datapoints[i - 1][0];
     newSeries.push([deltaValue, datapoints[i][1]]);
   }
@@ -38,7 +38,7 @@ function delta(datapoints) {
 function fluctuation(datapoints) {
   let newSeries = [];
   let flucValue;
-  for (var i = 0; i < datapoints.length; i++) {
+  for (let i = 0; i < datapoints.length; i++) {
     flucValue = datapoints[i][0] - datapoints[0][0];
     newSeries.push([flucValue, datapoints[i][1]]);
   }

@@ -47,7 +47,7 @@ function () {
     }
 
     var jsonData = instanceSettings.jsonData || {};
-    this.operatorList = ["firstSample", "lastSample", "firstFill", "lastFill", "mean", "min", "max", "count", "ncount", "nth", "median", "std", "jitter", "ignoreflyers", "flyers", "variance", "popvariance", "kurtosis", "skewness", "raw"];
+    this.operatorList = ['firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min', 'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter', 'ignoreflyers', 'flyers', 'variance', 'popvariance', 'kurtosis', 'skewness', 'raw'];
   }
 
   _createClass(ArchiverapplianceDatasource, [{
@@ -133,20 +133,20 @@ function () {
   }, {
     key: "buildUrl",
     value: function buildUrl(pvname, operator, interval, from, to) {
-      var pv = "";
+      var pv = '';
 
-      if (operator === "raw" || interval === "") {
-        pv = "pv=" + pvname;
-      } else if (_lodash["default"].includes(["", undefined], operator)) {
+      if (operator === 'raw' || interval === '') {
+        pv = ['pv=', pvname].join('');
+      } else if (_lodash["default"].includes(['', undefined], operator)) {
         // Default Operator
-        pv = "pv=mean_" + interval + "(" + pvname + ")";
+        pv = ['pv=mean_', interval, '(', pvname, ')'].join('');
       } else if (_lodash["default"].includes(this.operatorList, operator)) {
-        pv = "pv=" + operator + "_" + interval + "(" + pvname + ")";
+        pv = ['pv=', operator, '_', interval, '(', pvname, ')'].join('');
       } else {
-        throw new Error("Data Processing Operator is invalid.");
+        throw new Error('Data Processing Operator is invalid.');
       }
 
-      var url = this.url + '/data/getData.json?' + pv + '&from=' + from.toISOString() + '&to=' + to.toISOString();
+      var url = [this.url, '/data/getData.json?', pv, '&from=', from.toISOString(), '&to=', to.toISOString()].join('');
       return url;
     }
   }, {
@@ -157,7 +157,7 @@ function () {
       var requests = _lodash["default"].map(urls, function (url) {
         return _this4.doRequest({
           url: url,
-          method: "GET"
+          method: 'GET'
         });
       });
 
@@ -175,8 +175,8 @@ function () {
           });
 
           var target_data = {
-            "target": target_res.meta["name"],
-            "datapoints": timesiries
+            target: target_res.meta['name'],
+            datapoints: timesiries
           };
           return target_data;
         });
@@ -200,7 +200,7 @@ function () {
       var pattern;
 
       if (target.alias_pattern) {
-        pattern = new RegExp(target.alias_pattern, "");
+        pattern = new RegExp(target.alias_pattern, '');
       }
 
       _lodash["default"].forEach(data, function (d) {
@@ -237,15 +237,15 @@ function () {
     key: "testDatasource",
     value: function testDatasource() {
       return {
-        status: "success",
-        message: "Data source is working",
-        title: "Success"
+        status: 'success',
+        message: 'Data source is working',
+        title: 'Success'
       }; //return this.doRequest({
       //  url: this.url_mgmt + '/bpl/getAppliancesInCluster',
       //  method: 'GET',
       //}).then(response => {
       //  if (response.status === 200) {
-      //    return { status: "success", message: "Data source is working", title: "Success" };
+      //    return { status: 'success', message: 'Data source is working', title: 'Success' };
       //  }
       //});
     }
@@ -260,7 +260,7 @@ function () {
         return deferred.promise;
       }
 
-      var url = this.url + "/bpl/getMatchingPVs?limit=100&regex=" + encodeURIComponent(str);
+      var url = [this.url, '/bpl/getMatchingPVs?limit=100&regex=', encodeURIComponent(str)].join('');
       return this.doRequest({
         url: url,
         method: 'GET'
@@ -274,7 +274,7 @@ function () {
       return this.PVNamesFindQuery(query).then(function (pvnames) {
         return _lodash["default"].map(pvnames, function (pvname) {
           return {
-            "text": pvname
+            text: pvname
           };
         });
       });
@@ -307,7 +307,7 @@ function () {
 
       var interval_sec = _lodash["default"].floor(range_msec / (options.maxDataPoints * 1000));
 
-      var interval = "";
+      var interval = '';
 
       if (interval_sec >= 1) {
         interval = String(interval_sec);

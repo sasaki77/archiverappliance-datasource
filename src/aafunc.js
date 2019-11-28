@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import $ from 'jquery';
 
-var index = [];
-var categories = {
+let index = [];
+let categories = {
   Transform: [],
 };
 
@@ -23,7 +23,7 @@ addFuncDef({
   name: 'scale',
   category: 'Transform',
   params: [
-    { name: 'factor', type: 'float', options: [100, 0.01, 10, -1]}
+    { name: 'factor', type: 'float', options: [100, 0.01, 10, -1] }
   ],
   defaultParams: [100],
 });
@@ -32,7 +32,7 @@ addFuncDef({
   name: 'offset',
   category: 'Transform',
   params: [
-    { name: 'delta', type: 'float', options: [-100, 100]}
+    { name: 'delta', type: 'float', options: [-100, 100] }
   ],
   defaultParams: [100],
 });
@@ -67,18 +67,20 @@ class FuncInstance {
   }
 
   bindFunction(metricFunctions) {
-    var func = metricFunctions[this.def.name];
+    const func = metricFunctions[this.def.name];
     if (func) {
 
       // Bind function arguments
-      var bindedFunc = func;
-      var param;
-      for (var i = 0; i < this.params.length; i++) {
+      let bindedFunc = func;
+      let param;
+      for (let i = 0; i < this.params.length; i++) {
         param = this.params[i];
 
         // Convert numeric params
-        if (this.def.params[i].type === 'int' ||
-            this.def.params[i].type === 'float') {
+        if (
+            this.def.params[i].type === 'int'
+            || this.def.params[i].type === 'float'
+        ) {
           param = Number(param);
         }
         bindedFunc = _.partial(bindedFunc, param);
@@ -90,14 +92,16 @@ class FuncInstance {
   }
 
   render(metricExp) {
-    var str = this.def.name + '(';
-    var parameters = _.map(this.params, function(value, index) {
+    const str = this.def.name + '(';
+    let parameters = _.map(this.params, function(value, index) {
 
-      var paramType = this.def.params[index].type;
-      if (paramType === 'int' ||
-          paramType === 'float' ||
-          paramType === 'value_or_series' ||
-          paramType === 'boolean') {
+      const paramType = this.def.params[index].type;
+      if (
+          paramType === 'int'
+          || paramType === 'float'
+          || paramType === 'value_or_series'
+          || paramType === 'boolean'
+      ) {
         return value;
       }
       else if (paramType === 'int_or_interval' && $.isNumeric(value)) {
@@ -149,7 +153,7 @@ class FuncInstance {
       return;
     }
 
-    var text = this.def.name + '(';
+    let text = this.def.name + '(';
     text += this.params.join(', ');
     text += ')';
     this.text = text;

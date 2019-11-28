@@ -98,7 +98,7 @@ function (_QueryCtrl) {
         return [];
       }
 
-      var str = ".*" + query + ".*";
+      var str = ['.*', query, '.*'].join('');
       this.datasource.PVNamesFindQuery(str).then(function (res) {
         callback(res);
       });

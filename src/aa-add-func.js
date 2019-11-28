@@ -7,12 +7,12 @@ import * as aafunc from './aafunc';
 /** @ngInject */
 export function aaAddFunc($compile) {
   var inputTemplate = '<input type="text"'+
-                        ' class="gf-form-input"' +
-                        ' spellcheck="false" style="display:none"></input>';
+                      ' class="gf-form-input"' +
+                       ' spellcheck="false" style="display:none"></input>';
 
   var buttonTemplate = '<a  class="gf-form-label tight-form-func dropdown-toggle query-part"' +
-                          ' tabindex="1" gf-dropdown="functionMenu" data-toggle="dropdown">' +
-                          '<i class="fa fa-plus"></i></a>';
+                       ' tabindex="1" gf-dropdown="functionMenu" data-toggle="dropdown">' +
+                       '<i class="fa fa-plus"></i></a>';
 
   return {
     link: function($scope, elem) {
