@@ -66,12 +66,12 @@ function () {
         });
       }
 
-      var targets = _lodash["default"].map(query.targets, function (target) {
+      var targetProcesses = _lodash["default"].map(query.targets, function (target) {
         return _this.targetProcess(target, options);
       });
 
-      return this.q.all(targets).then(function (data) {
-        return _this.postProcess(data);
+      return this.q.all(targetProcesses).then(function (timeseriesDataArray) {
+        return _this.postProcess(timeseriesDataArray);
       });
     }
   }, {
@@ -83,19 +83,19 @@ function () {
         return _this2.doMultiUrlRequests(urls);
       }).then(function (responses) {
         return _this2.responseParse(responses);
-      }).then(function (data) {
-        return _this2.setAlias(data, target);
-      }).then(function (data) {
-        return _this2.applyFunctions(data, target);
+      }).then(function (timeseriesData) {
+        return _this2.setAlias(timeseriesData, target);
+      }).then(function (timeseriesData) {
+        return _this2.applyFunctions(timeseriesData, target);
       });
     }
   }, {
     key: "postProcess",
-    value: function postProcess(data) {
-      var d = _lodash["default"].flatten(data);
+    value: function postProcess(timeseriesDataArray) {
+      var timeseriesData = _lodash["default"].flatten(timeseriesDataArray);
 
       return {
-        data: d
+        data: timeseriesData
       };
     }
   }, {
@@ -103,17 +103,15 @@ function () {
     value: function buildUrls(target) {
       var _this3 = this;
 
-      var pvnames_promise;
+      var pvnamesPromise;
 
       if (target.regex) {
-        pvnames_promise = this.PVNamesFindQuery(target.target);
+        pvnamesPromise = this.pvNamesFindQuery(target.target);
       } else {
-        var pvnames = this.q.defer();
-        pvnames.resolve([target.target]);
-        pvnames_promise = pvnames.promise;
+        pvnamesPromise = this.q.when([target.target]);
       }
 
-      return pvnames_promise.then(function (pvnames) {
+      return pvnamesPromise.then(function (pvnames) {
         var deferred = _this3.q.defer();
 
         var urls;
@@ -168,42 +166,42 @@ function () {
     value: function responseParse(responses) {
       var deferred = this.q.defer();
 
-      var target_data = _lodash["default"].map(responses, function (response) {
-        var td = _lodash["default"].map(response.data, function (target_res) {
+      var timeSeriesDataArray = _lodash["default"].map(responses, function (response) {
+        var timeSeriesData = _lodash["default"].map(response.data, function (target_res) {
           var timesiries = _lodash["default"].map(target_res.data, function (datapoint) {
             return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
           });
 
-          var target_data = {
+          var timeseries = {
             target: target_res.meta['name'],
             datapoints: timesiries
           };
-          return target_data;
+          return timeseries;
         });
 
-        return td;
+        return timeSeriesData;
       });
 
-      deferred.resolve(_lodash["default"].flatten(target_data));
+      deferred.resolve(_lodash["default"].flatten(timeSeriesDataArray));
       return deferred.promise;
     }
   }, {
     key: "setAlias",
-    value: function setAlias(data, target) {
+    value: function setAlias(timeseriesdata, target) {
       var deferred = this.q.defer();
 
       if (!target.alias) {
-        deferred.resolve(data);
+        deferred.resolve(timeseriesdata);
         return deferred.promise;
       }
 
       var pattern;
 
-      if (target.alias_pattern) {
-        pattern = new RegExp(target.alias_pattern, '');
+      if (target.aliasPattern) {
+        pattern = new RegExp(target.aliasPattern, '');
       }
 
-      _lodash["default"].forEach(data, function (d) {
+      _lodash["default"].forEach(timeseriesdata, function (d) {
         if (pattern) {
           d.target = d.target.replace(pattern, target.alias);
         } else {
@@ -211,26 +209,26 @@ function () {
         }
       });
 
-      deferred.resolve(data);
+      deferred.resolve(timeseriesdata);
       return deferred.promise;
     }
   }, {
     key: "applyFunctions",
-    value: function applyFunctions(data, target) {
+    value: function applyFunctions(timeseriesdata, target) {
       var deferred = this.q.defer();
 
       if (target.functions === undefined) {
-        deferred.resolve(data);
+        deferred.resolve(timeseriesdata);
         return deferred.promise;
       } // Apply transformation functions
 
 
       var transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-      data = _lodash["default"].map(data, function (timeseries) {
+      timeseriesdata = _lodash["default"].map(timeseriesdata, function (timeseries) {
         timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
         return timeseries;
       });
-      deferred.resolve(data);
+      deferred.resolve(timeseriesdata);
       return deferred.promise;
     }
   }, {
@@ -250,8 +248,8 @@ function () {
       //});
     }
   }, {
-    key: "PVNamesFindQuery",
-    value: function PVNamesFindQuery(query) {
+    key: "pvNamesFindQuery",
+    value: function pvNamesFindQuery(query) {
       var str = this.templateSrv.replace(query, null, 'regex');
 
       if (!str) {
@@ -271,7 +269,7 @@ function () {
   }, {
     key: "metricFindQuery",
     value: function metricFindQuery(query) {
-      return this.PVNamesFindQuery(query).then(function (pvnames) {
+      return this.pvNamesFindQuery(query).then(function (pvnames) {
         return _lodash["default"].map(pvnames, function (pvname) {
           return {
             text: pvname
@@ -303,14 +301,14 @@ function () {
 
       var from = new Date(options.range.from);
       var to = new Date(options.range.to);
-      var range_msec = to.getTime() - from.getTime();
+      var rangeMsec = to.getTime() - from.getTime();
 
-      var interval_sec = _lodash["default"].floor(range_msec / (options.maxDataPoints * 1000));
+      var intervalSec = _lodash["default"].floor(rangeMsec / (options.maxDataPoints * 1000));
 
       var interval = '';
 
-      if (interval_sec >= 1) {
-        interval = String(interval_sec);
+      if (intervalSec >= 1) {
+        interval = String(intervalSec);
       }
 
       var targets = _lodash["default"].map(options.targets, function (target) {
@@ -325,7 +323,7 @@ function () {
           interval: interval,
           functions: target.functions,
           regex: target.regex,
-          alias_pattern: target.alias_pattern
+          aliasPattern: target.aliasPattern
         };
       });
 

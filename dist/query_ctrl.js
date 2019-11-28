@@ -99,7 +99,7 @@ function (_QueryCtrl) {
       }
 
       var str = ['.*', query, '.*'].join('');
-      this.datasource.PVNamesFindQuery(str).then(function (res) {
+      this.datasource.pvNamesFindQuery(str).then(function (res) {
         callback(res);
       });
     }

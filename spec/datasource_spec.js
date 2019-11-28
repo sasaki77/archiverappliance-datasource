@@ -246,7 +246,7 @@ describe('ArchiverapplianceDatasource', function() {
 
     let query = {
       targets: [
-        { target: 'header:PV1', refId: 'A', alias: '$2:$1', alias_pattern: '(.*):(.*)' }
+        { target: 'header:PV1', refId: 'A', alias: '$2:$1', aliasPattern: '(.*):(.*)' }
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000
@@ -275,7 +275,7 @@ describe('ArchiverapplianceDatasource', function() {
         return data;
     }
 
-    ctx.ds.PVNamesFindQuery(null).then((result) => {
+    ctx.ds.pvNamesFindQuery(null).then((result) => {
         expect(result).to.have.length(0);
         done();
     });
@@ -297,7 +297,7 @@ describe('ArchiverapplianceDatasource', function() {
       return data;
     }
 
-    ctx.ds.PVNamesFindQuery(undefined).then((result) => {
+    ctx.ds.pvNamesFindQuery(undefined).then((result) => {
       expect(result).to.have.length(0);
       done();
     });
@@ -319,7 +319,7 @@ describe('ArchiverapplianceDatasource', function() {
       return data;
     }
 
-    ctx.ds.PVNamesFindQuery('').then((result) => {
+    ctx.ds.pvNamesFindQuery('').then((result) => {
       expect(result).to.have.length(0);
       done();
     });
@@ -341,7 +341,7 @@ describe('ArchiverapplianceDatasource', function() {
       return data;
     }
 
-    ctx.ds.PVNamesFindQuery('metric').then((result) => {
+    ctx.ds.pvNamesFindQuery('metric').then((result) => {
       expect(result).to.have.length(3);
       expect(result[0]).to.equal('metric_0');
       expect(result[1]).to.equal('metric_1');

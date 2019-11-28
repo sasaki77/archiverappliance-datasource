@@ -38,40 +38,39 @@ export class ArchiverapplianceDatasource {
       return this.q.when({ data: [] });
     }
 
-    const targets = _.map(query.targets, (target) => {
+    const targetProcesses = _.map(query.targets, (target) => {
       return this.targetProcess(target, options);
     });
 
-   return this.q.all(targets).then(data => this.postProcess(data));
+   return this.q.all(targetProcesses)
+          .then((timeseriesDataArray) => this.postProcess(timeseriesDataArray));
   }
 
   targetProcess(target, options) {
     return (
       this.buildUrls(target, options)
-      .then(urls      => this.doMultiUrlRequests(urls))
-      .then(responses => this.responseParse(responses))
-      .then(data      => this.setAlias(data, target))
-      .then(data      => this.applyFunctions(data, target))
+      .then(urls           => this.doMultiUrlRequests(urls))
+      .then(responses      => this.responseParse(responses))
+      .then(timeseriesData => this.setAlias(timeseriesData, target))
+      .then(timeseriesData => this.applyFunctions(timeseriesData, target))
     );
   }
 
-  postProcess(data) {
-    const d = _.flatten(data);
+  postProcess(timeseriesDataArray) {
+    const timeseriesData = _.flatten(timeseriesDataArray);
 
-    return { data: d };
+    return { data: timeseriesData };
   }
 
   buildUrls(target) {
-    let pvnames_promise;
+    let pvnamesPromise;
     if (target.regex) {
-      pvnames_promise = this.PVNamesFindQuery(target.target);
+      pvnamesPromise = this.pvNamesFindQuery(target.target);
     } else {
-      let pvnames = this.q.defer();
-      pvnames.resolve([target.target]);
-      pvnames_promise = pvnames.promise;
+      pvnamesPromise = this.q.when([target.target]);
     }
 
-    return pvnames_promise.then( (pvnames) => {
+    return pvnamesPromise.then( (pvnames) => {
       let deferred = this.q.defer();
       let urls;
       try {
@@ -129,38 +128,38 @@ export class ArchiverapplianceDatasource {
   responseParse(responses) {
     let deferred = this.q.defer();
 
-    const target_data = _.map(responses, (response) => {
-      const td = _.map(response.data, (target_res) => {
+    const timeSeriesDataArray = _.map(responses, (response) => {
+      const timeSeriesData = _.map(response.data, (target_res) => {
         const timesiries = _.map( target_res.data, (datapoint) => {
           return [
             datapoint.val,
             datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000)
           ];
         });
-        const target_data = { target: target_res.meta['name'], datapoints: timesiries };
-        return target_data;
+        const timeseries = { target: target_res.meta['name'], datapoints: timesiries };
+        return timeseries;
       });
-      return td;
+      return timeSeriesData;
     });
 
-    deferred.resolve(_.flatten(target_data));
+    deferred.resolve(_.flatten(timeSeriesDataArray));
     return deferred.promise;
   }
 
-  setAlias(data, target) {
+  setAlias(timeseriesdata, target) {
     let deferred = this.q.defer();
 
     if (!target.alias) {
-      deferred.resolve(data);
+      deferred.resolve(timeseriesdata);
       return deferred.promise;
     }
 
     let pattern;
-    if (target.alias_pattern) {
-      pattern = new RegExp(target.alias_pattern, '');
+    if (target.aliasPattern) {
+      pattern = new RegExp(target.aliasPattern, '');
     }
 
-    _.forEach( data, (d) => {
+    _.forEach( timeseriesdata, (d) => {
       if (pattern) {
         d.target = d.target.replace(pattern, target.alias);
       } else {
@@ -168,26 +167,26 @@ export class ArchiverapplianceDatasource {
       }
     });
 
-    deferred.resolve(data);
+    deferred.resolve(timeseriesdata);
     return deferred.promise;
   }
 
-  applyFunctions(data, target) {
+  applyFunctions(timeseriesdata, target) {
     let deferred = this.q.defer();
 
     if (target.functions === undefined) {
-      deferred.resolve(data);
+      deferred.resolve(timeseriesdata);
       return deferred.promise;
     }
 
     // Apply transformation functions
     const transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-    data = _.map(data, (timeseries) => {
+    timeseriesdata = _.map(timeseriesdata, (timeseries) => {
       timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
       return timeseries;
     });
 
-    deferred.resolve(data);
+    deferred.resolve(timeseriesdata);
     return deferred.promise;
   }
 
@@ -203,7 +202,7 @@ export class ArchiverapplianceDatasource {
     //});
   }
 
-  PVNamesFindQuery(query) {
+  pvNamesFindQuery(query) {
     const str = this.templateSrv.replace(query, null, 'regex');
 
     if (!str) {
@@ -227,7 +226,7 @@ export class ArchiverapplianceDatasource {
   }
 
   metricFindQuery(query) {
-    return this.PVNamesFindQuery(query).then( (pvnames) => {
+    return this.pvNamesFindQuery(query).then((pvnames) => {
       return _.map(pvnames, (pvname) => {
         return { text: pvname };
       });
@@ -254,12 +253,12 @@ export class ArchiverapplianceDatasource {
 
     const from = new Date(options.range.from);
     const to = new Date(options.range.to);
-    const range_msec = to.getTime() - from.getTime();
-    const interval_sec =  _.floor(range_msec / ( options.maxDataPoints * 1000));
+    const rangeMsec = to.getTime() - from.getTime();
+    const intervalSec =  _.floor(rangeMsec / ( options.maxDataPoints * 1000));
 
     let interval = '';
-    if ( interval_sec >= 1 ) {
-      interval = String(interval_sec);
+    if ( intervalSec >= 1 ) {
+      interval = String(intervalSec);
     }
 
     const targets = _.map(options.targets, (target) => {
@@ -274,7 +273,7 @@ export class ArchiverapplianceDatasource {
         interval: interval,
         functions: target.functions,
         regex: target.regex,
-        alias_pattern: target.alias_pattern
+        aliasPattern: target.aliasPattern
       };
     });
 
