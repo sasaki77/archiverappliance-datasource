@@ -186,11 +186,11 @@ function () {
     }
   }, {
     key: "setAlias",
-    value: function setAlias(timeseriesdata, target) {
+    value: function setAlias(timeseriesData, target) {
       var deferred = this.q.defer();
 
       if (!target.alias) {
-        deferred.resolve(timeseriesdata);
+        deferred.resolve(timeseriesData);
         return deferred.promise;
       }
 
@@ -200,34 +200,41 @@ function () {
         pattern = new RegExp(target.aliasPattern, '');
       }
 
-      _lodash["default"].forEach(timeseriesdata, function (d) {
+      var newTimeseriesData = _lodash["default"].map(timeseriesData, function (timeseries) {
         if (pattern) {
-          d.target = d.target.replace(pattern, target.alias);
-        } else {
-          d.target = target.alias;
+          var alias = timeseries.target.replace(pattern, target.alias);
+          return {
+            target: alias,
+            datapoints: timeseries.datapoints
+          };
         }
+
+        return {
+          target: target.alias,
+          datapoints: timeseries.datapoints
+        };
       });
 
-      deferred.resolve(timeseriesdata);
+      deferred.resolve(newTimeseriesData);
       return deferred.promise;
     }
   }, {
     key: "applyFunctions",
-    value: function applyFunctions(timeseriesdata, target) {
+    value: function applyFunctions(timeseriesData, target) {
       var deferred = this.q.defer();
 
       if (target.functions === undefined) {
-        deferred.resolve(timeseriesdata);
+        deferred.resolve(timeseriesData);
         return deferred.promise;
       } // Apply transformation functions
 
 
       var transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-      timeseriesdata = _lodash["default"].map(timeseriesdata, function (timeseries) {
+      timeseriesData = _lodash["default"].map(timeseriesData, function (timeseries) {
         timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
         return timeseries;
       });
-      deferred.resolve(timeseriesdata);
+      deferred.resolve(timeseriesData);
       return deferred.promise;
     }
   }, {

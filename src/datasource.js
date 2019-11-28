@@ -144,11 +144,11 @@ export class ArchiverapplianceDatasource {
     return deferred.promise;
   }
 
-  setAlias(timeseriesdata, target) {
+  setAlias(timeseriesData, target) {
     let deferred = this.q.defer();
 
     if (!target.alias) {
-      deferred.resolve(timeseriesdata);
+      deferred.resolve(timeseriesData);
       return deferred.promise;
     }
 
@@ -157,34 +157,35 @@ export class ArchiverapplianceDatasource {
       pattern = new RegExp(target.aliasPattern, '');
     }
 
-    _.forEach( timeseriesdata, (d) => {
+    let newTimeseriesData = _.map(timeseriesData, (timeseries) => {
       if (pattern) {
-        d.target = d.target.replace(pattern, target.alias);
-      } else {
-        d.target = target.alias;
+        const alias = timeseries.target.replace(pattern, target.alias);
+        return { target: alias, datapoints: timeseries.datapoints };
       }
+
+      return { target: target.alias, datapoints: timeseries.datapoints };
     });
 
-    deferred.resolve(timeseriesdata);
+    deferred.resolve(newTimeseriesData);
     return deferred.promise;
   }
 
-  applyFunctions(timeseriesdata, target) {
+  applyFunctions(timeseriesData, target) {
     let deferred = this.q.defer();
 
     if (target.functions === undefined) {
-      deferred.resolve(timeseriesdata);
+      deferred.resolve(timeseriesData);
       return deferred.promise;
     }
 
     // Apply transformation functions
     const transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-    timeseriesdata = _.map(timeseriesdata, (timeseries) => {
+    timeseriesData = _.map(timeseriesData, (timeseries) => {
       timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
       return timeseries;
     });
 
-    deferred.resolve(timeseriesdata);
+    deferred.resolve(timeseriesData);
     return deferred.promise;
   }
 
