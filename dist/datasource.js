@@ -46,7 +46,6 @@ function () {
       this.headers['Authorization'] = instanceSettings.basicAuth;
     }
 
-    var jsonData = instanceSettings.jsonData || {};
     this.operatorList = ['firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min', 'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter', 'ignoreflyers', 'flyers', 'variance', 'popvariance', 'kurtosis', 'skewness', 'raw'];
   }
 

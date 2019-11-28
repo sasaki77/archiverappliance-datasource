@@ -20,8 +20,6 @@ export class ArchiverapplianceDatasource {
       this.headers['Authorization'] = instanceSettings.basicAuth;
     }
 
-    const jsonData = instanceSettings.jsonData || {};
-
     this.operatorList = [
         'firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min',
         'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter',

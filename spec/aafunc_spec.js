@@ -8,7 +8,6 @@ describe('ArchiverapplianceFunc', function() {
   beforeEach( function() {
     ctx.instanceSettings = {
       url: 'url_header:',
-      jsonData: { prefix: 'prefix', noparams: 1, param_names: ['test'], enbSearch: true }
     };
     ctx.$q = Q;
     ctx.backendSrv = {};
