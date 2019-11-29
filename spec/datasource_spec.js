@@ -416,10 +416,6 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
-      return data;
-    }
-
     ctx.ds.pvNamesFindQuery('metric').then((result) => {
       expect(result).to.have.length(3);
       expect(result[0]).to.equal('metric_0');
@@ -450,6 +446,32 @@ describe('ArchiverapplianceDatasource', function() {
       expect(result[0].text).to.equal('metric_0');
       expect(result[1].text).to.equal('metric_1');
       expect(result[2].text).to.equal('metric_2');
+      done();
+    });
+  });
+
+  it ('should return the pv name results for metricFindQuery with regex OR', function(done) {
+    ctx.backendSrv.datasourceRequest = function(request) {
+      return ctx.$q.when({
+        _request: request,
+        data: [
+          unescape(_.split(request.url, /regex=(.*)/)[1])
+        ]
+      });
+    };
+
+    ctx.templateSrv.replace = function(data) {
+      return data;
+    }
+
+    ctx.ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result) => {
+      expect(result).to.have.length(6);
+      expect(result[0].text).to.equal('PVA:1:test');
+      expect(result[1].text).to.equal('PVA:2:test');
+      expect(result[2].text).to.equal('PVB:1:test');
+      expect(result[3].text).to.equal('PVB:2:test');
+      expect(result[4].text).to.equal('PVC:1:test');
+      expect(result[5].text).to.equal('PVC:2:test');
       done();
     });
   });

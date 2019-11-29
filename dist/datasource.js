@@ -260,15 +260,13 @@ function () {
   }, {
     key: "pvNamesFindQuery",
     value: function pvNamesFindQuery(query) {
-      var str = this.templateSrv.replace(query, null, 'regex');
-
-      if (!str) {
+      if (!query) {
         var deferred = this.q.defer();
         deferred.resolve([]);
         return deferred.promise;
       }
 
-      var url = [this.url, '/bpl/getMatchingPVs?limit=100&regex=', encodeURIComponent(str)].join('');
+      var url = [this.url, '/bpl/getMatchingPVs?limit=100&regex=', encodeURIComponent(query)].join('');
       return this.doRequest({
         url: url,
         method: 'GET'
@@ -279,7 +277,18 @@ function () {
   }, {
     key: "metricFindQuery",
     value: function metricFindQuery(query) {
-      return this.pvNamesFindQuery(query).then(function (pvnames) {
+      var _this5 = this;
+
+      var replacedQuery = this.templateSrv.replace(query, null, 'regex');
+      var parsedQuery = this.parseTargetQuery(replacedQuery);
+
+      var pvnamesPromise = _lodash["default"].map(parsedQuery, function (targetQuery) {
+        return _this5.pvNamesFindQuery(targetQuery);
+      });
+
+      return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
+        var pvnames = _lodash["default"].slice(_lodash["default"].uniq(_lodash["default"].flatten(pvnamesArray)), 0, 100);
+
         return _lodash["default"].map(pvnames, function (pvname) {
           return {
             text: pvname
@@ -298,7 +307,7 @@ function () {
   }, {
     key: "buildQueryParameters",
     value: function buildQueryParameters(options) {
-      var _this5 = this;
+      var _this6 = this;
 
       //remove placeholder targets and undefined targets
       options.targets = _lodash["default"].filter(options.targets, function (target) {
@@ -323,7 +332,7 @@ function () {
 
       var targets = _lodash["default"].map(options.targets, function (target) {
         return {
-          target: _this5.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+          target: _this6.templateSrv.replace(target.target, options.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
           alias: target.alias,

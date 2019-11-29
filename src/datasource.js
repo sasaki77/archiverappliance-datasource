@@ -209,9 +209,7 @@ export class ArchiverapplianceDatasource {
   }
 
   pvNamesFindQuery(query) {
-    const str = this.templateSrv.replace(query, null, 'regex');
-
-    if (!str) {
+    if (!query) {
       let deferred = this.q.defer();
       deferred.resolve([]);
       return deferred.promise;
@@ -220,7 +218,7 @@ export class ArchiverapplianceDatasource {
     const url = [
       this.url,
       '/bpl/getMatchingPVs?limit=100&regex=',
-      encodeURIComponent(str)
+      encodeURIComponent(query)
     ].join('');
 
     return this.doRequest({
@@ -232,7 +230,15 @@ export class ArchiverapplianceDatasource {
   }
 
   metricFindQuery(query) {
-    return this.pvNamesFindQuery(query).then((pvnames) => {
+    const replacedQuery = this.templateSrv.replace(query, null, 'regex');
+    const parsedQuery = this.parseTargetQuery(replacedQuery);
+
+    const pvnamesPromise = _.map(parsedQuery, (targetQuery) => {
+      return this.pvNamesFindQuery(targetQuery);
+    });
+
+    return this.q.all(pvnamesPromise).then((pvnamesArray) => {
+      const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
       return _.map(pvnames, (pvname) => {
         return { text: pvname };
       });
