@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {Datasource} from '../module';
 import Q from 'q';
 import * as aafunc from '../aafunc';
@@ -86,6 +87,34 @@ describe('ArchiverapplianceDatasource', function() {
     ctx.ds.buildUrls(target).then((url) => {
       expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
       expect(url[1]).to.equal('url_header:/data/getData.json?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      done();
+    });
+  });
+
+  it('should return an 100 urls', function(done) {
+    ctx.backendSrv.datasourceRequest = function(request) {
+      return ctx.$q.when({
+          _request: request,
+          data: _.map(_.range(1000), (num) => {
+            return String(num);
+          })
+      });
+    };
+
+    ctx.templateSrv.replace = function(data) {
+      return data;
+    };
+
+    const target = {
+        target: 'PV*',
+        interval: '9',
+        from: new Date('2010-01-01T00:00:00.000Z'),
+        to: new Date('2010-01-01T00:00:30.000Z'),
+        regex: true
+    };
+
+    ctx.ds.buildUrls(target).then((url) => {
+      expect(url).to.have.length(100);
       done();
     });
   });

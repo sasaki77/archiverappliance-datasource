@@ -73,7 +73,7 @@ export class ArchiverapplianceDatasource {
 
     return this.q.all(pvnamesPromise)
           .then((pvnamesArray) => {
-            const pvnames = _.uniq(_.flattenDeep(pvnamesArray));
+            const pvnames = _.slice(_.uniq(_.flattenDeep(pvnamesArray)), 0, 100);
             let deferred = this.q.defer();
             let urls;
 

@@ -113,7 +113,7 @@ function () {
       });
 
       return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
-        var pvnames = _lodash["default"].uniq(_lodash["default"].flattenDeep(pvnamesArray));
+        var pvnames = _lodash["default"].slice(_lodash["default"].uniq(_lodash["default"].flattenDeep(pvnamesArray)), 0, 100);
 
         var deferred = _this3.q.defer();
 
