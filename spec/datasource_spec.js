@@ -63,6 +63,57 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
+  it('should return an valid unique urls', function(done) {
+    ctx.backendSrv.datasourceRequest = function(request) {
+      return ctx.$q.when({
+          _request: request,
+          data: ['PV1', 'PV2', 'PV1']
+      });
+    };
+
+    ctx.templateSrv.replace = function(data) {
+      return data;
+    };
+
+    const target = {
+        target: 'PV*',
+        interval: '9',
+        from: new Date('2010-01-01T00:00:00.000Z'),
+        to: new Date('2010-01-01T00:00:30.000Z'),
+        regex: true
+    };
+
+    ctx.ds.buildUrls(target).then((url) => {
+      expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[1]).to.equal('url_header:/data/getData.json?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      done();
+    });
+  });
+
+  it('should return an valid multi urls when regex OR target', function(done) {
+    ctx.templateSrv.replace = function(data) {
+      return data;
+    };
+
+    const target = {
+        target: 'PV(A|B|C):(1|2):test',
+        interval: '9',
+        from: new Date('2010-01-01T00:00:00.000Z'),
+        to: new Date('2010-01-01T00:00:30.000Z'),
+    };
+
+    ctx.ds.buildUrls(target).then((url) => {
+      expect(url).to.have.length(6);
+      expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[1]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[2]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[3]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[4]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[5]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      done();
+    });
+  });
+
   it('should return an Error when invalid data processing is required', function(done) {
     const target = {
       target: 'PV1',

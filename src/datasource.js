@@ -61,32 +61,39 @@ export class ArchiverapplianceDatasource {
   }
 
   buildUrls(target) {
-    let pvnamesPromise;
-    if (target.regex) {
-      pvnamesPromise = this.pvNamesFindQuery(target.target);
-    } else {
-      pvnamesPromise = this.q.when([target.target]);
-    }
+    const targetQueries = this.parseTargetQuery(target.target);
 
-    return pvnamesPromise.then( (pvnames) => {
-      let deferred = this.q.defer();
-      let urls;
-      try {
-        urls = _.map( pvnames, (pvname) => {
-          return this.buildUrl(
-            pvname,
-            target.operator,
-            target.interval,
-            target.from,
-            target.to
-          );
-        });
-      } catch (e) {
-        deferred.reject(e);
+    const pvnamesPromise = _.map(targetQueries, (targetQuery) => {
+      if (target.regex) {
+        return this.pvNamesFindQuery(targetQuery);
       }
-      deferred.resolve(urls);
-      return deferred.promise;
+
+      return this.q.when([targetQuery]);
     });
+
+    return this.q.all(pvnamesPromise)
+          .then((pvnamesArray) => {
+            const pvnames = _.uniq(_.flattenDeep(pvnamesArray));
+            let deferred = this.q.defer();
+            let urls;
+
+            try {
+              urls = _.map( pvnames, (pvname) => {
+                return this.buildUrl(
+                  pvname,
+                  target.operator,
+                  target.interval,
+                  target.from,
+                  target.to
+                );
+              });
+            } catch (e) {
+              deferred.reject(e);
+            }
+
+            deferred.resolve(urls);
+            return deferred.promise;
+          });
   }
 
   buildUrl(pvname, operator, interval, from, to) {
@@ -279,6 +286,42 @@ export class ArchiverapplianceDatasource {
     options.targets = targets;
 
     return options;
+  }
+
+  parseTargetQuery(query) {
+    /*
+     * ex) query = ABC(1|2|3)EFG(5|6)
+     *     then
+     *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
+     *     queries = [
+     *     ABC1EFG5, ABC1EFG6, ABC2EFG6,
+     *     ABC2EFG6, ABC3EFG5, ABC3EFG6
+     *     ]
+     */
+    const splitQueries = _.split(query, /(\(.*?\))/);
+    let queries = [''];
+
+    _.forEach(splitQueries, (splitQuery, i) => {
+      // Fixed string like 'ABC'
+      if (i % 2 === 0) {
+        queries = _.map(queries, (query) => {
+          return [query, splitQuery].join('');
+        });
+        return;
+      }
+
+      // Regex OR string like '(1|2|3)'
+      const orElems = _.split(_.trim(splitQuery, '()'), '|');
+
+      const newQueries = _.map(queries, (query) => {
+        return _.map(orElems, (orElem) => {
+          return [query, orElem].join('');
+        });
+      });
+      queries = _.flatten(newQueries);
+    });
+
+    return queries;
   }
 }
 

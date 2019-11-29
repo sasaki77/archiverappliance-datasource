@@ -102,15 +102,19 @@ function () {
     value: function buildUrls(target) {
       var _this3 = this;
 
-      var pvnamesPromise;
+      var targetQueries = this.parseTargetQuery(target.target);
 
-      if (target.regex) {
-        pvnamesPromise = this.pvNamesFindQuery(target.target);
-      } else {
-        pvnamesPromise = this.q.when([target.target]);
-      }
+      var pvnamesPromise = _lodash["default"].map(targetQueries, function (targetQuery) {
+        if (target.regex) {
+          return _this3.pvNamesFindQuery(targetQuery);
+        }
 
-      return pvnamesPromise.then(function (pvnames) {
+        return _this3.q.when([targetQuery]);
+      });
+
+      return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
+        var pvnames = _lodash["default"].uniq(_lodash["default"].flattenDeep(pvnamesArray));
+
         var deferred = _this3.q.defer();
 
         var urls;
@@ -335,6 +339,45 @@ function () {
 
       options.targets = targets;
       return options;
+    }
+  }, {
+    key: "parseTargetQuery",
+    value: function parseTargetQuery(query) {
+      /*
+       * ex) query = ABC(1|2|3)EFG(5|6)
+       *     then
+       *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
+       *     queries = [
+       *     ABC1EFG5, ABC1EFG6, ABC2EFG6,
+       *     ABC2EFG6, ABC3EFG5, ABC3EFG6
+       *     ]
+       */
+      var splitQueries = _lodash["default"].split(query, /(\(.*?\))/);
+
+      var queries = [''];
+
+      _lodash["default"].forEach(splitQueries, function (splitQuery, i) {
+        // Fixed string like 'ABC'
+        if (i % 2 === 0) {
+          queries = _lodash["default"].map(queries, function (query) {
+            return [query, splitQuery].join('');
+          });
+          return;
+        } // Regex OR string like '(1|2|3)'
+
+
+        var orElems = _lodash["default"].split(_lodash["default"].trim(splitQuery, '()'), '|');
+
+        var newQueries = _lodash["default"].map(queries, function (query) {
+          return _lodash["default"].map(orElems, function (orElem) {
+            return [query, orElem].join('');
+          });
+        });
+
+        queries = _lodash["default"].flatten(newQueries);
+      });
+
+      return queries;
     }
   }]);
 
