@@ -192,6 +192,12 @@ export class ArchiverapplianceDatasource {
       return timeseries;
     });
 
+    // Apply filter series functions
+    const filterSeriesFuntions = bindFunctionDefs(target.functions, 'Filter Series');
+    if (filterSeriesFuntions.length) {
+      timeseriesData = sequence(filterSeriesFuntions)(timeseriesData);
+    }
+
     deferred.resolve(timeseriesData);
     return deferred.promise;
   }

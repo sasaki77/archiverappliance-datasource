@@ -4,6 +4,7 @@ import $ from 'jquery';
 let index = [];
 let categories = {
   Transform: [],
+  'Filter Series': [],
 };
 
 function addFuncDef(funcDef) {
@@ -49,6 +50,28 @@ addFuncDef({
   category: 'Transform',
   params: [],
   defaultParams: [],
+});
+
+// Filter Series
+
+addFuncDef({
+  name: 'top',
+  category: 'Filter Series',
+  params: [
+    { name: 'number', type: 'int' },
+    { name: 'value', type: 'string', options: ['avg', 'min', 'max', 'sum'] }
+  ],
+  defaultParams: [5, 'avg']
+});
+
+addFuncDef({
+  name: 'bottom',
+  category: 'Filter Series',
+  params: [
+    { name: 'number', type: 'int' },
+    { name: 'value', type: 'string', options: ['avg', 'min', 'max', 'sum'] }
+  ],
+  defaultParams: [5, 'avg']
 });
 
 class FuncInstance {

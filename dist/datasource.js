@@ -237,7 +237,14 @@ function () {
       timeseriesData = _lodash["default"].map(timeseriesData, function (timeseries) {
         timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
         return timeseries;
-      });
+      }); // Apply filter series functions
+
+      var filterSeriesFuntions = bindFunctionDefs(target.functions, 'Filter Series');
+
+      if (filterSeriesFuntions.length) {
+        timeseriesData = sequence(filterSeriesFuntions)(timeseriesData);
+      }
+
       deferred.resolve(timeseriesData);
       return deferred.promise;
     }

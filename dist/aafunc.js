@@ -21,7 +21,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var index = [];
 var categories = {
-  Transform: []
+  Transform: [],
+  'Filter Series': []
 };
 
 function addFuncDef(funcDef) {
@@ -68,6 +69,33 @@ addFuncDef({
   category: 'Transform',
   params: [],
   defaultParams: []
+}); // Filter Series
+
+addFuncDef({
+  name: 'top',
+  category: 'Filter Series',
+  params: [{
+    name: 'number',
+    type: 'int'
+  }, {
+    name: 'value',
+    type: 'string',
+    options: ['avg', 'min', 'max', 'sum']
+  }],
+  defaultParams: [5, 'avg']
+});
+addFuncDef({
+  name: 'bottom',
+  category: 'Filter Series',
+  params: [{
+    name: 'number',
+    type: 'int'
+  }, {
+    name: 'value',
+    type: 'string',
+    options: ['avg', 'min', 'max', 'sum']
+  }],
+  defaultParams: [5, 'avg']
 });
 
 var FuncInstance =

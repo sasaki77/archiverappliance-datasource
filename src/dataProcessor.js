@@ -5,8 +5,13 @@ const functions = {
   scale: scale,
   offset: offset,
   delta: delta,
-  fluctuation: fluctuation
+  fluctuation: fluctuation,
+  // Filter Series
+  top: _.partial(Extraction, 'top'),
+  bottom: _.partial(Extraction, 'bottom')
 };
+
+// Transform
 
 function scale(factor, datapoints) {
   return _.map(datapoints, (point) => {
@@ -43,6 +48,57 @@ function fluctuation(datapoints) {
     newSeries.push([flucValue, datapoints[i][1]]);
   }
   return newSeries;
+}
+
+// Filter Series
+
+function Extraction(order, n, orderFunc, timeseriesData) {
+  const orderByCallback = datapointsAggFuncs[orderFunc];
+  const sortByIteratee = (ts) => {
+      return orderByCallback(ts.datapoints);
+  };
+
+  const sortedTsData = _.sortBy(timeseriesData, sortByIteratee);
+  if (order === 'bottom') {
+    return _.slice(sortedTsData, 0, n);
+  } else {
+    return _.reverse(_.slice(sortedTsData, -n));
+  }
+}
+
+// [Support Funcs] Datapoints aggregation functions
+
+const datapointsAggFuncs = {
+  avg: datapointsAvg,
+  min: datapointsMin,
+  max: datapointsMax,
+  sum: datapointsSum
+};
+
+function datapointsAvg(datapoints) {
+  return _.meanBy(datapoints, (point) => {
+    return point[0];
+  });
+}
+
+function datapointsMin(datapoints) {
+  const minPoint = _.minBy(datapoints, (point) => {
+    return point[0];
+  });
+  return minPoint[0];
+}
+
+function datapointsMax(datapoints) {
+  const maxPoint = _.maxBy(datapoints, (point) => {
+    return point[0];
+  });
+  return maxPoint[0]
+}
+
+function datapointsSum(datapoints) {
+  return _.sumBy(datapoints, (point) => {
+    return point[0];
+  });
 }
 
 export default {
