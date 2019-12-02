@@ -48,7 +48,11 @@ function (_QueryCtrl) {
     _this.target.type = _this.target.type || 'timeserie';
     _this.target.functions = _this.target.functions || [];
     _this.getPVNames = _.bind(_this.getPVNames_, _assertThisInitialized(_this));
-    _this.getOperators = _.bind(_this.getOperators_, _assertThisInitialized(_this));
+    _this.getOperators = _.bind(_this.getOperators_, _assertThisInitialized(_this)); // Create function instances from saved JSON
+
+    _this.target.functions = _.map(_this.target.functions, function (func) {
+      return aafunc.createFuncInstance(func.def, func.params);
+    });
     return _this;
   }
 

@@ -13,6 +13,11 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
 
     this.getPVNames = _.bind(this.getPVNames_, this);
     this.getOperators = _.bind(this.getOperators_, this);
+
+    // Create function instances from saved JSON
+    this.target.functions = _.map(this.target.functions, (func) => {
+      return aafunc.createFuncInstance(func.def, func.params);
+    });
   }
 
   addFunction(funcDef) {
