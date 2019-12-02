@@ -116,7 +116,7 @@ class FuncInstance {
 
   render(metricExp) {
     const str = this.def.name + '(';
-    let parameters = _.map(this.params, function(value, index) {
+    let parameters = _.map(this.params, (value, index) => {
 
       const paramType = this.def.params[index].type;
       if (
@@ -154,7 +154,7 @@ class FuncInstance {
     // handle optional parameters
     // if string contains ',' and next param is optional, split and update both
     if (this._hasMultipleParamsInString(strValue, index)) {
-      _.each(strValue.split(','), function(partVal, idx) {
+      _.each(strValue.split(','), (partVal, idx) => {
         this.updateParam(partVal.trim(), idx);
       }, this);
       return;

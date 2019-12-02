@@ -16,8 +16,8 @@ var functions = {
   delta: delta,
   fluctuation: fluctuation,
   // Filter Series
-  top: _lodash["default"].partial(Extraction, 'top'),
-  bottom: _lodash["default"].partial(Extraction, 'bottom')
+  top: _lodash["default"].partial(extraction, 'top'),
+  bottom: _lodash["default"].partial(extraction, 'bottom')
 }; // Transform
 
 function scale(factor, datapoints) {
@@ -59,7 +59,7 @@ function fluctuation(datapoints) {
 } // Filter Series
 
 
-function Extraction(order, n, orderFunc, timeseriesData) {
+function extraction(order, n, orderFunc, timeseriesData) {
   var orderByCallback = datapointsAggFuncs[orderFunc];
 
   var sortByIteratee = function sortByIteratee(ts) {

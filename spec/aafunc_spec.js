@@ -4,10 +4,10 @@ import Q from 'q';
 import * as aafunc from '../aafunc';
 import dataProcessor from '../dataProcessor';
 
-describe('ArchiverapplianceFunc', function() {
+describe('ArchiverapplianceFunc', () => {
   var ctx = {};
 
-  beforeEach( function() {
+  beforeEach( () => {
     ctx.instanceSettings = {
       url: 'url_header:',
     };
@@ -17,8 +17,8 @@ describe('ArchiverapplianceFunc', function() {
     ctx.ds = new Datasource(ctx.instanceSettings, ctx.$q, ctx.backendSrv, ctx.templateSrv);
   });
 
-  it('should return the server results with scale function', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with scale function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [{
@@ -31,7 +31,7 @@ describe('ArchiverapplianceFunc', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -60,8 +60,8 @@ describe('ArchiverapplianceFunc', function() {
     });
   });
 
-  it('should return the server results with offset function', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with offset function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [{
@@ -74,7 +74,7 @@ describe('ArchiverapplianceFunc', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -103,8 +103,8 @@ describe('ArchiverapplianceFunc', function() {
     });
   });
 
-  it('should return the server results with delta function', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with delta function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [{
@@ -117,7 +117,7 @@ describe('ArchiverapplianceFunc', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -145,8 +145,8 @@ describe('ArchiverapplianceFunc', function() {
   });
 
 
-  it('should return the server results with fluctuation function', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with fluctuation function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [{
@@ -160,7 +160,7 @@ describe('ArchiverapplianceFunc', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -188,8 +188,8 @@ describe('ArchiverapplianceFunc', function() {
     });
   });
 
-  it('should return the server results with top function', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with top function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       const pvname = unescape(_.split(request.url, /pv=(.*?)\&/)[1]);
       let data = [];
       if (pvname === 'PV1') {
@@ -227,7 +227,7 @@ describe('ArchiverapplianceFunc', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -257,7 +257,7 @@ describe('ArchiverapplianceFunc', function() {
     });
   });
 
-  it ('should return aggregated value', function() {
+  it ('should return aggregated value', () => {
     const timeseriesData = [
       { target: 'min', datapoints: [[0,0], [1,0], [2,0], [3,0], [4,0]] },
       { target: 'max', datapoints: [[1,0], [1,0], [1,0], [1,0], [7,0]] },

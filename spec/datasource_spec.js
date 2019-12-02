@@ -3,10 +3,10 @@ import {Datasource} from '../module';
 import Q from 'q';
 import * as aafunc from '../aafunc';
 
-describe('ArchiverapplianceDatasource', function() {
+describe('ArchiverapplianceDatasource', () => {
   var ctx = {};
 
-  beforeEach(function() {
+  beforeEach(() => {
     ctx.instanceSettings = {
       url: 'url_header:',
     };
@@ -16,14 +16,14 @@ describe('ArchiverapplianceDatasource', function() {
     ctx.ds = new Datasource(ctx.instanceSettings, ctx.$q, ctx.backendSrv, ctx.templateSrv);
   });
 
-  it('should return an empty array when no targets are set', function(done) {
+  it('should return an empty array when no targets are set', (done) => {
     ctx.ds.query({targets: []}).then((result) => {
       expect(result.data).to.have.length(0);
       done();
     });
   });
 
-  it('should return an valid url', function(done) {
+  it('should return an valid url', (done) => {
     const target = {
       target: 'PV1',
       interval: '9',
@@ -37,15 +37,15 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an valid multi urls', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return an valid multi urls', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
           _request: request,
           data: ['PV1', 'PV2']
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -64,15 +64,15 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an valid unique urls', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return an valid unique urls', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
           _request: request,
           data: ['PV1', 'PV2', 'PV1']
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -91,8 +91,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an 100 urls', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return an 100 urls', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
           _request: request,
           data: _.map(_.range(1000), (num) => {
@@ -101,7 +101,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -119,8 +119,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an valid multi urls when regex OR target', function(done) {
-    ctx.templateSrv.replace = function(data) {
+  it('should return an valid multi urls when regex OR target', (done) => {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -143,7 +143,7 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an Error when invalid data processing is required', function(done) {
+  it('should return an Error when invalid data processing is required', (done) => {
     const target = {
       target: 'PV1',
       operator: 'invalid',
@@ -158,7 +158,7 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return an data processing url', function(done) {
+  it('should return an data processing url', (done) => {
     const targets = [
       {target: 'PV1', operator: 'mean', interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
@@ -184,8 +184,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return valid interval time in integer', function(done) {
-    ctx.templateSrv.replace = function(data) {
+  it('should return valid interval time in integer', (done) => {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -202,8 +202,8 @@ describe('ArchiverapplianceDatasource', function() {
     done();
   });
 
-  it('should return no interval data when interval time is less than 1 second', function(done) {
-    ctx.templateSrv.replace = function(data) {
+  it('should return no interval data when interval time is less than 1 second', (done) => {
+    ctx.templateSrv.replace = (data) => {
       return data;
     };
 
@@ -220,8 +220,8 @@ describe('ArchiverapplianceDatasource', function() {
     done();
   });
 
-  it('should return filtered array when target is empty or undefined', function(done) {
-    ctx.templateSrv.replace = function(data) {
+  it('should return filtered array when target is empty or undefined', (done) => {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -241,8 +241,8 @@ describe('ArchiverapplianceDatasource', function() {
     done();
   });
 
-  it('should return the server results when a target is set', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results when a target is set', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [{
@@ -256,7 +256,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -277,8 +277,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return the server results with alias', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with alias', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       const pv = request.url.slice(33, 36);
       return ctx.$q.when({
         _request: request,
@@ -286,7 +286,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -311,15 +311,15 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it('should return the server results with alias pattern', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it('should return the server results with alias pattern', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [ { meta: { name: 'header:PV1' , PREC: '0'}, data: [] }]
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -338,8 +338,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results when a target is null', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results when a target is null', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -350,7 +350,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
         return data;
     }
 
@@ -360,8 +360,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results when a target is undefined', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results when a target is undefined', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -372,7 +372,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -382,8 +382,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results when a target is empty', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results when a target is empty', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -394,7 +394,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -404,8 +404,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results when a target is set', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results when a target is set', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -425,8 +425,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results for metricFindQuery', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results for metricFindQuery', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -437,7 +437,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 
@@ -450,8 +450,8 @@ describe('ArchiverapplianceDatasource', function() {
     });
   });
 
-  it ('should return the pv name results for metricFindQuery with regex OR', function(done) {
-    ctx.backendSrv.datasourceRequest = function(request) {
+  it ('should return the pv name results for metricFindQuery with regex OR', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
       return ctx.$q.when({
         _request: request,
         data: [
@@ -460,7 +460,7 @@ describe('ArchiverapplianceDatasource', function() {
       });
     };
 
-    ctx.templateSrv.replace = function(data) {
+    ctx.templateSrv.replace = (data) => {
       return data;
     }
 

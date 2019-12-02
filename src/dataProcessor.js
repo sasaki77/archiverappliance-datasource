@@ -7,8 +7,8 @@ const functions = {
   delta: delta,
   fluctuation: fluctuation,
   // Filter Series
-  top: _.partial(Extraction, 'top'),
-  bottom: _.partial(Extraction, 'bottom')
+  top: _.partial(extraction, 'top'),
+  bottom: _.partial(extraction, 'bottom')
 };
 
 // Transform
@@ -52,7 +52,7 @@ function fluctuation(datapoints) {
 
 // Filter Series
 
-function Extraction(order, n, orderFunc, timeseriesData) {
+function extraction(order, n, orderFunc, timeseriesData) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
   const sortByIteratee = (ts) => {
       return orderByCallback(ts.datapoints);

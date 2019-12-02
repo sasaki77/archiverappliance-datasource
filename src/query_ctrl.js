@@ -11,8 +11,8 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     this.target.type = this.target.type || 'timeserie';
     this.target.functions = this.target.functions || [];
 
-    this.getPVNames = _.bind(this.getPVNames_, this);
-    this.getOperators = _.bind(this.getOperators_, this);
+    this.getPVNames = _.bind(this.getPVNamesZ, this);
+    this.getOperators = _.bind(this.getOperatorsZ, this);
 
     // Create function instances from saved JSON
     this.target.functions = _.map(this.target.functions, (func) => {
@@ -58,7 +58,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     }
   }
 
-  getPVNames_(query, callback) {
+  getPVNamesZ(query, callback) {
     if (this.target.regex) {
       return [];
     }
@@ -68,7 +68,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     });
   }
 
-  getOperators_(query) {
+  getOperatorsZ(query) {
     return this.datasource.operatorList;
   }
 

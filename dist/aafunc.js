@@ -147,10 +147,12 @@ function () {
   }, {
     key: "render",
     value: function render(metricExp) {
+      var _this = this;
+
       var str = this.def.name + '(';
 
       var parameters = _lodash["default"].map(this.params, function (value, index) {
-        var paramType = this.def.params[index].type;
+        var paramType = _this.def.params[index].type;
 
         if (paramType === 'int' || paramType === 'float' || paramType === 'value_or_series' || paramType === 'boolean') {
           return value;
@@ -179,11 +181,13 @@ function () {
   }, {
     key: "updateParam",
     value: function updateParam(strValue, index) {
+      var _this2 = this;
+
       // handle optional parameters
       // if string contains ',' and next param is optional, split and update both
       if (this._hasMultipleParamsInString(strValue, index)) {
         _lodash["default"].each(strValue.split(','), function (partVal, idx) {
-          this.updateParam(partVal.trim(), idx);
+          _this2.updateParam(partVal.trim(), idx);
         }, this);
 
         return;
