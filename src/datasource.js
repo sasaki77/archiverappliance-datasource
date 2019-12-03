@@ -178,28 +178,11 @@ export class ArchiverapplianceDatasource {
   }
 
   applyFunctions(timeseriesData, target) {
-    let deferred = this.q.defer();
-
     if (target.functions === undefined) {
-      deferred.resolve(timeseriesData);
-      return deferred.promise;
+      return this.q.when(timeseriesData);
     }
 
-    // Apply transformation functions
-    const transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-    timeseriesData = _.map(timeseriesData, (timeseries) => {
-      timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
-      return timeseries;
-    });
-
-    // Apply filter series functions
-    const filterSeriesFuntions = bindFunctionDefs(target.functions, 'Filter Series');
-    if (filterSeriesFuntions.length) {
-      timeseriesData = sequence(filterSeriesFuntions)(timeseriesData);
-    }
-
-    deferred.resolve(timeseriesData);
-    return deferred.promise;
+    return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
   }
 
   testDatasource() {
@@ -335,25 +318,37 @@ export class ArchiverapplianceDatasource {
 
     return queries;
   }
-}
 
-function bindFunctionDefs(functionDefs, category) {
-  const aggregationFunctions = _.map(aafunc.getCategories()[category], 'name');
-  const aggFuncDefs = _.filter(functionDefs, function(func) {
-    return _.includes(aggregationFunctions, func.def.name);
-  });
+  bindFunctionDefs(functionDefs, categories, data) {
+    const allCategorisedFuncDefs = aafunc.getCategories();
 
-  return _.map(aggFuncDefs, func => {
-    let funcInstance = aafunc.createFuncInstance(func.def, func.params);
-    return funcInstance.bindFunction(dataProcessor.aaFunctions);
-  });
-}
+    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => {
+      return _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'));
+    }, []);
 
-function sequence(funcsArray) {
-  return function (result) {
-    for (let i = 0; i < funcsArray.length; i++) {
-      result = funcsArray[i].call(this, result);
-    }
-    return result;
-  };
+    const applyFuncDefs = _.filter(functionDefs, (func) => {
+      return _.includes(requiredCategoryFuncNames, func.def.name);
+    });
+
+    const promises = _.reduce(applyFuncDefs, (prevPromise, func) => {
+      return prevPromise.then((res) => {
+        const funcInstance = aafunc.createFuncInstance(func.def, func.params);
+        const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
+
+        // Transform function
+        if (func.def.category === 'Transform') {
+          const tsData = _.map(res, (timeseries) => {
+            timeseries.datapoints = bindedFunc(timeseries.datapoints);
+            return timeseries;
+          });
+          return this.q.when(tsData);
+        }
+
+        // Any other function
+        return this.q.when(bindedFunc(res));
+      });
+    }, this.q.when(data));
+
+    return promises;
+  }
 }

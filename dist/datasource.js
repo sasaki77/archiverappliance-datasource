@@ -225,28 +225,11 @@ function () {
   }, {
     key: "applyFunctions",
     value: function applyFunctions(timeseriesData, target) {
-      var deferred = this.q.defer();
-
       if (target.functions === undefined) {
-        deferred.resolve(timeseriesData);
-        return deferred.promise;
-      } // Apply transformation functions
-
-
-      var transformFunctions = bindFunctionDefs(target.functions, 'Transform');
-      timeseriesData = _lodash["default"].map(timeseriesData, function (timeseries) {
-        timeseries.datapoints = sequence(transformFunctions)(timeseries.datapoints);
-        return timeseries;
-      }); // Apply filter series functions
-
-      var filterSeriesFuntions = bindFunctionDefs(target.functions, 'Filter Series');
-
-      if (filterSeriesFuntions.length) {
-        timeseriesData = sequence(filterSeriesFuntions)(timeseriesData);
+        return this.q.when(timeseriesData);
       }
 
-      deferred.resolve(timeseriesData);
-      return deferred.promise;
+      return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
     }
   }, {
     key: "testDatasource",
@@ -395,33 +378,46 @@ function () {
 
       return queries;
     }
+  }, {
+    key: "bindFunctionDefs",
+    value: function bindFunctionDefs(functionDefs, categories, data) {
+      var _this7 = this;
+
+      var allCategorisedFuncDefs = aafunc.getCategories();
+
+      var requiredCategoryFuncNames = _lodash["default"].reduce(categories, function (funcNames, category) {
+        return _lodash["default"].concat(funcNames, _lodash["default"].map(allCategorisedFuncDefs[category], 'name'));
+      }, []);
+
+      var applyFuncDefs = _lodash["default"].filter(functionDefs, function (func) {
+        return _lodash["default"].includes(requiredCategoryFuncNames, func.def.name);
+      });
+
+      var promises = _lodash["default"].reduce(applyFuncDefs, function (prevPromise, func) {
+        return prevPromise.then(function (res) {
+          var funcInstance = aafunc.createFuncInstance(func.def, func.params);
+          var bindedFunc = funcInstance.bindFunction(_dataProcessor["default"].aaFunctions); // Transform function
+
+          if (func.def.category === 'Transform') {
+            var tsData = _lodash["default"].map(res, function (timeseries) {
+              timeseries.datapoints = bindedFunc(timeseries.datapoints);
+              return timeseries;
+            });
+
+            return _this7.q.when(tsData);
+          } // Any other function
+
+
+          return _this7.q.when(bindedFunc(res));
+        });
+      }, this.q.when(data));
+
+      return promises;
+    }
   }]);
 
   return ArchiverapplianceDatasource;
 }();
 
 exports.ArchiverapplianceDatasource = ArchiverapplianceDatasource;
-
-function bindFunctionDefs(functionDefs, category) {
-  var aggregationFunctions = _lodash["default"].map(aafunc.getCategories()[category], 'name');
-
-  var aggFuncDefs = _lodash["default"].filter(functionDefs, function (func) {
-    return _lodash["default"].includes(aggregationFunctions, func.def.name);
-  });
-
-  return _lodash["default"].map(aggFuncDefs, function (func) {
-    var funcInstance = aafunc.createFuncInstance(func.def, func.params);
-    return funcInstance.bindFunction(_dataProcessor["default"].aaFunctions);
-  });
-}
-
-function sequence(funcsArray) {
-  return function (result) {
-    for (var i = 0; i < funcsArray.length; i++) {
-      result = funcsArray[i].call(this, result);
-    }
-
-    return result;
-  };
-}
 //# sourceMappingURL=datasource.js.map
