@@ -265,12 +265,13 @@ describe('ArchiverapplianceFunc', () => {
     ];
 
     const topFunction = dataProcessor.aaFunctions.top;
+    const bottomFunction = dataProcessor.aaFunctions.bottom;
+
     const minTopData = topFunction(3, 'min', timeseriesData);
     const maxTopData = topFunction(1, 'max', timeseriesData);
     const avgTopData = topFunction(1, 'avg', timeseriesData);
     const sumTopData = topFunction(1, 'sum', timeseriesData);
 
-    const bottomFunction = dataProcessor.aaFunctions.bottom;
     const minBottomData = bottomFunction(3, 'min', timeseriesData);
     const maxBottomData = bottomFunction(1, 'max', timeseriesData);
     const avgBottomData = bottomFunction(1, 'avg', timeseriesData);
@@ -303,6 +304,29 @@ describe('ArchiverapplianceFunc', () => {
 
     expect(sumBottomData).to.have.length(1);
     expect(sumBottomData[0].target).to.equal('min');
+
+    const timeseriesDataAbs = [
+      { target: 'min', datapoints: [[0,0], [3,0]] },
+      { target: 'max', datapoints: [[-6,0], [-5,0], [-4,0], [-3,0], [-2,0]] },
+      { target: 'avgsum', datapoints: [[3,0], [4,0]] }
+    ];
+
+    const absMinTopData = topFunction(1, 'absoluteMin', timeseriesDataAbs);
+    const absMaxTopData = topFunction(1, 'absoluteMax', timeseriesDataAbs);
+    const absMinBottomData = bottomFunction(1, 'absoluteMin', timeseriesDataAbs);
+    const absMaxBottomData = bottomFunction(1, 'absoluteMax', timeseriesDataAbs);
+
+    expect(absMinTopData).to.have.length(1);
+    expect(absMinTopData[0].target).to.equal('avgsum');
+
+    expect(absMaxTopData).to.have.length(1);
+    expect(absMaxTopData[0].target).to.equal('max');
+
+    expect(absMinBottomData).to.have.length(1);
+    expect(absMinBottomData[0].target).to.equal('min');
+
+    expect(absMaxBottomData).to.have.length(1);
+    expect(absMaxBottomData[0].target).to.equal('min');
   });
 
 });

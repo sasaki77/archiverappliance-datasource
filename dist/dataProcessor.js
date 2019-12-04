@@ -80,7 +80,9 @@ var datapointsAggFuncs = {
   avg: datapointsAvg,
   min: datapointsMin,
   max: datapointsMax,
-  sum: datapointsSum
+  sum: datapointsSum,
+  absoluteMin: datapointsAbsMin,
+  absoluteMax: datapointsAbsMax
 };
 
 function datapointsAvg(datapoints) {
@@ -109,6 +111,22 @@ function datapointsSum(datapoints) {
   return _lodash["default"].sumBy(datapoints, function (point) {
     return point[0];
   });
+}
+
+function datapointsAbsMin(datapoints) {
+  var minPoint = _lodash["default"].minBy(datapoints, function (point) {
+    return Math.abs(point[0]);
+  });
+
+  return Math.abs(minPoint[0]);
+}
+
+function datapointsAbsMax(datapoints) {
+  var maxPoint = _lodash["default"].maxBy(datapoints, function (point) {
+    return Math.abs(point[0]);
+  });
+
+  return Math.abs(maxPoint[0]);
 }
 
 var _default = {

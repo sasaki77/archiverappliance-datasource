@@ -80,7 +80,7 @@ addFuncDef({
   }, {
     name: 'value',
     type: 'string',
-    options: ['avg', 'min', 'max', 'sum']
+    options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
   }],
   defaultParams: [5, 'avg']
 });
@@ -93,7 +93,7 @@ addFuncDef({
   }, {
     name: 'value',
     type: 'string',
-    options: ['avg', 'min', 'max', 'sum']
+    options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
   }],
   defaultParams: [5, 'avg']
 });

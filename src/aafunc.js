@@ -59,7 +59,11 @@ addFuncDef({
   category: 'Filter Series',
   params: [
     { name: 'number', type: 'int' },
-    { name: 'value', type: 'string', options: ['avg', 'min', 'max', 'sum'] }
+    {
+      name: 'value',
+      type: 'string',
+      options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
+    }
   ],
   defaultParams: [5, 'avg']
 });
@@ -69,7 +73,11 @@ addFuncDef({
   category: 'Filter Series',
   params: [
     { name: 'number', type: 'int' },
-    { name: 'value', type: 'string', options: ['avg', 'min', 'max', 'sum'] }
+    {
+      name: 'value',
+      type: 'string',
+      options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
+    }
   ],
   defaultParams: [5, 'avg']
 });
