@@ -113,11 +113,6 @@ function (_QueryCtrl) {
       return this.datasource.operatorList;
     }
   }, {
-    key: "toggleEditorMode",
-    value: function toggleEditorMode() {
-      this.target.rawQuery = !this.target.rawQuery;
-    }
-  }, {
     key: "targetChanged",
     value: function targetChanged() {
       this.panelCtrl.refresh(); // Asks the panel to refresh data.

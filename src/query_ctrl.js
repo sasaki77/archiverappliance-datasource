@@ -72,10 +72,6 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     return this.datasource.operatorList;
   }
 
-  toggleEditorMode() {
-    this.target.rawQuery = !this.target.rawQuery;
-  }
-
   targetChanged() {
     this.panelCtrl.refresh(); // Asks the panel to refresh data.
   }
