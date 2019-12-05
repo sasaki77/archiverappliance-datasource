@@ -137,17 +137,17 @@ function () {
       var pv = '';
 
       if (operator === 'raw' || interval === '') {
-        pv = ['pv=', pvname].join('');
+        pv = "pv=".concat(pvname);
       } else if (_lodash["default"].includes(['', undefined], operator)) {
         // Default Operator
-        pv = ['pv=mean_', interval, '(', pvname, ')'].join('');
+        pv = "pv=mean_".concat(interval, "(").concat(pvname, ")");
       } else if (_lodash["default"].includes(this.operatorList, operator)) {
-        pv = ['pv=', operator, '_', interval, '(', pvname, ')'].join('');
+        pv = "pv=".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
       } else {
         throw new Error('Data Processing Operator is invalid.');
       }
 
-      var url = [this.url, '/data/getData.json?', pv, '&from=', from.toISOString(), '&to=', to.toISOString()].join('');
+      var url = "".concat(this.url, "/data/getData.json?").concat(pv, "&from=").concat(from.toISOString(), "&to=").concat(to.toISOString());
       return url;
     }
   }, {
@@ -256,7 +256,7 @@ function () {
         return deferred.promise;
       }
 
-      var url = [this.url, '/bpl/getMatchingPVs?limit=100&regex=', encodeURIComponent(query)].join('');
+      var url = "".concat(this.url, "/bpl/getMatchingPVs?limit=100&regex=").concat(encodeURIComponent(query));
       return this.doRequest({
         url: url,
         method: 'GET'
@@ -359,7 +359,7 @@ function () {
         // Fixed string like 'ABC'
         if (i % 2 === 0) {
           queries = _lodash["default"].map(queries, function (query) {
-            return [query, splitQuery].join('');
+            return "".concat(query).concat(splitQuery);
           });
           return;
         } // Regex OR string like '(1|2|3)'
@@ -369,7 +369,7 @@ function () {
 
         var newQueries = _lodash["default"].map(queries, function (query) {
           return _lodash["default"].map(orElems, function (orElem) {
-            return [query, orElem].join('');
+            return "".concat(query).concat(orElem);
           });
         });
 

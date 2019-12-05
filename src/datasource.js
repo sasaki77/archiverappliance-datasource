@@ -99,25 +99,17 @@ export class ArchiverapplianceDatasource {
   buildUrl(pvname, operator, interval, from, to) {
     let pv = ''
     if (operator === 'raw' || interval === '') {
-      pv = ['pv=', pvname].join('');
+      pv = `pv=${pvname}`;
     } else if (_.includes(['', undefined], operator)) {
       // Default Operator
-      pv = ['pv=mean_', interval, '(', pvname, ')'].join('');
+      pv = `pv=mean_${interval}(${pvname})`;
     } else if (_.includes(this.operatorList, operator) ) {
-      pv = ['pv=', operator, '_', interval, '(', pvname, ')'].join('');
+      pv = `pv=${operator}_${interval}(${pvname})`;
     } else {
       throw new Error('Data Processing Operator is invalid.');
     }
 
-    const url = [
-      this.url,
-      '/data/getData.json?',
-      pv,
-      '&from=',
-      from.toISOString(),
-      '&to=',
-      to.toISOString()
-    ].join('');
+    const url = `${this.url}/data/getData.json?${pv}&from=${from.toISOString()}&to=${to.toISOString()}`;
 
     return url;
   }
@@ -204,11 +196,7 @@ export class ArchiverapplianceDatasource {
       return deferred.promise;
     }
 
-    const url = [
-      this.url,
-      '/bpl/getMatchingPVs?limit=100&regex=',
-      encodeURIComponent(query)
-    ].join('');
+    const url = `${this.url}/bpl/getMatchingPVs?limit=100&regex=${encodeURIComponent(query)}`;
 
     return this.doRequest({
       url: url,
@@ -300,7 +288,7 @@ export class ArchiverapplianceDatasource {
       // Fixed string like 'ABC'
       if (i % 2 === 0) {
         queries = _.map(queries, (query) => {
-          return [query, splitQuery].join('');
+          return `${query}${splitQuery}`;
         });
         return;
       }
@@ -310,7 +298,7 @@ export class ArchiverapplianceDatasource {
 
       const newQueries = _.map(queries, (query) => {
         return _.map(orElems, (orElem) => {
-          return [query, orElem].join('');
+          return `${query}${orElem}`;
         });
       });
       queries = _.flatten(newQueries);

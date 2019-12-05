@@ -102,7 +102,7 @@ function (_QueryCtrl) {
         return [];
       }
 
-      var str = ['.*', query, '.*'].join('');
+      var str = ".*".concat(query, ".*");
       this.datasource.pvNamesFindQuery(str).then(function (res) {
         callback(res);
       });

@@ -62,7 +62,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     if (this.target.regex) {
       return [];
     }
-    const str = ['.*', query, '.*'].join('');
+    const str = `.*${query}.*`;
     this.datasource.pvNamesFindQuery(str).then((res) => {
       callback(res);
     });
