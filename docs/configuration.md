@@ -1,0 +1,27 @@
+# Configuration
+## Add New Archiver Appliance Datasource
+After installing plugin you can add Archiver Appliance datasource.
+
+To add Archiver Appliance datasource, follow the below steps.
+
+1. Open `Data Sources` in the side menu.
+2. Click `Add data source`.
+3. Select `ArchiverAppliacne` in the list.
+
+![Add new datasrouce](./img/aa-configuration-add-datasource.png)
+
+Please refer [How to add a data source](https://grafana.com/docs/grafana/latest/guides/getting_started/#how-to-add-a-data-source) for
+more information.
+
+## Datasource Settings
+![Datasrouce settings](./img/aa-configuration-datasource-settings.png)
+
+### HTTP
+- **URL:** set `retrieval url` end with retrieval.
+- **Access:** controls how requests to the data source will be handled. `Server` mode is only tested in this plugin.
+  - **Server:** Grafana backend/server forwards the requests to the data source.
+  - **Browser:** directly access to the data source from the browser.
+- **Whitelisted Cokkies:** no need to configure.
+
+### Auth
+Basically, no need to configure.
