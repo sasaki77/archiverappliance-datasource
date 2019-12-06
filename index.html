@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>EPICS Archiver Appliance Grafana Datasouce &mdash; Archiver Appliance Datasource 0.1.0 documentation</title>
+  <title>Archiver Appliance Datasouce &mdash; Archiver Appliance Datasource 0.1.0 documentation</title>
   
 
   
@@ -81,6 +81,10 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 </ul>
 
             
@@ -126,7 +130,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>EPICS Archiver Appliance Grafana Datasouce</li>
+      <li>Archiver Appliance Datasouce</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -145,13 +149,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="epics-archiver-appliance-grafana-datasouce">
-<h1>EPICS Archiver Appliance Grafana Datasouce<a class="headerlink" href="#epics-archiver-appliance-grafana-datasouce" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="archiver-appliance-datasouce">
+<h1>Archiver Appliance Datasouce<a class="headerlink" href="#archiver-appliance-datasouce" title="Permalink to this headline">¶</a></h1>
+<p>Archiver Appliance Datasource is a Grafana plugin to visualize archived PV data in Archiver Appliance.
+EPICS Archiver Appliance is an archive engine for EPICS control systems. See <a class="reference external" href="https://domain.invalid/">Archiver Appliance site</a> for more information about Archiver Appliance.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Select multiple PVs by using Regex (Only supports wildcard pattern like <code class="docutils literal notranslate"><span class="pre">PV.*</span></code> and alternation pattern like <code class="docutils literal notranslate"><span class="pre">PV(1|2)</span></code>)</p></li>
+<li><p>Legend alias with regex pattern</p></li>
+<li><p>Data retrieval with data processing (See <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.htm">Archiver Appliance User Guide</a> for processing of data)</p></li>
+<li><p>Using PV names for Grafana variables</p></li>
+<li><p>Transform your data with processing functions</p></li>
+</ul>
+</div>
 <div class="section" id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#add-new-archiver-appliance-datasource">Add New Archiver Appliance Datasource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#datasource-settings">Datasource Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="query.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query.html#pv-name-completion">PV name completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query.html#select-multiple-pvs-by-regex">Select Multiple PVs by Regex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query.html#legend-alias-with-regex-pattern">Legend Alias with Regex Pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query.html#apply-processing-functions">Apply Processing Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="variables.html#adding-a-variable">Adding a Variable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html#variable-settings">Variable Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html#variables-usage">Variables Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html#transform">Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html#filter-series">Filter Series</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
