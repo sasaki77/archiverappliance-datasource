@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release Notes" href="releases.html" />
     <link rel="prev" title="Variables" href="variables.html" /> 
 </head>
 
@@ -85,20 +86,22 @@
 <li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#transform">Transform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#categories">Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transform-functions">Transform Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#scale"><em>scale</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#offset"><em>offset</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#delta"><em>delta</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fuluctuation"><em>fuluctuation</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fluctuation"><em>fluctuation</em></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#filter-series">Filter Series</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#filter-series-functions">Filter Series Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#top"><em>top</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bottom"><em>bottom</em></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
 </ul>
 
             
@@ -165,28 +168,91 @@
             
   <div class="section" id="functions">
 <h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="transform">
-<h2>Transform<a class="headerlink" href="#transform" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="categories">
+<h2>Categories<a class="headerlink" href="#categories" title="Permalink to this headline">¶</a></h2>
+<p>Functions are categorized into below groups.</p>
+<ul class="simple">
+<li><p><strong>Transform:</strong> converts the timeseries datapoints from its datapoint values.</p></li>
+<li><p><strong>Filter Series:</strong> picks up some series that meet certain condition.</p></li>
+</ul>
+</div>
+<div class="section" id="transform-functions">
+<h2>Transform Functions<a class="headerlink" href="#transform-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="scale">
 <h3><em>scale</em><a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="scale">
+<code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param">factor</em><span class="sig-paren">)</span><a class="headerlink" href="#scale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Multiplies datapoint by <em>factor</em> at each point.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">scale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nx">scale</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="offset">
 <h3><em>offset</em><a class="headerlink" href="#offset" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="offset">
+<code class="sig-name descname">offset</code><span class="sig-paren">(</span><em class="sig-param">delta</em><span class="sig-paren">)</span><a class="headerlink" href="#offset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">scale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="nx">scale</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adds <em>delta</em> to each datapoint.</p>
 </div>
 <div class="section" id="delta">
 <h3><em>delta</em><a class="headerlink" href="#delta" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="delta">
+<code class="sig-name descname">delta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Calculates difference between datapoint and its before point at each point.</p>
 </div>
-<div class="section" id="fuluctuation">
-<h3><em>fuluctuation</em><a class="headerlink" href="#fuluctuation" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fluctuation">
+<h3><em>fluctuation</em><a class="headerlink" href="#fluctuation" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="fluctuation">
+<code class="sig-name descname">fluctuation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fluctuation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Subtracts first datapoint value from each datapoint.</p>
 </div>
 </div>
-<div class="section" id="filter-series">
-<h2>Filter Series<a class="headerlink" href="#filter-series" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="filter-series-functions">
+<h2>Filter Series Functions<a class="headerlink" href="#filter-series-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="top">
 <h3><em>top</em><a class="headerlink" href="#top" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="top">
+<code class="sig-name descname">top</code><span class="sig-paren">(</span><em class="sig-param">number</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Returns top N series sorted by <em>value</em>.
+Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</em>, <em>absoluteMin</em>, <em>absoluteMax</em>, and <em>sum</em>.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">top</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nx">max</span><span class="p">)</span>
+<span class="nx">top</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">avg</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="bottom">
 <h3><em>bottom</em><a class="headerlink" href="#bottom" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="bottom">
+<code class="sig-name descname">bottom</code><span class="sig-paren">(</span><em class="sig-param">number</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#bottom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Returns bottom N series sorted by <em>value</em>.
+Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</em>, <em>absoluteMin</em>, <em>absoluteMax</em>, and <em>sum</em>.</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">bottom</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nx">avg</span><span class="p">)</span>
+<span class="nx">bottom</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nx">min</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -198,6 +264,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="releases.html" class="btn btn-neutral float-right" title="Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="variables.html" class="btn btn-neutral float-left" title="Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

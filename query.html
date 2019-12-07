@@ -171,7 +171,7 @@
 <li><p><strong>Regex:</strong> enable/disable Regex mode. Refer <a class="reference external" href="#select-multiple-pvs-by-regex">Select Multiple PVs by Regex</a>.</p></li>
 <li><p><strong>Operator:</strong> controls processing of data during data ritrieval (Default: <code class="docutils literal notranslate"><span class="pre">mean</span></code>). Refer <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> abourt processing of data.</p></li>
 <li><p><strong>Alias:</strong> set alias for legend.</p></li>
-<li><p><strong>Alias pattern:</strong> set regex pattern to use PV name for legend alias. Refer <a class="reference external" href="#legend-alias-with-regex-pattern">Legend Alias with Regex Pattern</a></p></li>
+<li><p><strong>Alias pattern:</strong> set regular expressoin pattern to use PV name for legend alias. Refer <a class="reference external" href="#legend-alias-with-regex-pattern">Legend Alias with Regex Pattern</a></p></li>
 <li><p><strong>Function:</strong> apply processing function for rerieved data. Refer <a class="reference external" href="#apply-processing-functions">Apply Processing Functions</a></p></li>
 </ul>
 </div>
@@ -179,8 +179,8 @@
 <h2>PV name completion<a class="headerlink" href="#pv-name-completion" title="Permalink to this headline">¶</a></h2>
 <p><img alt="Name completion" src="_images/aa-query-name-completion.png" /></p>
 <p>Candidate PV names are shown during focussing on <code class="docutils literal notranslate"><span class="pre">PV</span></code> text input.</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Maximum number of candidate names is <strong>100</strong>.</p>
 </div>
 </div>
@@ -189,13 +189,13 @@
 <p>You can select multiple PVs using Regular Expressoins.
 To enable Regex mode, click <code class="docutils literal notranslate"><span class="pre">Regex</span></code> button next to <code class="docutils literal notranslate"><span class="pre">PV</span></code> text input.</p>
 <p>The plugin supports only <strong>wildcard pattern</strong> and <strong>alternation pattern</strong>.</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Maximum number of PVs you can select on Regex mode is <strong>100</strong>.</p>
 </div>
 <div class="section" id="wildcard-pattern">
 <h3>Wildcard Pattern<a class="headerlink" href="#wildcard-pattern" title="Permalink to this headline">¶</a></h3>
-<p>Wildcard pattern (e.g. <code class="docutils literal notranslate"><span class="pre">.*</span></code>) is used to match any numbr of characters.
+<p>Wildcard pattern (e.g. <code class="docutils literal notranslate"><span class="pre">.*</span></code>) is used to match any characters.
 For example, <code class="docutils literal notranslate"><span class="pre">PV:.*</span></code> matches <code class="docutils literal notranslate"><span class="pre">PV:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:2</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:2</span></code>. and <code class="docutils literal notranslate"><span class="pre">PV:EFG:1</span></code>.</p>
 <p><img alt="Regex wildcard input" src="_images/aa-query-regex-wildcard-input.png" /></p>
 <p>Result of above query is shown below.</p>
@@ -203,7 +203,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">PV:.*<
 </div>
 <div class="section" id="alternation-pattern">
 <h3>Alternation Pattern<a class="headerlink" href="#alternation-pattern" title="Permalink to this headline">¶</a></h3>
-<p>Alternation pattern (e.g. <code class="docutils literal notranslate"><span class="pre">(A|B|C)</span></code>) is used to OR match.
+<p>Alternation pattern (e.g. <code class="docutils literal notranslate"><span class="pre">(A|B|C)</span></code>) is used to OR matching.
 For example, <code class="docutils literal notranslate"><span class="pre">PV:(ABC|EFG):.*</span></code> matches <code class="docutils literal notranslate"><span class="pre">PV:ABC:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:2</span></code>, and <code class="docutils literal notranslate"><span class="pre">PV:EFG:1</span></code>.</p>
 <p><img alt="Regex alternation input" src="_images/aa-query-regex-alternation-input.png" /></p>
 <p>Result of above query is shown below.</p>
@@ -224,13 +224,16 @@ To escape characters, two backslashes is required before the characters (e.g. <c
 <h2>Apply Processing Functions<a class="headerlink" href="#apply-processing-functions" title="Permalink to this headline">¶</a></h2>
 <p>Functions are used to apply post processing to the data.
 You can add, move and remove functions from <code class="docutils literal notranslate"><span class="pre">Functions</span></code> row.
-Functions are categorized to some groups.
+Functions are categorized into some groups.
 Select preffered functions from categoires.</p>
 <p><img alt="Functions" src="_images/aa-query-functions-add.png" /></p>
 <p>Some functions require parameters. You can edit parameters after adding the function.</p>
-<p>Functions are applied from left to right.</p>
 <p>To see details of each function, refer <a class="reference internal" href="functions.html"><span class="doc">Functions</span></a>.</p>
 <p><img alt="Functions" src="_images/aa-query-functions.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Functions are applied from left to right.</p>
+</div>
 </div>
 </div>
 

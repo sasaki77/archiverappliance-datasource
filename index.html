@@ -85,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
 </ul>
 
             
@@ -152,13 +153,20 @@
   <div class="section" id="archiver-appliance-datasouce">
 <h1>Archiver Appliance Datasouce<a class="headerlink" href="#archiver-appliance-datasouce" title="Permalink to this headline">¶</a></h1>
 <p>Archiver Appliance Datasource is a Grafana plugin to visualize archived PV data in Archiver Appliance.
-EPICS Archiver Appliance is an archive engine for EPICS control systems. See <a class="reference external" href="https://domain.invalid/">Archiver Appliance site</a> for more information about Archiver Appliance.</p>
+EPICS Archiver Appliance is an archive engine for EPICS control systems. See <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs">Archiver Appliance site</a> for more information about Archiver Appliance.</p>
+<div class="section" id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource">Source(GitHub)</a></p></li>
+<li><p><a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs">Archiver Appliance site</a></p></li>
+</ul>
+</div>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Select multiple PVs by using Regex (Only supports wildcard pattern like <code class="docutils literal notranslate"><span class="pre">PV.*</span></code> and alternation pattern like <code class="docutils literal notranslate"><span class="pre">PV(1|2)</span></code>)</p></li>
-<li><p>Legend alias with regex pattern</p></li>
-<li><p>Data retrieval with data processing (See <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.htm">Archiver Appliance User Guide</a> for processing of data)</p></li>
+<li><p>Legend alias with regular expression pattern</p></li>
+<li><p>Data retrieval with data processing (See <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> for processing of data)</p></li>
 <li><p>Using PV names for Grafana variables</p></li>
 <li><p>Transform your data with processing functions</p></li>
 </ul>
@@ -188,8 +196,13 @@ EPICS Archiver Appliance is an archive engine for EPICS control systems. See <a 
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functions.html#transform">Transform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html#filter-series">Filter Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html#categories">Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html#transform-functions">Transform Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html#filter-series-functions">Filter Series Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases.html#id1">0.1.0</a></li>
 </ul>
 </li>
 </ul>

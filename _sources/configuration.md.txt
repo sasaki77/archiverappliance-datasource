@@ -18,9 +18,9 @@ more information.
 
 ### HTTP
 - **URL:** set `retrieval url` end with retrieval.
-- **Access:** controls how requests to the data source will be handled. `Server` mode is only tested in this plugin.
-  - **Server:** Grafana backend/server forwards the requests to the data source.
-  - **Browser:** directly access to the data source from the browser.
+- **Access:** controls how requests to the data source will be handled. Only `Server` mode is tested in this plugin.
+  - **Server:** Grafana backend/server forwards the requests to the Archiver Appliance server.
+  - **Browser:** directly access to the Archiver Appliance server from the browser.
 - **Whitelisted Cokkies:** no need to configure.
 
 ### Auth

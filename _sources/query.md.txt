@@ -7,7 +7,7 @@
 - **Regex:** enable/disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex).
 - **Operator:** controls processing of data during data ritrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) abourt processing of data.
 - **Alias:** set alias for legend.
-- **Alias pattern:** set regex pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern)
+- **Alias pattern:** set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern)
 - **Function:** apply processing function for rerieved data. Refer [Apply Processing Functions](#apply-processing-functions)
 
 ## PV name completion
@@ -15,8 +15,7 @@
 
 Candidate PV names are shown during focussing on `PV` text input.
 
-```eval_rst
-.. Attention:: Maximum number of candidate names is **100**.
+``` Note:: Maximum number of candidate names is **100**.
 ```
 
 ## Select Multiple PVs by Regex
@@ -26,12 +25,11 @@ To enable Regex mode, click `Regex` button next to `PV` text input.
 
 The plugin supports only **wildcard pattern** and **alternation pattern**.
 
-```eval_rst
-.. Attention:: Maximum number of PVs you can select on Regex mode is **100**.
+``` Note:: Maximum number of PVs you can select on Regex mode is **100**.
 ```
 
 ### Wildcard Pattern
-Wildcard pattern (e.g. `.*`) is used to match any numbr of characters.
+Wildcard pattern (e.g. `.*`) is used to match any characters.
 For example, `PV:.*` matches `PV:1`, `PV:2`, `PV:ABC:1`, `PV:ABC:2`. and `PV:EFG:1`.
 
 ![Regex wildcard input](./img/aa-query-regex-wildcard-input.png)
@@ -41,7 +39,7 @@ Result of above query is shown below.
 ![Regex wildcard](./img/aa-query-regex-wildcard.png)
 
 ### Alternation Pattern
-Alternation pattern (e.g. `(A|B|C)`) is used to OR match.
+Alternation pattern (e.g. `(A|B|C)`) is used to OR matching.
 For example, `PV:(ABC|EFG):.*` matches `PV:ABC:1`, `PV:ABC:2`, and `PV:EFG:1`.
 
 ![Regex alternation input](./img/aa-query-regex-alternation-input.png)
@@ -65,16 +63,17 @@ Result of above query is shown below.
 ## Apply Processing Functions
 Functions are used to apply post processing to the data.
 You can add, move and remove functions from `Functions` row.
-Functions are categorized to some groups.
+Functions are categorized into some groups.
 Select preffered functions from categoires.
 
 ![Functions](./img/aa-query-functions-add.png)
 
 Some functions require parameters. You can edit parameters after adding the function.
 
-Functions are applied from left to right.
-
 To see details of each function, refer [Functions](functions).
 
 
 ![Functions](./img/aa-query-functions.png)
+
+``` Note:: Functions are applied from left to right.
+```

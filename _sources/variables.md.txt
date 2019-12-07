@@ -10,7 +10,7 @@ You can add a variable by following steps.
 1. Open `Dashboard settings` from top header.
 2. Select `Variables` from side menu.
 3. Click `Add variable`.
-4. Input information. Refer [Variable Settings](#variable-settings)
+4. Configure variable settings. Refer [Variable Settings](#variable-settings)
 5. Click `Add`.
 
 ## Variable Settings
@@ -33,12 +33,11 @@ Below is a query in this case.
 ${group}:.*
 ```
 
-```eval_rst
-.. Attention:: Maximum number of PV names you can use in variables is **100**.
+``` Note:: Maximum number of PV names you can use in variables is **100**.
 ```
 
 ## Variables Usage
-Variables is allowd to use only in `PV` input. Using variables in other input is not supported.
+Variables is allowd to use only in `PV` field input. Using variables in other fields is not supported.
 
 You can select multiple PVs from drop down menu with variables.
 
