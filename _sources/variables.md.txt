@@ -2,7 +2,7 @@
 Variable is Grafana feature to create interactive and dynamic dashboards also known as Templating.
 Refer [Grafana Documentation](https://grafana.com/docs/grafana/latest/reference/templating/) for more information.
 
-This plugin supports to use PV names registered on Archiver Appliance for variables.
+This plugin supports to use PV names registered in Archiver Appliance for variables.
 
 ## Adding a Variable
 You can add a variable by following steps.
