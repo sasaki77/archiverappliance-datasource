@@ -16,7 +16,7 @@ See [Archiver Appliance site](https://slacmshankar.github.io/epicsarchiver_docs/
 Clone this plugin into grafana plugins directory; the default is /var/lib/grafana/plugins.
 
 ## Documentaion
-Documentation is available at [https://sasaki77.github.io/archiverappliance-datasource](https://sasaki77.github.io/archiverappliance-datasource)
+Documentation is available at [https://sasaki77.github.io/archiverappliance-datasource](https://sasaki77.github.io/archiverappliance-datasource).
 
 ## Dev setup
 

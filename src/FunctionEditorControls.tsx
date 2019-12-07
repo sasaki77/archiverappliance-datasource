@@ -29,7 +29,7 @@ const FunctionHelpButton = (props: { description: string; name: string; onDescri
       className="pointer fa fa-question-circle"
       onClick={() => {
         window.open(
-          'https://github.com/sasaki77/archiverappliance-datasource',
+          `https://sasaki77.github.io/archiverappliance-datasource/functions.html#${props.name}`,
           '_blank'
         );
       }}

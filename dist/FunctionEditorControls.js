@@ -20,7 +20,7 @@ var FunctionHelpButton = function FunctionHelpButton(props) {
   return _react["default"].createElement("span", {
     className: "pointer fa fa-question-circle",
     onClick: function onClick() {
-      window.open('https://github.com/sasaki77/archiverappliance-datasource', '_blank');
+      window.open("https://sasaki77.github.io/archiverappliance-datasource/functions.html#".concat(props.name), '_blank');
     }
   });
 };
