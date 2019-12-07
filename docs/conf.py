@@ -67,6 +67,13 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+html_context = {
+  'display_github': True,
+  'github_user': 'sasaki77',
+  'github_repo': 'archiverappliance-datasource',
+  'github_version': 'master/docs/'
+}
+
 github_doc_root = 'https://github.com/sasaki77/archiverappliance-datasourcetree/master/doc/'
 def setup(app):
     app.add_config_value('recommonmark_config', {
