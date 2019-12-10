@@ -24,12 +24,14 @@ scale(-0.5)
 ``` function:: offset(delta)
 ```
 
+Adds _delta_ to each datapoint.
+
+Examples:
+
 ```js
 scale(50)
 scale(-0.5)
 ```
-
-Adds _delta_ to each datapoint.
 
 ### _delta_
 ``` function:: delta()
@@ -52,6 +54,8 @@ Subtracts first datapoint value from each datapoint.
 Returns top N series sorted by _value_.
 Available _value_ is as following: _avg_, _min_, _max_, _absoluteMin_, _absoluteMax_, and _sum_.
 
+Examples:
+
 ```js
 top(5, max)
 top(10, avg)
@@ -63,6 +67,8 @@ top(10, avg)
 
 Returns bottom N series sorted by _value_.
 Available _value_ is as following: _avg_, _min_, _max_, _absoluteMin_, _absoluteMax_, and _sum_.
+
+Examples:
 
 ```js
 bottom(5, avg)
