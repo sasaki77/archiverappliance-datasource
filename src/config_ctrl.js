@@ -1,8 +1,6 @@
 export class ArchiverapplianceConfigCtrl {
-
-  constructor($scope, $injector)  {
+  constructor($scope) {
     this.scope = $scope;
-    this.current.jsonData.entityLabel = this.current.jsonData.entityLabel || "entity";
   }
 }
 

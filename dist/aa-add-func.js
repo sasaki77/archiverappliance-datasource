@@ -21,7 +21,32 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function getAllFunctionNames(categories) {
+  return _lodash["default"].reduce(categories, function (list, category) {
+    _lodash["default"].each(category, function (func) {
+      return list.push(func.name);
+    });
+
+    return list;
+  }, []);
+}
+
+function createFunctionDropDownMenu(categories) {
+  return _lodash["default"].map(categories, function (list, category) {
+    return {
+      text: category,
+      submenu: _lodash["default"].map(list, function (value) {
+        return {
+          text: value.name,
+          click: "ctrl.addFunction('".concat(value.name, "')")
+        };
+      })
+    };
+  });
+}
 /** @ngInject */
+
+
 function aaAddFunc($compile) {
   var inputTemplate = '<input type="text"' + ' class="gf-form-input"' + ' spellcheck="false" style="display:none"></input>';
   var buttonTemplate = '<a  class="gf-form-label tight-form-func dropdown-toggle query-part"' + ' tabindex="1" gf-dropdown="functionMenu" data-toggle="dropdown">' + '<i class="fa fa-plus"></i></a>';
@@ -44,13 +69,13 @@ function aaAddFunc($compile) {
 
           if (!funcDef) {
             // try find close match
-            value = value.toLowerCase();
+            var lowerValue = value.toLowerCase();
             funcDef = _lodash["default"].find(allFunctions, function (funcName) {
-              return funcName.toLowerCase().indexOf(value) === 0;
+              return funcName.toLowerCase().indexOf(lowerValue) === 0;
             });
 
             if (!funcDef) {
-              return;
+              return undefined;
             }
           }
 
@@ -84,31 +109,5 @@ function aaAddFunc($compile) {
   };
 }
 
-;
-
 _core_module["default"].directive('aaAddFunc', aaAddFunc);
-
-function getAllFunctionNames(categories) {
-  return _lodash["default"].reduce(categories, function (list, category) {
-    _lodash["default"].each(category, function (func) {
-      list.push(func.name);
-    });
-
-    return list;
-  }, []);
-}
-
-function createFunctionDropDownMenu(categories) {
-  return _lodash["default"].map(categories, function (list, category) {
-    return {
-      text: category,
-      submenu: _lodash["default"].map(list, function (value) {
-        return {
-          text: value.name,
-          click: "ctrl.addFunction('" + value.name + "')"
-        };
-      })
-    };
-  });
-}
 //# sourceMappingURL=aa-add-func.js.map

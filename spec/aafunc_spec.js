@@ -1,13 +1,16 @@
+/* eslint import/no-unresolved: [0] */
+
 import _ from 'lodash';
-import {Datasource} from '../module';
 import Q from 'q';
+import { expect } from 'chai';
+import { Datasource } from '../module';
 import * as aafunc from '../aafunc';
 import dataProcessor from '../dataProcessor';
 
 describe('ArchiverapplianceFunc', () => {
-  var ctx = {};
+  const ctx = {};
 
-  beforeEach( () => {
+  beforeEach(() => {
     ctx.instanceSettings = {
       url: 'url_header:',
     };
@@ -18,32 +21,30 @@ describe('ArchiverapplianceFunc', () => {
   });
 
   it('should return the server results with scale function', (done) => {
-    ctx.backendSrv.datasourceRequest = (request) => {
-      return ctx.$q.when({
+    ctx.backendSrv.datasourceRequest = (request) => (
+      ctx.$q.when({
         _request: request,
         data: [{
-          meta: { 'name': 'PV' , 'PREC': '0'},
+          meta: { name: 'PV', PREC: '0' },
           data: [
-            { secs: 1262304001, val: 1, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 2, nanos: 789000000, severity:0, status:0 },
-          ]
-        }]
-      });
-    };
+            { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          ],
+        }],
+      })
+    );
 
-    ctx.templateSrv.replace = (data) => {
-      return data;
-    }
+    ctx.templateSrv.replace = (data) => data;
 
     const query = {
       targets: [{
         target: 'PV',
         refId: 'A',
         functions: [
-            aafunc.createFuncInstance(aafunc.getFuncDef('scale'), [100])
-        ]
+          aafunc.createFuncInstance(aafunc.getFuncDef('scale'), [100]),
+        ],
       }],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
     };
 
@@ -61,32 +62,30 @@ describe('ArchiverapplianceFunc', () => {
   });
 
   it('should return the server results with offset function', (done) => {
-    ctx.backendSrv.datasourceRequest = (request) => {
-      return ctx.$q.when({
+    ctx.backendSrv.datasourceRequest = (request) => (
+      ctx.$q.when({
         _request: request,
         data: [{
-          meta: { 'name': 'PV' , 'PREC': '0'},
+          meta: { name: 'PV', PREC: '0' },
           data: [
-            { secs: 1262304001, val: 1, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 2, nanos: 789000000, severity:0, status:0 },
-          ]
-        }]
-      });
-    };
+            { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          ],
+        }],
+      })
+    );
 
-    ctx.templateSrv.replace = (data) => {
-      return data;
-    }
+    ctx.templateSrv.replace = (data) => data;
 
     const query = {
       targets: [{
         target: 'PV',
         refId: 'A',
         functions: [
-            aafunc.createFuncInstance(aafunc.getFuncDef('offset'), [100])
-        ]
+          aafunc.createFuncInstance(aafunc.getFuncDef('offset'), [100]),
+        ],
       }],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
     };
 
@@ -104,32 +103,30 @@ describe('ArchiverapplianceFunc', () => {
   });
 
   it('should return the server results with delta function', (done) => {
-    ctx.backendSrv.datasourceRequest = (request) => {
-      return ctx.$q.when({
+    ctx.backendSrv.datasourceRequest = (request) => (
+      ctx.$q.when({
         _request: request,
         data: [{
-          meta: { 'name': 'PV' , 'PREC': '0'},
+          meta: { name: 'PV', PREC: '0' },
           data: [
-            { secs: 1262304001, val: 1, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 2, nanos: 789000000, severity:0, status:0 },
-          ]
-        }]
-      });
-    };
+            { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          ],
+        }],
+      })
+    );
 
-    ctx.templateSrv.replace = (data) => {
-      return data;
-    }
+    ctx.templateSrv.replace = (data) => data;
 
     const query = {
       targets: [{
         target: 'PV',
         refId: 'A',
         functions: [
-          aafunc.createFuncInstance(aafunc.getFuncDef('delta'), [])
-        ]
+          aafunc.createFuncInstance(aafunc.getFuncDef('delta'), []),
+        ],
       }],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
     };
 
@@ -140,43 +137,41 @@ describe('ArchiverapplianceFunc', () => {
       expect(series.datapoints).to.have.length(1);
       expect(series.datapoints[0][0]).to.equal(1);
       expect(series.datapoints[0][1]).to.equal(1262304002789);
-        done();
+      done();
     });
   });
 
 
   it('should return the server results with fluctuation function', (done) => {
-    ctx.backendSrv.datasourceRequest = (request) => {
-      return ctx.$q.when({
+    ctx.backendSrv.datasourceRequest = (request) => (
+      ctx.$q.when({
         _request: request,
         data: [{
-          meta: { 'name': 'PV' , 'PREC': '0'},
+          meta: { name: 'PV', PREC: '0' },
           data: [
-            { secs: 1262304001, val: 100, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 200, nanos: 789000000, severity:0, status:0 },
-            { secs: 1262304002, val: 300, nanos: 789000000, severity:0, status:0 },
-          ]
-        }]
-      });
-    };
+            { secs: 1262304001, val: 100, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 200, nanos: 789000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 300, nanos: 789000000, severity: 0, status: 0 },
+          ],
+        }],
+      })
+    );
 
-    ctx.templateSrv.replace = (data) => {
-      return data;
-    }
+    ctx.templateSrv.replace = (data) => data;
 
     const query = {
       targets: [{
         target: 'PV',
         refId: 'A',
         functions: [
-            aafunc.createFuncInstance(aafunc.getFuncDef('fluctuation'), [])
-        ]
+          aafunc.createFuncInstance(aafunc.getFuncDef('fluctuation'), []),
+        ],
       }],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
     };
 
-    ctx.ds.query(query).then( result => {
+    ctx.ds.query(query).then((result) => {
       expect(result.data).to.have.length(1);
       const series = result.data[0];
       expect(series.target).to.equal('PV');
@@ -190,60 +185,58 @@ describe('ArchiverapplianceFunc', () => {
 
   it('should return the server results with top function', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => {
-      const pvname = unescape(_.split(request.url, /pv=(.*?)\&/)[1]);
-      let data = [];
+      const pvname = unescape(_.split(request.url, /pv=(.*?)&/)[1]);
+      let pvdata = [];
       if (pvname === 'PV1') {
-        data = [{
-          meta: { 'name': pvname, 'PREC': '0'},
+        pvdata = [{
+          meta: { name: pvname, PREC: '0' },
           data: [
-            { secs: 1262304001, val: 0, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 1, nanos: 789000000, severity:0, status:0 },
-            { secs: 1262304002, val: 2, nanos: 789000000, severity:0, status:0 }
-          ]
+            { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 1, nanos: 789000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          ],
         }];
       } else if (pvname === 'PV2') {
-        data = [{
-          meta: { 'name': pvname, 'PREC': '0'},
+        pvdata = [{
+          meta: { name: pvname, PREC: '0' },
           data: [
-            { secs: 1262304001, val: 3, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 4, nanos: 789000000, severity:0, status:0 },
-            { secs: 1262304002, val: 5, nanos: 789000000, severity:0, status:0 },
-          ]
+            { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+          ],
         }];
       } else {
-        data = [{
-          meta: { 'name': pvname, 'PREC': '0'},
+        pvdata = [{
+          meta: { name: pvname, PREC: '0' },
           data: [
-            { secs: 1262304001, val: 0, nanos: 456000000, severity:0, status:0 },
-            { secs: 1262304002, val: 0, nanos: 789000000, severity:0, status:0 },
-            { secs: 1262304002, val: 0, nanos: 789000000, severity:0, status:0 },
-          ]
+            { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+          ],
         }];
       }
 
       return ctx.$q.when({
         _request: request,
-        data: data
+        data: pvdata,
       });
     };
 
-    ctx.templateSrv.replace = (data) => {
-      return data;
-    }
+    ctx.templateSrv.replace = (data) => data;
 
     const query = {
       targets: [{
         target: '(PV1|PV2|PV3)',
         refId: 'A',
         functions: [
-            aafunc.createFuncInstance(aafunc.getFuncDef('top'), [2, 'avg'])
-        ]
+          aafunc.createFuncInstance(aafunc.getFuncDef('top'), [2, 'avg']),
+        ],
       }],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z')},
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
     };
 
-    ctx.ds.query(query).then( result => {
+    ctx.ds.query(query).then((result) => {
       expect(result.data).to.have.length(2);
       const series1 = result.data[0];
       const series2 = result.data[1];
@@ -257,11 +250,11 @@ describe('ArchiverapplianceFunc', () => {
     });
   });
 
-  it ('should return aggregated value', () => {
+  it('should return aggregated value', () => {
     const timeseriesData = [
-      { target: 'min', datapoints: [[0,0], [1,0], [2,0], [3,0], [4,0]] },
-      { target: 'max', datapoints: [[1,0], [1,0], [1,0], [1,0], [7,0]] },
-      { target: 'avgsum', datapoints: [[2,0], [3,0], [4,0], [5,0], [6,0]] }
+      { target: 'min', datapoints: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]] },
+      { target: 'max', datapoints: [[1, 0], [1, 0], [1, 0], [1, 0], [7, 0]] },
+      { target: 'avgsum', datapoints: [[2, 0], [3, 0], [4, 0], [5, 0], [6, 0]] },
     ];
 
     const topFunction = dataProcessor.aaFunctions.top;
@@ -306,9 +299,9 @@ describe('ArchiverapplianceFunc', () => {
     expect(sumBottomData[0].target).to.equal('min');
 
     const timeseriesDataAbs = [
-      { target: 'min', datapoints: [[0,0], [3,0]] },
-      { target: 'max', datapoints: [[-6,0], [-5,0], [-4,0], [-3,0], [-2,0]] },
-      { target: 'avgsum', datapoints: [[3,0], [4,0]] }
+      { target: 'min', datapoints: [[0, 0], [3, 0]] },
+      { target: 'max', datapoints: [[-6, 0], [-5, 0], [-4, 0], [-3, 0], [-2, 0]] },
+      { target: 'avgsum', datapoints: [[3, 0], [4, 0]] },
     ];
 
     const absMinTopData = topFunction(1, 'absoluteMin', timeseriesDataAbs);
@@ -328,5 +321,4 @@ describe('ArchiverapplianceFunc', () => {
     expect(absMaxBottomData).to.have.length(1);
     expect(absMaxBottomData[0].target).to.equal('min');
   });
-
 });

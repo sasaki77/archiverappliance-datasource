@@ -4,25 +4,47 @@ import $ from 'jquery';
 import coreModule from 'app/core/core_module';
 import * as aafunc from './aafunc';
 
+function getAllFunctionNames(categories) {
+  return _.reduce(categories, (list, category) => {
+    _.each(category, (func) => list.push(func.name));
+    return list;
+  }, []);
+}
+
+function createFunctionDropDownMenu(categories) {
+  return _.map(categories, (list, category) => (
+    {
+      text: category,
+      submenu: _.map(list, (value) => (
+        {
+          text: value.name,
+          click: `ctrl.addFunction('${value.name}')`,
+        }
+      )),
+    }
+  ));
+}
+
 /** @ngInject */
 export function aaAddFunc($compile) {
-  var inputTemplate = '<input type="text"'+
-                      ' class="gf-form-input"' +
-                       ' spellcheck="false" style="display:none"></input>';
+  const inputTemplate = '<input type="text"'
+                        + ' class="gf-form-input"'
+                        + ' spellcheck="false" style="display:none"></input>';
 
-  var buttonTemplate = '<a  class="gf-form-label tight-form-func dropdown-toggle query-part"' +
-                       ' tabindex="1" gf-dropdown="functionMenu" data-toggle="dropdown">' +
-                       '<i class="fa fa-plus"></i></a>';
+  const buttonTemplate = '<a  class="gf-form-label tight-form-func dropdown-toggle query-part"'
+                         + ' tabindex="1" gf-dropdown="functionMenu" data-toggle="dropdown">'
+                         + '<i class="fa fa-plus"></i></a>';
+
 
   return {
-    link: function($scope, elem) {
-      var categories = aafunc.getCategories();
-      var allFunctions = getAllFunctionNames(categories);
+    link: ($scope, elem) => {
+      const categories = aafunc.getCategories();
+      const allFunctions = getAllFunctionNames(categories);
 
       $scope.functionMenu = createFunctionDropDownMenu(categories);
 
-      var $input = $(inputTemplate);
-      var $button = $(buttonTemplate);
+      const $input = $(inputTemplate);
+      const $button = $(buttonTemplate);
       $input.appendTo(elem);
       $button.appendTo(elem);
 
@@ -31,41 +53,41 @@ export function aaAddFunc($compile) {
         source: allFunctions,
         minLength: 1,
         items: 10,
-        updater: function (value) {
-          var funcDef = aafunc.getFuncDef(value);
+        updater: (value) => {
+          let funcDef = aafunc.getFuncDef(value);
           if (!funcDef) {
             // try find close match
-            value = value.toLowerCase();
-            funcDef = _.find(allFunctions, function(funcName) {
-              return funcName.toLowerCase().indexOf(value) === 0;
-            });
+            const lowerValue = value.toLowerCase();
+            funcDef = _.find(allFunctions, (funcName) => (
+              funcName.toLowerCase().indexOf(lowerValue) === 0
+            ));
 
-            if (!funcDef) { return; }
+            if (!funcDef) { return undefined; }
           }
 
-          $scope.$apply(function() {
+          $scope.$apply(() => {
             $scope.addFunction(funcDef);
           });
 
           $input.trigger('blur');
           return '';
-        }
+        },
       });
 
-      $button.click(function() {
+      $button.click(() => {
         $button.hide();
         $input.show();
         $input.focus();
       });
 
-      $input.keyup(function() {
+      $input.keyup(() => {
         elem.toggleClass('open', $input.val() === '');
       });
 
-      $input.blur(function() {
+      $input.blur(() => {
         // clicking the function dropdown menu won't
         // work if you remove class at once
-        setTimeout(function() {
+        setTimeout(() => {
           $input.val('');
           $input.hide();
           $button.show();
@@ -74,31 +96,8 @@ export function aaAddFunc($compile) {
       });
 
       $compile(elem.contents())($scope);
-    }
+    },
   };
-};
+}
 
 coreModule.directive('aaAddFunc', aaAddFunc);
-
-function getAllFunctionNames(categories) {
-  return _.reduce(categories, function(list, category) {
-    _.each(category, function(func) {
-      list.push(func.name);
-    });
-    return list;
-  }, []);
-}
-
-function createFunctionDropDownMenu(categories) {
-  return _.map(categories, function(list, category) {
-    return {
-      text: category,
-      submenu: _.map(list, function(value) {
-        return {
-          text: value.name,
-          click: "ctrl.addFunction('" + value.name + "')",
-        };
-      })
-    };
-  });
-}

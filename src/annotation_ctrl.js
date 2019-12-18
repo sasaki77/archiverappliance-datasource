@@ -1,11 +1,7 @@
 export class ArchiverapplianceAnnotationsQueryCtrl {
-
-  constructor($scope, $injector)  {
+  constructor($scope) {
     this.scope = $scope;
-    this.annotation.param_names = this.datasource.annParam_names;
-    this.annotation.param_vals = this.annotation.param_vals || {};
   }
-
 }
 
-ArchiverapplianceAnnotationsQueryCtrl.templateUrl = 'partials/annotations.editor.html'
+ArchiverapplianceAnnotationsQueryCtrl.templateUrl = 'partials/annotations.editor.html';

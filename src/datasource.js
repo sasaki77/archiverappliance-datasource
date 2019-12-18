@@ -3,7 +3,6 @@ import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
 
 export class ArchiverapplianceDatasource {
-
   constructor(instanceSettings, $q, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
     this.url = instanceSettings.url;
@@ -12,45 +11,47 @@ export class ArchiverapplianceDatasource {
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.withCredentials = instanceSettings.withCredentials;
-    this.headers = {'Content-Type': 'application/json'};
+    this.headers = { 'Content-Type': 'application/json' };
     if (
-        typeof instanceSettings.basicAuth === 'string'
-        && instanceSettings.basicAuth.length > 0
+      typeof instanceSettings.basicAuth === 'string'
+      && instanceSettings.basicAuth.length > 0
     ) {
-      this.headers['Authorization'] = instanceSettings.basicAuth;
+      this.headers.Authorization = instanceSettings.basicAuth;
     }
 
     this.operatorList = [
-        'firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min',
-        'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter',
-        'ignoreflyers', 'flyers', 'variance',
-        'popvariance', 'kurtosis', 'skewness', 'raw'
+      'firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min',
+      'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter',
+      'ignoreflyers', 'flyers', 'variance',
+      'popvariance', 'kurtosis', 'skewness', 'raw',
     ];
   }
 
   query(options) {
-    let query = this.buildQueryParameters(options);
-    query.targets = _.filter(query.targets, t => !t.hide);
+    const query = this.buildQueryParameters(options);
+    query.targets = _.filter(query.targets, (t) => !t.hide);
 
     if (query.targets.length <= 0) {
       return this.q.when({ data: [] });
     }
 
-    const targetProcesses = _.map(query.targets, (target) => {
-      return this.targetProcess(target, options);
-    });
+    const targetProcesses = _.map(query.targets, (target) => (
+      this.targetProcess(target)
+    ));
 
-   return this.q.all(targetProcesses)
-          .then((timeseriesDataArray) => this.postProcess(timeseriesDataArray));
+    return (
+      this.q.all(targetProcesses)
+        .then((timeseriesDataArray) => this.postProcess(timeseriesDataArray))
+    );
   }
 
-  targetProcess(target, options) {
+  targetProcess(target) {
     return (
-      this.buildUrls(target, options)
-      .then(urls           => this.doMultiUrlRequests(urls))
-      .then(responses      => this.responseParse(responses))
-      .then(timeseriesData => this.setAlias(timeseriesData, target))
-      .then(timeseriesData => this.applyFunctions(timeseriesData, target))
+      this.buildUrls(target)
+        .then((urls) => this.doMultiUrlRequests(urls))
+        .then((responses) => this.responseParse(responses))
+        .then((timeseriesData) => this.setAlias(timeseriesData, target))
+        .then((timeseriesData) => this.applyFunctions(timeseriesData, target))
     );
   }
 
@@ -72,38 +73,38 @@ export class ArchiverapplianceDatasource {
     });
 
     return this.q.all(pvnamesPromise)
-          .then((pvnamesArray) => {
-            const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
-            let deferred = this.q.defer();
-            let urls;
+      .then((pvnamesArray) => {
+        const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
+        const deferred = this.q.defer();
+        let urls;
 
-            try {
-              urls = _.map( pvnames, (pvname) => {
-                return this.buildUrl(
-                  pvname,
-                  target.operator,
-                  target.interval,
-                  target.from,
-                  target.to
-                );
-              });
-            } catch (e) {
-              deferred.reject(e);
-            }
+        try {
+          urls = _.map(pvnames, (pvname) => (
+            this.buildUrl(
+              pvname,
+              target.operator,
+              target.interval,
+              target.from,
+              target.to,
+            )
+          ));
+        } catch (e) {
+          deferred.reject(e);
+        }
 
-            deferred.resolve(urls);
-            return deferred.promise;
-          });
+        deferred.resolve(urls);
+        return deferred.promise;
+      });
   }
 
   buildUrl(pvname, operator, interval, from, to) {
-    let pv = ''
+    let pv = '';
     if (operator === 'raw' || interval === '') {
       pv = `pv=${pvname}`;
     } else if (_.includes(['', undefined], operator)) {
       // Default Operator
       pv = `pv=mean_${interval}(${pvname})`;
-    } else if (_.includes(this.operatorList, operator) ) {
+    } else if (_.includes(this.operatorList, operator)) {
       pv = `pv=${operator}_${interval}(${pvname})`;
     } else {
       throw new Error('Data Processing Operator is invalid.');
@@ -115,25 +116,25 @@ export class ArchiverapplianceDatasource {
   }
 
   doMultiUrlRequests(urls) {
-    const requests = _.map(urls, (url) => {
-      return this.doRequest({ url: url, method: 'GET' });
-    });
+    const requests = _.map(urls, (url) => (
+      this.doRequest({ url, method: 'GET' })
+    ));
 
     return this.q.all(requests);
   }
 
   responseParse(responses) {
-    let deferred = this.q.defer();
+    const deferred = this.q.defer();
 
     const timeSeriesDataArray = _.map(responses, (response) => {
-      const timeSeriesData = _.map(response.data, (target_res) => {
-        const timesiries = _.map( target_res.data, (datapoint) => {
-          return [
+      const timeSeriesData = _.map(response.data, (targetRes) => {
+        const timesiries = _.map(targetRes.data, (datapoint) => (
+          [
             datapoint.val,
-            datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000)
-          ];
-        });
-        const timeseries = { target: target_res.meta['name'], datapoints: timesiries };
+            datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000),
+          ]
+        ));
+        const timeseries = { target: targetRes.meta.name, datapoints: timesiries };
         return timeseries;
       });
       return timeSeriesData;
@@ -144,7 +145,7 @@ export class ArchiverapplianceDatasource {
   }
 
   setAlias(timeseriesData, target) {
-    let deferred = this.q.defer();
+    const deferred = this.q.defer();
 
     if (!target.alias) {
       deferred.resolve(timeseriesData);
@@ -156,7 +157,7 @@ export class ArchiverapplianceDatasource {
       pattern = new RegExp(target.aliasPattern, '');
     }
 
-    let newTimeseriesData = _.map(timeseriesData, (timeseries) => {
+    const newTimeseriesData = _.map(timeseriesData, (timeseries) => {
       if (pattern) {
         const alias = timeseries.target.replace(pattern, target.alias);
         return { target: alias, datapoints: timeseries.datapoints };
@@ -179,101 +180,87 @@ export class ArchiverapplianceDatasource {
 
   testDatasource() {
     return { status: 'success', message: 'Data source is working', title: 'Success' };
-    //return this.doRequest({
-    //  url: this.url_mgmt + '/bpl/getAppliancesInCluster',
-    //  method: 'GET',
-    //}).then(response => {
-    //  if (response.status === 200) {
-    //    return { status: 'success', message: 'Data source is working', title: 'Success' };
-    //  }
-    //});
   }
 
   pvNamesFindQuery(query) {
     if (!query) {
-      let deferred = this.q.defer();
-      deferred.resolve([]);
-      return deferred.promise;
+      return this.q.when([]);
     }
 
     const url = `${this.url}/bpl/getMatchingPVs?limit=100&regex=${encodeURIComponent(query)}`;
 
     return this.doRequest({
-      url: url,
+      url,
       method: 'GET',
-    }).then( (res) => {
-      return res.data;
-    });
+    }).then((res) => res.data);
   }
 
   metricFindQuery(query) {
     const replacedQuery = this.templateSrv.replace(query, null, 'regex');
     const parsedQuery = this.parseTargetQuery(replacedQuery);
 
-    const pvnamesPromise = _.map(parsedQuery, (targetQuery) => {
-      return this.pvNamesFindQuery(targetQuery);
-    });
+    const pvnamesPromise = _.map(parsedQuery, (targetQuery) => (
+      this.pvNamesFindQuery(targetQuery)
+    ));
 
     return this.q.all(pvnamesPromise).then((pvnamesArray) => {
       const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
-      return _.map(pvnames, (pvname) => {
-        return { text: pvname };
-      });
+      return _.map(pvnames, (pvname) => ({ text: pvname }));
     });
   }
 
   doRequest(options) {
-    options.withCredentials = this.withCredentials;
-    options.headers = this.headers;
+    const newOptions = { ...options };
+    newOptions.withCredentials = this.withCredentials;
+    newOptions.headers = this.headers;
 
-    const result = this.backendSrv.datasourceRequest(options);
+    const result = this.backendSrv.datasourceRequest(newOptions);
     return result;
   }
 
   buildQueryParameters(options) {
-    //remove placeholder targets and undefined targets
-    options.targets = _.filter(options.targets, (target) => {
-      return (target.target !== '' && typeof target.target !== 'undefined');
-    });
+    const query = { ...options };
 
-    if (options.targets.length <= 0) {
-      return options;
+    // remove placeholder targets and undefined targets
+    query.targets = _.filter(query.targets, (target) => (
+      target.target !== '' && typeof target.target !== 'undefined'
+    ));
+
+    if (query.targets.length <= 0) {
+      return query;
     }
 
-    const from = new Date(options.range.from);
-    const to = new Date(options.range.to);
+    const from = new Date(query.range.from);
+    const to = new Date(query.range.to);
     const rangeMsec = to.getTime() - from.getTime();
-    const intervalSec =  _.floor(rangeMsec / ( options.maxDataPoints * 1000));
+    const intervalSec = _.floor(rangeMsec / (query.maxDataPoints * 1000));
 
-    let interval = '';
-    if ( intervalSec >= 1 ) {
-      interval = String(intervalSec);
-    }
+    const interval = (intervalSec >= 1) ? String(intervalSec) : '';
 
-    const targets = _.map(options.targets, (target) => {
-      return {
-        target: this.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+    const targets = _.map(query.targets, (target) => (
+      {
+        target: this.templateSrv.replace(target.target, query.scopedVars, 'regex'),
         refId: target.refId,
         hide: target.hide,
         alias: target.alias,
         operator: target.operator,
-        from: from,
-        to: to,
-        interval: interval,
         functions: target.functions,
         regex: target.regex,
-        aliasPattern: target.aliasPattern
-      };
-    });
+        aliasPattern: target.aliasPattern,
+        from,
+        to,
+        interval,
+      }
+    ));
 
-    options.targets = targets;
+    query.targets = targets;
 
-    return options;
+    return query;
   }
 
-  parseTargetQuery(query) {
+  parseTargetQuery(targetQuery) {
     /*
-     * ex) query = ABC(1|2|3)EFG(5|6)
+     * ex) targetQuery = ABC(1|2|3)EFG(5|6)
      *     then
      *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
      *     queries = [
@@ -281,26 +268,22 @@ export class ArchiverapplianceDatasource {
      *     ABC2EFG6, ABC3EFG5, ABC3EFG6
      *     ]
      */
-    const splitQueries = _.split(query, /(\(.*?\))/);
+    const splitQueries = _.split(targetQuery, /(\(.*?\))/);
     let queries = [''];
 
     _.forEach(splitQueries, (splitQuery, i) => {
       // Fixed string like 'ABC'
       if (i % 2 === 0) {
-        queries = _.map(queries, (query) => {
-          return `${query}${splitQuery}`;
-        });
+        queries = _.map(queries, (query) => `${query}${splitQuery}`);
         return;
       }
 
       // Regex OR string like '(1|2|3)'
       const orElems = _.split(_.trim(splitQuery, '()'), '|');
 
-      const newQueries = _.map(queries, (query) => {
-        return _.map(orElems, (orElem) => {
-          return `${query}${orElem}`;
-        });
-      });
+      const newQueries = _.map(queries, (query) => (
+        _.map(orElems, (orElem) => `${query}${orElem}`)
+      ));
       queries = _.flatten(newQueries);
     });
 
@@ -310,16 +293,16 @@ export class ArchiverapplianceDatasource {
   bindFunctionDefs(functionDefs, categories, data) {
     const allCategorisedFuncDefs = aafunc.getCategories();
 
-    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => {
-      return _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'));
-    }, []);
+    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => (
+      _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'))
+    ), []);
 
-    const applyFuncDefs = _.filter(functionDefs, (func) => {
-      return _.includes(requiredCategoryFuncNames, func.def.name);
-    });
+    const applyFuncDefs = _.filter(functionDefs, (func) => (
+      _.includes(requiredCategoryFuncNames, func.def.name)
+    ));
 
-    const promises = _.reduce(applyFuncDefs, (prevPromise, func) => {
-      return prevPromise.then((res) => {
+    const promises = _.reduce(applyFuncDefs, (prevPromise, func) => (
+      prevPromise.then((res) => {
         const funcInstance = aafunc.createFuncInstance(func.def, func.params);
         const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
 
@@ -334,8 +317,8 @@ export class ArchiverapplianceDatasource {
 
         // Any other function
         return this.q.when(bindedFunc(res));
-      });
-    }, this.q.when(data));
+      })
+    ), this.q.when(data));
 
     return promises;
   }

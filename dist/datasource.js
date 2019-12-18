@@ -19,6 +19,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -43,7 +49,7 @@ function () {
     };
 
     if (typeof instanceSettings.basicAuth === 'string' && instanceSettings.basicAuth.length > 0) {
-      this.headers['Authorization'] = instanceSettings.basicAuth;
+      this.headers.Authorization = instanceSettings.basicAuth;
     }
 
     this.operatorList = ['firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min', 'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter', 'ignoreflyers', 'flyers', 'variance', 'popvariance', 'kurtosis', 'skewness', 'raw'];
@@ -66,7 +72,7 @@ function () {
       }
 
       var targetProcesses = _lodash["default"].map(query.targets, function (target) {
-        return _this.targetProcess(target, options);
+        return _this.targetProcess(target);
       });
 
       return this.q.all(targetProcesses).then(function (timeseriesDataArray) {
@@ -75,10 +81,10 @@ function () {
     }
   }, {
     key: "targetProcess",
-    value: function targetProcess(target, options) {
+    value: function targetProcess(target) {
       var _this2 = this;
 
-      return this.buildUrls(target, options).then(function (urls) {
+      return this.buildUrls(target).then(function (urls) {
         return _this2.doMultiUrlRequests(urls);
       }).then(function (responses) {
         return _this2.responseParse(responses);
@@ -170,13 +176,13 @@ function () {
       var deferred = this.q.defer();
 
       var timeSeriesDataArray = _lodash["default"].map(responses, function (response) {
-        var timeSeriesData = _lodash["default"].map(response.data, function (target_res) {
-          var timesiries = _lodash["default"].map(target_res.data, function (datapoint) {
+        var timeSeriesData = _lodash["default"].map(response.data, function (targetRes) {
+          var timesiries = _lodash["default"].map(targetRes.data, function (datapoint) {
             return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
           });
 
           var timeseries = {
-            target: target_res.meta['name'],
+            target: targetRes.meta.name,
             datapoints: timesiries
           };
           return timeseries;
@@ -238,22 +244,13 @@ function () {
         status: 'success',
         message: 'Data source is working',
         title: 'Success'
-      }; //return this.doRequest({
-      //  url: this.url_mgmt + '/bpl/getAppliancesInCluster',
-      //  method: 'GET',
-      //}).then(response => {
-      //  if (response.status === 200) {
-      //    return { status: 'success', message: 'Data source is working', title: 'Success' };
-      //  }
-      //});
+      };
     }
   }, {
     key: "pvNamesFindQuery",
     value: function pvNamesFindQuery(query) {
       if (!query) {
-        var deferred = this.q.defer();
-        deferred.resolve([]);
-        return deferred.promise;
+        return this.q.when([]);
       }
 
       var url = "".concat(this.url, "/bpl/getMatchingPVs?limit=100&regex=").concat(encodeURIComponent(query));
@@ -289,9 +286,11 @@ function () {
   }, {
     key: "doRequest",
     value: function doRequest(options) {
-      options.withCredentials = this.withCredentials;
-      options.headers = this.headers;
-      var result = this.backendSrv.datasourceRequest(options);
+      var newOptions = _objectSpread({}, options);
+
+      newOptions.withCredentials = this.withCredentials;
+      newOptions.headers = this.headers;
+      var result = this.backendSrv.datasourceRequest(newOptions);
       return result;
     }
   }, {
@@ -299,51 +298,49 @@ function () {
     value: function buildQueryParameters(options) {
       var _this6 = this;
 
-      //remove placeholder targets and undefined targets
-      options.targets = _lodash["default"].filter(options.targets, function (target) {
+      var query = _objectSpread({}, options); // remove placeholder targets and undefined targets
+
+
+      query.targets = _lodash["default"].filter(query.targets, function (target) {
         return target.target !== '' && typeof target.target !== 'undefined';
       });
 
-      if (options.targets.length <= 0) {
-        return options;
+      if (query.targets.length <= 0) {
+        return query;
       }
 
-      var from = new Date(options.range.from);
-      var to = new Date(options.range.to);
+      var from = new Date(query.range.from);
+      var to = new Date(query.range.to);
       var rangeMsec = to.getTime() - from.getTime();
 
-      var intervalSec = _lodash["default"].floor(rangeMsec / (options.maxDataPoints * 1000));
+      var intervalSec = _lodash["default"].floor(rangeMsec / (query.maxDataPoints * 1000));
 
-      var interval = '';
+      var interval = intervalSec >= 1 ? String(intervalSec) : '';
 
-      if (intervalSec >= 1) {
-        interval = String(intervalSec);
-      }
-
-      var targets = _lodash["default"].map(options.targets, function (target) {
+      var targets = _lodash["default"].map(query.targets, function (target) {
         return {
-          target: _this6.templateSrv.replace(target.target, options.scopedVars, 'regex'),
+          target: _this6.templateSrv.replace(target.target, query.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
           alias: target.alias,
           operator: target.operator,
-          from: from,
-          to: to,
-          interval: interval,
           functions: target.functions,
           regex: target.regex,
-          aliasPattern: target.aliasPattern
+          aliasPattern: target.aliasPattern,
+          from: from,
+          to: to,
+          interval: interval
         };
       });
 
-      options.targets = targets;
-      return options;
+      query.targets = targets;
+      return query;
     }
   }, {
     key: "parseTargetQuery",
-    value: function parseTargetQuery(query) {
+    value: function parseTargetQuery(targetQuery) {
       /*
-       * ex) query = ABC(1|2|3)EFG(5|6)
+       * ex) targetQuery = ABC(1|2|3)EFG(5|6)
        *     then
        *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
        *     queries = [
@@ -351,7 +348,7 @@ function () {
        *     ABC2EFG6, ABC3EFG5, ABC3EFG6
        *     ]
        */
-      var splitQueries = _lodash["default"].split(query, /(\(.*?\))/);
+      var splitQueries = _lodash["default"].split(targetQuery, /(\(.*?\))/);
 
       var queries = [''];
 

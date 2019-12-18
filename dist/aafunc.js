@@ -19,13 +19,21 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var index = [];
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var funcIndex = [];
 var categories = {
   Transform: [],
   'Filter Series': []
 };
 
-function addFuncDef(funcDef) {
+function addFuncDef(newFuncDef) {
+  var funcDef = _objectSpread({}, newFuncDef);
+
   funcDef.params = funcDef.params || [];
   funcDef.defaultParams = funcDef.defaultParams || [];
 
@@ -33,8 +41,8 @@ function addFuncDef(funcDef) {
     categories[funcDef.category].push(funcDef);
   }
 
-  index[funcDef.name] = funcDef;
-  index[funcDef.shortName || funcDef.name] = funcDef;
+  funcIndex[funcDef.name] = funcDef;
+  funcIndex[funcDef.shortName || funcDef.name] = funcDef;
 } // Transform
 
 
@@ -122,52 +130,54 @@ function () {
     value: function bindFunction(metricFunctions) {
       var func = metricFunctions[this.def.name];
 
-      if (func) {
-        // Bind function arguments
-        var bindedFunc = func;
-        var param;
+      if (!func) {
+        throw new Error({
+          message: "Method not found ".concat(this.def.name)
+        });
+      } // Bind function arguments
 
-        for (var i = 0; i < this.params.length; i++) {
-          param = this.params[i]; // Convert numeric params
 
-          if (this.def.params[i].type === 'int' || this.def.params[i].type === 'float') {
-            param = Number(param);
-          }
+      var bindedFunc = func;
+      var param;
 
-          bindedFunc = _lodash["default"].partial(bindedFunc, param);
+      for (var i = 0; i < this.params.length; i += 1) {
+        param = this.params[i]; // Convert numeric params
+
+        if (this.def.params[i].type === 'int' || this.def.params[i].type === 'float') {
+          param = Number(param);
         }
 
-        return bindedFunc;
-      } else {
-        throw {
-          message: 'Method not found ' + this.def.name
-        };
+        bindedFunc = _lodash["default"].partial(bindedFunc, param);
       }
+
+      return bindedFunc;
     }
   }, {
     key: "render",
     value: function render(metricExp) {
       var _this = this;
 
-      var str = this.def.name + '(';
+      var str = "".concat(this.def.name, "(");
 
       var parameters = _lodash["default"].map(this.params, function (value, index) {
         var paramType = _this.def.params[index].type;
 
         if (paramType === 'int' || paramType === 'float' || paramType === 'value_or_series' || paramType === 'boolean') {
           return value;
-        } else if (paramType === 'int_or_interval' && _jquery["default"].isNumeric(value)) {
+        }
+
+        if (paramType === 'int_or_interval' && _jquery["default"].isNumeric(value)) {
           return value;
         }
 
-        return "'" + value + "'";
+        return "'".concat(value, "'");
       }, this);
 
       if (metricExp) {
         parameters.unshift(metricExp);
       }
 
-      return str + parameters.join(', ') + ')';
+      return "".concat(str).concat(parameters.join(', '), ")");
     }
   }, {
     key: "_hasMultipleParamsInString",
@@ -205,13 +215,11 @@ function () {
     key: "updateText",
     value: function updateText() {
       if (this.params.length === 0) {
-        this.text = this.def.name + '()';
+        this.text = "".concat(this.def.name, "()");
         return;
       }
 
-      var text = this.def.name + '(';
-      text += this.params.join(', ');
-      text += ')';
+      var text = "".concat(this.def.name, "(").concat(this.params.join(', '), ")");
       this.text = text;
     }
   }]);
@@ -221,20 +229,20 @@ function () {
 
 function createFuncInstance(funcDef, params) {
   if (_lodash["default"].isString(funcDef)) {
-    if (!index[funcDef]) {
-      throw {
-        message: 'Method not found ' + name
-      };
+    if (!funcIndex[funcDef]) {
+      throw new Error({
+        message: "Method not found ".concat(funcDef.name)
+      });
     }
 
-    funcDef = index[funcDef];
+    return new FuncInstance(funcIndex[funcDef], params);
   }
 
   return new FuncInstance(funcDef, params);
 }
 
 function getFuncDef(name) {
-  return index[name];
+  return funcIndex[name];
 }
 
 function getCategories() {

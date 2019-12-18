@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ArchiverapplianceDatasourceQueryCtrl = void 0;
 
+var _lodash = _interopRequireDefault(require("lodash"));
+
 var _sdk = require("app/plugins/sdk");
 
 require("./css/query-editor.css!");
@@ -14,6 +16,8 @@ var aafunc = _interopRequireWildcard(require("./aafunc"));
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -47,10 +51,10 @@ function (_QueryCtrl) {
     _this.scope = $scope;
     _this.target.type = _this.target.type || 'timeserie';
     _this.target.functions = _this.target.functions || [];
-    _this.getPVNames = _.bind(_this.getPVNamesZ, _assertThisInitialized(_this));
-    _this.getOperators = _.bind(_this.getOperatorsZ, _assertThisInitialized(_this)); // Create function instances from saved JSON
+    _this.getPVNames = _lodash["default"].bind(_this.getPVNamesZ, _assertThisInitialized(_this));
+    _this.getOperators = _lodash["default"].bind(_this.getOperatorsZ, _assertThisInitialized(_this)); // Create function instances from saved JSON
 
-    _this.target.functions = _.map(_this.target.functions, function (func) {
+    _this.target.functions = _lodash["default"].map(_this.target.functions, function (func) {
       return aafunc.createFuncInstance(func.def, func.params);
     });
     return _this;
@@ -71,7 +75,7 @@ function (_QueryCtrl) {
   }, {
     key: "removeFunction",
     value: function removeFunction(func) {
-      this.target.functions = _.without(this.target.functions, func);
+      this.target.functions = _lodash["default"].without(this.target.functions, func);
       this.targetChanged();
     }
   }, {
@@ -79,19 +83,19 @@ function (_QueryCtrl) {
     value: function moveFunction(func, offset) {
       var index = this.target.functions.indexOf(func);
 
-      _.move(this.target.functions, index, index + offset);
+      _lodash["default"].move(this.target.functions, index, index + offset);
 
       this.targetChanged();
     }
   }, {
     key: "moveAliasFuncLast",
     value: function moveAliasFuncLast() {
-      var aliasFunc = _.find(this.target.functions, function (func) {
+      var aliasFunc = _lodash["default"].find(this.target.functions, function (func) {
         return func.def.category === 'Alias';
       });
 
       if (aliasFunc) {
-        this.target.functions = _.without(this.target.functions, aliasFunc);
+        this.target.functions = _lodash["default"].without(this.target.functions, aliasFunc);
         this.target.functions.push(aliasFunc);
       }
     }
@@ -106,10 +110,11 @@ function (_QueryCtrl) {
       this.datasource.pvNamesFindQuery(str).then(function (res) {
         callback(res);
       });
+      return undefined;
     }
   }, {
     key: "getOperatorsZ",
-    value: function getOperatorsZ(query) {
+    value: function getOperatorsZ() {
       return this.datasource.operatorList;
     }
   }, {

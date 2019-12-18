@@ -1,10 +1,10 @@
-import {QueryCtrl} from 'app/plugins/sdk';
-import './css/query-editor.css!'
+import _ from 'lodash';
+import { QueryCtrl } from 'app/plugins/sdk';
+import './css/query-editor.css!';
 import * as aafunc from './aafunc';
 
 export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
-
-  constructor($scope, $injector)  {
+  constructor($scope, $injector) {
     super($scope, $injector);
 
     this.scope = $scope;
@@ -15,22 +15,21 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     this.getOperators = _.bind(this.getOperatorsZ, this);
 
     // Create function instances from saved JSON
-    this.target.functions = _.map(this.target.functions, (func) => {
-      return aafunc.createFuncInstance(func.def, func.params);
-    });
+    this.target.functions = _.map(this.target.functions, (func) => (
+      aafunc.createFuncInstance(func.def, func.params)
+    ));
   }
 
   addFunction(funcDef) {
-    var newFunc = aafunc.createFuncInstance(funcDef);
+    const newFunc = aafunc.createFuncInstance(funcDef);
     newFunc.added = true;
     this.target.functions.push(newFunc);
 
     this.moveAliasFuncLast();
 
     if (
-        newFunc.params.length
-        && newFunc.added
-        || newFunc.def.params.length === 0
+      (newFunc.params.length && newFunc.added)
+      || newFunc.def.params.length === 0
     ) {
       this.targetChanged();
     }
@@ -48,9 +47,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
   }
 
   moveAliasFuncLast() {
-    var aliasFunc = _.find(this.target.functions, func => {
-      return func.def.category === 'Alias';
-    });
+    const aliasFunc = _.find(this.target.functions, (func) => (func.def.category === 'Alias'));
 
     if (aliasFunc) {
       this.target.functions = _.without(this.target.functions, aliasFunc);
@@ -62,13 +59,16 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     if (this.target.regex) {
       return [];
     }
+
     const str = `.*${query}.*`;
     this.datasource.pvNamesFindQuery(str).then((res) => {
       callback(res);
     });
+
+    return undefined;
   }
 
-  getOperatorsZ(query) {
+  getOperatorsZ() {
     return this.datasource.operatorList;
   }
 

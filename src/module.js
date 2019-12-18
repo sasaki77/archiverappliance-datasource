@@ -1,7 +1,7 @@
-import {ArchiverapplianceDatasource} from './datasource';
-import {ArchiverapplianceDatasourceQueryCtrl} from './query_ctrl';
-import {ArchiverapplianceConfigCtrl} from './config_ctrl';
-import {ArchiverapplianceAnnotationsQueryCtrl} from './annotation_ctrl';
+import { ArchiverapplianceDatasource } from './datasource';
+import { ArchiverapplianceDatasourceQueryCtrl } from './query_ctrl';
+import { ArchiverapplianceConfigCtrl } from './config_ctrl';
+import { ArchiverapplianceAnnotationsQueryCtrl } from './annotation_ctrl';
 import './aa-add-func';
 import './func_editor';
 
@@ -13,5 +13,5 @@ export {
   ArchiverapplianceDatasourceQueryCtrl as QueryCtrl,
   ArchiverapplianceConfigCtrl as ConfigCtrl,
   ArchiverapplianceQueryOptionsCtrl as QueryOptionsCtrl,
-  ArchiverapplianceAnnotationsQueryCtrl as AnnotationsQueryCtrl
+  ArchiverapplianceAnnotationsQueryCtrl as AnnotationsQueryCtrl,
 };
