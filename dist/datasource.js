@@ -143,17 +143,17 @@ function () {
       var pv = '';
 
       if (operator === 'raw' || interval === '') {
-        pv = "pv=".concat(pvname);
+        pv = "".concat(pvname);
       } else if (_lodash["default"].includes(['', undefined], operator)) {
         // Default Operator
-        pv = "pv=mean_".concat(interval, "(").concat(pvname, ")");
+        pv = "mean_".concat(interval, "(").concat(pvname, ")");
       } else if (_lodash["default"].includes(this.operatorList, operator)) {
-        pv = "pv=".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
+        pv = "".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
       } else {
         throw new Error('Data Processing Operator is invalid.');
       }
 
-      var url = "".concat(this.url, "/data/getData.json?").concat(pv, "&from=").concat(from.toISOString(), "&to=").concat(to.toISOString());
+      var url = "".concat(this.url, "/data/getData.json?pv=").concat(encodeURIComponent(pv), "&from=").concat(from.toISOString(), "&to=").concat(to.toISOString());
       return url;
     }
   }, {

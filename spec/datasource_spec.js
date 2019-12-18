@@ -125,12 +125,12 @@ describe('ArchiverapplianceDatasource', () => {
 
     ctx.ds.buildUrls(target).then((url) => {
       expect(url).to.have.length(6);
-      expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
-      expect(url[1]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
-      expect(url[2]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
-      expect(url[3]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
-      expect(url[4]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC:1:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
-      expect(url[5]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC:2:test)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[1]).to.equal('url_header:/data/getData.json?pv=mean_9(PVA%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[2]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[3]).to.equal('url_header:/data/getData.json?pv=mean_9(PVB%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[4]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      expect(url[5]).to.equal('url_header:/data/getData.json?pv=mean_9(PVC%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
       done();
     });
   });

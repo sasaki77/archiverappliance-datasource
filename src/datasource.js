@@ -100,17 +100,17 @@ export class ArchiverapplianceDatasource {
   buildUrl(pvname, operator, interval, from, to) {
     let pv = '';
     if (operator === 'raw' || interval === '') {
-      pv = `pv=${pvname}`;
+      pv = `${pvname}`;
     } else if (_.includes(['', undefined], operator)) {
       // Default Operator
-      pv = `pv=mean_${interval}(${pvname})`;
+      pv = `mean_${interval}(${pvname})`;
     } else if (_.includes(this.operatorList, operator)) {
-      pv = `pv=${operator}_${interval}(${pvname})`;
+      pv = `${operator}_${interval}(${pvname})`;
     } else {
       throw new Error('Data Processing Operator is invalid.');
     }
 
-    const url = `${this.url}/data/getData.json?${pv}&from=${from.toISOString()}&to=${to.toISOString()}`;
+    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(pv)}&from=${from.toISOString()}&to=${to.toISOString()}`;
 
     return url;
   }
