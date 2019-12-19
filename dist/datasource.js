@@ -382,18 +382,7 @@ function () {
       var promises = _lodash.default.reduce(applyFuncDefs, function (prevPromise, func) {
         return prevPromise.then(function (res) {
           var funcInstance = aafunc.createFuncInstance(func.def, func.params);
-          var bindedFunc = funcInstance.bindFunction(_dataProcessor.default.aaFunctions); // Transform function
-
-          if (func.def.category === 'Transform') {
-            var tsData = _lodash.default.map(res, function (timeseries) {
-              timeseries.datapoints = bindedFunc(timeseries.datapoints);
-              return timeseries;
-            });
-
-            return Promise.resolve(tsData);
-          } // Any other function
-
-
+          var bindedFunc = funcInstance.bindFunction(_dataProcessor.default.aaFunctions);
           return Promise.resolve(bindedFunc(res));
         });
       }, Promise.resolve(data));

@@ -298,16 +298,6 @@ export class ArchiverapplianceDatasource {
         const funcInstance = aafunc.createFuncInstance(func.def, func.params);
         const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
 
-        // Transform function
-        if (func.def.category === 'Transform') {
-          const tsData = _.map(res, (timeseries) => {
-            timeseries.datapoints = bindedFunc(timeseries.datapoints);
-            return timeseries;
-          });
-          return Promise.resolve(tsData);
-        }
-
-        // Any other function
         return Promise.resolve(bindedFunc(res));
       })
     ), Promise.resolve(data));

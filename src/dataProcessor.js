@@ -34,6 +34,20 @@ function fluctuation(datapoints) {
   return newSeries;
 }
 
+// [Support Funcs] Transform wrapper
+
+function transformWrapper(func, ...args) {
+  const funcArgs = args.slice(0, -1);
+  const timeseriesData = args[args.length - 1];
+
+  const tsData = _.map(timeseriesData, (timeseries) => {
+    timeseries.datapoints = func(...funcArgs, timeseries.datapoints);
+    return timeseries;
+  });
+
+  return Promise.resolve(tsData);
+}
+
 // Filter Series
 
 // [Support Funcs] Datapoints aggregation functions
@@ -95,10 +109,10 @@ function extraction(order, n, orderFunc, timeseriesData) {
 
 const functions = {
   // Transform
-  scale,
-  offset,
-  delta,
-  fluctuation,
+  scale: _.partial(transformWrapper, scale),
+  offset: _.partial(transformWrapper, offset),
+  delta: _.partial(transformWrapper, delta),
+  fluctuation: _.partial(transformWrapper, fluctuation),
   // Filter Series
   top: _.partial(extraction, 'top'),
   bottom: _.partial(extraction, 'bottom'),

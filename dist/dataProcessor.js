@@ -9,6 +9,14 @@ var _lodash = _interopRequireDefault(require("lodash"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 // Transform
 function scale(factor, datapoints) {
   return _lodash.default.map(datapoints, function (point) {
@@ -44,6 +52,23 @@ function fluctuation(datapoints) {
   }
 
   return newSeries;
+} // [Support Funcs] Transform wrapper
+
+
+function transformWrapper(func) {
+  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
+  var funcArgs = args.slice(0, -1);
+  var timeseriesData = args[args.length - 1];
+
+  var tsData = _lodash.default.map(timeseriesData, function (timeseries) {
+    timeseries.datapoints = func.apply(void 0, _toConsumableArray(funcArgs).concat([timeseries.datapoints]));
+    return timeseries;
+  });
+
+  return Promise.resolve(tsData);
 } // Filter Series
 // [Support Funcs] Datapoints aggregation functions
 
@@ -120,10 +145,10 @@ function extraction(order, n, orderFunc, timeseriesData) {
 
 var functions = {
   // Transform
-  scale: scale,
-  offset: offset,
-  delta: delta,
-  fluctuation: fluctuation,
+  scale: _lodash.default.partial(transformWrapper, scale),
+  offset: _lodash.default.partial(transformWrapper, offset),
+  delta: _lodash.default.partial(transformWrapper, delta),
+  fluctuation: _lodash.default.partial(transformWrapper, fluctuation),
   // Filter Series
   top: _lodash.default.partial(extraction, 'top'),
   bottom: _lodash.default.partial(extraction, 'bottom')
