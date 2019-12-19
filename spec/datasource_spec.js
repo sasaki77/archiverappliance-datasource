@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import Q from 'q';
 import { expect } from 'chai';
-import { Datasource } from '../module';
+import { ArchiverapplianceDatasource } from '../datasource';
 
 describe('ArchiverapplianceDatasource', () => {
   const ctx = {};
@@ -15,7 +15,12 @@ describe('ArchiverapplianceDatasource', () => {
     ctx.$q = Q;
     ctx.backendSrv = {};
     ctx.templateSrv = {};
-    ctx.ds = new Datasource(ctx.instanceSettings, ctx.$q, ctx.backendSrv, ctx.templateSrv);
+    ctx.ds = new ArchiverapplianceDatasource(
+      ctx.instanceSettings,
+      ctx.$q,
+      ctx.backendSrv,
+      ctx.templateSrv,
+    );
   });
 
   it('should return an empty array when no targets are set', (done) => {

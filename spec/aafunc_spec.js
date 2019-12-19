@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import Q from 'q';
 import { expect } from 'chai';
-import { Datasource } from '../module';
+import { ArchiverapplianceDatasource } from '../datasource';
 import * as aafunc from '../aafunc';
 import dataProcessor from '../dataProcessor';
 
@@ -17,7 +17,12 @@ describe('ArchiverapplianceFunc', () => {
     ctx.$q = Q;
     ctx.backendSrv = {};
     ctx.templateSrv = {};
-    ctx.ds = new Datasource(ctx.instanceSettings, ctx.$q, ctx.backendSrv, ctx.templateSrv);
+    ctx.ds = new ArchiverapplianceDatasource(
+      ctx.instanceSettings,
+      ctx.$q,
+      ctx.backendSrv,
+      ctx.templateSrv,
+    );
   });
 
   it('should return the server results with scale function', (done) => {
