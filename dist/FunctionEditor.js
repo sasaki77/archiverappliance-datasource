@@ -11,7 +11,7 @@ var _ui = require("@grafana/ui");
 
 var _FunctionEditorControls = require("./FunctionEditorControls");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -47,7 +47,7 @@ function (_React$PureComponent) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(FunctionEditor).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "triggerRef", _react["default"].createRef());
+    _defineProperty(_assertThisInitialized(_this), "triggerRef", _react.default.createRef());
 
     _defineProperty(_assertThisInitialized(_this), "renderContent", function (_ref) {
       var updatePopperPosition = _ref.updatePopperPosition;
@@ -60,21 +60,21 @@ function (_React$PureComponent) {
       var showingDescription = _this.state.showingDescription;
 
       if (showingDescription) {
-        return _react["default"].createElement("div", {
+        return _react.default.createElement("div", {
           style: {
             overflow: 'auto',
             maxHeight: '30rem',
             textAlign: 'left',
             fontWeight: 'normal'
           }
-        }, _react["default"].createElement("h4", {
+        }, _react.default.createElement("h4", {
           style: {
             color: 'white'
           }
-        }, " ", name, " "), _react["default"].createElement("div", null, description));
+        }, " ", name, " "), _react.default.createElement("div", null, description));
       }
 
-      return _react["default"].createElement(_FunctionEditorControls.FunctionEditorControls, _extends({}, _this.props, {
+      return _react.default.createElement(_FunctionEditorControls.FunctionEditorControls, _extends({}, _this.props, {
         onMoveLeft: function onMoveLeft() {
           _onMoveLeft(_this.props.func);
 
@@ -106,12 +106,12 @@ function (_React$PureComponent) {
     value: function render() {
       var _this2 = this;
 
-      return _react["default"].createElement(_ui.PopoverController, {
+      return _react.default.createElement(_ui.PopoverController, {
         content: this.renderContent,
         placement: "top",
         hideAfter: 300
       }, function (showPopper, hidePopper, popperProps) {
-        return _react["default"].createElement(_react["default"].Fragment, null, _this2.triggerRef && _react["default"].createElement(_ui.Popover, _extends({}, popperProps, {
+        return _react.default.createElement(_react.default.Fragment, null, _this2.triggerRef && _react.default.createElement(_ui.Popover, _extends({}, popperProps, {
           referenceElement: _this2.triggerRef.current,
           wrapperClassName: "popper",
           className: "popper__background",
@@ -126,12 +126,12 @@ function (_React$PureComponent) {
           renderArrow: function renderArrow(_ref2) {
             var arrowProps = _ref2.arrowProps,
                 placement = _ref2.placement;
-            return _react["default"].createElement("div", _extends({
+            return _react.default.createElement("div", _extends({
               className: "popper__arrow",
               "data-placement": placement
             }, arrowProps));
           }
-        })), _react["default"].createElement("span", {
+        })), _react.default.createElement("span", {
           ref: _this2.triggerRef,
           onClick: popperProps.show ? hidePopper : showPopper,
           onMouseLeave: function onMouseLeave() {
@@ -150,7 +150,7 @@ function (_React$PureComponent) {
   }]);
 
   return FunctionEditor;
-}(_react["default"].PureComponent);
+}(_react.default.PureComponent);
 
 exports.FunctionEditor = FunctionEditor;
 //# sourceMappingURL=FunctionEditor.js.map

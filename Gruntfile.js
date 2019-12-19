@@ -27,7 +27,21 @@ module.exports = function(grunt) {
       options: {
         sourceMap: true,
         plugins: ["@babel/plugin-proposal-class-properties"],
-        presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"]
+        presets: [
+          ["@babel/preset-env",
+            {
+              "targets": {
+                "browsers": [
+                  ">0.25%",
+                  "not ie 11",
+                  "not op_mini all"
+                ]
+              }
+            }
+          ],
+          "@babel/preset-typescript",
+          "@babel/preset-react"
+        ]
       },
       dist: {
         files: [{

@@ -13,7 +13,7 @@ var _core_module = _interopRequireDefault(require("app/core/core_module"));
 
 var _FunctionEditor = require("./FunctionEditor");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** @ngInject */
 function aaFuncEditor($compile, templateSrv) {
@@ -22,7 +22,7 @@ function aaFuncEditor($compile, templateSrv) {
   return {
     restrict: 'A',
     link: function postLink($scope, elem) {
-      var $funcLink = (0, _jquery["default"])(funcSpanTemplate);
+      var $funcLink = (0, _jquery.default)(funcSpanTemplate);
       var ctrl = $scope.ctrl;
       var func = $scope.func;
       var scheduledRelink = false;
@@ -43,7 +43,7 @@ function aaFuncEditor($compile, templateSrv) {
 
       function clickFuncParam(paramIndex) {
         /*jshint validthis:true */
-        var $link = (0, _jquery["default"])(this);
+        var $link = (0, _jquery.default)(this);
         var $comma = $link.prev('.comma');
         var $input = $link.next();
         $input.val(func.params[paramIndex]);
@@ -79,8 +79,8 @@ function aaFuncEditor($compile, templateSrv) {
           return func.def.params[index];
         }
 
-        if (_lodash["default"].last(func.def.params).multiple) {
-          return _lodash["default"].assign({}, _lodash["default"].last(func.def.params), {
+        if (_lodash.default.last(func.def.params).multiple) {
+          return _lodash.default.assign({}, _lodash.default.last(func.def.params), {
             optional: true
           });
         }
@@ -90,7 +90,7 @@ function aaFuncEditor($compile, templateSrv) {
 
       function switchToLink(inputElem, paramIndex) {
         /*jshint validthis:true */
-        var $input = (0, _jquery["default"])(inputElem);
+        var $input = (0, _jquery.default)(inputElem);
         clearTimeout(cancelBlur);
         cancelBlur = null;
         var $link = $input.prev();
@@ -131,7 +131,7 @@ function aaFuncEditor($compile, templateSrv) {
       function inputKeyPress(paramIndex, e) {
         /*jshint validthis:true */
         if (e.which === 13) {
-          (0, _jquery["default"])(this).blur();
+          (0, _jquery.default)(this).blur();
         }
       }
 
@@ -145,7 +145,7 @@ function aaFuncEditor($compile, templateSrv) {
         var options = paramDef(paramIndex).options;
 
         if (paramDef(paramIndex).type === 'int' || paramDef(paramIndex).type === 'float') {
-          options = _lodash["default"].map(options, function (val) {
+          options = _lodash.default.map(options, function (val) {
             return val.toString();
           });
         }
@@ -171,17 +171,17 @@ function aaFuncEditor($compile, templateSrv) {
       function addElementsAndCompile() {
         $funcLink.appendTo(elem);
 
-        var defParams = _lodash["default"].clone(func.def.params);
+        var defParams = _lodash.default.clone(func.def.params);
 
-        var lastParam = _lodash["default"].last(func.def.params);
+        var lastParam = _lodash.default.last(func.def.params);
 
         while (func.params.length >= defParams.length && lastParam && lastParam.multiple) {
-          defParams.push(_lodash["default"].assign({}, lastParam, {
+          defParams.push(_lodash.default.assign({}, lastParam, {
             optional: true
           }));
         }
 
-        _lodash["default"].each(defParams, function (param, index) {
+        _lodash.default.each(defParams, function (param, index) {
           if (param.optional && func.params.length < index) {
             return false;
           }
@@ -195,19 +195,19 @@ function aaFuncEditor($compile, templateSrv) {
           }
 
           if (index > 0) {
-            (0, _jquery["default"])('<span class="comma' + (last ? ' query-part__last' : '') + '">, </span>').appendTo(elem);
+            (0, _jquery.default)('<span class="comma' + (last ? ' query-part__last' : '') + '">, </span>').appendTo(elem);
           }
 
-          var $paramLink = (0, _jquery["default"])('<a ng-click="" class="graphite-func-param-link' + (last ? ' query-part__last' : '') + '">' + (hasValue ? paramValue : '&nbsp;') + '</a>');
-          var $input = (0, _jquery["default"])(paramTemplate);
+          var $paramLink = (0, _jquery.default)('<a ng-click="" class="graphite-func-param-link' + (last ? ' query-part__last' : '') + '">' + (hasValue ? paramValue : '&nbsp;') + '</a>');
+          var $input = (0, _jquery.default)(paramTemplate);
           $input.attr('placeholder', param.name);
           paramCountAtLink++;
           $paramLink.appendTo(elem);
           $input.appendTo(elem);
-          $input.blur(_lodash["default"].partial(inputBlur, index));
+          $input.blur(_lodash.default.partial(inputBlur, index));
           $input.keyup(inputKeyDown);
-          $input.keypress(_lodash["default"].partial(inputKeyPress, index));
-          $paramLink.click(_lodash["default"].partial(clickFuncParam, index));
+          $input.keypress(_lodash.default.partial(inputKeyPress, index));
+          $paramLink.click(_lodash.default.partial(clickFuncParam, index));
 
           if (param.options) {
             addTypeahead($input, index);
@@ -216,7 +216,7 @@ function aaFuncEditor($compile, templateSrv) {
           return true;
         });
 
-        (0, _jquery["default"])('<span>)</span>').appendTo(elem);
+        (0, _jquery.default)('<span>)</span>').appendTo(elem);
         $compile(elem.contents())($scope);
       }
 
@@ -240,12 +240,12 @@ function aaFuncEditor($compile, templateSrv) {
   };
 }
 
-_core_module["default"].directive('aaFuncEditor', aaFuncEditor);
+_core_module.default.directive('aaFuncEditor', aaFuncEditor);
 
 react2AngularDirective('aaFunctionEditor', _FunctionEditor.FunctionEditor, ['func', 'onRemove', 'onMoveLeft', 'onMoveRight']);
 
 function react2AngularDirective(name, component, options) {
-  _core_module["default"].directive(name, ['reactDirective', function (reactDirective) {
+  _core_module.default.directive(name, ['reactDirective', function (reactDirective) {
     return reactDirective(component, options);
   }]);
 }

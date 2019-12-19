@@ -3,21 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Transform
 function scale(factor, datapoints) {
-  return _lodash["default"].map(datapoints, function (point) {
+  return _lodash.default.map(datapoints, function (point) {
     return [point[0] * factor, point[1]];
   });
 }
 
 function offset(delta, datapoints) {
-  return _lodash["default"].map(datapoints, function (point) {
+  return _lodash.default.map(datapoints, function (point) {
     return [point[0] + delta, point[1]];
   });
 }
@@ -49,13 +49,13 @@ function fluctuation(datapoints) {
 
 
 function datapointsAvg(datapoints) {
-  return _lodash["default"].meanBy(datapoints, function (point) {
+  return _lodash.default.meanBy(datapoints, function (point) {
     return point[0];
   });
 }
 
 function datapointsMin(datapoints) {
-  var minPoint = _lodash["default"].minBy(datapoints, function (point) {
+  var minPoint = _lodash.default.minBy(datapoints, function (point) {
     return point[0];
   });
 
@@ -63,7 +63,7 @@ function datapointsMin(datapoints) {
 }
 
 function datapointsMax(datapoints) {
-  var maxPoint = _lodash["default"].maxBy(datapoints, function (point) {
+  var maxPoint = _lodash.default.maxBy(datapoints, function (point) {
     return point[0];
   });
 
@@ -71,13 +71,13 @@ function datapointsMax(datapoints) {
 }
 
 function datapointsSum(datapoints) {
-  return _lodash["default"].sumBy(datapoints, function (point) {
+  return _lodash.default.sumBy(datapoints, function (point) {
     return point[0];
   });
 }
 
 function datapointsAbsMin(datapoints) {
-  var minPoint = _lodash["default"].minBy(datapoints, function (point) {
+  var minPoint = _lodash.default.minBy(datapoints, function (point) {
     return Math.abs(point[0]);
   });
 
@@ -85,7 +85,7 @@ function datapointsAbsMin(datapoints) {
 }
 
 function datapointsAbsMax(datapoints) {
-  var maxPoint = _lodash["default"].maxBy(datapoints, function (point) {
+  var maxPoint = _lodash.default.maxBy(datapoints, function (point) {
     return Math.abs(point[0]);
   });
 
@@ -108,13 +108,13 @@ function extraction(order, n, orderFunc, timeseriesData) {
     return orderByCallback(ts.datapoints);
   };
 
-  var sortedTsData = _lodash["default"].sortBy(timeseriesData, sortByIteratee);
+  var sortedTsData = _lodash.default.sortBy(timeseriesData, sortByIteratee);
 
   if (order === 'bottom') {
-    return _lodash["default"].slice(sortedTsData, 0, n);
+    return _lodash.default.slice(sortedTsData, 0, n);
   }
 
-  return _lodash["default"].reverse(_lodash["default"].slice(sortedTsData, -n));
+  return _lodash.default.reverse(_lodash.default.slice(sortedTsData, -n));
 } // Function list
 
 
@@ -125,8 +125,8 @@ var functions = {
   delta: delta,
   fluctuation: fluctuation,
   // Filter Series
-  top: _lodash["default"].partial(extraction, 'top'),
-  bottom: _lodash["default"].partial(extraction, 'bottom')
+  top: _lodash.default.partial(extraction, 'top'),
+  bottom: _lodash.default.partial(extraction, 'bottom')
 };
 var _default = {
   get aaFunctions() {
@@ -134,5 +134,5 @@ var _default = {
   }
 
 };
-exports["default"] = _default;
+exports.default = _default;
 //# sourceMappingURL=dataProcessor.js.map

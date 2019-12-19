@@ -17,13 +17,13 @@ var aafunc = _interopRequireWildcard(require("./aafunc"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getAllFunctionNames(categories) {
-  return _lodash["default"].reduce(categories, function (list, category) {
-    _lodash["default"].each(category, function (func) {
+  return _lodash.default.reduce(categories, function (list, category) {
+    _lodash.default.each(category, function (func) {
       return list.push(func.name);
     });
 
@@ -32,10 +32,10 @@ function getAllFunctionNames(categories) {
 }
 
 function createFunctionDropDownMenu(categories) {
-  return _lodash["default"].map(categories, function (list, category) {
+  return _lodash.default.map(categories, function (list, category) {
     return {
       text: category,
-      submenu: _lodash["default"].map(list, function (value) {
+      submenu: _lodash.default.map(list, function (value) {
         return {
           text: value.name,
           click: "ctrl.addFunction('".concat(value.name, "')")
@@ -55,8 +55,8 @@ function aaAddFunc($compile) {
       var categories = aafunc.getCategories();
       var allFunctions = getAllFunctionNames(categories);
       $scope.functionMenu = createFunctionDropDownMenu(categories);
-      var $input = (0, _jquery["default"])(inputTemplate);
-      var $button = (0, _jquery["default"])(buttonTemplate);
+      var $input = (0, _jquery.default)(inputTemplate);
+      var $button = (0, _jquery.default)(buttonTemplate);
       $input.appendTo(elem);
       $button.appendTo(elem);
       $input.attr('data-provide', 'typeahead');
@@ -70,7 +70,7 @@ function aaAddFunc($compile) {
           if (!funcDef) {
             // try find close match
             var lowerValue = value.toLowerCase();
-            funcDef = _lodash["default"].find(allFunctions, function (funcName) {
+            funcDef = _lodash.default.find(allFunctions, function (funcName) {
               return funcName.toLowerCase().indexOf(lowerValue) === 0;
             });
 
@@ -109,5 +109,5 @@ function aaAddFunc($compile) {
   };
 }
 
-_core_module["default"].directive('aaAddFunc', aaAddFunc);
+_core_module.default.directive('aaAddFunc', aaAddFunc);
 //# sourceMappingURL=aa-add-func.js.map

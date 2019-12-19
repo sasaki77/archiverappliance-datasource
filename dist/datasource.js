@@ -15,9 +15,9 @@ var aafunc = _interopRequireWildcard(require("./aafunc"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -61,7 +61,7 @@ function () {
       var _this = this;
 
       var query = this.buildQueryParameters(options);
-      query.targets = _lodash["default"].filter(query.targets, function (t) {
+      query.targets = _lodash.default.filter(query.targets, function (t) {
         return !t.hide;
       });
 
@@ -71,7 +71,7 @@ function () {
         });
       }
 
-      var targetProcesses = _lodash["default"].map(query.targets, function (target) {
+      var targetProcesses = _lodash.default.map(query.targets, function (target) {
         return _this.targetProcess(target);
       });
 
@@ -97,7 +97,7 @@ function () {
   }, {
     key: "postProcess",
     value: function postProcess(timeseriesDataArray) {
-      var timeseriesData = _lodash["default"].flatten(timeseriesDataArray);
+      var timeseriesData = _lodash.default.flatten(timeseriesDataArray);
 
       return {
         data: timeseriesData
@@ -110,7 +110,7 @@ function () {
 
       var targetQueries = this.parseTargetQuery(target.target);
 
-      var pvnamesPromise = _lodash["default"].map(targetQueries, function (targetQuery) {
+      var pvnamesPromise = _lodash.default.map(targetQueries, function (targetQuery) {
         if (target.regex) {
           return _this3.pvNamesFindQuery(targetQuery);
         }
@@ -119,14 +119,14 @@ function () {
       });
 
       return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
-        var pvnames = _lodash["default"].slice(_lodash["default"].uniq(_lodash["default"].flatten(pvnamesArray)), 0, 100);
+        var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
 
         var deferred = _this3.q.defer();
 
         var urls;
 
         try {
-          urls = _lodash["default"].map(pvnames, function (pvname) {
+          urls = _lodash.default.map(pvnames, function (pvname) {
             return _this3.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
           });
         } catch (e) {
@@ -144,10 +144,10 @@ function () {
 
       if (operator === 'raw' || interval === '') {
         pv = "".concat(pvname);
-      } else if (_lodash["default"].includes(['', undefined], operator)) {
+      } else if (_lodash.default.includes(['', undefined], operator)) {
         // Default Operator
         pv = "mean_".concat(interval, "(").concat(pvname, ")");
-      } else if (_lodash["default"].includes(this.operatorList, operator)) {
+      } else if (_lodash.default.includes(this.operatorList, operator)) {
         pv = "".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
       } else {
         throw new Error('Data Processing Operator is invalid.');
@@ -161,7 +161,7 @@ function () {
     value: function doMultiUrlRequests(urls) {
       var _this4 = this;
 
-      var requests = _lodash["default"].map(urls, function (url) {
+      var requests = _lodash.default.map(urls, function (url) {
         return _this4.doRequest({
           url: url,
           method: 'GET'
@@ -175,10 +175,10 @@ function () {
     value: function responseParse(responses) {
       var deferred = this.q.defer();
 
-      var timeSeriesDataArray = _lodash["default"].map(responses, function (response) {
-        var timeSeriesData = _lodash["default"].map(response.data, function (targetRes) {
-          var timesiries = _lodash["default"].map(targetRes.data, function (datapoint) {
-            return [datapoint.val, datapoint.secs * 1000 + _lodash["default"].floor(datapoint.nanos / 1000000)];
+      var timeSeriesDataArray = _lodash.default.map(responses, function (response) {
+        var timeSeriesData = _lodash.default.map(response.data, function (targetRes) {
+          var timesiries = _lodash.default.map(targetRes.data, function (datapoint) {
+            return [datapoint.val, datapoint.secs * 1000 + _lodash.default.floor(datapoint.nanos / 1000000)];
           });
 
           var timeseries = {
@@ -191,7 +191,7 @@ function () {
         return timeSeriesData;
       });
 
-      deferred.resolve(_lodash["default"].flatten(timeSeriesDataArray));
+      deferred.resolve(_lodash.default.flatten(timeSeriesDataArray));
       return deferred.promise;
     }
   }, {
@@ -210,7 +210,7 @@ function () {
         pattern = new RegExp(target.aliasPattern, '');
       }
 
-      var newTimeseriesData = _lodash["default"].map(timeseriesData, function (timeseries) {
+      var newTimeseriesData = _lodash.default.map(timeseriesData, function (timeseries) {
         if (pattern) {
           var alias = timeseries.target.replace(pattern, target.alias);
           return {
@@ -269,14 +269,14 @@ function () {
       var replacedQuery = this.templateSrv.replace(query, null, 'regex');
       var parsedQuery = this.parseTargetQuery(replacedQuery);
 
-      var pvnamesPromise = _lodash["default"].map(parsedQuery, function (targetQuery) {
+      var pvnamesPromise = _lodash.default.map(parsedQuery, function (targetQuery) {
         return _this5.pvNamesFindQuery(targetQuery);
       });
 
       return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
-        var pvnames = _lodash["default"].slice(_lodash["default"].uniq(_lodash["default"].flatten(pvnamesArray)), 0, 100);
+        var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
 
-        return _lodash["default"].map(pvnames, function (pvname) {
+        return _lodash.default.map(pvnames, function (pvname) {
           return {
             text: pvname
           };
@@ -301,7 +301,7 @@ function () {
       var query = _objectSpread({}, options); // remove placeholder targets and undefined targets
 
 
-      query.targets = _lodash["default"].filter(query.targets, function (target) {
+      query.targets = _lodash.default.filter(query.targets, function (target) {
         return target.target !== '' && typeof target.target !== 'undefined';
       });
 
@@ -313,11 +313,11 @@ function () {
       var to = new Date(query.range.to);
       var rangeMsec = to.getTime() - from.getTime();
 
-      var intervalSec = _lodash["default"].floor(rangeMsec / (query.maxDataPoints * 1000));
+      var intervalSec = _lodash.default.floor(rangeMsec / (query.maxDataPoints * 1000));
 
       var interval = intervalSec >= 1 ? String(intervalSec) : '';
 
-      var targets = _lodash["default"].map(query.targets, function (target) {
+      var targets = _lodash.default.map(query.targets, function (target) {
         return {
           target: _this6.templateSrv.replace(target.target, query.scopedVars, 'regex'),
           refId: target.refId,
@@ -348,29 +348,29 @@ function () {
        *     ABC2EFG6, ABC3EFG5, ABC3EFG6
        *     ]
        */
-      var splitQueries = _lodash["default"].split(targetQuery, /(\(.*?\))/);
+      var splitQueries = _lodash.default.split(targetQuery, /(\(.*?\))/);
 
       var queries = [''];
 
-      _lodash["default"].forEach(splitQueries, function (splitQuery, i) {
+      _lodash.default.forEach(splitQueries, function (splitQuery, i) {
         // Fixed string like 'ABC'
         if (i % 2 === 0) {
-          queries = _lodash["default"].map(queries, function (query) {
+          queries = _lodash.default.map(queries, function (query) {
             return "".concat(query).concat(splitQuery);
           });
           return;
         } // Regex OR string like '(1|2|3)'
 
 
-        var orElems = _lodash["default"].split(_lodash["default"].trim(splitQuery, '()'), '|');
+        var orElems = _lodash.default.split(_lodash.default.trim(splitQuery, '()'), '|');
 
-        var newQueries = _lodash["default"].map(queries, function (query) {
-          return _lodash["default"].map(orElems, function (orElem) {
+        var newQueries = _lodash.default.map(queries, function (query) {
+          return _lodash.default.map(orElems, function (orElem) {
             return "".concat(query).concat(orElem);
           });
         });
 
-        queries = _lodash["default"].flatten(newQueries);
+        queries = _lodash.default.flatten(newQueries);
       });
 
       return queries;
@@ -382,21 +382,21 @@ function () {
 
       var allCategorisedFuncDefs = aafunc.getCategories();
 
-      var requiredCategoryFuncNames = _lodash["default"].reduce(categories, function (funcNames, category) {
-        return _lodash["default"].concat(funcNames, _lodash["default"].map(allCategorisedFuncDefs[category], 'name'));
+      var requiredCategoryFuncNames = _lodash.default.reduce(categories, function (funcNames, category) {
+        return _lodash.default.concat(funcNames, _lodash.default.map(allCategorisedFuncDefs[category], 'name'));
       }, []);
 
-      var applyFuncDefs = _lodash["default"].filter(functionDefs, function (func) {
-        return _lodash["default"].includes(requiredCategoryFuncNames, func.def.name);
+      var applyFuncDefs = _lodash.default.filter(functionDefs, function (func) {
+        return _lodash.default.includes(requiredCategoryFuncNames, func.def.name);
       });
 
-      var promises = _lodash["default"].reduce(applyFuncDefs, function (prevPromise, func) {
+      var promises = _lodash.default.reduce(applyFuncDefs, function (prevPromise, func) {
         return prevPromise.then(function (res) {
           var funcInstance = aafunc.createFuncInstance(func.def, func.params);
-          var bindedFunc = funcInstance.bindFunction(_dataProcessor["default"].aaFunctions); // Transform function
+          var bindedFunc = funcInstance.bindFunction(_dataProcessor.default.aaFunctions); // Transform function
 
           if (func.def.category === 'Transform') {
-            var tsData = _lodash["default"].map(res, function (timeseries) {
+            var tsData = _lodash.default.map(res, function (timeseries) {
               timeseries.datapoints = bindedFunc(timeseries.datapoints);
               return timeseries;
             });

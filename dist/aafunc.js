@@ -11,7 +11,7 @@ var _lodash = _interopRequireDefault(require("lodash"));
 
 var _jquery = _interopRequireDefault(require("jquery"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -147,7 +147,7 @@ function () {
           param = Number(param);
         }
 
-        bindedFunc = _lodash["default"].partial(bindedFunc, param);
+        bindedFunc = _lodash.default.partial(bindedFunc, param);
       }
 
       return bindedFunc;
@@ -159,14 +159,14 @@ function () {
 
       var str = "".concat(this.def.name, "(");
 
-      var parameters = _lodash["default"].map(this.params, function (value, index) {
+      var parameters = _lodash.default.map(this.params, function (value, index) {
         var paramType = _this.def.params[index].type;
 
         if (paramType === 'int' || paramType === 'float' || paramType === 'value_or_series' || paramType === 'boolean') {
           return value;
         }
 
-        if (paramType === 'int_or_interval' && _jquery["default"].isNumeric(value)) {
+        if (paramType === 'int_or_interval' && _jquery.default.isNumeric(value)) {
           return value;
         }
 
@@ -196,7 +196,7 @@ function () {
       // handle optional parameters
       // if string contains ',' and next param is optional, split and update both
       if (this._hasMultipleParamsInString(strValue, index)) {
-        _lodash["default"].each(strValue.split(','), function (partVal, idx) {
+        _lodash.default.each(strValue.split(','), function (partVal, idx) {
           _this2.updateParam(partVal.trim(), idx);
         }, this);
 
@@ -228,7 +228,7 @@ function () {
 }();
 
 function createFuncInstance(funcDef, params) {
-  if (_lodash["default"].isString(funcDef)) {
+  if (_lodash.default.isString(funcDef)) {
     if (!funcIndex[funcDef]) {
       throw new Error({
         message: "Method not found ".concat(funcDef.name)
