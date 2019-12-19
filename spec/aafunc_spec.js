@@ -1,7 +1,6 @@
 /* eslint import/no-unresolved: [0] */
 
 import _ from 'lodash';
-import Q from 'q';
 import { expect } from 'chai';
 import { ArchiverapplianceDatasource } from '../datasource';
 import * as aafunc from '../aafunc';
@@ -14,12 +13,10 @@ describe('ArchiverapplianceFunc', () => {
     ctx.instanceSettings = {
       url: 'url_header:',
     };
-    ctx.$q = Q;
     ctx.backendSrv = {};
     ctx.templateSrv = {};
     ctx.ds = new ArchiverapplianceDatasource(
       ctx.instanceSettings,
-      ctx.$q,
       ctx.backendSrv,
       ctx.templateSrv,
     );
@@ -27,7 +24,7 @@ describe('ArchiverapplianceFunc', () => {
 
   it('should return the server results with scale function', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [{
           meta: { name: 'PV', PREC: '0' },
@@ -68,7 +65,7 @@ describe('ArchiverapplianceFunc', () => {
 
   it('should return the server results with offset function', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [{
           meta: { name: 'PV', PREC: '0' },
@@ -109,7 +106,7 @@ describe('ArchiverapplianceFunc', () => {
 
   it('should return the server results with delta function', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [{
           meta: { name: 'PV', PREC: '0' },
@@ -149,7 +146,7 @@ describe('ArchiverapplianceFunc', () => {
 
   it('should return the server results with fluctuation function', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [{
           meta: { name: 'PV', PREC: '0' },
@@ -221,7 +218,7 @@ describe('ArchiverapplianceFunc', () => {
         }];
       }
 
-      return ctx.$q.when({
+      return Promise.resolve({
         _request: request,
         data: pvdata,
       });

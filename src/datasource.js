@@ -3,11 +3,10 @@ import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
 
 export class ArchiverapplianceDatasource {
-  constructor(instanceSettings, $q, backendSrv, templateSrv) {
+  constructor(instanceSettings, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
-    this.q = $q;
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.withCredentials = instanceSettings.withCredentials;
@@ -32,7 +31,7 @@ export class ArchiverapplianceDatasource {
     query.targets = _.filter(query.targets, (t) => !t.hide);
 
     if (query.targets.length <= 0) {
-      return this.q.when({ data: [] });
+      return Promise.resolve({ data: [] });
     }
 
     const targetProcesses = _.map(query.targets, (target) => (
@@ -40,7 +39,7 @@ export class ArchiverapplianceDatasource {
     ));
 
     return (
-      this.q.all(targetProcesses)
+      Promise.all(targetProcesses)
         .then((timeseriesDataArray) => this.postProcess(timeseriesDataArray))
     );
   }
@@ -69,32 +68,32 @@ export class ArchiverapplianceDatasource {
         return this.pvNamesFindQuery(targetQuery);
       }
 
-      return this.q.when([targetQuery]);
+      return Promise.resolve([targetQuery]);
     });
 
-    return this.q.all(pvnamesPromise)
-      .then((pvnamesArray) => {
-        const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
-        const deferred = this.q.defer();
-        let urls;
+    return Promise.all(pvnamesPromise)
+      .then((pvnamesArray) => (
+        new Promise((resolve, reject) => {
+          const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
+          let urls;
 
-        try {
-          urls = _.map(pvnames, (pvname) => (
-            this.buildUrl(
-              pvname,
-              target.operator,
-              target.interval,
-              target.from,
-              target.to,
-            )
-          ));
-        } catch (e) {
-          deferred.reject(e);
-        }
+          try {
+            urls = _.map(pvnames, (pvname) => (
+              this.buildUrl(
+                pvname,
+                target.operator,
+                target.interval,
+                target.from,
+                target.to,
+              )
+            ));
+          } catch (e) {
+            reject(e);
+          }
 
-        deferred.resolve(urls);
-        return deferred.promise;
-      });
+          resolve(urls);
+        })
+      ));
   }
 
   buildUrl(pvname, operator, interval, from, to) {
@@ -120,12 +119,10 @@ export class ArchiverapplianceDatasource {
       this.doRequest({ url, method: 'GET' })
     ));
 
-    return this.q.all(requests);
+    return Promise.all(requests);
   }
 
   responseParse(responses) {
-    const deferred = this.q.defer();
-
     const timeSeriesDataArray = _.map(responses, (response) => {
       const timeSeriesData = _.map(response.data, (targetRes) => {
         const timesiries = _.map(targetRes.data, (datapoint) => (
@@ -140,16 +137,12 @@ export class ArchiverapplianceDatasource {
       return timeSeriesData;
     });
 
-    deferred.resolve(_.flatten(timeSeriesDataArray));
-    return deferred.promise;
+    return Promise.resolve(_.flatten(timeSeriesDataArray));
   }
 
   setAlias(timeseriesData, target) {
-    const deferred = this.q.defer();
-
     if (!target.alias) {
-      deferred.resolve(timeseriesData);
-      return deferred.promise;
+      return Promise.resolve(timeseriesData);
     }
 
     let pattern;
@@ -166,13 +159,12 @@ export class ArchiverapplianceDatasource {
       return { target: target.alias, datapoints: timeseries.datapoints };
     });
 
-    deferred.resolve(newTimeseriesData);
-    return deferred.promise;
+    return Promise.resolve(newTimeseriesData);
   }
 
   applyFunctions(timeseriesData, target) {
     if (target.functions === undefined) {
-      return this.q.when(timeseriesData);
+      return Promise.resolve(timeseriesData);
     }
 
     return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
@@ -184,7 +176,7 @@ export class ArchiverapplianceDatasource {
 
   pvNamesFindQuery(query) {
     if (!query) {
-      return this.q.when([]);
+      return Promise.resolve([]);
     }
 
     const url = `${this.url}/bpl/getMatchingPVs?limit=100&regex=${encodeURIComponent(query)}`;
@@ -203,7 +195,7 @@ export class ArchiverapplianceDatasource {
       this.pvNamesFindQuery(targetQuery)
     ));
 
-    return this.q.all(pvnamesPromise).then((pvnamesArray) => {
+    return Promise.all(pvnamesPromise).then((pvnamesArray) => {
       const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
       return _.map(pvnames, (pvname) => ({ text: pvname }));
     });
@@ -312,13 +304,13 @@ export class ArchiverapplianceDatasource {
             timeseries.datapoints = bindedFunc(timeseries.datapoints);
             return timeseries;
           });
-          return this.q.when(tsData);
+          return Promise.resolve(tsData);
         }
 
         // Any other function
-        return this.q.when(bindedFunc(res));
+        return Promise.resolve(bindedFunc(res));
       })
-    ), this.q.when(data));
+    ), Promise.resolve(data));
 
     return promises;
   }

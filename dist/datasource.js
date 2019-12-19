@@ -34,13 +34,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var ArchiverapplianceDatasource =
 /*#__PURE__*/
 function () {
-  function ArchiverapplianceDatasource(instanceSettings, $q, backendSrv, templateSrv) {
+  function ArchiverapplianceDatasource(instanceSettings, backendSrv, templateSrv) {
     _classCallCheck(this, ArchiverapplianceDatasource);
 
     this.type = instanceSettings.type;
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
-    this.q = $q;
     this.backendSrv = backendSrv;
     this.templateSrv = templateSrv;
     this.withCredentials = instanceSettings.withCredentials;
@@ -66,7 +65,7 @@ function () {
       });
 
       if (query.targets.length <= 0) {
-        return this.q.when({
+        return Promise.resolve({
           data: []
         });
       }
@@ -75,7 +74,7 @@ function () {
         return _this.targetProcess(target);
       });
 
-      return this.q.all(targetProcesses).then(function (timeseriesDataArray) {
+      return Promise.all(targetProcesses).then(function (timeseriesDataArray) {
         return _this.postProcess(timeseriesDataArray);
       });
     }
@@ -115,26 +114,25 @@ function () {
           return _this3.pvNamesFindQuery(targetQuery);
         }
 
-        return _this3.q.when([targetQuery]);
+        return Promise.resolve([targetQuery]);
       });
 
-      return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
-        var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
+      return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
+        return new Promise(function (resolve, reject) {
+          var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
 
-        var deferred = _this3.q.defer();
+          var urls;
 
-        var urls;
+          try {
+            urls = _lodash.default.map(pvnames, function (pvname) {
+              return _this3.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
+            });
+          } catch (e) {
+            reject(e);
+          }
 
-        try {
-          urls = _lodash.default.map(pvnames, function (pvname) {
-            return _this3.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
-          });
-        } catch (e) {
-          deferred.reject(e);
-        }
-
-        deferred.resolve(urls);
-        return deferred.promise;
+          resolve(urls);
+        });
       });
     }
   }, {
@@ -168,13 +166,11 @@ function () {
         });
       });
 
-      return this.q.all(requests);
+      return Promise.all(requests);
     }
   }, {
     key: "responseParse",
     value: function responseParse(responses) {
-      var deferred = this.q.defer();
-
       var timeSeriesDataArray = _lodash.default.map(responses, function (response) {
         var timeSeriesData = _lodash.default.map(response.data, function (targetRes) {
           var timesiries = _lodash.default.map(targetRes.data, function (datapoint) {
@@ -191,17 +187,13 @@ function () {
         return timeSeriesData;
       });
 
-      deferred.resolve(_lodash.default.flatten(timeSeriesDataArray));
-      return deferred.promise;
+      return Promise.resolve(_lodash.default.flatten(timeSeriesDataArray));
     }
   }, {
     key: "setAlias",
     value: function setAlias(timeseriesData, target) {
-      var deferred = this.q.defer();
-
       if (!target.alias) {
-        deferred.resolve(timeseriesData);
-        return deferred.promise;
+        return Promise.resolve(timeseriesData);
       }
 
       var pattern;
@@ -225,14 +217,13 @@ function () {
         };
       });
 
-      deferred.resolve(newTimeseriesData);
-      return deferred.promise;
+      return Promise.resolve(newTimeseriesData);
     }
   }, {
     key: "applyFunctions",
     value: function applyFunctions(timeseriesData, target) {
       if (target.functions === undefined) {
-        return this.q.when(timeseriesData);
+        return Promise.resolve(timeseriesData);
       }
 
       return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
@@ -250,7 +241,7 @@ function () {
     key: "pvNamesFindQuery",
     value: function pvNamesFindQuery(query) {
       if (!query) {
-        return this.q.when([]);
+        return Promise.resolve([]);
       }
 
       var url = "".concat(this.url, "/bpl/getMatchingPVs?limit=100&regex=").concat(encodeURIComponent(query));
@@ -273,7 +264,7 @@ function () {
         return _this5.pvNamesFindQuery(targetQuery);
       });
 
-      return this.q.all(pvnamesPromise).then(function (pvnamesArray) {
+      return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
         var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
 
         return _lodash.default.map(pvnames, function (pvname) {
@@ -378,8 +369,6 @@ function () {
   }, {
     key: "bindFunctionDefs",
     value: function bindFunctionDefs(functionDefs, categories, data) {
-      var _this7 = this;
-
       var allCategorisedFuncDefs = aafunc.getCategories();
 
       var requiredCategoryFuncNames = _lodash.default.reduce(categories, function (funcNames, category) {
@@ -401,13 +390,13 @@ function () {
               return timeseries;
             });
 
-            return _this7.q.when(tsData);
+            return Promise.resolve(tsData);
           } // Any other function
 
 
-          return _this7.q.when(bindedFunc(res));
+          return Promise.resolve(bindedFunc(res));
         });
-      }, this.q.when(data));
+      }, Promise.resolve(data));
 
       return promises;
     }

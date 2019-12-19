@@ -1,7 +1,6 @@
 /* eslint import/no-unresolved: [0] */
 
 import _ from 'lodash';
-import Q from 'q';
 import { expect } from 'chai';
 import { ArchiverapplianceDatasource } from '../datasource';
 
@@ -12,12 +11,10 @@ describe('ArchiverapplianceDatasource', () => {
     ctx.instanceSettings = {
       url: 'url_header:',
     };
-    ctx.$q = Q;
     ctx.backendSrv = {};
     ctx.templateSrv = {};
     ctx.ds = new ArchiverapplianceDatasource(
       ctx.instanceSettings,
-      ctx.$q,
       ctx.backendSrv,
       ctx.templateSrv,
     );
@@ -46,7 +43,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return an valid multi urls', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: ['PV1', 'PV2'],
       })
@@ -71,7 +68,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return an valid unique urls', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: ['PV1', 'PV2', 'PV1'],
       })
@@ -96,7 +93,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return an 100 urls', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: _.map(_.range(1000), (num) => String(num)),
       })
@@ -167,7 +164,7 @@ describe('ArchiverapplianceDatasource', () => {
 
     const urlProcs = targets.map((target) => ctx.ds.buildUrls(target));
 
-    ctx.$q.all(urlProcs).then((urls) => {
+    Promise.all(urlProcs).then((urls) => {
       expect(urls).to.have.length(4);
       expect(urls[0][0]).to.equal('url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
       expect(urls[1][0]).to.equal('url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
@@ -230,7 +227,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the server results when a target is set', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           {
@@ -267,7 +264,7 @@ describe('ArchiverapplianceDatasource', () => {
   it('should return the server results with alias', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => {
       const pv = request.url.slice(33, 36);
-      return ctx.$q.when({
+      return Promise.resolve({
         _request: request,
         data: [
           {
@@ -303,7 +300,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the server results with alias pattern', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           {
@@ -338,7 +335,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results when a target is null', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           'metric_0',
@@ -358,7 +355,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results when a target is undefined', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           'metric_0',
@@ -378,7 +375,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results when a target is empty', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           'metric_0',
@@ -398,7 +395,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results when a target is set', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           'metric_0',
@@ -419,7 +416,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results for metricFindQuery', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           'metric_0',
@@ -442,7 +439,7 @@ describe('ArchiverapplianceDatasource', () => {
 
   it('should return the pv name results for metricFindQuery with regex OR', (done) => {
     ctx.backendSrv.datasourceRequest = (request) => (
-      ctx.$q.when({
+      Promise.resolve({
         _request: request,
         data: [
           unescape(_.split(request.url, /regex=(.*)/)[1]),
