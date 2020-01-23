@@ -314,7 +314,7 @@ function () {
           refId: target.refId,
           hide: target.hide,
           alias: target.alias,
-          operator: target.operator,
+          operator: _this6.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
           functions: target.functions,
           regex: target.regex,
           aliasPattern: target.aliasPattern,

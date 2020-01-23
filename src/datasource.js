@@ -235,7 +235,7 @@ export class ArchiverapplianceDatasource {
         refId: target.refId,
         hide: target.hide,
         alias: target.alias,
-        operator: target.operator,
+        operator: this.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
         functions: target.functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,

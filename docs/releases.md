@@ -1,4 +1,9 @@
 # Release Notes
+## 0.1.1
+
+**2020-XX-XX**
+- Support variables for `Operator` field
+
 ## 0.1.0
 
 **2019-12-08**
