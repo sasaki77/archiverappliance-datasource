@@ -16,9 +16,8 @@ function offset(delta, datapoints) {
 
 function delta(datapoints) {
   const newSeries = [];
-  let deltaValue;
   for (let i = 1; i < datapoints.length; i += 1) {
-    deltaValue = datapoints[i][0] - datapoints[i - 1][0];
+    const deltaValue = datapoints[i][0] - datapoints[i - 1][0];
     newSeries.push([deltaValue, datapoints[i][1]]);
   }
   return newSeries;
@@ -26,9 +25,8 @@ function delta(datapoints) {
 
 function fluctuation(datapoints) {
   const newSeries = [];
-  let flucValue;
   for (let i = 0; i < datapoints.length; i += 1) {
-    flucValue = datapoints[i][0] - datapoints[0][0];
+    const flucValue = datapoints[i][0] - datapoints[0][0];
     newSeries.push([flucValue, datapoints[i][1]]);
   }
   return newSeries;
