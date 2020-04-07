@@ -25,7 +25,8 @@ To enable Regex mode, click `Regex` button next to `PV` text input.
 
 The plugin supports only **wildcard pattern** and **alternation pattern**.
 
-``` Note:: Maximum number of PVs you can select on Regex mode is **100**.
+```eval_rst
+.. Note:: Maximum number of PVs you can select on Regex mode is **100** in default.  :ref:`functions:maxNumPVs` function is availavle to change maximum number.
 ```
 
 ### Wildcard Pattern
