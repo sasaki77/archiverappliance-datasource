@@ -19,6 +19,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -108,10 +116,15 @@ function () {
       var _this3 = this;
 
       var targetQueries = this.parseTargetQuery(target.target);
+      var maxNumPVs = 100;
+
+      if (target.options.maxNumPVs) {
+        maxNumPVs = target.options.maxNumPVs;
+      }
 
       var pvnamesPromise = _lodash.default.map(targetQueries, function (targetQuery) {
         if (target.regex) {
-          return _this3.pvNamesFindQuery(targetQuery, 100);
+          return _this3.pvNamesFindQuery(targetQuery, maxNumPVs);
         }
 
         return Promise.resolve([targetQuery]);
@@ -119,7 +132,7 @@ function () {
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
         return new Promise(function (resolve, reject) {
-          var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
+          var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, maxNumPVs);
 
           var urls;
 
@@ -318,6 +331,7 @@ function () {
           functions: target.functions,
           regex: target.regex,
           aliasPattern: target.aliasPattern,
+          options: _this6.getOptions(target.functions),
           from: from,
           to: to,
           interval: interval
@@ -388,6 +402,26 @@ function () {
       }, Promise.resolve(data));
 
       return promises;
+    }
+  }, {
+    key: "getOptions",
+    value: function getOptions(functionDefs) {
+      var allCategorisedFuncDefs = aafunc.getCategories();
+
+      var optionsFuncNames = _lodash.default.map(allCategorisedFuncDefs.Options, 'name');
+
+      var applyFuncDefs = _lodash.default.filter(functionDefs, function (func) {
+        return _lodash.default.includes(optionsFuncNames, func.def.name);
+      });
+
+      var options = _lodash.default.reduce(applyFuncDefs, function (optionMap, func) {
+        var _func$params = _slicedToArray(func.params, 1);
+
+        optionMap[func.def.name] = _func$params[0];
+        return optionMap;
+      }, {});
+
+      return options;
     }
   }]);
 

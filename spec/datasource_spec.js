@@ -33,6 +33,7 @@ describe('ArchiverapplianceDatasource', () => {
       interval: '9',
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then((url) => {
@@ -57,6 +58,7 @@ describe('ArchiverapplianceDatasource', () => {
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
       regex: true,
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then((url) => {
@@ -82,6 +84,7 @@ describe('ArchiverapplianceDatasource', () => {
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
       regex: true,
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then((url) => {
@@ -107,10 +110,36 @@ describe('ArchiverapplianceDatasource', () => {
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
       regex: true,
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then((url) => {
       expect(url).to.have.length(100);
+      done();
+    });
+  });
+
+  it('should return an required number of urls', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => (
+      Promise.resolve({
+        _request: request,
+        data: _.map(_.range(1000), (num) => String(num)),
+      })
+    );
+
+    ctx.templateSrv.replace = (data) => data;
+
+    const target = {
+      target: 'PV*',
+      interval: '9',
+      from: new Date('2010-01-01T00:00:00.000Z'),
+      to: new Date('2010-01-01T00:00:30.000Z'),
+      regex: true,
+      options: { maxNumPVs: 300 },
+    };
+
+    ctx.ds.buildUrls(target).then((url) => {
+      expect(url).to.have.length(300);
       done();
     });
   });
@@ -123,6 +152,7 @@ describe('ArchiverapplianceDatasource', () => {
       interval: '9',
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then((url) => {
@@ -144,6 +174,7 @@ describe('ArchiverapplianceDatasource', () => {
       interval: '9',
       from: new Date('2010-01-01T00:00:00.000Z'),
       to: new Date('2010-01-01T00:00:30.000Z'),
+      options: {},
     };
 
     ctx.ds.buildUrls(target).then(() => {
@@ -155,11 +186,12 @@ describe('ArchiverapplianceDatasource', () => {
   it('should return an data processing url', (done) => {
     const from = new Date('2010-01-01T00:00:00.000Z');
     const to = new Date('2010-01-01T00:00:30.000Z');
+    const options = {};
     const targets = [
-      { target: 'PV1', operator: 'mean', interval: '9', from, to },
-      { target: 'PV2', operator: 'raw', interval: '9', from, to },
-      { target: 'PV3', operator: '', interval: '9', from, to },
-      { target: 'PV4', interval: '9', from, to },
+      { target: 'PV1', operator: 'mean', interval: '9', from, to, options },
+      { target: 'PV2', operator: 'raw', interval: '9', from, to, options },
+      { target: 'PV3', operator: '', interval: '9', from, to, options },
+      { target: 'PV4', interval: '9', from, to, options },
     ];
 
     const urlProcs = targets.map((target) => ctx.ds.buildUrls(target));

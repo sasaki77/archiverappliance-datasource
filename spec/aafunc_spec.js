@@ -323,4 +323,27 @@ describe('ArchiverapplianceFunc', () => {
     expect(absMaxBottomData).to.have.length(1);
     expect(absMaxBottomData[0].target).to.equal('min');
   });
+
+
+  it('should return option variables if option functions are applied', (done) => {
+    ctx.templateSrv.replace = (data) => data;
+
+    const options = {
+      targets: [{
+        target: 'PV',
+        refId: 'A',
+        functions: [
+          aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), [1000]),
+        ],
+      }],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      maxDataPoints: 1000,
+    };
+
+    const query = ctx.ds.buildQueryParameters(options);
+
+    expect(query.targets).to.have.length(1);
+    expect(query.targets[0].options.maxNumPVs).to.equal(1000);
+    done();
+  });
 });

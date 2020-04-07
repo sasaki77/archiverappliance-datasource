@@ -63,9 +63,14 @@ export class ArchiverapplianceDatasource {
   buildUrls(target) {
     const targetQueries = this.parseTargetQuery(target.target);
 
+    let maxNumPVs = 100;
+    if (target.options.maxNumPVs) {
+      maxNumPVs = target.options.maxNumPVs;
+    }
+
     const pvnamesPromise = _.map(targetQueries, (targetQuery) => {
       if (target.regex) {
-        return this.pvNamesFindQuery(targetQuery, 100);
+        return this.pvNamesFindQuery(targetQuery, maxNumPVs);
       }
 
       return Promise.resolve([targetQuery]);
@@ -74,7 +79,7 @@ export class ArchiverapplianceDatasource {
     return Promise.all(pvnamesPromise)
       .then((pvnamesArray) => (
         new Promise((resolve, reject) => {
-          const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
+          const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
           let urls;
 
           try {
@@ -239,6 +244,7 @@ export class ArchiverapplianceDatasource {
         functions: target.functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,
+        options: this.getOptions(target.functions),
         from,
         to,
         interval,
@@ -303,5 +309,21 @@ export class ArchiverapplianceDatasource {
     ), Promise.resolve(data));
 
     return promises;
+  }
+
+  getOptions(functionDefs) {
+    const allCategorisedFuncDefs = aafunc.getCategories();
+    const optionsFuncNames = _.map(allCategorisedFuncDefs.Options, 'name');
+
+    const applyFuncDefs = _.filter(functionDefs, (func) => (
+      _.includes(optionsFuncNames, func.def.name)
+    ));
+
+    const options = _.reduce(applyFuncDefs, (optionMap, func) => {
+      [optionMap[func.def.name]] = func.params;
+      return optionMap;
+    }, {});
+
+    return options;
   }
 }

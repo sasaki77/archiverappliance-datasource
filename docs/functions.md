@@ -4,6 +4,7 @@ Functions are categorized into below groups.
 
 - **Transform:** converts the timeseries datapoints from its datapoint values.
 - **Filter Series:** picks up some series that meet certain condition.
+- **Options:** adds option parameters.
 
 ## Transform Functions
 
@@ -73,4 +74,17 @@ Examples:
 ```js
 bottom(5, avg)
 bottom(10, min)
+```
+
+## Options Functions
+### maxNumPVs
+``` function:: maxNumPVs(number)
+```
+
+Set maximum number of PVs you can select for a target.
+
+Examples:
+
+```js
+maxNumPVs(500)
 ```

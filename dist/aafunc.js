@@ -28,7 +28,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var funcIndex = [];
 var categories = {
   Transform: [],
-  'Filter Series': []
+  'Filter Series': [],
+  Options: []
 };
 
 function addFuncDef(newFuncDef) {
@@ -104,6 +105,16 @@ addFuncDef({
     options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
   }],
   defaultParams: [5, 'avg']
+}); // Options
+
+addFuncDef({
+  name: 'maxNumPVs',
+  category: 'Options',
+  params: [{
+    name: 'number',
+    type: 'int'
+  }],
+  defaultParams: [100]
 });
 
 var FuncInstance =

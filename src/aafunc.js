@@ -5,6 +5,7 @@ const funcIndex = [];
 const categories = {
   Transform: [],
   'Filter Series': [],
+  Options: [],
 };
 
 function addFuncDef(newFuncDef) {
@@ -82,6 +83,17 @@ addFuncDef({
     },
   ],
   defaultParams: [5, 'avg'],
+});
+
+// Options
+
+addFuncDef({
+  name: 'maxNumPVs',
+  category: 'Options',
+  params: [
+    { name: 'number', type: 'int' },
+  ],
+  defaultParams: [100],
 });
 
 class FuncInstance {
