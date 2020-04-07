@@ -107,7 +107,7 @@ function (_QueryCtrl) {
       }
 
       var str = ".*".concat(query, ".*");
-      this.datasource.pvNamesFindQuery(str).then(function (res) {
+      this.datasource.pvNamesFindQuery(str, 100).then(function (res) {
         callback(res);
       });
       return undefined;

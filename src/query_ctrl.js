@@ -61,7 +61,7 @@ export class ArchiverapplianceDatasourceQueryCtrl extends QueryCtrl {
     }
 
     const str = `.*${query}.*`;
-    this.datasource.pvNamesFindQuery(str).then((res) => {
+    this.datasource.pvNamesFindQuery(str, 100).then((res) => {
       callback(res);
     });
 

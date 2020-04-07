@@ -65,7 +65,7 @@ export class ArchiverapplianceDatasource {
 
     const pvnamesPromise = _.map(targetQueries, (targetQuery) => {
       if (target.regex) {
-        return this.pvNamesFindQuery(targetQuery);
+        return this.pvNamesFindQuery(targetQuery, 100);
       }
 
       return Promise.resolve([targetQuery]);
@@ -174,12 +174,12 @@ export class ArchiverapplianceDatasource {
     return { status: 'success', message: 'Data source is working', title: 'Success' };
   }
 
-  pvNamesFindQuery(query) {
+  pvNamesFindQuery(query, maxPvs) {
     if (!query) {
       return Promise.resolve([]);
     }
 
-    const url = `${this.url}/bpl/getMatchingPVs?limit=100&regex=${encodeURIComponent(query)}`;
+    const url = `${this.url}/bpl/getMatchingPVs?limit=${maxPvs}&regex=${encodeURIComponent(query)}`;
 
     return this.doRequest({
       url,
@@ -192,7 +192,7 @@ export class ArchiverapplianceDatasource {
     const parsedQuery = this.parseTargetQuery(replacedQuery);
 
     const pvnamesPromise = _.map(parsedQuery, (targetQuery) => (
-      this.pvNamesFindQuery(targetQuery)
+      this.pvNamesFindQuery(targetQuery, 100)
     ));
 
     return Promise.all(pvnamesPromise).then((pvnamesArray) => {

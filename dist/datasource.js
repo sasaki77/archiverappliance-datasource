@@ -111,7 +111,7 @@ function () {
 
       var pvnamesPromise = _lodash.default.map(targetQueries, function (targetQuery) {
         if (target.regex) {
-          return _this3.pvNamesFindQuery(targetQuery);
+          return _this3.pvNamesFindQuery(targetQuery, 100);
         }
 
         return Promise.resolve([targetQuery]);
@@ -239,12 +239,12 @@ function () {
     }
   }, {
     key: "pvNamesFindQuery",
-    value: function pvNamesFindQuery(query) {
+    value: function pvNamesFindQuery(query, maxPvs) {
       if (!query) {
         return Promise.resolve([]);
       }
 
-      var url = "".concat(this.url, "/bpl/getMatchingPVs?limit=100&regex=").concat(encodeURIComponent(query));
+      var url = "".concat(this.url, "/bpl/getMatchingPVs?limit=").concat(maxPvs, "&regex=").concat(encodeURIComponent(query));
       return this.doRequest({
         url: url,
         method: 'GET'
@@ -261,7 +261,7 @@ function () {
       var parsedQuery = this.parseTargetQuery(replacedQuery);
 
       var pvnamesPromise = _lodash.default.map(parsedQuery, function (targetQuery) {
-        return _this5.pvNamesFindQuery(targetQuery);
+        return _this5.pvNamesFindQuery(targetQuery, 100);
       });
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
