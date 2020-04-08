@@ -88,3 +88,16 @@ Examples:
 ```js
 maxNumPVs(500)
 ```
+
+### binInterval
+``` function:: binInterval(interval)
+```
+
+Set binning interval for processing of data.
+For example, if binInterval is set 100 and operator in query is set mean then returned values are average values in 100 seconds wide bins.
+
+Examples:
+
+```js
+binInterval(100)
+```

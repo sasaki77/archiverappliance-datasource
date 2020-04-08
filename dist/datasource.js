@@ -130,6 +130,12 @@ function () {
         return Promise.resolve([targetQuery]);
       });
 
+      var binInterval = target.interval;
+
+      if (target.options.binInterval) {
+        binInterval = target.options.binInterval;
+      }
+
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
         return new Promise(function (resolve, reject) {
           var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, maxNumPVs);
@@ -138,7 +144,7 @@ function () {
 
           try {
             urls = _lodash.default.map(pvnames, function (pvname) {
-              return _this3.buildUrl(pvname, target.operator, target.interval, target.from, target.to);
+              return _this3.buildUrl(pvname, target.operator, binInterval, target.from, target.to);
             });
           } catch (e) {
             reject(e);

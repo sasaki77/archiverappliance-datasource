@@ -1,4 +1,11 @@
 # Release Notes
+## 0.1.2
+
+**2020-XX-XX**
+
+### Features
+- Add binInterval option function to set a binning interval for processing of data
+
 ## 0.1.1
 
 **2020-04-07**

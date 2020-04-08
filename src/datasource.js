@@ -76,6 +76,11 @@ export class ArchiverapplianceDatasource {
       return Promise.resolve([targetQuery]);
     });
 
+    let binInterval = target.interval;
+    if (target.options.binInterval) {
+      binInterval = target.options.binInterval;
+    }
+
     return Promise.all(pvnamesPromise)
       .then((pvnamesArray) => (
         new Promise((resolve, reject) => {
@@ -87,7 +92,7 @@ export class ArchiverapplianceDatasource {
               this.buildUrl(
                 pvname,
                 target.operator,
-                target.interval,
+                binInterval,
                 target.from,
                 target.to,
               )

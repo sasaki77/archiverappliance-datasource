@@ -144,6 +144,21 @@ describe('ArchiverapplianceDatasource', () => {
     });
   });
 
+  it('should return an required bin interval url', (done) => {
+    const target = {
+      target: 'PV1',
+      interval: '9',
+      from: new Date('2010-01-01T00:00:00.000Z'),
+      to: new Date('2010-01-01T00:00:30.000Z'),
+      options: { binInterval: 100 },
+    };
+
+    ctx.ds.buildUrls(target).then((url) => {
+      expect(url[0]).to.equal('url_header:/data/getData.json?pv=mean_100(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z');
+      done();
+    });
+  });
+
   it('should return an valid multi urls when regex OR target', (done) => {
     ctx.templateSrv.replace = (data) => data;
 

@@ -96,6 +96,15 @@ addFuncDef({
   defaultParams: [100],
 });
 
+addFuncDef({
+  name: 'binInterval',
+  category: 'Options',
+  params: [
+    { name: 'interval', type: 'int' },
+  ],
+  defaultParams: [900],
+});
+
 class FuncInstance {
   constructor(funcDef, params) {
     this.def = funcDef;
