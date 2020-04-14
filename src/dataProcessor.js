@@ -43,7 +43,7 @@ function transformWrapper(func, ...args) {
     return timeseries;
   });
 
-  return Promise.resolve(tsData);
+  return tsData;
 }
 
 // Filter Series

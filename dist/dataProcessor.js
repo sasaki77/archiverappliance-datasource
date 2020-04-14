@@ -66,7 +66,7 @@ function transformWrapper(func) {
     return timeseries;
   });
 
-  return Promise.resolve(tsData);
+  return tsData;
 } // Filter Series
 // [Support Funcs] Datapoints aggregation functions
 
