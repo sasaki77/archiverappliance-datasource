@@ -5,7 +5,7 @@
 
 ### Features
 - Add binInterval option function to set a binning interval for processing of data
-- Add exclude option to exluce matched PV data
+- Add exclude option to exclude matched PV data
 
 ## 0.1.1
 
