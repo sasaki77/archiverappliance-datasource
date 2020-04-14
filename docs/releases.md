@@ -1,10 +1,11 @@
 # Release Notes
 ## 0.1.2
 
-**2020-XX-XX**
+**2020-04-14**
 
 ### Features
 - Add binInterval option function to set a binning interval for processing of data
+- Add exclude option to exluce matched PV data
 
 ## 0.1.1
 

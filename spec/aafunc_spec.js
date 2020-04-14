@@ -324,6 +324,46 @@ describe('ArchiverapplianceFunc', () => {
     expect(absMaxBottomData[0].target).to.equal('min');
   });
 
+  it('should return the server results with exclude function', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
+      const pvname = unescape(_.split(request.url, /pv=(.*?)&/)[1]);
+      const pvdata = [{
+        meta: { name: pvname, PREC: '0' },
+        data: [
+          { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+        ],
+      }];
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    };
+
+    ctx.templateSrv.replace = (data) => data;
+
+    const query = {
+      targets: [{
+        target: '(PV1|PV2|PVA|PVB)',
+        refId: 'A',
+        functions: [
+          aafunc.createFuncInstance(aafunc.getFuncDef('exclude'), ['PV[0-9]']),
+        ],
+      }],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      maxDataPoints: 1000,
+    };
+
+    ctx.ds.query(query).then((result) => {
+      expect(result.data).to.have.length(2);
+      const series1 = result.data[0];
+      const series2 = result.data[1];
+      expect(series1.target).to.equal('PVA');
+      expect(series2.target).to.equal('PVB');
+      done();
+    });
+  });
+
 
   it('should return option variables if option functions are applied', (done) => {
     ctx.templateSrv.replace = (data) => data;

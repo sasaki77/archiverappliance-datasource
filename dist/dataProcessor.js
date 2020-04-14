@@ -68,7 +68,14 @@ function transformWrapper(func) {
 
   return tsData;
 } // Filter Series
-// [Support Funcs] Datapoints aggregation functions
+
+
+function exclude(pattern, timeseriesData) {
+  var regex = new RegExp(pattern);
+  return _lodash.default.filter(timeseriesData, function (timeseries) {
+    return !regex.test(timeseries.target);
+  });
+} // [Support Funcs] Datapoints aggregation functions
 
 
 function datapointsAvg(datapoints) {
@@ -149,7 +156,8 @@ var functions = {
   fluctuation: _lodash.default.partial(transformWrapper, fluctuation),
   // Filter Series
   top: _lodash.default.partial(extraction, 'top'),
-  bottom: _lodash.default.partial(extraction, 'bottom')
+  bottom: _lodash.default.partial(extraction, 'bottom'),
+  exclude: exclude
 };
 var _default = {
   get aaFunctions() {

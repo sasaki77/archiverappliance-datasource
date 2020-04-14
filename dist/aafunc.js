@@ -105,6 +105,15 @@ addFuncDef({
     options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum']
   }],
   defaultParams: [5, 'avg']
+});
+addFuncDef({
+  name: 'exclude',
+  category: 'Filter Series',
+  params: [{
+    name: 'pattern',
+    type: 'string'
+  }],
+  defaultParams: []
 }); // Options
 
 addFuncDef({

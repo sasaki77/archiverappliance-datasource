@@ -47,6 +47,10 @@ function transformWrapper(func, ...args) {
 }
 
 // Filter Series
+function exclude(pattern, timeseriesData) {
+  const regex = new RegExp(pattern);
+  return _.filter(timeseriesData, (timeseries) => (!regex.test(timeseries.target)));
+}
 
 // [Support Funcs] Datapoints aggregation functions
 
@@ -114,6 +118,7 @@ const functions = {
   // Filter Series
   top: _.partial(extraction, 'top'),
   bottom: _.partial(extraction, 'bottom'),
+  exclude,
 };
 
 export default {
