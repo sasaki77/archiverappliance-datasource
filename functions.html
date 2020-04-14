@@ -97,10 +97,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#filter-series-functions">Filter Series Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#top"><em>top</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bottom"><em>bottom</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exclude"><em>exclude</em></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#options-functions">Options Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#maxnumpvs">maxNumPVs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maxnumpvs"><em>maxNumPVs</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bininterval"><em>binInterval</em></a></li>
 </ul>
 </li>
 </ul>
@@ -264,11 +266,24 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </pre></div>
 </div>
 </div>
+<div class="section" id="exclude">
+<h3><em>exclude</em><a class="headerlink" href="#exclude" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="exclude">
+<code class="sig-name descname">exclude</code><span class="sig-paren">(</span><em class="sig-param">pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Exclude PV data that match the regular expression.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">exclude</span><span class="p">(</span><span class="nx">PV</span><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="options-functions">
 <h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="maxnumpvs">
-<h3>maxNumPVs<a class="headerlink" href="#maxnumpvs" title="Permalink to this headline">¶</a></h3>
+<h3><em>maxNumPVs</em><a class="headerlink" href="#maxnumpvs" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="maxNumPVs">
 <code class="sig-name descname">maxNumPVs</code><span class="sig-paren">(</span><em class="sig-param">number</em><span class="sig-paren">)</span><a class="headerlink" href="#maxNumPVs" title="Permalink to this definition">¶</a></dt>
@@ -277,6 +292,20 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <p>Set maximum number of PVs you can select for a target.</p>
 <p>Examples:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">maxNumPVs</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bininterval">
+<h3><em>binInterval</em><a class="headerlink" href="#bininterval" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="binInterval">
+<code class="sig-name descname">binInterval</code><span class="sig-paren">(</span><em class="sig-param">interval</em><span class="sig-paren">)</span><a class="headerlink" href="#binInterval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Set binning interval for processing of data.
+For example, if binInterval is set 100 and operator in query is set mean then returned values are average values in 100 seconds wide bins.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">binInterval</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

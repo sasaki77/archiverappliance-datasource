@@ -76,8 +76,20 @@ bottom(5, avg)
 bottom(10, min)
 ```
 
+### _exclude_
+``` function:: exclude(pattern)
+```
+
+Exclude PV data that match the regular expression.
+
+Examples:
+
+```js
+exclude(PV[0-9])
+```
+
 ## Options Functions
-### maxNumPVs
+### _maxNumPVs_
 ``` function:: maxNumPVs(number)
 ```
 
@@ -87,4 +99,17 @@ Examples:
 
 ```js
 maxNumPVs(500)
+```
+
+### _binInterval_
+``` function:: binInterval(interval)
+```
+
+Set binning interval for processing of data.
+For example, if binInterval is set 100 and operator in query is set mean then returned values are average values in 100 seconds wide bins.
+
+Examples:
+
+```js
+binInterval(100)
 ```
