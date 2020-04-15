@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -189,9 +189,9 @@
 <h2>Transform Functions<a class="headerlink" href="#transform-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="scale">
 <h3><em>scale</em><a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="scale">
-<code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param">factor</em><span class="sig-paren">)</span><a class="headerlink" href="#scale" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">factor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#scale" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Multiplies datapoint by <em>factor</em> at each point.</p>
@@ -203,9 +203,9 @@
 </div>
 <div class="section" id="offset">
 <h3><em>offset</em><a class="headerlink" href="#offset" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="offset">
-<code class="sig-name descname">offset</code><span class="sig-paren">(</span><em class="sig-param">delta</em><span class="sig-paren">)</span><a class="headerlink" href="#offset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">offset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delta</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Adds <em>delta</em> to each datapoint.</p>
@@ -217,7 +217,7 @@
 </div>
 <div class="section" id="delta">
 <h3><em>delta</em><a class="headerlink" href="#delta" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="delta">
 <code class="sig-name descname">delta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -226,7 +226,7 @@
 </div>
 <div class="section" id="fluctuation">
 <h3><em>fluctuation</em><a class="headerlink" href="#fluctuation" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="fluctuation">
 <code class="sig-name descname">fluctuation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fluctuation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -238,9 +238,9 @@
 <h2>Filter Series Functions<a class="headerlink" href="#filter-series-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="top">
 <h3><em>top</em><a class="headerlink" href="#top" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="top">
-<code class="sig-name descname">top</code><span class="sig-paren">(</span><em class="sig-param">number</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#top" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">top</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#top" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Returns top N series sorted by <em>value</em>.
@@ -253,9 +253,9 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </div>
 <div class="section" id="bottom">
 <h3><em>bottom</em><a class="headerlink" href="#bottom" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="bottom">
-<code class="sig-name descname">bottom</code><span class="sig-paren">(</span><em class="sig-param">number</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#bottom" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bottom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">number</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bottom" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Returns bottom N series sorted by <em>value</em>.
@@ -268,9 +268,9 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </div>
 <div class="section" id="exclude">
 <h3><em>exclude</em><a class="headerlink" href="#exclude" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="exclude">
-<code class="sig-name descname">exclude</code><span class="sig-paren">(</span><em class="sig-param">pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">exclude</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span></em><span class="sig-paren">)</span><a class="headerlink" href="#exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Exclude PV data that match the regular expression.</p>
@@ -284,9 +284,9 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="maxnumpvs">
 <h3><em>maxNumPVs</em><a class="headerlink" href="#maxnumpvs" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="maxNumPVs">
-<code class="sig-name descname">maxNumPVs</code><span class="sig-paren">(</span><em class="sig-param">number</em><span class="sig-paren">)</span><a class="headerlink" href="#maxNumPVs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">maxNumPVs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="headerlink" href="#maxNumPVs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Set maximum number of PVs you can select for a target.</p>
@@ -297,9 +297,9 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </div>
 <div class="section" id="bininterval">
 <h3><em>binInterval</em><a class="headerlink" href="#bininterval" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="binInterval">
-<code class="sig-name descname">binInterval</code><span class="sig-paren">(</span><em class="sig-param">interval</em><span class="sig-paren">)</span><a class="headerlink" href="#binInterval" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">binInterval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interval</span></em><span class="sig-paren">)</span><a class="headerlink" href="#binInterval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>Set binning interval for processing of data.
