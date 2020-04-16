@@ -507,4 +507,51 @@ describe('ArchiverapplianceDatasource', () => {
       done();
     });
   });
+
+  it('should return the pv name results for metricFindQuery with limit parameter', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
+      const params = new URLSearchParams(request.url.split('?')[1]);
+      const limit = parseInt(params.get('limit'), 10);
+      const pvname = params.get('regex');
+      const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
+
+      return Promise.resolve({
+        _request: request,
+        data,
+      });
+    };
+
+    ctx.templateSrv.replace = (data) => data;
+
+    ctx.ds.metricFindQuery('PV?limit=5').then((result) => {
+      expect(result).to.have.length(5);
+      expect(result[0].text).to.equal('PV0');
+      expect(result[1].text).to.equal('PV1');
+      expect(result[2].text).to.equal('PV2');
+      expect(result[3].text).to.equal('PV3');
+      expect(result[4].text).to.equal('PV4');
+      done();
+    });
+  });
+
+  it('should return the pv name results for metricFindQuery with invalid limit parameter', (done) => {
+    ctx.backendSrv.datasourceRequest = (request) => {
+      const params = new URLSearchParams(request.url.split('?')[1]);
+      const limit = parseInt(params.get('limit'), 10);
+      const pvname = params.get('regex');
+      const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
+
+      return Promise.resolve({
+        _request: request,
+        data,
+      });
+    };
+
+    ctx.templateSrv.replace = (data) => data;
+
+    ctx.ds.metricFindQuery('PV?limit=a').then((result) => {
+      expect(result).to.have.length(100);
+      done();
+    });
+  });
 });

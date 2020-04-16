@@ -19,6 +19,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -26,12 +32,6 @@ function _nonIterableRest() { throw new TypeError("Invalid attempt to destructur
 function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -276,15 +276,37 @@ function () {
     value: function metricFindQuery(query) {
       var _this5 = this;
 
+      /*
+       * query format:
+       * ex1) PV:NAME:.*
+       * ex2) PV:NAME:.*?limit=10
+       */
       var replacedQuery = this.templateSrv.replace(query, null, 'regex');
-      var parsedQuery = this.parseTargetQuery(replacedQuery);
+
+      var _replacedQuery$split = replacedQuery.split('?', 2),
+          _replacedQuery$split2 = _slicedToArray(_replacedQuery$split, 2),
+          pvQuery = _replacedQuery$split2[0],
+          paramsQuery = _replacedQuery$split2[1];
+
+      var parsedQuery = this.parseTargetQuery(pvQuery); // Parse query parameters
+
+      var limitNum = 100;
+
+      if (paramsQuery) {
+        var params = new URLSearchParams(paramsQuery);
+
+        if (params.has('limit')) {
+          var limit = parseInt(params.get('limit'), 10);
+          limitNum = Number.isInteger(limit) ? limit : 100;
+        }
+      }
 
       var pvnamesPromise = _lodash.default.map(parsedQuery, function (targetQuery) {
-        return _this5.pvNamesFindQuery(targetQuery, 100);
+        return _this5.pvNamesFindQuery(targetQuery, limitNum);
       });
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
-        var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, 100);
+        var pvnames = _lodash.default.slice(_lodash.default.uniq(_lodash.default.flatten(pvnamesArray)), 0, limitNum);
 
         return _lodash.default.map(pvnames, function (pvname) {
           return {

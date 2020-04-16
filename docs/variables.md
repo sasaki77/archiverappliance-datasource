@@ -33,7 +33,13 @@ Below is a query in this case.
 ${group}:.*
 ```
 
-``` Note:: Maximum number of PV names you can use in variables is **100**.
+``` Note:: Default maximum number of PV names you can use in variables is **100**.
+```
+
+Limit parameter is available to change maxmum number. Parameters must be follow `?` character.
+
+```bash
+PV:NAME:.*?limit=1000
 ```
 
 ## Variables Usage

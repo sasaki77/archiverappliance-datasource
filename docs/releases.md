@@ -5,6 +5,7 @@
 
 ### Features
 - Support variables for [Functions](functions) parameter.
+- Support limit parameter for variable query
 
 ## 0.1.2
 

@@ -198,15 +198,31 @@ export class ArchiverapplianceDatasource {
   }
 
   metricFindQuery(query) {
+    /*
+     * query format:
+     * ex1) PV:NAME:.*
+     * ex2) PV:NAME:.*?limit=10
+     */
     const replacedQuery = this.templateSrv.replace(query, null, 'regex');
-    const parsedQuery = this.parseTargetQuery(replacedQuery);
+    const [pvQuery, paramsQuery] = replacedQuery.split('?', 2);
+    const parsedQuery = this.parseTargetQuery(pvQuery);
+
+    // Parse query parameters
+    let limitNum = 100;
+    if (paramsQuery) {
+      const params = new URLSearchParams(paramsQuery);
+      if (params.has('limit')) {
+        const limit = parseInt(params.get('limit'), 10);
+        limitNum = Number.isInteger(limit) ? limit : 100;
+      }
+    }
 
     const pvnamesPromise = _.map(parsedQuery, (targetQuery) => (
-      this.pvNamesFindQuery(targetQuery, 100)
+      this.pvNamesFindQuery(targetQuery, limitNum)
     ));
 
     return Promise.all(pvnamesPromise).then((pvnamesArray) => {
-      const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, 100);
+      const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, limitNum);
       return _.map(pvnames, (pvname) => ({ text: pvname }));
     });
   }
