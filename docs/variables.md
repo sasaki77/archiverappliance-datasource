@@ -37,7 +37,7 @@ ${group}:.*
 ```
 
 ## Variables Usage
-Variables is allowd to use only in `PV` and `Operator` field input. Using variables in other fields is not supported.
+Variables is allowd to use only in `PV` and `Operator` field input and [Functions](functions) parameter. Using variables in other fields is not supported.
 
 You can select multiple PVs from drop down menu with variables.
 

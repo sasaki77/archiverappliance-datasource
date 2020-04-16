@@ -239,22 +239,31 @@ export class ArchiverapplianceDatasource {
 
     const interval = (intervalSec >= 1) ? String(intervalSec) : '';
 
-    const targets = _.map(query.targets, (target) => (
-      {
+    const targets = _.map(query.targets, (target) => {
+      // Replace parameters with variables for each functions
+      const functions = _.map(target.functions, (func) => {
+        const newFunc = func;
+        newFunc.params = _.map(newFunc.params, (param) => (
+          this.templateSrv.replace(param, query.scopedVars, 'regex')
+        ));
+        return newFunc;
+      });
+
+      return {
         target: this.templateSrv.replace(target.target, query.scopedVars, 'regex'),
         refId: target.refId,
         hide: target.hide,
         alias: target.alias,
         operator: this.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
-        functions: target.functions,
+        functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,
         options: this.getOptions(target.functions),
         from,
         to,
         interval,
-      }
-    ));
+      };
+    });
 
     query.targets = targets;
 

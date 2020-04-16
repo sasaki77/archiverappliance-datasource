@@ -1,4 +1,11 @@
 # Release Notes
+## 0.1.3
+
+**2020-XX-XX**
+
+### Features
+- Support variables for [Functions](functions) parameter.
+
 ## 0.1.2
 
 **2020-04-14**

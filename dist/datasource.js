@@ -328,13 +328,22 @@ function () {
       var interval = intervalSec >= 1 ? String(intervalSec) : '';
 
       var targets = _lodash.default.map(query.targets, function (target) {
+        // Replace parameters with variables for each functions
+        var functions = _lodash.default.map(target.functions, function (func) {
+          var newFunc = func;
+          newFunc.params = _lodash.default.map(newFunc.params, function (param) {
+            return _this6.templateSrv.replace(param, query.scopedVars, 'regex');
+          });
+          return newFunc;
+        });
+
         return {
           target: _this6.templateSrv.replace(target.target, query.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
           alias: target.alias,
           operator: _this6.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
-          functions: target.functions,
+          functions: functions,
           regex: target.regex,
           aliasPattern: target.aliasPattern,
           options: _this6.getOptions(target.functions),
