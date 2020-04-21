@@ -28,6 +28,8 @@ export class ArchiverapplianceDatasource {
 
   query(options) {
     const query = this.buildQueryParameters(options);
+
+    // Remove hidden target from query
     query.targets = _.filter(query.targets, (t) => !t.hide);
 
     if (query.targets.length <= 0) {
@@ -61,12 +63,11 @@ export class ArchiverapplianceDatasource {
   }
 
   buildUrls(target) {
-    const targetQueries = this.parseTargetQuery(target.target);
+    // Get Option values
+    const maxNumPVs = target.options.maxNumPVs || 100;
+    const binInterval = target.options.binInterval || target.interval;
 
-    let maxNumPVs = 100;
-    if (target.options.maxNumPVs) {
-      maxNumPVs = target.options.maxNumPVs;
-    }
+    const targetQueries = this.parseTargetQuery(target.target);
 
     const pvnamesPromise = _.map(targetQueries, (targetQuery) => {
       if (target.regex) {
@@ -75,11 +76,6 @@ export class ArchiverapplianceDatasource {
 
       return Promise.resolve([targetQuery]);
     });
-
-    let binInterval = target.interval;
-    if (target.options.binInterval) {
-      binInterval = target.options.binInterval;
-    }
 
     return Promise.all(pvnamesPromise)
       .then((pvnamesArray) => (
@@ -107,17 +103,24 @@ export class ArchiverapplianceDatasource {
   }
 
   buildUrl(pvname, operator, interval, from, to) {
-    let pv = '';
-    if (operator === 'raw' || interval === '') {
-      pv = `${pvname}`;
-    } else if (_.includes(['', undefined], operator)) {
+    const pv = (() => {
+      // raw Operator
+      if (operator === 'raw' || interval === '') {
+        return `${pvname}`;
+      }
+
       // Default Operator
-      pv = `mean_${interval}(${pvname})`;
-    } else if (_.includes(this.operatorList, operator)) {
-      pv = `${operator}_${interval}(${pvname})`;
-    } else {
+      if (_.includes(['', undefined], operator)) {
+        return `mean_${interval}(${pvname})`;
+      }
+
+      // Other Operator
+      if (_.includes(this.operatorList, operator)) {
+        return `${operator}_${interval}(${pvname})`;
+      }
+
       throw new Error('Data Processing Operator is invalid.');
-    }
+    })();
 
     const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(pv)}&from=${from.toISOString()}&to=${to.toISOString()}`;
 

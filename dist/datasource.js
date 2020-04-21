@@ -67,7 +67,8 @@ function () {
     value: function query(options) {
       var _this = this;
 
-      var query = this.buildQueryParameters(options);
+      var query = this.buildQueryParameters(options); // Remove hidden target from query
+
       query.targets = _lodash.default.filter(query.targets, function (t) {
         return !t.hide;
       });
@@ -115,12 +116,10 @@ function () {
     value: function buildUrls(target) {
       var _this3 = this;
 
+      // Get Option values
+      var maxNumPVs = target.options.maxNumPVs || 100;
+      var binInterval = target.options.binInterval || target.interval;
       var targetQueries = this.parseTargetQuery(target.target);
-      var maxNumPVs = 100;
-
-      if (target.options.maxNumPVs) {
-        maxNumPVs = target.options.maxNumPVs;
-      }
 
       var pvnamesPromise = _lodash.default.map(targetQueries, function (targetQuery) {
         if (target.regex) {
@@ -129,12 +128,6 @@ function () {
 
         return Promise.resolve([targetQuery]);
       });
-
-      var binInterval = target.interval;
-
-      if (target.options.binInterval) {
-        binInterval = target.options.binInterval;
-      }
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
         return new Promise(function (resolve, reject) {
@@ -157,18 +150,26 @@ function () {
   }, {
     key: "buildUrl",
     value: function buildUrl(pvname, operator, interval, from, to) {
-      var pv = '';
+      var _this4 = this;
 
-      if (operator === 'raw' || interval === '') {
-        pv = "".concat(pvname);
-      } else if (_lodash.default.includes(['', undefined], operator)) {
-        // Default Operator
-        pv = "mean_".concat(interval, "(").concat(pvname, ")");
-      } else if (_lodash.default.includes(this.operatorList, operator)) {
-        pv = "".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
-      } else {
+      var pv = function () {
+        // raw Operator
+        if (operator === 'raw' || interval === '') {
+          return "".concat(pvname);
+        } // Default Operator
+
+
+        if (_lodash.default.includes(['', undefined], operator)) {
+          return "mean_".concat(interval, "(").concat(pvname, ")");
+        } // Other Operator
+
+
+        if (_lodash.default.includes(_this4.operatorList, operator)) {
+          return "".concat(operator, "_").concat(interval, "(").concat(pvname, ")");
+        }
+
         throw new Error('Data Processing Operator is invalid.');
-      }
+      }();
 
       var url = "".concat(this.url, "/data/getData.json?pv=").concat(encodeURIComponent(pv), "&from=").concat(from.toISOString(), "&to=").concat(to.toISOString());
       return url;
@@ -176,10 +177,10 @@ function () {
   }, {
     key: "doMultiUrlRequests",
     value: function doMultiUrlRequests(urls) {
-      var _this4 = this;
+      var _this5 = this;
 
       var requests = _lodash.default.map(urls, function (url) {
-        return _this4.doRequest({
+        return _this5.doRequest({
           url: url,
           method: 'GET'
         });
@@ -274,7 +275,7 @@ function () {
   }, {
     key: "metricFindQuery",
     value: function metricFindQuery(query) {
-      var _this5 = this;
+      var _this6 = this;
 
       /*
        * query format:
@@ -302,7 +303,7 @@ function () {
       }
 
       var pvnamesPromise = _lodash.default.map(parsedQuery, function (targetQuery) {
-        return _this5.pvNamesFindQuery(targetQuery, limitNum);
+        return _this6.pvNamesFindQuery(targetQuery, limitNum);
       });
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
@@ -328,7 +329,7 @@ function () {
   }, {
     key: "buildQueryParameters",
     value: function buildQueryParameters(options) {
-      var _this6 = this;
+      var _this7 = this;
 
       var query = _objectSpread({}, options); // remove placeholder targets and undefined targets
 
@@ -354,21 +355,21 @@ function () {
         var functions = _lodash.default.map(target.functions, function (func) {
           var newFunc = func;
           newFunc.params = _lodash.default.map(newFunc.params, function (param) {
-            return _this6.templateSrv.replace(param, query.scopedVars, 'regex');
+            return _this7.templateSrv.replace(param, query.scopedVars, 'regex');
           });
           return newFunc;
         });
 
         return {
-          target: _this6.templateSrv.replace(target.target, query.scopedVars, 'regex'),
+          target: _this7.templateSrv.replace(target.target, query.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
-          alias: _this6.templateSrv.replace(target.alias, query.scopedVars, 'regex'),
-          operator: _this6.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
+          alias: _this7.templateSrv.replace(target.alias, query.scopedVars, 'regex'),
+          operator: _this7.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
           functions: functions,
           regex: target.regex,
           aliasPattern: target.aliasPattern,
-          options: _this6.getOptions(target.functions),
+          options: _this7.getOptions(target.functions),
           from: from,
           to: to,
           interval: interval
