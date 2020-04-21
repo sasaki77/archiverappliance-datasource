@@ -43,7 +43,7 @@ PV:NAME:.*?limit=1000
 ```
 
 ## Variables Usage
-Variables is allowd to use only in `PV` and `Operator` field input and [Functions](functions) parameter. Using variables in other fields is not supported.
+Variables is allowed to use in each field and [Functions](functions) parameter except for `alias pattern` field.
 
 You can select multiple PVs from drop down menu with variables.
 

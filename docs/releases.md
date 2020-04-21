@@ -4,7 +4,7 @@
 **2020-XX-XX**
 
 ### Features
-- Support variables for [Functions](functions) parameter.
+- Support variables for alias field and [Functions](functions) parameter.
 - Support limit parameter for variable query
 
 ## 0.1.2

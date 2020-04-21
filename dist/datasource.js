@@ -363,7 +363,7 @@ function () {
           target: _this6.templateSrv.replace(target.target, query.scopedVars, 'regex'),
           refId: target.refId,
           hide: target.hide,
-          alias: target.alias,
+          alias: _this6.templateSrv.replace(target.alias, query.scopedVars, 'regex'),
           operator: _this6.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
           functions: functions,
           regex: target.regex,
