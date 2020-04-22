@@ -133,14 +133,14 @@ function () {
       // Get Option values
       var maxNumPVs = target.options.maxNumPVs || 100;
       var binInterval = target.options.binInterval || target.interval;
-      var targetQueries = this.parseTargetQuery(target.target);
+      var targetPVs = this.parseTargetPV(target.target); // Create Promise to fetch PV names
 
-      var pvnamesPromise = _lodash.default.map(targetQueries, function (targetQuery) {
+      var pvnamesPromise = _lodash.default.map(targetPVs, function (targetPV) {
         if (target.regex) {
-          return _this3.pvNamesFindQuery(targetQuery, maxNumPVs);
+          return _this3.pvNamesFindQuery(targetPV, maxNumPVs);
         }
 
-        return Promise.resolve([targetQuery]);
+        return Promise.resolve([targetPV]);
       });
 
       return Promise.all(pvnamesPromise).then(function (pvnamesArray) {
@@ -260,7 +260,7 @@ function () {
         return Promise.resolve(timeseriesData);
       }
 
-      return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
+      return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
     } // Called from Grafana data source configuration page to make sure the connection is working
 
   }, {
@@ -305,7 +305,7 @@ function () {
           pvQuery = _replacedQuery$split2[0],
           paramsQuery = _replacedQuery$split2[1];
 
-      var parsedQuery = this.parseTargetQuery(pvQuery); // Parse query parameters
+      var parsedPVs = this.parseTargetPV(pvQuery); // Parse query parameters
 
       var limitNum = 100;
 
@@ -318,7 +318,7 @@ function () {
         }
       }
 
-      var pvnamesPromise = _lodash.default.map(parsedQuery, function (targetQuery) {
+      var pvnamesPromise = _lodash.default.map(parsedPVs, function (targetQuery) {
         return _this6.pvNamesFindQuery(targetQuery, limitNum);
       });
 
@@ -436,10 +436,10 @@ function () {
       return query;
     }
   }, {
-    key: "parseTargetQuery",
-    value: function parseTargetQuery(targetQuery) {
+    key: "parseTargetPV",
+    value: function parseTargetPV(targetPV) {
       /*
-       * ex) targetQuery = ABC(1|2|3)EFG(5|6)
+       * ex) targetPV = ABC(1|2|3)EFG(5|6)
        *     then
        *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
        *     queries = [
@@ -447,7 +447,7 @@ function () {
        *     ABC2EFG6, ABC3EFG5, ABC3EFG6
        *     ]
        */
-      var splitQueries = _lodash.default.split(targetQuery, /(\(.*?\))/);
+      var splitQueries = _lodash.default.split(targetPV, /(\(.*?\))/);
 
       var queries = [''];
 
@@ -475,17 +475,9 @@ function () {
       return queries;
     }
   }, {
-    key: "bindFunctionDefs",
-    value: function bindFunctionDefs(functionDefs, categories, data) {
-      var allCategorisedFuncDefs = aafunc.getCategories();
-
-      var requiredCategoryFuncNames = _lodash.default.reduce(categories, function (funcNames, category) {
-        return _lodash.default.concat(funcNames, _lodash.default.map(allCategorisedFuncDefs[category], 'name'));
-      }, []);
-
-      var applyFuncDefs = _lodash.default.filter(functionDefs, function (func) {
-        return _lodash.default.includes(requiredCategoryFuncNames, func.def.name);
-      });
+    key: "applyFunctionDefs",
+    value: function applyFunctionDefs(functionDefs, categories, data) {
+      var applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
 
       var promises = _lodash.default.reduce(applyFuncDefs, function (prevPromise, func) {
         return prevPromise.then(function (res) {
@@ -500,15 +492,9 @@ function () {
   }, {
     key: "getOptions",
     value: function getOptions(functionDefs) {
-      var allCategorisedFuncDefs = aafunc.getCategories();
+      var appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
 
-      var optionsFuncNames = _lodash.default.map(allCategorisedFuncDefs.Options, 'name');
-
-      var applyFuncDefs = _lodash.default.filter(functionDefs, function (func) {
-        return _lodash.default.includes(optionsFuncNames, func.def.name);
-      });
-
-      var options = _lodash.default.reduce(applyFuncDefs, function (optionMap, func) {
+      var options = _lodash.default.reduce(appliedOptionFuncs, function (optionMap, func) {
         var _func$params = _slicedToArray(func.params, 1);
 
         optionMap[func.def.name] = _func$params[0];
@@ -516,6 +502,21 @@ function () {
       }, {});
 
       return options;
+    }
+  }, {
+    key: "pickFuncDefsFromCategories",
+    value: function pickFuncDefsFromCategories(functionDefs, categories) {
+      var allCategorisedFuncDefs = aafunc.getCategories();
+
+      var requiredCategoryFuncNames = _lodash.default.reduce(categories, function (funcNames, category) {
+        return _lodash.default.concat(funcNames, _lodash.default.map(allCategorisedFuncDefs[category], 'name'));
+      }, []);
+
+      var pickedFuncDefs = _lodash.default.filter(functionDefs, function (func) {
+        return _lodash.default.includes(requiredCategoryFuncNames, func.def.name);
+      });
+
+      return pickedFuncDefs;
     }
   }]);
 

@@ -82,14 +82,15 @@ export class ArchiverapplianceDatasource {
     const maxNumPVs = target.options.maxNumPVs || 100;
     const binInterval = target.options.binInterval || target.interval;
 
-    const targetQueries = this.parseTargetQuery(target.target);
+    const targetPVs = this.parseTargetPV(target.target);
 
-    const pvnamesPromise = _.map(targetQueries, (targetQuery) => {
+    // Create Promise to fetch PV names
+    const pvnamesPromise = _.map(targetPVs, (targetPV) => {
       if (target.regex) {
-        return this.pvNamesFindQuery(targetQuery, maxNumPVs);
+        return this.pvNamesFindQuery(targetPV, maxNumPVs);
       }
 
-      return Promise.resolve([targetQuery]);
+      return Promise.resolve([targetPV]);
     });
 
     return Promise.all(pvnamesPromise)
@@ -195,7 +196,7 @@ export class ArchiverapplianceDatasource {
       return Promise.resolve(timeseriesData);
     }
 
-    return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
+    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working
@@ -225,7 +226,7 @@ export class ArchiverapplianceDatasource {
      */
     const replacedQuery = this.templateSrv.replace(query, null, 'regex');
     const [pvQuery, paramsQuery] = replacedQuery.split('?', 2);
-    const parsedQuery = this.parseTargetQuery(pvQuery);
+    const parsedPVs = this.parseTargetPV(pvQuery);
 
     // Parse query parameters
     let limitNum = 100;
@@ -237,7 +238,7 @@ export class ArchiverapplianceDatasource {
       }
     }
 
-    const pvnamesPromise = _.map(parsedQuery, (targetQuery) => (
+    const pvnamesPromise = _.map(parsedPVs, (targetQuery) => (
       this.pvNamesFindQuery(targetQuery, limitNum)
     ));
 
@@ -346,9 +347,9 @@ export class ArchiverapplianceDatasource {
     return query;
   }
 
-  parseTargetQuery(targetQuery) {
+  parseTargetPV(targetPV) {
     /*
-     * ex) targetQuery = ABC(1|2|3)EFG(5|6)
+     * ex) targetPV = ABC(1|2|3)EFG(5|6)
      *     then
      *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
      *     queries = [
@@ -356,7 +357,7 @@ export class ArchiverapplianceDatasource {
      *     ABC2EFG6, ABC3EFG5, ABC3EFG6
      *     ]
      */
-    const splitQueries = _.split(targetQuery, /(\(.*?\))/);
+    const splitQueries = _.split(targetPV, /(\(.*?\))/);
     let queries = [''];
 
     _.forEach(splitQueries, (splitQuery, i) => {
@@ -378,16 +379,8 @@ export class ArchiverapplianceDatasource {
     return queries;
   }
 
-  bindFunctionDefs(functionDefs, categories, data) {
-    const allCategorisedFuncDefs = aafunc.getCategories();
-
-    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => (
-      _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'))
-    ), []);
-
-    const applyFuncDefs = _.filter(functionDefs, (func) => (
-      _.includes(requiredCategoryFuncNames, func.def.name)
-    ));
+  applyFunctionDefs(functionDefs, categories, data) {
+    const applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
 
     const promises = _.reduce(applyFuncDefs, (prevPromise, func) => (
       prevPromise.then((res) => {
@@ -402,18 +395,27 @@ export class ArchiverapplianceDatasource {
   }
 
   getOptions(functionDefs) {
-    const allCategorisedFuncDefs = aafunc.getCategories();
-    const optionsFuncNames = _.map(allCategorisedFuncDefs.Options, 'name');
+    const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
 
-    const applyFuncDefs = _.filter(functionDefs, (func) => (
-      _.includes(optionsFuncNames, func.def.name)
-    ));
-
-    const options = _.reduce(applyFuncDefs, (optionMap, func) => {
+    const options = _.reduce(appliedOptionFuncs, (optionMap, func) => {
       [optionMap[func.def.name]] = func.params;
       return optionMap;
     }, {});
 
     return options;
+  }
+
+  pickFuncDefsFromCategories(functionDefs, categories) {
+    const allCategorisedFuncDefs = aafunc.getCategories();
+
+    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => (
+      _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'))
+    ), []);
+
+    const pickedFuncDefs = _.filter(functionDefs, (func) => (
+      _.includes(requiredCategoryFuncNames, func.def.name)
+    ));
+
+    return pickedFuncDefs;
   }
 }
