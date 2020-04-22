@@ -39,6 +39,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+/*
+ * Variable format descriptions
+ * ---
+ * timeseries = {
+ *   "target":"PV1", // Used as legend in Grafana
+ *   "datapoints":[
+ *     [622, 1450754160000], // Metric value as a float, unixtimestamp in milliseconds
+ *     [365, 1450754220000]
+ *   ]
+ * }
+ * timeseriesData = [ timeseries, timeseries, ... ]
+ * timeseriesDataArray = [ timeseriesData, timeseriesData, ... ]
+ */
 var ArchiverapplianceDatasource =
 /*#__PURE__*/
 function () {
@@ -60,7 +73,8 @@ function () {
     }
 
     this.operatorList = ['firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min', 'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter', 'ignoreflyers', 'flyers', 'variance', 'popvariance', 'kurtosis', 'skewness', 'raw'];
-  }
+  } // Called from Grafana panels to get data
+
 
   _createClass(ArchiverapplianceDatasource, [{
     key: "query",
@@ -247,7 +261,8 @@ function () {
       }
 
       return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
-    }
+    } // Called from Grafana data source configuration page to make sure the connection is working
+
   }, {
     key: "testDatasource",
     value: function testDatasource() {
@@ -271,7 +286,8 @@ function () {
       }).then(function (res) {
         return res.data;
       });
-    }
+    } // Called from Grafana variables to get values
+
   }, {
     key: "metricFindQuery",
     value: function metricFindQuery(query) {
@@ -331,6 +347,46 @@ function () {
     value: function buildQueryParameters(options) {
       var _this7 = this;
 
+      /*
+       * options argument format
+       * ---
+       * {
+       *   ...
+       *   "range": { "from": "2015-12-22T03:06:13.851Z", "to": "2015-12-22T06:48:24.137Z" },
+       *   "interval": "5s",
+       *   "targets": [
+       *     { "refId":"A",
+       *       "target":"PV:NAME:.*",
+       *       "regex":true,
+       *       "operator":"mean",
+       *       "alias":"$3",
+       *       "aliasPattern":"(.*):(.*)",
+       *       "functions":[
+       *         {
+       *           "text":"top($top_num, max)",
+       *           "params":[ "$top_num", "max" ],
+       *           "def":{
+       *             "category":"Filter Series",
+       *             "defaultParams":[ 5, "avg" ],
+       *             "name":"top",
+       *             "params":[
+       *               { "name":"number", "type":"int" },
+       *               {
+       *                 "name":"value",
+       *                 "options":[ "avg", "min", "max", "absoluteMin", "absoluteMax", "sum" ],
+       *                 "type":"string"
+       *               }
+       *             ]
+       *           },
+       *         }
+       *       ],
+       *     }
+       *   ],
+       *   "format": "json",
+       *   "maxDataPoints": 2495 // decided by the panel
+       *   ...
+       * }
+       */
       var query = _objectSpread({}, options); // remove placeholder targets and undefined targets
 
 

@@ -2,6 +2,20 @@ import _ from 'lodash';
 import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
 
+/*
+ * Variable format descriptions
+ * ---
+ * timeseries = {
+ *   "target":"PV1", // Used as legend in Grafana
+ *   "datapoints":[
+ *     [622, 1450754160000], // Metric value as a float, unixtimestamp in milliseconds
+ *     [365, 1450754220000]
+ *   ]
+ * }
+ * timeseriesData = [ timeseries, timeseries, ... ]
+ * timeseriesDataArray = [ timeseriesData, timeseriesData, ... ]
+ */
+
 export class ArchiverapplianceDatasource {
   constructor(instanceSettings, backendSrv, templateSrv) {
     this.type = instanceSettings.type;
@@ -26,6 +40,7 @@ export class ArchiverapplianceDatasource {
     ];
   }
 
+  // Called from Grafana panels to get data
   query(options) {
     const query = this.buildQueryParameters(options);
 
@@ -183,6 +198,7 @@ export class ArchiverapplianceDatasource {
     return this.bindFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
   }
 
+  // Called from Grafana data source configuration page to make sure the connection is working
   testDatasource() {
     return { status: 'success', message: 'Data source is working', title: 'Success' };
   }
@@ -200,6 +216,7 @@ export class ArchiverapplianceDatasource {
     }).then((res) => res.data);
   }
 
+  // Called from Grafana variables to get values
   metricFindQuery(query) {
     /*
      * query format:
@@ -240,6 +257,46 @@ export class ArchiverapplianceDatasource {
   }
 
   buildQueryParameters(options) {
+    /*
+     * options argument format
+     * ---
+     * {
+     *   ...
+     *   "range": { "from": "2015-12-22T03:06:13.851Z", "to": "2015-12-22T06:48:24.137Z" },
+     *   "interval": "5s",
+     *   "targets": [
+     *     { "refId":"A",
+     *       "target":"PV:NAME:.*",
+     *       "regex":true,
+     *       "operator":"mean",
+     *       "alias":"$3",
+     *       "aliasPattern":"(.*):(.*)",
+     *       "functions":[
+     *         {
+     *           "text":"top($top_num, max)",
+     *           "params":[ "$top_num", "max" ],
+     *           "def":{
+     *             "category":"Filter Series",
+     *             "defaultParams":[ 5, "avg" ],
+     *             "name":"top",
+     *             "params":[
+     *               { "name":"number", "type":"int" },
+     *               {
+     *                 "name":"value",
+     *                 "options":[ "avg", "min", "max", "absoluteMin", "absoluteMax", "sum" ],
+     *                 "type":"string"
+     *               }
+     *             ]
+     *           },
+     *         }
+     *       ],
+     *     }
+     *   ],
+     *   "format": "json",
+     *   "maxDataPoints": 2495 // decided by the panel
+     *   ...
+     * }
+     */
     const query = { ...options };
 
     // remove placeholder targets and undefined targets
