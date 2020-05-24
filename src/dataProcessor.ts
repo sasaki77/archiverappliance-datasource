@@ -2,19 +2,15 @@ import _ from 'lodash';
 
 // Transform
 
-function scale(factor, datapoints) {
-  return _.map(datapoints, (point) => (
-    [point[0] * factor, point[1]]
-  ));
+function scale(factor: number, datapoints: any[]) {
+  return _.map(datapoints, point => [point[0] * factor, point[1]]);
 }
 
-function offset(delta, datapoints) {
-  return _.map(datapoints, (point) => (
-    [point[0] + delta, point[1]]
-  ));
+function offset(delta: number, datapoints: any[]) {
+  return _.map(datapoints, point => [point[0] + delta, point[1]]);
 }
 
-function delta(datapoints) {
+function delta(datapoints: any[]) {
   const newSeries = [];
   for (let i = 1; i < datapoints.length; i += 1) {
     const deltaValue = datapoints[i][0] - datapoints[i - 1][0];
@@ -23,7 +19,7 @@ function delta(datapoints) {
   return newSeries;
 }
 
-function fluctuation(datapoints) {
+function fluctuation(datapoints: any[]) {
   const newSeries = [];
   for (let i = 0; i < datapoints.length; i += 1) {
     const flucValue = datapoints[i][0] - datapoints[0][0];
@@ -34,11 +30,11 @@ function fluctuation(datapoints) {
 
 // [Support Funcs] Transform wrapper
 
-function transformWrapper(func, ...args) {
+function transformWrapper(func: any, ...args: any) {
   const funcArgs = args.slice(0, -1);
   const timeseriesData = args[args.length - 1];
 
-  const tsData = _.map(timeseriesData, (timeseries) => {
+  const tsData = _.map(timeseriesData, timeseries => {
     timeseries.datapoints = func(...funcArgs, timeseries.datapoints);
     return timeseries;
   });
@@ -47,42 +43,42 @@ function transformWrapper(func, ...args) {
 }
 
 // Filter Series
-function exclude(pattern, timeseriesData) {
+function exclude(pattern: string, timeseriesData: any[]) {
   const regex = new RegExp(pattern);
-  return _.filter(timeseriesData, (timeseries) => (!regex.test(timeseries.target)));
+  return _.filter(timeseriesData, timeseries => !regex.test(timeseries.target));
 }
 
 // [Support Funcs] Datapoints aggregation functions
 
-function datapointsAvg(datapoints) {
-  return _.meanBy(datapoints, (point) => point[0]);
+function datapointsAvg(datapoints: any[]) {
+  return _.meanBy(datapoints, point => point[0]);
 }
 
-function datapointsMin(datapoints) {
-  const minPoint = _.minBy(datapoints, (point) => point[0]);
+function datapointsMin(datapoints: any[]) {
+  const minPoint = _.minBy(datapoints, point => point[0]);
   return minPoint[0];
 }
 
-function datapointsMax(datapoints) {
-  const maxPoint = _.maxBy(datapoints, (point) => point[0]);
+function datapointsMax(datapoints: any[]) {
+  const maxPoint = _.maxBy(datapoints, point => point[0]);
   return maxPoint[0];
 }
 
-function datapointsSum(datapoints) {
-  return _.sumBy(datapoints, (point) => point[0]);
+function datapointsSum(datapoints: any[]) {
+  return _.sumBy(datapoints, point => point[0]);
 }
 
-function datapointsAbsMin(datapoints) {
-  const minPoint = _.minBy(datapoints, (point) => Math.abs(point[0]));
+function datapointsAbsMin(datapoints: any[]) {
+  const minPoint = _.minBy(datapoints, point => Math.abs(point[0]));
   return Math.abs(minPoint[0]);
 }
 
-function datapointsAbsMax(datapoints) {
-  const maxPoint = _.maxBy(datapoints, (point) => Math.abs(point[0]));
+function datapointsAbsMax(datapoints: any[]) {
+  const maxPoint = _.maxBy(datapoints, point => Math.abs(point[0]));
   return Math.abs(maxPoint[0]);
 }
 
-const datapointsAggFuncs = {
+const datapointsAggFuncs: { [key: string]: any } = {
   avg: datapointsAvg,
   min: datapointsMin,
   max: datapointsMax,
@@ -93,11 +89,9 @@ const datapointsAggFuncs = {
 
 // [Support Funcs] Wrapper function for top and bottom function
 
-function extraction(order, n, orderFunc, timeseriesData) {
+function extraction(order: string, n: number, orderFunc: string, timeseriesData: any[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (ts) => (
-    orderByCallback(ts.datapoints)
-  );
+  const sortByIteratee = (ts: any) => orderByCallback(ts.datapoints);
 
   const sortedTsData = _.sortBy(timeseriesData, sortByIteratee);
   if (order === 'bottom') {

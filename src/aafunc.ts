@@ -1,14 +1,24 @@
 import _ from 'lodash';
-import $ from 'jquery';
 
-const funcIndex = [];
-const categories = {
+const funcIndex: any = [];
+const categories: { [key: string]: FuncDef[] } = {
   Transform: [],
   'Filter Series': [],
   Options: [],
 };
 
-function addFuncDef(newFuncDef) {
+export interface FuncDef {
+  name: any;
+  category?: string;
+  params?: any;
+  defaultParams?: any;
+  shortName?: any;
+  fake?: boolean;
+  version?: string;
+  description?: string;
+}
+
+function addFuncDef(newFuncDef: FuncDef) {
   const funcDef = { ...newFuncDef };
 
   funcDef.params = funcDef.params || [];
@@ -26,18 +36,14 @@ function addFuncDef(newFuncDef) {
 addFuncDef({
   name: 'scale',
   category: 'Transform',
-  params: [
-    { name: 'factor', type: 'float', options: [100, 0.01, 10, -1] },
-  ],
+  params: [{ name: 'factor', type: 'float', options: [100, 0.01, 10, -1] }],
   defaultParams: [100],
 });
 
 addFuncDef({
   name: 'offset',
   category: 'Transform',
-  params: [
-    { name: 'delta', type: 'float', options: [-100, 100] },
-  ],
+  params: [{ name: 'delta', type: 'float', options: [-100, 100] }],
   defaultParams: [100],
 });
 
@@ -88,9 +94,7 @@ addFuncDef({
 addFuncDef({
   name: 'exclude',
   category: 'Filter Series',
-  params: [
-    { name: 'pattern', type: 'string' },
-  ],
+  params: [{ name: 'pattern', type: 'string' }],
   defaultParams: [],
 });
 
@@ -99,23 +103,24 @@ addFuncDef({
 addFuncDef({
   name: 'maxNumPVs',
   category: 'Options',
-  params: [
-    { name: 'number', type: 'int' },
-  ],
+  params: [{ name: 'number', type: 'int' }],
   defaultParams: [100],
 });
 
 addFuncDef({
   name: 'binInterval',
   category: 'Options',
-  params: [
-    { name: 'interval', type: 'int' },
-  ],
+  params: [{ name: 'interval', type: 'int' }],
   defaultParams: [900],
 });
 
 class FuncInstance {
-  constructor(funcDef, params) {
+  def: FuncDef;
+  params: any[];
+  text: string;
+
+  constructor(funcDef: FuncDef, params: any[]) {
+    this.text = '';
     this.def = funcDef;
 
     if (params) {
@@ -129,11 +134,11 @@ class FuncInstance {
     this.updateText();
   }
 
-  bindFunction(metricFunctions) {
+  bindFunction(metricFunctions: any) {
     const func = metricFunctions[this.def.name];
 
     if (!func) {
-      throw new Error({ message: `Method not found ${this.def.name}` });
+      throw new Error(`Method not found ${this.def.name}`);
     }
 
     // Bind function arguments
@@ -143,10 +148,7 @@ class FuncInstance {
       param = this.params[i];
 
       // Convert numeric params
-      if (
-        this.def.params[i].type === 'int'
-        || this.def.params[i].type === 'float'
-      ) {
+      if (this.def.params[i].type === 'int' || this.def.params[i].type === 'float') {
         param = Number(param);
       }
       bindedFunc = _.partial(bindedFunc, param);
@@ -154,16 +156,11 @@ class FuncInstance {
     return bindedFunc;
   }
 
-  render(metricExp) {
+  render(metricExp: string): string {
     const str = `${this.def.name}(`;
     const parameters = _.map(this.params, (value, index) => {
       const paramType = this.def.params[index].type;
-      if (
-        paramType === 'int'
-        || paramType === 'float'
-        || paramType === 'value_or_series'
-        || paramType === 'boolean'
-      ) {
+      if (paramType === 'int' || paramType === 'float' || paramType === 'value_or_series' || paramType === 'boolean') {
         return value;
       }
 
@@ -172,7 +169,7 @@ class FuncInstance {
       }
 
       return `'${value}'`;
-    }, this);
+    });
 
     if (metricExp) {
       parameters.unshift(metricExp);
@@ -181,7 +178,7 @@ class FuncInstance {
     return `${str}${parameters.join(', ')})`;
   }
 
-  _hasMultipleParamsInString(strValue, index) {
+  _hasMultipleParamsInString(strValue: string, index: number) {
     if (strValue.indexOf(',') === -1) {
       return false;
     }
@@ -189,13 +186,13 @@ class FuncInstance {
     return this.def.params[index + 1] && this.def.params[index + 1].optional;
   }
 
-  updateParam(strValue, index) {
+  updateParam(strValue: string, index: number) {
     // handle optional parameters
     // if string contains ',' and next param is optional, split and update both
     if (this._hasMultipleParamsInString(strValue, index)) {
-      _.each(strValue.split(','), (partVal, idx) => {
+      _.each(strValue.split(','), (partVal: string, idx: number) => {
         this.updateParam(partVal.trim(), idx);
-      }, this);
+      });
       return;
     }
 
@@ -219,10 +216,10 @@ class FuncInstance {
   }
 }
 
-export function createFuncInstance(funcDef, params) {
+export function createFuncInstance(funcDef: FuncDef, params: any[]) {
   if (_.isString(funcDef)) {
     if (!funcIndex[funcDef]) {
-      throw new Error({ message: `Method not found ${funcDef.name}` });
+      throw new Error(`Method not found ${funcDef.name}`);
     }
     return new FuncInstance(funcIndex[funcDef], params);
   }
@@ -230,7 +227,7 @@ export function createFuncInstance(funcDef, params) {
   return new FuncInstance(funcDef, params);
 }
 
-export function getFuncDef(name) {
+export function getFuncDef(name: string) {
   return funcIndex[name];
 }
 

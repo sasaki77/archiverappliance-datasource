@@ -1,4 +1,9 @@
+import { getBackendSrv } from '@grafana/runtime';
+import { DataQueryResponse, DataQueryRequest, DataSourceInstanceSettings, DataSourceApi } from '@grafana/data';
+import { getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
+
+import { AAQuery, AADataSourceOptions } from './types';
 import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
 
@@ -16,68 +21,80 @@ import * as aafunc from './aafunc';
  * timeseriesDataArray = [ timeseriesData, timeseriesData, ... ]
  */
 
-export class ArchiverapplianceDatasource {
-  constructor(instanceSettings, backendSrv, templateSrv) {
-    this.type = instanceSettings.type;
+export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
+  url?: string | undefined;
+  name: string;
+  templateSrv: any;
+  withCredentials?: boolean;
+  headers: { [key: string]: string };
+  operatorList: string[];
+
+  constructor(instanceSettings: DataSourceInstanceSettings<AADataSourceOptions>) {
+    super(instanceSettings);
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
-    this.backendSrv = backendSrv;
-    this.templateSrv = templateSrv;
+    this.templateSrv = getTemplateSrv();
     this.withCredentials = instanceSettings.withCredentials;
     this.headers = { 'Content-Type': 'application/json' };
-    if (
-      typeof instanceSettings.basicAuth === 'string'
-      && instanceSettings.basicAuth.length > 0
-    ) {
+    if (typeof instanceSettings.basicAuth === 'string' && instanceSettings.basicAuth.length > 0) {
       this.headers.Authorization = instanceSettings.basicAuth;
     }
 
     this.operatorList = [
-      'firstSample', 'lastSample', 'firstFill', 'lastFill', 'mean', 'min',
-      'max', 'count', 'ncount', 'nth', 'median', 'std', 'jitter',
-      'ignoreflyers', 'flyers', 'variance',
-      'popvariance', 'kurtosis', 'skewness', 'raw',
+      'firstSample',
+      'lastSample',
+      'firstFill',
+      'lastFill',
+      'mean',
+      'min',
+      'max',
+      'count',
+      'ncount',
+      'nth',
+      'median',
+      'std',
+      'jitter',
+      'ignoreflyers',
+      'flyers',
+      'variance',
+      'popvariance',
+      'kurtosis',
+      'skewness',
+      'raw',
     ];
   }
 
   // Called from Grafana panels to get data
-  query(options) {
+  async query(options: DataQueryRequest<AAQuery>): Promise<DataQueryResponse> {
     const query = this.buildQueryParameters(options);
 
     // Remove hidden target from query
-    query.targets = _.filter(query.targets, (t) => !t.hide);
+    query.targets = _.filter(query.targets, t => !t.hide);
 
     if (query.targets.length <= 0) {
       return Promise.resolve({ data: [] });
     }
 
-    const targetProcesses = _.map(query.targets, (target) => (
-      this.targetProcess(target)
-    ));
+    const targetProcesses = _.map(query.targets, target => this.targetProcess(target));
 
-    return (
-      Promise.all(targetProcesses)
-        .then((timeseriesDataArray) => this.postProcess(timeseriesDataArray))
-    );
+    return Promise.all(targetProcesses).then(timeseriesDataArray => this.postProcess(timeseriesDataArray));
   }
 
-  targetProcess(target) {
-    return (
-      this.buildUrls(target)
-        .then((urls) => this.doMultiUrlRequests(urls))
-        .then((responses) => this.responseParse(responses))
-        .then((timeseriesData) => this.setAlias(timeseriesData, target))
-        .then((timeseriesData) => this.applyFunctions(timeseriesData, target))
-    );
+  targetProcess(target: any[]) {
+    return this.buildUrls(target)
+      .then((urls: string[]) => this.doMultiUrlRequests(urls))
+      .then(responses => this.responseParse(responses))
+      .then(timeseriesData => this.setAlias(timeseriesData, target))
+      .then(timeseriesData => this.applyFunctions(timeseriesData, target));
   }
 
-  postProcess(timeseriesDataArray) {
+  postProcess(timeseriesDataArray: any) {
     const timeseriesData = _.flatten(timeseriesDataArray);
 
     return { data: timeseriesData };
   }
 
-  buildUrls(target) {
+  buildUrls(target: any): Promise<string[]> {
     // Get Option values
     const maxNumPVs = target.options.maxNumPVs || 100;
     const binInterval = target.options.binInterval || target.interval;
@@ -85,7 +102,7 @@ export class ArchiverapplianceDatasource {
     const targetPVs = this.parseTargetPV(target.target);
 
     // Create Promise to fetch PV names
-    const pvnamesPromise = _.map(targetPVs, (targetPV) => {
+    const pvnamesPromise = _.map(targetPVs, targetPV => {
       if (target.regex) {
         return this.pvNamesFindQuery(targetPV, maxNumPVs);
       }
@@ -93,32 +110,26 @@ export class ArchiverapplianceDatasource {
       return Promise.resolve([targetPV]);
     });
 
-    return Promise.all(pvnamesPromise)
-      .then((pvnamesArray) => (
+    return Promise.all(pvnamesPromise).then(
+      pvnamesArray =>
         new Promise((resolve, reject) => {
           const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
           let urls;
 
           try {
-            urls = _.map(pvnames, (pvname) => (
-              this.buildUrl(
-                pvname,
-                target.operator,
-                binInterval,
-                target.from,
-                target.to,
-              )
-            ));
+            urls = _.map(pvnames, pvname =>
+              this.buildUrl(pvname, target.operator, binInterval, target.from, target.to)
+            );
           } catch (e) {
             reject(e);
           }
 
           resolve(urls);
         })
-      ));
+    );
   }
 
-  buildUrl(pvname, operator, interval, from, to) {
+  buildUrl(pvname: string, operator: string, interval: string, from: Date, to: Date) {
     const pv = (() => {
       // raw Operator
       if (operator === 'raw' || interval === '') {
@@ -138,28 +149,26 @@ export class ArchiverapplianceDatasource {
       throw new Error('Data Processing Operator is invalid.');
     })();
 
-    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(pv)}&from=${from.toISOString()}&to=${to.toISOString()}`;
+    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(
+      pv
+    )}&from=${from.toISOString()}&to=${to.toISOString()}`;
 
     return url;
   }
 
-  doMultiUrlRequests(urls) {
-    const requests = _.map(urls, (url) => (
-      this.doRequest({ url, method: 'GET' })
-    ));
+  doMultiUrlRequests(urls: string[]) {
+    const requests = _.map(urls, url => this.doRequest({ url, method: 'GET' }));
 
     return Promise.all(requests);
   }
 
-  responseParse(responses) {
-    const timeSeriesDataArray = _.map(responses, (response) => {
-      const timeSeriesData = _.map(response.data, (targetRes) => {
-        const timesiries = _.map(targetRes.data, (datapoint) => (
-          [
-            datapoint.val,
-            datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000),
-          ]
-        ));
+  responseParse(responses: any[]) {
+    const timeSeriesDataArray = _.map(responses, response => {
+      const timeSeriesData = _.map(response.data, targetRes => {
+        const timesiries = _.map(targetRes.data, datapoint => [
+          datapoint.val,
+          datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000),
+        ]);
         const timeseries = { target: targetRes.meta.name, datapoints: timesiries };
         return timeseries;
       });
@@ -169,17 +178,17 @@ export class ArchiverapplianceDatasource {
     return Promise.resolve(_.flatten(timeSeriesDataArray));
   }
 
-  setAlias(timeseriesData, target) {
+  setAlias(timeseriesData: any[], target: any) {
     if (!target.alias) {
       return Promise.resolve(timeseriesData);
     }
 
-    let pattern;
+    let pattern: RegExp;
     if (target.aliasPattern) {
       pattern = new RegExp(target.aliasPattern, '');
     }
 
-    const newTimeseriesData = _.map(timeseriesData, (timeseries) => {
+    const newTimeseriesData = _.map(timeseriesData, timeseries => {
       if (pattern) {
         const alias = timeseries.target.replace(pattern, target.alias);
         return { target: alias, datapoints: timeseries.datapoints };
@@ -191,7 +200,7 @@ export class ArchiverapplianceDatasource {
     return Promise.resolve(newTimeseriesData);
   }
 
-  applyFunctions(timeseriesData, target) {
+  applyFunctions(timeseriesData: any, target: any) {
     if (target.functions === undefined) {
       return Promise.resolve(timeseriesData);
     }
@@ -200,11 +209,11 @@ export class ArchiverapplianceDatasource {
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working
-  testDatasource() {
+  async testDatasource() {
     return { status: 'success', message: 'Data source is working', title: 'Success' };
   }
 
-  pvNamesFindQuery(query, maxPvs) {
+  pvNamesFindQuery(query: string, maxPvs: number) {
     if (!query) {
       return Promise.resolve([]);
     }
@@ -214,11 +223,11 @@ export class ArchiverapplianceDatasource {
     return this.doRequest({
       url,
       method: 'GET',
-    }).then((res) => res.data);
+    }).then(res => res.data);
   }
 
   // Called from Grafana variables to get values
-  metricFindQuery(query) {
+  metricFindQuery(query: string) {
     /*
      * query format:
      * ex1) PV:NAME:.*
@@ -231,33 +240,32 @@ export class ArchiverapplianceDatasource {
     // Parse query parameters
     let limitNum = 100;
     if (paramsQuery) {
-      const params = new URLSearchParams(paramsQuery);
-      if (params.has('limit')) {
-        const limit = parseInt(params.get('limit'), 10);
+      const params: URLSearchParams = new URLSearchParams(paramsQuery);
+      const limit_param: string | null = params.get('limit');
+      if (limit_param) {
+        const limit = parseInt(limit_param, 10);
         limitNum = Number.isInteger(limit) ? limit : 100;
       }
     }
 
-    const pvnamesPromise = _.map(parsedPVs, (targetQuery) => (
-      this.pvNamesFindQuery(targetQuery, limitNum)
-    ));
+    const pvnamesPromise = _.map(parsedPVs, targetQuery => this.pvNamesFindQuery(targetQuery, limitNum));
 
-    return Promise.all(pvnamesPromise).then((pvnamesArray) => {
+    return Promise.all(pvnamesPromise).then(pvnamesArray => {
       const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, limitNum);
-      return _.map(pvnames, (pvname) => ({ text: pvname }));
+      return _.map(pvnames, pvname => ({ text: pvname }));
     });
   }
 
-  doRequest(options) {
+  doRequest(options: any) {
     const newOptions = { ...options };
     newOptions.withCredentials = this.withCredentials;
     newOptions.headers = this.headers;
 
-    const result = this.backendSrv.datasourceRequest(newOptions);
+    const result = getBackendSrv().datasourceRequest(newOptions);
     return result;
   }
 
-  buildQueryParameters(options) {
+  buildQueryParameters(options: any) {
     /*
      * options argument format
      * ---
@@ -301,9 +309,7 @@ export class ArchiverapplianceDatasource {
     const query = { ...options };
 
     // remove placeholder targets and undefined targets
-    query.targets = _.filter(query.targets, (target) => (
-      target.target !== '' && typeof target.target !== 'undefined'
-    ));
+    query.targets = _.filter(query.targets, target => target.target !== '' && typeof target.target !== 'undefined');
 
     if (query.targets.length <= 0) {
       return query;
@@ -314,15 +320,13 @@ export class ArchiverapplianceDatasource {
     const rangeMsec = to.getTime() - from.getTime();
     const intervalSec = _.floor(rangeMsec / (query.maxDataPoints * 1000));
 
-    const interval = (intervalSec >= 1) ? String(intervalSec) : '';
+    const interval = intervalSec >= 1 ? String(intervalSec) : '';
 
-    const targets = _.map(query.targets, (target) => {
+    const targets = _.map(query.targets, target => {
       // Replace parameters with variables for each functions
-      const functions = _.map(target.functions, (func) => {
+      const functions = _.map(target.functions, func => {
         const newFunc = func;
-        newFunc.params = _.map(newFunc.params, (param) => (
-          this.templateSrv.replace(param, query.scopedVars, 'regex')
-        ));
+        newFunc.params = _.map(newFunc.params, param => this.templateSrv.replace(param, query.scopedVars, 'regex'));
         return newFunc;
       });
 
@@ -347,7 +351,7 @@ export class ArchiverapplianceDatasource {
     return query;
   }
 
-  parseTargetPV(targetPV) {
+  parseTargetPV(targetPV: string) {
     /*
      * ex) targetPV = ABC(1|2|3)EFG(5|6)
      *     then
@@ -363,58 +367,63 @@ export class ArchiverapplianceDatasource {
     _.forEach(splitQueries, (splitQuery, i) => {
       // Fixed string like 'ABC'
       if (i % 2 === 0) {
-        queries = _.map(queries, (query) => `${query}${splitQuery}`);
+        queries = _.map(queries, query => `${query}${splitQuery}`);
         return;
       }
 
       // Regex OR string like '(1|2|3)'
       const orElems = _.split(_.trim(splitQuery, '()'), '|');
 
-      const newQueries = _.map(queries, (query) => (
-        _.map(orElems, (orElem) => `${query}${orElem}`)
-      ));
+      const newQueries = _.map(queries, query => _.map(orElems, orElem => `${query}${orElem}`));
       queries = _.flatten(newQueries);
     });
 
     return queries;
   }
 
-  applyFunctionDefs(functionDefs, categories, data) {
+  applyFunctionDefs(functionDefs: any, categories: string[], data: any) {
     const applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
 
-    const promises = _.reduce(applyFuncDefs, (prevPromise, func) => (
-      prevPromise.then((res) => {
-        const funcInstance = aafunc.createFuncInstance(func.def, func.params);
-        const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
+    const promises = _.reduce(
+      applyFuncDefs,
+      (prevPromise, func) =>
+        prevPromise.then(res => {
+          const funcInstance = aafunc.createFuncInstance(func.def, func.params);
+          const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
 
-        return Promise.resolve(bindedFunc(res));
-      })
-    ), Promise.resolve(data));
+          return Promise.resolve(bindedFunc(res));
+        }),
+      Promise.resolve(data)
+    );
 
     return promises;
   }
 
-  getOptions(functionDefs) {
+  getOptions(functionDefs: any) {
     const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
 
-    const options = _.reduce(appliedOptionFuncs, (optionMap, func) => {
-      [optionMap[func.def.name]] = func.params;
-      return optionMap;
-    }, {});
+    const options = _.reduce(
+      appliedOptionFuncs,
+      (optionMap: any, func: any) => {
+        [optionMap[func.def.name]] = func.params;
+        return optionMap;
+      },
+      {}
+    );
 
     return options;
   }
 
-  pickFuncDefsFromCategories(functionDefs, categories) {
+  pickFuncDefsFromCategories(functionDefs: any, categories: string[]) {
     const allCategorisedFuncDefs = aafunc.getCategories();
 
-    const requiredCategoryFuncNames = _.reduce(categories, (funcNames, category) => (
-      _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name'))
-    ), []);
+    const requiredCategoryFuncNames = _.reduce(
+      categories,
+      (funcNames: string[], category: string) => _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name')),
+      []
+    );
 
-    const pickedFuncDefs = _.filter(functionDefs, (func) => (
-      _.includes(requiredCategoryFuncNames, func.def.name)
-    ));
+    const pickedFuncDefs = _.filter(functionDefs, func => _.includes(requiredCategoryFuncNames, func.def.name));
 
     return pickedFuncDefs;
   }

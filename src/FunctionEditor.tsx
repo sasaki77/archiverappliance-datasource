@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { PopoverController, Popover } from '@grafana/ui';
 import { FunctionDescriptor, FunctionEditorControls, FunctionEditorControlsProps } from './FunctionEditorControls';
 
@@ -69,7 +69,7 @@ class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEd
               {this.triggerRef && (
                 <Popover
                   {...popperProps}
-                  referenceElement={this.triggerRef.current}
+                  referenceElement={this.triggerRef.current || undefined}
                   wrapperClassName="popper"
                   className="popper__background"
                   onMouseLeave={() => {

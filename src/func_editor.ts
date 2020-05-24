@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import $ from 'jquery';
-import coreModule from 'app/core/core_module';
-import { TemplateSrv } from 'app/features/templating/template_srv';
+import coreModule from 'grafana/app/core/core_module';
+import { TemplateSrv } from 'grafana/app/features/templating/template_srv';
 import { FunctionEditor } from './FunctionEditor';
 
 /** @ngInject */
@@ -257,7 +257,7 @@ react2AngularDirective('aaFunctionEditor', FunctionEditor, ['func', 'onRemove', 
 function react2AngularDirective(name: string, component: any, options: any) {
   coreModule.directive(name, [
     'reactDirective',
-    reactDirective => {
+    (reactDirective: any): any => {
       return reactDirective(component, options);
     },
   ]);

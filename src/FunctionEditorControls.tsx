@@ -19,7 +19,11 @@ export interface FunctionEditorControlsProps {
   onRemove: (func: FunctionDescriptor) => void;
 }
 
-const FunctionHelpButton = (props: { description: string; name: string; onDescriptionShow: () => void }) => {
+const FunctionHelpButton = (props: {
+  description: string | undefined;
+  name: string;
+  onDescriptionShow: () => void;
+}) => {
   if (props.description) {
     return <span className="pointer fa fa-question-circle" onClick={props.onDescriptionShow} />;
   }
@@ -28,10 +32,7 @@ const FunctionHelpButton = (props: { description: string; name: string; onDescri
     <span
       className="pointer fa fa-question-circle"
       onClick={() => {
-        window.open(
-          `https://sasaki77.github.io/archiverappliance-datasource/functions.html#${props.name}`,
-          '_blank'
-        );
+        window.open(`https://sasaki77.github.io/archiverappliance-datasource/functions.html#${props.name}`, '_blank');
       }}
     />
   );

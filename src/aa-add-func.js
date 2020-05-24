@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import $ from 'jquery';
 
-import coreModule from 'app/core/core_module';
+import coreModule from 'grafana/app/core/core_module';
 import * as aafunc from './aafunc';
 
 function getAllFunctionNames(categories) {
