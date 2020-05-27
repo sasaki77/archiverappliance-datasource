@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { FuncDef } from './types';
 
 const funcIndex: any = [];
 const categories: { [key: string]: FuncDef[] } = {
@@ -6,17 +7,6 @@ const categories: { [key: string]: FuncDef[] } = {
   'Filter Series': [],
   Options: [],
 };
-
-export interface FuncDef {
-  name: any;
-  category?: string;
-  params?: any;
-  defaultParams?: any;
-  shortName?: any;
-  fake?: boolean;
-  version?: string;
-  description?: string;
-}
 
 function addFuncDef(newFuncDef: FuncDef) {
   const funcDef = { ...newFuncDef };
@@ -36,15 +26,15 @@ function addFuncDef(newFuncDef: FuncDef) {
 addFuncDef({
   name: 'scale',
   category: 'Transform',
-  params: [{ name: 'factor', type: 'float', options: [100, 0.01, 10, -1] }],
-  defaultParams: [100],
+  params: [{ name: 'factor', type: 'float', options: ['100', '0.01', '10', '-1'] }],
+  defaultParams: ['100'],
 });
 
 addFuncDef({
   name: 'offset',
   category: 'Transform',
-  params: [{ name: 'delta', type: 'float', options: [-100, 100] }],
-  defaultParams: [100],
+  params: [{ name: 'delta', type: 'float', options: ['-100', '100'] }],
+  defaultParams: ['100'],
 });
 
 addFuncDef({
@@ -74,7 +64,7 @@ addFuncDef({
       options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum'],
     },
   ],
-  defaultParams: [5, 'avg'],
+  defaultParams: ['5', 'avg'],
 });
 
 addFuncDef({
@@ -88,7 +78,7 @@ addFuncDef({
       options: ['avg', 'min', 'max', 'absoluteMin', 'absoluteMax', 'sum'],
     },
   ],
-  defaultParams: [5, 'avg'],
+  defaultParams: ['5', 'avg'],
 });
 
 addFuncDef({
@@ -104,19 +94,19 @@ addFuncDef({
   name: 'maxNumPVs',
   category: 'Options',
   params: [{ name: 'number', type: 'int' }],
-  defaultParams: [100],
+  defaultParams: ['100'],
 });
 
 addFuncDef({
   name: 'binInterval',
   category: 'Options',
   params: [{ name: 'interval', type: 'int' }],
-  defaultParams: [900],
+  defaultParams: ['900'],
 });
 
 class FuncInstance {
   def: FuncDef;
-  params: any[];
+  params: string[];
   text: string;
 
   constructor(funcDef: FuncDef, params: any[]) {
@@ -183,7 +173,7 @@ class FuncInstance {
       return false;
     }
 
-    return this.def.params[index + 1] && this.def.params[index + 1].optional;
+    return this.def.params[index + 1];
   }
 
   updateParam(strValue: string, index: number) {
@@ -196,7 +186,7 @@ class FuncInstance {
       return;
     }
 
-    if (strValue === '' && this.def.params[index].optional) {
+    if (strValue === '') {
       this.params.splice(index, 1);
     } else {
       this.params[index] = strValue;

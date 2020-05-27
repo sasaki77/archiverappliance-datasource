@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import zip from 'lodash/zip';
-import { FunctionDescriptor } from './FunctionEditorControls';
+
+import { FunctionDescriptor } from '../types';
 
 interface FunctionParamsProps {
   func: FunctionDescriptor;

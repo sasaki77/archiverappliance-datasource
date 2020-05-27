@@ -18,6 +18,23 @@ export const defaultQuery: Partial<AAQuery> = {
   functions: [],
 };
 
+export interface FuncDef {
+  defaultParams?: any;
+  shortName?: any;
+  version?: string;
+  category: string;
+  description?: string;
+  fake?: boolean;
+  name: string;
+  params: Array<{ name: string; options?: string[]; type: string }>;
+}
+
+export interface FunctionDescriptor {
+  text: string;
+  params: string[];
+  def: FuncDef;
+}
+
 /**
  * These are options configured for each DataSource instance
  */

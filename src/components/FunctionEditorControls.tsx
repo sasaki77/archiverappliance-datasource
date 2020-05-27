@@ -1,17 +1,5 @@
 import React from 'react';
-
-export interface FunctionDescriptor {
-  text: string;
-  params: string[];
-  def: {
-    category: string;
-    defaultParams: string[];
-    description?: string;
-    fake: boolean;
-    name: string;
-    params: Array<{ name: string; options?: string[]; type: string }>;
-  };
-}
+import { FunctionDescriptor } from '../types';
 
 export interface FunctionEditorControlsProps {
   onMoveLeft: (func: FunctionDescriptor, index: number) => void;

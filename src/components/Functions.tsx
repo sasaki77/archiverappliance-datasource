@@ -1,7 +1,9 @@
 import React from 'react';
 import { InlineFormLabel } from '@grafana/ui';
-import { FunctionDescriptor } from './FunctionEditorControls';
 import { FunctionElem } from './FunctionElem';
+import { FunctionAdd } from './FunctionAdd';
+import { FuncDef, FunctionDescriptor } from '../types';
+import { createFuncInstance } from '../aafunc';
 
 interface FunctionsProps {
   funcs: FunctionDescriptor[];
@@ -21,6 +23,18 @@ class Functions extends React.PureComponent<FunctionsProps> {
   constructor(props: FunctionsProps) {
     super(props);
   }
+
+  addFunction = (funcDef: FuncDef) => {
+    const { onChange, onRunQuery } = this.props;
+    const newFunc = createFuncInstance(funcDef, funcDef.defaultParams);
+    const newFuncs = [...this.props.funcs];
+    newFuncs.push(newFunc);
+    onChange(newFuncs);
+
+    if (newFunc.params.length || newFunc.def.params.length === 0) {
+      onRunQuery();
+    }
+  };
 
   handleRemoveFunction = (func: FunctionDescriptor, index: number) => {
     const { onChange, onRunQuery } = this.props;
@@ -81,6 +95,7 @@ class Functions extends React.PureComponent<FunctionsProps> {
               onRunQuery={onRunQuery}
             />
           ))}
+        <FunctionAdd addFunc={this.addFunction} />
         <div className="gf-form gf-form--grow">
           <div className="gf-form-label gf-form-label--grow"></div>
         </div>

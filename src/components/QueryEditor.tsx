@@ -4,7 +4,7 @@ import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery } from '../types';
 import { Functions } from './Functions';
-import { FunctionDescriptor } from './FunctionEditorControls';
+import { FunctionDescriptor } from '../types';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PopoverController, Popover } from '@grafana/ui';
-import { FunctionDescriptor, FunctionEditorControls, FunctionEditorControlsProps } from './FunctionEditorControls';
+import { FunctionEditorControls, FunctionEditorControlsProps } from './FunctionEditorControls';
+import { FunctionDescriptor } from '../types';
 
 interface FunctionEditorProps extends FunctionEditorControlsProps {
   func: FunctionDescriptor;
