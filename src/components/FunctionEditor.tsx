@@ -4,6 +4,7 @@ import { FunctionDescriptor, FunctionEditorControls, FunctionEditorControlsProps
 
 interface FunctionEditorProps extends FunctionEditorControlsProps {
   func: FunctionDescriptor;
+  index: number;
 }
 
 interface FunctionEditorState {
@@ -44,11 +45,11 @@ class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEd
       <FunctionEditorControls
         {...this.props}
         onMoveLeft={() => {
-          onMoveLeft(this.props.func);
+          onMoveLeft(this.props.func, this.props.index);
           updatePopperPosition();
         }}
         onMoveRight={() => {
-          onMoveRight(this.props.func);
+          onMoveRight(this.props.func, this.props.index);
           updatePopperPosition();
         }}
         onDescriptionShow={() => {

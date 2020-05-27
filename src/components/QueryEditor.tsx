@@ -3,6 +3,8 @@ import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery } from '../types';
+import { Functions } from './Functions';
+import { FunctionDescriptor } from './FunctionEditorControls';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
@@ -31,6 +33,11 @@ export class QueryEditor extends PureComponent<Props> {
   onAliaspatternChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
     onChange({ ...query, aliasPattern: event.target.value });
+  };
+
+  onFuncsChange = (funcs: FunctionDescriptor[]) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, functions: funcs });
   };
 
   onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -104,13 +111,7 @@ export class QueryEditor extends PureComponent<Props> {
             onKeyDown={this.onKeydownEnter}
           />
         </div>
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            <InlineFormLabel width={6} className="query-keyword">
-              Function
-            </InlineFormLabel>
-          </div>
-        </div>
+        <Functions funcs={query.functions} onChange={this.onFuncsChange} onRunQuery={onRunQuery} />
       </>
     );
   }

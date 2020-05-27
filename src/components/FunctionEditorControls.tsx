@@ -9,14 +9,14 @@ export interface FunctionDescriptor {
     description?: string;
     fake: boolean;
     name: string;
-    params: string[];
+    params: Array<{ name: string; options?: string[]; type: string }>;
   };
 }
 
 export interface FunctionEditorControlsProps {
-  onMoveLeft: (func: FunctionDescriptor) => void;
-  onMoveRight: (func: FunctionDescriptor) => void;
-  onRemove: (func: FunctionDescriptor) => void;
+  onMoveLeft: (func: FunctionDescriptor, index: number) => void;
+  onMoveRight: (func: FunctionDescriptor, index: number) => void;
+  onRemove: (func: FunctionDescriptor, index: number) => void;
 }
 
 const FunctionHelpButton = (props: {
@@ -42,9 +42,10 @@ export const FunctionEditorControls = (
   props: FunctionEditorControlsProps & {
     func: FunctionDescriptor;
     onDescriptionShow: () => void;
+    index: number;
   }
 ) => {
-  const { func, onMoveLeft, onMoveRight, onRemove, onDescriptionShow } = props;
+  const { func, index, onMoveLeft, onMoveRight, onRemove, onDescriptionShow } = props;
   return (
     <div
       style={{
@@ -53,14 +54,14 @@ export const FunctionEditorControls = (
         justifyContent: 'space-between',
       }}
     >
-      <span className="pointer fa fa-arrow-left" onClick={() => onMoveLeft(func)} />
+      <span className="pointer fa fa-arrow-left" onClick={() => onMoveLeft(func, index)} />
       <FunctionHelpButton
         name={func.def.name}
         description={func.def.description}
         onDescriptionShow={onDescriptionShow}
       />
-      <span className="pointer fa fa-remove" onClick={() => onRemove(func)} />
-      <span className="pointer fa fa-arrow-right" onClick={() => onMoveRight(func)} />
+      <span className="pointer fa fa-remove" onClick={() => onRemove(func, index)} />
+      <span className="pointer fa fa-arrow-right" onClick={() => onMoveRight(func, index)} />
     </div>
   );
 };

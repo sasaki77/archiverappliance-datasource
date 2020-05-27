@@ -2,7 +2,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import coreModule from 'grafana/app/core/core_module';
 import { TemplateSrv } from 'grafana/app/features/templating/template_srv';
-import { FunctionEditor } from './FunctionEditor';
+import { FunctionEditor } from './components/FunctionEditor';
 
 /** @ngInject */
 export function aaFuncEditor($compile: any, templateSrv: TemplateSrv) {
