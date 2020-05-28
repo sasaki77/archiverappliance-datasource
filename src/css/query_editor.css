@@ -7,7 +7,7 @@
 }
 
 .react-autosuggest__suggestions-container--open {
-  display: inline-block;
+  display: flex;
   position: absolute;
   border: 1px solid #424345;
   background-color: #141414;

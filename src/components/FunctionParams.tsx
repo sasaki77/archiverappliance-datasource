@@ -1,5 +1,6 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import zip from 'lodash/zip';
+import { FunctionParam } from './FunctionParam';
 
 import { FunctionDescriptor } from '../types';
 
@@ -15,14 +16,14 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
     super(props);
   }
 
-  onChange(paramIndex: number, event: ChangeEvent<HTMLInputElement>) {
+  onParamChange = (paramIndex: number, newValue: string) => {
     const { func, index } = this.props;
     const { params } = func;
     const newParams = [...params];
-    newParams.splice(paramIndex, 1, event.target.value);
+    newParams.splice(paramIndex, 1, newValue);
     const newFunc = { ...func, params: newParams };
     this.props.onChange(newFunc, index);
-  }
+  };
 
   render() {
     const { func, onRunQuery } = this.props;
@@ -31,19 +32,26 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
     return (
       <>
         {paramArray &&
-          paramArray.map(([param, paramDef], paramIndex) => (
-            <>
-              {paramIndex > 0 ? <span className="comma">,</span> : ''}
-              <input
-                value={param}
-                key={paramIndex}
-                className="input-small tight-form-func-param"
-                placeholder={paramDef ? paramDef.name : ''}
-                onChange={e => this.onChange(paramIndex, e)}
-                onBlur={onRunQuery}
-              ></input>
-            </>
-          ))}
+          paramArray.map(([param, paramDef], paramIndex) => {
+            if (param === undefined || paramDef === undefined) {
+              return;
+            }
+
+            return (
+              <>
+                {paramIndex > 0 ? <span className="comma">,&nbsp;</span> : ''}
+                <div>
+                  <FunctionParam
+                    param={param}
+                    paramDef={paramDef}
+                    index={paramIndex}
+                    onRunQuery={onRunQuery}
+                    onChange={this.onParamChange}
+                  />
+                </div>
+              </>
+            );
+          })}
       </>
     );
   }

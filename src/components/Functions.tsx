@@ -82,20 +82,24 @@ class Functions extends React.PureComponent<FunctionsProps> {
             Functions
           </InlineFormLabel>
         </div>
-        {funcs &&
-          funcs.map((func, index) => (
-            <FunctionElem
-              key={index}
-              index={index}
-              func={func}
-              onMoveLeft={this.handleMoveLeft}
-              onMoveRight={this.handleMoveRight}
-              onRemove={this.handleRemoveFunction}
-              onChange={this.onFuncChange}
-              onRunQuery={onRunQuery}
-            />
-          ))}
-        <FunctionAdd addFunc={this.addFunction} />
+        <div className="gf-form">
+          {funcs &&
+            funcs.map((func, index) => (
+              <FunctionElem
+                key={index}
+                index={index}
+                func={func}
+                onMoveLeft={this.handleMoveLeft}
+                onMoveRight={this.handleMoveRight}
+                onRemove={this.handleRemoveFunction}
+                onChange={this.onFuncChange}
+                onRunQuery={onRunQuery}
+              />
+            ))}
+        </div>
+        <div className="gf-form">
+          <FunctionAdd addFunc={this.addFunction} />
+        </div>
         <div className="gf-form gf-form--grow">
           <div className="gf-form-label gf-form-label--grow"></div>
         </div>
