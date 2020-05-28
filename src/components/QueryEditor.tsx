@@ -14,6 +14,8 @@ interface State {
   suggestions: any[];
 }
 
+const colorYellow = '#d69e2e';
+
 const getSuggestionValue = (suggestion: any) => {
   return suggestion;
 };
@@ -26,7 +28,6 @@ export class QueryEditor extends PureComponent<Props, State> {
   state = { suggestions: [] };
 
   onPVChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
-    console.log(event.target.value);
     const { onChange, query } = this.props;
     onChange({ ...query, target: newValue });
   };
@@ -88,15 +89,8 @@ export class QueryEditor extends PureComponent<Props, State> {
   render() {
     const { suggestions } = this.state;
     const { query, onRunQuery } = this.props;
-    const pvInputProps = {
-      value: query.target,
-      className: 'gf-form-input',
-      placeholder: 'PV name',
-      spellcheck: 'false',
-      onChange: this.onPVChange,
-      onBlur: onRunQuery,
-      onKeyDown: this.onKeydownEnter,
-    };
+    const pvInputStyle = query.regex ? { color: colorYellow } : {};
+    const aliasInputStyle = query.aliasPattern ? { color: colorYellow } : {};
 
     return (
       <>
@@ -111,7 +105,16 @@ export class QueryEditor extends PureComponent<Props, State> {
               onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
               getSuggestionValue={getSuggestionValue}
               renderSuggestion={renderSuggestion}
-              inputProps={pvInputProps}
+              inputProps={{
+                value: query.target,
+                className: 'gf-form-input',
+                placeholder: 'PV name',
+                spellCheck: false,
+                style: pvInputStyle,
+                onChange: this.onPVChange,
+                onBlur: onRunQuery,
+                onKeyDown: this.onKeydownEnter,
+              }}
             />
           </div>
           <LegacyForms.Switch
@@ -144,6 +147,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             value={query.alias}
             className="gf-form-input max-width-30"
             placeholder="Alias"
+            style={aliasInputStyle}
             onChange={this.onAliasChange}
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
@@ -156,6 +160,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             value={query.aliasPattern}
             className="gf-form-input max-width-30"
             placeholder="Alias regex pattern"
+            style={{ color: colorYellow }}
             onChange={this.onAliaspatternChange}
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
