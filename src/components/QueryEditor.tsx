@@ -1,6 +1,8 @@
 import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
 import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
+import Autosuggest from 'react-autosuggest';
+import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery } from '../types';
 import { Functions } from './Functions';
@@ -8,10 +10,25 @@ import { FunctionDescriptor } from '../types';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
-export class QueryEditor extends PureComponent<Props> {
-  onPVChange = (event: ChangeEvent<HTMLInputElement>) => {
+interface State {
+  suggestions: any[];
+}
+
+const getSuggestionValue = (suggestion: any) => {
+  return suggestion;
+};
+
+const renderSuggestion = (suggestion: any) => {
+  return <span>{suggestion}</span>;
+};
+
+export class QueryEditor extends PureComponent<Props, State> {
+  state = { suggestions: [] };
+
+  onPVChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
+    console.log(event.target.value);
     const { onChange, query } = this.props;
-    onChange({ ...query, target: event.target.value });
+    onChange({ ...query, target: newValue });
   };
 
   onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -46,8 +63,40 @@ export class QueryEditor extends PureComponent<Props> {
     }
   };
 
+  loadPVSuggestions(value: string) {
+    const templateSrv = getTemplateSrv();
+    const replacedQuery = templateSrv.replace(value, undefined, 'regex');
+    const { regex } = this.props.query;
+    const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
+    this.props.datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
+      this.setState({
+        suggestions: res,
+      });
+    });
+  }
+
+  onPVSuggestionsFetchRequested = ({ value }: { value: any }) => {
+    this.loadPVSuggestions(value);
+  };
+
+  onPVSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: [],
+    });
+  };
+
   render() {
+    const { suggestions } = this.state;
     const { query, onRunQuery } = this.props;
+    const pvInputProps = {
+      value: query.target,
+      className: 'gf-form-input',
+      placeholder: 'PV name',
+      spellcheck: 'false',
+      onChange: this.onPVChange,
+      onBlur: onRunQuery,
+      onKeyDown: this.onKeydownEnter,
+    };
 
     return (
       <>
@@ -55,15 +104,16 @@ export class QueryEditor extends PureComponent<Props> {
           <InlineFormLabel width={6} className="query-keyword">
             PV
           </InlineFormLabel>
-          <input
-            type="text"
-            value={query.target}
-            className="gf-form-input max-width-30"
-            placeholder="PV name"
-            onChange={this.onPVChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
+          <div className="max-width-30">
+            <Autosuggest
+              suggestions={suggestions}
+              onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
+              getSuggestionValue={getSuggestionValue}
+              renderSuggestion={renderSuggestion}
+              inputProps={pvInputProps}
+            />
+          </div>
           <LegacyForms.Switch
             checked={query.regex}
             label="Regex"
