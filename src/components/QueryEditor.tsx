@@ -1,17 +1,19 @@
+import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
 import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import Autosuggest from 'react-autosuggest';
 import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
-import { AADataSourceOptions, AAQuery } from '../types';
+import { AADataSourceOptions, AAQuery, defaultQuery, operatorList } from '../types';
 import { Functions } from './Functions';
 import { FunctionDescriptor } from '../types';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
 interface State {
-  suggestions: any[];
+  pvSuggestions: any[];
+  oprSuggestions: any[];
 }
 
 const colorYellow = '#d69e2e';
@@ -25,7 +27,7 @@ const renderSuggestion = (suggestion: any) => {
 };
 
 export class QueryEditor extends PureComponent<Props, State> {
-  state = { suggestions: [] };
+  state = { pvSuggestions: [], oprSuggestions: [] };
 
   onPVChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
     const { onChange, query } = this.props;
@@ -38,9 +40,9 @@ export class QueryEditor extends PureComponent<Props, State> {
     onRunQuery();
   };
 
-  onOperatorChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onOperatorChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
     const { onChange, query } = this.props;
-    onChange({ ...query, operator: event.target.value });
+    onChange({ ...query, operator: newValue });
   };
 
   onAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +73,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
     this.props.datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
       this.setState({
-        suggestions: res,
+        pvSuggestions: res,
       });
     });
   }
@@ -82,13 +84,31 @@ export class QueryEditor extends PureComponent<Props, State> {
 
   onPVSuggestionsClearRequested = () => {
     this.setState({
-      suggestions: [],
+      pvSuggestions: [],
+    });
+  };
+
+  onOprSuggestionsFetchRequested = ({ value }: { value: any }) => {
+    const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp('.*' + escapedValue, 'i');
+
+    const suggestions = operatorList.filter(operator => regex.test(operator));
+
+    this.setState({
+      oprSuggestions: suggestions,
+    });
+  };
+
+  onOprSuggestionsClearRequested = () => {
+    this.setState({
+      oprSuggestions: [],
     });
   };
 
   render() {
-    const { suggestions } = this.state;
-    const { query, onRunQuery } = this.props;
+    const query = defaults(this.props.query, defaultQuery);
+    const { pvSuggestions, oprSuggestions } = this.state;
+    const { onRunQuery } = this.props;
     const pvInputStyle = query.regex ? { color: colorYellow } : {};
     const aliasInputStyle = query.aliasPattern ? { color: colorYellow } : {};
 
@@ -100,11 +120,12 @@ export class QueryEditor extends PureComponent<Props, State> {
           </InlineFormLabel>
           <div className="max-width-30">
             <Autosuggest
-              suggestions={suggestions}
+              suggestions={pvSuggestions}
               onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
               onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
               getSuggestionValue={getSuggestionValue}
               renderSuggestion={renderSuggestion}
+              shouldRenderSuggestions={() => true}
               inputProps={{
                 value: query.target,
                 className: 'gf-form-input',
@@ -128,15 +149,25 @@ export class QueryEditor extends PureComponent<Props, State> {
           <InlineFormLabel width={6} className="query-keyword">
             Operator
           </InlineFormLabel>
-          <input
-            type="text"
-            value={query.operator}
-            className="gf-form-input max-width-30"
-            placeholder="mean"
-            onChange={this.onOperatorChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
+          <div className="max-width-30">
+            <Autosuggest
+              suggestions={oprSuggestions}
+              onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onOprSuggestionsClearRequested}
+              getSuggestionValue={getSuggestionValue}
+              renderSuggestion={renderSuggestion}
+              shouldRenderSuggestions={() => true}
+              inputProps={{
+                value: query.operator,
+                className: 'gf-form-input',
+                placeholder: 'mean',
+                spellCheck: false,
+                onChange: this.onOperatorChange,
+                onBlur: onRunQuery,
+                onKeyDown: this.onKeydownEnter,
+              }}
+            />
+          </div>
         </div>
         <div className="gf-form">
           <InlineFormLabel width={6} className="query-keyword">

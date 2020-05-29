@@ -3,7 +3,7 @@ import { DataQueryResponse, DataQueryRequest, DataSourceInstanceSettings, DataSo
 import { getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
 
-import { AAQuery, AADataSourceOptions } from './types';
+import { AAQuery, AADataSourceOptions, operatorList } from './types';
 import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
 
@@ -27,7 +27,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   templateSrv: any;
   withCredentials?: boolean;
   headers: { [key: string]: string };
-  operatorList: string[];
 
   constructor(instanceSettings: DataSourceInstanceSettings<AADataSourceOptions>) {
     super(instanceSettings);
@@ -39,29 +38,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     if (typeof instanceSettings.basicAuth === 'string' && instanceSettings.basicAuth.length > 0) {
       this.headers.Authorization = instanceSettings.basicAuth;
     }
-
-    this.operatorList = [
-      'firstSample',
-      'lastSample',
-      'firstFill',
-      'lastFill',
-      'mean',
-      'min',
-      'max',
-      'count',
-      'ncount',
-      'nth',
-      'median',
-      'std',
-      'jitter',
-      'ignoreflyers',
-      'flyers',
-      'variance',
-      'popvariance',
-      'kurtosis',
-      'skewness',
-      'raw',
-    ];
   }
 
   // Called from Grafana panels to get data
@@ -142,7 +118,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       }
 
       // Other Operator
-      if (_.includes(this.operatorList, operator)) {
+      if (_.includes(operatorList, operator)) {
         return `${operator}_${interval}(${pvname})`;
       }
 

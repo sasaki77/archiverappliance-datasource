@@ -29,6 +29,29 @@ export interface FuncDef {
   params: Array<{ name: string; options?: string[]; type: string }>;
 }
 
+export const operatorList: string[] = [
+  'firstSample',
+  'lastSample',
+  'firstFill',
+  'lastFill',
+  'mean',
+  'min',
+  'max',
+  'count',
+  'ncount',
+  'nth',
+  'median',
+  'std',
+  'jitter',
+  'ignoreflyers',
+  'flyers',
+  'variance',
+  'popvariance',
+  'kurtosis',
+  'skewness',
+  'raw',
+];
+
 export interface FunctionDescriptor {
   text: string;
   params: string[];
