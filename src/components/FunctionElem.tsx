@@ -5,7 +5,7 @@ import { FunctionParams } from './FunctionParams';
 
 import { FunctionDescriptor } from '../types';
 
-interface FunctionElemProps extends FunctionEditorControlsProps {
+export interface FunctionElemProps extends FunctionEditorControlsProps {
   func: FunctionDescriptor;
   index: number;
   onChange: (func: FunctionDescriptor, index: number) => void;
