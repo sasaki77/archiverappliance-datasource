@@ -1,3 +1,4 @@
+import { MutableDataFrame, FieldType, getFieldDisplayName } from '@grafana/data';
 import split from 'lodash/split';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
@@ -76,13 +77,18 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
-      const series = result.data[0];
-      expect(series.target).toBe('PV');
-      expect(series.datapoints).toHaveLength(2);
-      expect(series.datapoints[0][0]).toBe(100);
-      expect(series.datapoints[1][0]).toBe(200);
-      expect(series.datapoints[0][1]).toBe(1262304001456);
-      expect(series.datapoints[1][1]).toBe(1262304002789);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(pvname).toBe('PV');
+      expect(timesArray).toHaveLength(2);
+      expect(valArray).toHaveLength(2);
+      expect(timesArray[0]).toBe(1262304001456);
+      expect(timesArray[1]).toBe(1262304002789);
+      expect(valArray[0]).toBe(100);
+      expect(valArray[1]).toBe(200);
       done();
     });
   });
@@ -117,13 +123,18 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
-      const series = result.data[0];
-      expect(series.target).toBe('PV');
-      expect(series.datapoints).toHaveLength(2);
-      expect(series.datapoints[0][0]).toBe(101);
-      expect(series.datapoints[1][0]).toBe(102);
-      expect(series.datapoints[0][1]).toBe(1262304001456);
-      expect(series.datapoints[1][1]).toBe(1262304002789);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(pvname).toBe('PV');
+      expect(timesArray).toHaveLength(2);
+      expect(valArray).toHaveLength(2);
+      expect(timesArray[0]).toBe(1262304001456);
+      expect(timesArray[1]).toBe(1262304002789);
+      expect(valArray[0]).toBe(101);
+      expect(valArray[1]).toBe(102);
       done();
     });
   });
@@ -158,11 +169,16 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
-      const series = result.data[0];
-      expect(series.target).toBe('PV');
-      expect(series.datapoints).toHaveLength(1);
-      expect(series.datapoints[0][0]).toBe(1);
-      expect(series.datapoints[0][1]).toBe(1262304002789);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(pvname).toBe('PV');
+      expect(timesArray).toHaveLength(1);
+      expect(valArray).toHaveLength(1);
+      expect(timesArray[0]).toBe(1262304002789);
+      expect(valArray[0]).toBe(1);
       done();
     });
   });
@@ -198,12 +214,17 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
-      const series = result.data[0];
-      expect(series.target).toBe('PV');
-      expect(series.datapoints).toHaveLength(3);
-      expect(series.datapoints[0][0]).toBe(0);
-      expect(series.datapoints[1][0]).toBe(100);
-      expect(series.datapoints[2][0]).toBe(200);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(pvname).toBe('PV');
+      expect(timesArray).toHaveLength(3);
+      expect(valArray).toHaveLength(3);
+      expect(valArray[0]).toBe(0);
+      expect(valArray[1]).toBe(100);
+      expect(valArray[2]).toBe(200);
       done();
     });
   });
@@ -267,22 +288,30 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(2);
-      const series1 = result.data[0];
-      const series2 = result.data[1];
-      expect(series1.target).toBe('PV2');
-      expect(series2.target).toBe('PV1');
-      expect(series1.datapoints).toHaveLength(3);
-      expect(series1.datapoints[0][0]).toBe(3);
-      expect(series1.datapoints[1][0]).toBe(4);
-      expect(series1.datapoints[2][0]).toBe(5);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const timesArray1 = dataFrameArray[0].fields[0].values.toArray();
+      const valArray1 = dataFrameArray[0].fields[1].values.toArray();
+
+      expect(pvname1).toBe('PV2');
+      expect(pvname2).toBe('PV1');
+      expect(timesArray1).toHaveLength(3);
+      expect(valArray1).toHaveLength(3);
+      expect(valArray1[0]).toBe(3);
+      expect(valArray1[1]).toBe(4);
+      expect(valArray1[2]).toBe(5);
       done();
     });
   });
 
   it('should return aggregated value', () => {
-    const timeseriesData = [
+    const data = [
       {
         target: 'min',
+        name: 'min',
+        values: [0, 1, 2, 3, 4],
+        times: [0, 0, 0, 0, 0],
         datapoints: [
           [0, 0],
           [1, 0],
@@ -293,6 +322,9 @@ describe('Archiverappliance Functions', () => {
       },
       {
         target: 'max',
+        name: 'max',
+        values: [1, 1, 1, 1, 7],
+        times: [0, 0, 0, 0, 0],
         datapoints: [
           [1, 0],
           [1, 0],
@@ -303,6 +335,9 @@ describe('Archiverappliance Functions', () => {
       },
       {
         target: 'avgsum',
+        name: 'avgsum',
+        values: [2, 3, 4, 5, 6],
+        times: [0, 0, 0, 0, 0],
         datapoints: [
           [2, 0],
           [3, 0],
@@ -312,6 +347,17 @@ describe('Archiverappliance Functions', () => {
         ],
       },
     ];
+
+    const timeseriesData: MutableDataFrame[] = data.map(
+      d =>
+        new MutableDataFrame({
+          name: d.name,
+          fields: [
+            { name: 'time', type: FieldType.time, values: d.times },
+            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+          ],
+        })
+    );
 
     const topFunction = dataProcessor.aaFunctions.top;
     const bottomFunction = dataProcessor.aaFunctions.bottom;
@@ -327,36 +373,39 @@ describe('Archiverappliance Functions', () => {
     const sumBottomData = bottomFunction(1, 'sum', timeseriesData);
 
     expect(minTopData).toHaveLength(3);
-    expect(minTopData[0].target).toBe('avgsum');
-    expect(minTopData[1].target).toBe('max');
-    expect(minTopData[2].target).toBe('min');
+    expect(minTopData[0].name).toBe('avgsum');
+    expect(minTopData[1].name).toBe('max');
+    expect(minTopData[2].name).toBe('min');
 
     expect(maxTopData).toHaveLength(1);
-    expect(maxTopData[0].target).toBe('max');
+    expect(maxTopData[0].name).toBe('max');
 
     expect(avgTopData).toHaveLength(1);
-    expect(avgTopData[0].target).toBe('avgsum');
+    expect(avgTopData[0].name).toBe('avgsum');
 
     expect(sumTopData).toHaveLength(1);
-    expect(sumTopData[0].target).toBe('avgsum');
+    expect(sumTopData[0].name).toBe('avgsum');
 
     expect(minBottomData).toHaveLength(3);
-    expect(minBottomData[0].target).toBe('min');
-    expect(minBottomData[1].target).toBe('max');
-    expect(minBottomData[2].target).toBe('avgsum');
+    expect(minBottomData[0].name).toBe('min');
+    expect(minBottomData[1].name).toBe('max');
+    expect(minBottomData[2].name).toBe('avgsum');
 
     expect(maxBottomData).toHaveLength(1);
-    expect(maxBottomData[0].target).toBe('min');
+    expect(maxBottomData[0].name).toBe('min');
 
     expect(avgBottomData).toHaveLength(1);
-    expect(avgBottomData[0].target).toBe('min');
+    expect(avgBottomData[0].name).toBe('min');
 
     expect(sumBottomData).toHaveLength(1);
-    expect(sumBottomData[0].target).toBe('min');
+    expect(sumBottomData[0].name).toBe('min');
 
-    const timeseriesDataAbs = [
+    const absData = [
       {
         target: 'min',
+        name: 'min',
+        values: [0, 3],
+        times: [0, 0],
         datapoints: [
           [0, 0],
           [3, 0],
@@ -364,6 +413,9 @@ describe('Archiverappliance Functions', () => {
       },
       {
         target: 'max',
+        name: 'max',
+        values: [-6, -5, -4, -3, -2],
+        times: [0, 0, 0, 0, 0],
         datapoints: [
           [-6, 0],
           [-5, 0],
@@ -374,6 +426,9 @@ describe('Archiverappliance Functions', () => {
       },
       {
         target: 'avgsum',
+        name: 'avgsum',
+        values: [3, 4],
+        times: [0, 0],
         datapoints: [
           [3, 0],
           [4, 0],
@@ -381,22 +436,33 @@ describe('Archiverappliance Functions', () => {
       },
     ];
 
+    const timeseriesDataAbs: MutableDataFrame[] = absData.map(
+      d =>
+        new MutableDataFrame({
+          name: d.name,
+          fields: [
+            { name: 'time', type: FieldType.time, values: d.times },
+            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+          ],
+        })
+    );
+
     const absMinTopData = topFunction(1, 'absoluteMin', timeseriesDataAbs);
     const absMaxTopData = topFunction(1, 'absoluteMax', timeseriesDataAbs);
     const absMinBottomData = bottomFunction(1, 'absoluteMin', timeseriesDataAbs);
     const absMaxBottomData = bottomFunction(1, 'absoluteMax', timeseriesDataAbs);
 
     expect(absMinTopData).toHaveLength(1);
-    expect(absMinTopData[0].target).toBe('avgsum');
+    expect(absMinTopData[0].name).toBe('avgsum');
 
     expect(absMaxTopData).toHaveLength(1);
-    expect(absMaxTopData[0].target).toBe('max');
+    expect(absMaxTopData[0].name).toBe('max');
 
     expect(absMinBottomData).toHaveLength(1);
-    expect(absMinBottomData[0].target).toBe('min');
+    expect(absMinBottomData[0].name).toBe('min');
 
     expect(absMaxBottomData).toHaveLength(1);
-    expect(absMaxBottomData[0].target).toBe('min');
+    expect(absMaxBottomData[0].name).toBe('min');
   });
 
   it('should return the server results with exclude function', done => {
@@ -429,10 +495,12 @@ describe('Archiverappliance Functions', () => {
 
     ctx.ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(2);
-      const series1 = result.data[0];
-      const series2 = result.data[1];
-      expect(series1.target).toBe('PVA');
-      expect(series2.target).toBe('PVB');
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+
+      expect(pvname1).toBe('PVA');
+      expect(pvname2).toBe('PVB');
       done();
     });
   });

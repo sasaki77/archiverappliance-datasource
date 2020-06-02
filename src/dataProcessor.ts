@@ -1,84 +1,131 @@
 import _ from 'lodash';
+import { MutableDataFrame, ArrayVector, getFieldDisplayName } from '@grafana/data';
 
 // Transform
 
-function scale(factor: number, datapoints: any[]) {
-  return _.map(datapoints, point => [point[0] * factor, point[1]]);
+function scale(factor: number, times: number[], values: number[]) {
+  return {
+    times: times,
+    values: _.map(values, value => value * factor),
+  };
 }
 
-function offset(delta: number, datapoints: any[]) {
-  return _.map(datapoints, point => [point[0] + delta, point[1]]);
+function offset(delta: number, times: number[], values: number[]) {
+  return {
+    times: times,
+    values: _.map(values, value => value + delta),
+  };
 }
 
-function delta(datapoints: any[]) {
-  const newSeries = [];
-  for (let i = 1; i < datapoints.length; i += 1) {
-    const deltaValue = datapoints[i][0] - datapoints[i - 1][0];
-    newSeries.push([deltaValue, datapoints[i][1]]);
+function delta(times: number[], values: number[]) {
+  const newTimes = [];
+  const newValues = [];
+
+  for (let i = 1; i < values.length; i += 1) {
+    const deltaValue = values[i] - values[i - 1];
+    newTimes.push(times[i]);
+    newValues.push(deltaValue);
   }
-  return newSeries;
+
+  return {
+    times: newTimes,
+    values: newValues,
+  };
 }
 
-function fluctuation(datapoints: any[]) {
+function fluctuation(times: number[], values: number[]) {
   const newSeries = [];
-  for (let i = 0; i < datapoints.length; i += 1) {
-    const flucValue = datapoints[i][0] - datapoints[0][0];
-    newSeries.push([flucValue, datapoints[i][1]]);
+
+  for (let i = 0; i < values.length; i += 1) {
+    const flucValue = values[i] - values[0];
+    newSeries.push(flucValue);
   }
-  return newSeries;
+
+  return {
+    times: times,
+    values: newSeries,
+  };
 }
 
 // [Support Funcs] Transform wrapper
 
-function transformWrapper(func: any, ...args: any) {
+function transformWrapper(func: (...args: any) => { times: number[]; values: number[] }, ...args: any) {
   const funcArgs = args.slice(0, -1);
-  const timeseriesData = args[args.length - 1];
+  const dataFrameArray: MutableDataFrame[] = args[args.length - 1];
 
-  const tsData = _.map(timeseriesData, timeseries => {
-    timeseries.datapoints = func(...funcArgs, timeseries.datapoints);
-    return timeseries;
+  const tsData = _.map(dataFrameArray, dataFrame => {
+    const timesField = dataFrame.fields[0];
+    const valField = dataFrame.fields[1];
+    const vals = func(...funcArgs, timesField.values.toArray(), valField.values.toArray());
+
+    const newTimesField = {
+      ...timesField,
+      values: new ArrayVector(vals.times),
+    };
+
+    const newValfield = {
+      ...valField,
+      values: new ArrayVector(vals.values),
+    };
+
+    return {
+      ...dataFrame,
+      fields: [newTimesField, newValfield],
+    };
   });
 
   return tsData;
 }
 
 // Filter Series
-function exclude(pattern: string, timeseriesData: any[]) {
+function exclude(pattern: string, dataFrameArray: MutableDataFrame[]) {
   const regex = new RegExp(pattern);
-  return _.filter(timeseriesData, timeseries => !regex.test(timeseries.target));
+  return _.filter(dataFrameArray, dataFrame => {
+    const valfield = dataFrame.fields[1];
+    const displayName = getFieldDisplayName(valfield, dataFrame);
+    return !regex.test(displayName);
+  });
 }
 
 // [Support Funcs] Datapoints aggregation functions
 
-function datapointsAvg(datapoints: any[]) {
-  return _.meanBy(datapoints, point => point[0]);
+function datapointsAvg(values: number[]) {
+  return _.meanBy(values, value => value);
 }
 
-function datapointsMin(datapoints: any[]) {
-  const minPoint = _.minBy(datapoints, point => point[0]);
-  return minPoint[0];
+function datapointsMin(values: number[]) {
+  const minPoint = _.minBy(values, value => value);
+  return minPoint;
 }
 
-function datapointsMax(datapoints: any[]) {
-  const maxPoint = _.maxBy(datapoints, point => point[0]);
-  return maxPoint[0];
+function datapointsMax(values: number[]) {
+  const maxPoint = _.maxBy(values, value => value);
+  return maxPoint;
 }
 
-function datapointsSum(datapoints: any[]) {
-  return _.sumBy(datapoints, point => point[0]);
+function datapointsSum(values: number[]) {
+  return _.sumBy(values, value => value);
 }
 
-function datapointsAbsMin(datapoints: any[]) {
-  const minPoint = _.minBy(datapoints, point => Math.abs(point[0]));
-  return Math.abs(minPoint[0]);
+function datapointsAbsMin(values: number[]) {
+  const minPoint = _.minBy(values, value => Math.abs(value));
+
+  if (minPoint === undefined) {
+    return minPoint;
+  }
+  return Math.abs(minPoint);
 }
 
-function datapointsAbsMax(datapoints: any[]) {
-  const maxPoint = _.maxBy(datapoints, point => Math.abs(point[0]));
-  return Math.abs(maxPoint[0]);
+function datapointsAbsMax(values: number[]) {
+  const maxPoint = _.maxBy(values, value => Math.abs(value));
+
+  if (maxPoint === undefined) {
+    return maxPoint;
+  }
+  return Math.abs(maxPoint);
 }
 
-const datapointsAggFuncs: { [key: string]: any } = {
+const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefined } = {
   avg: datapointsAvg,
   min: datapointsMin,
   max: datapointsMax,
@@ -89,11 +136,11 @@ const datapointsAggFuncs: { [key: string]: any } = {
 
 // [Support Funcs] Wrapper function for top and bottom function
 
-function extraction(order: string, n: number, orderFunc: string, timeseriesData: any[]) {
+function extraction(order: string, n: number, orderFunc: string, dataFrameArray: MutableDataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (ts: any) => orderByCallback(ts.datapoints);
+  const sortByIteratee = (ts: any) => orderByCallback(ts.fields[1].values.toArray());
 
-  const sortedTsData = _.sortBy(timeseriesData, sortByIteratee);
+  const sortedTsData = _.sortBy(dataFrameArray, sortByIteratee);
   if (order === 'bottom') {
     return _.slice(sortedTsData, 0, n);
   }

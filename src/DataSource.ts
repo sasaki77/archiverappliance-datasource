@@ -1,5 +1,13 @@
 import { getBackendSrv } from '@grafana/runtime';
-import { DataQueryResponse, DataQueryRequest, DataSourceInstanceSettings, DataSourceApi } from '@grafana/data';
+import {
+  DataQueryResponse,
+  DataQueryRequest,
+  DataSourceInstanceSettings,
+  DataSourceApi,
+  MutableDataFrame,
+  FieldType,
+  getFieldDisplayName,
+} from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
 
@@ -139,24 +147,27 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   responseParse(responses: any[]) {
-    const timeSeriesDataArray = _.map(responses, response => {
-      const timeSeriesData = _.map(response.data, targetRes => {
-        const timesiries = _.map(targetRes.data, datapoint => [
-          datapoint.val,
-          datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000),
-        ]);
-        const timeseries = { target: targetRes.meta.name, datapoints: timesiries };
-        return timeseries;
+    const dataFramesArray = _.map(responses, response => {
+      const dataFrames = _.map(response.data, targetRes => {
+        const values = _.map(targetRes.data, datapoint => datapoint.val);
+        const times = _.map(targetRes.data, datapoint => datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000));
+        const frame = new MutableDataFrame({
+          fields: [
+            { name: 'time', type: FieldType.time, values: times },
+            { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },
+          ],
+        });
+        return frame;
       });
-      return timeSeriesData;
+      return dataFrames;
     });
 
-    return Promise.resolve(_.flatten(timeSeriesDataArray));
+    return Promise.resolve(_.flatten(dataFramesArray));
   }
 
-  setAlias(timeseriesData: any[], target: any) {
+  setAlias(dataFrameArray: MutableDataFrame[], target: any) {
     if (!target.alias) {
-      return Promise.resolve(timeseriesData);
+      return Promise.resolve(dataFrameArray);
     }
 
     let pattern: RegExp;
@@ -164,16 +175,34 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       pattern = new RegExp(target.aliasPattern, '');
     }
 
-    const newTimeseriesData = _.map(timeseriesData, timeseries => {
+    const newDataFrameArray = _.map(dataFrameArray, dataFrame => {
+      let alias = target.alias;
+      const valfield = dataFrame.fields[1];
+      const displayName = getFieldDisplayName(valfield, dataFrame);
+
       if (pattern) {
-        const alias = timeseries.target.replace(pattern, target.alias);
-        return { target: alias, datapoints: timeseries.datapoints };
+        alias = displayName.replace(pattern, alias);
       }
 
-      return { target: target.alias, datapoints: timeseries.datapoints };
+      const newValfield = {
+        ...valfield,
+        config: {
+          ...valfield.config,
+          displayName: alias,
+        },
+        state: {
+          ...valfield.state,
+          displayName: alias,
+        },
+      };
+
+      return {
+        ...dataFrame,
+        fields: [dataFrame.fields[0], newValfield],
+      };
     });
 
-    return Promise.resolve(newTimeseriesData);
+    return Promise.resolve(newDataFrameArray);
   }
 
   applyFunctions(timeseriesData: any, target: any) {

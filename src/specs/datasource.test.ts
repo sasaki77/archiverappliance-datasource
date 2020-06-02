@@ -1,4 +1,5 @@
 import { DataSource } from '../DataSource';
+import { MutableDataFrame, getFieldDisplayName } from '@grafana/data';
 import range from 'lodash/range';
 import split from 'lodash/split';
 
@@ -340,11 +341,16 @@ describe('Archiverappliance Datasource', () => {
 
       ctx.ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(1);
-        const series = result.data[0];
-        expect(series.target).toBe('PV');
-        expect(series.datapoints).toHaveLength(3);
-        expect(series.datapoints[0][0]).toBe(0);
-        expect(series.datapoints[0][1]).toBe(1262304000123);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+        const displayName = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+
+        expect(displayName).toBe('PV');
+        expect(valArray).toHaveLength(3);
+        expect(timesArray).toHaveLength(3);
+        expect(valArray[0]).toBe(0);
+        expect(timesArray[0]).toBe(1262304000123);
         done();
       });
     });
@@ -379,10 +385,16 @@ describe('Archiverappliance Datasource', () => {
 
       ctx.ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(4);
-        expect(result.data[0].target).toBe('alias');
-        expect(result.data[1].target).toBe('PV2');
-        expect(result.data[2].target).toBe('PV3');
-        expect(result.data[3].target).toBe('PV4');
+        const dataFrameArray: MutableDataFrame[] = result.data;
+        const pv1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+        const pv2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+        const pv3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+        const pv4 = getFieldDisplayName(dataFrameArray[3].fields[1], dataFrameArray[3]);
+
+        expect(pv1).toBe('alias');
+        expect(pv2).toBe('PV2');
+        expect(pv3).toBe('PV3');
+        expect(pv4).toBe('PV4');
         done();
       });
     });
@@ -414,7 +426,9 @@ describe('Archiverappliance Datasource', () => {
 
       ctx.ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(1);
-        expect(result.data[0].target).toBe('PV1:header');
+        const dataFrame: MutableDataFrame = result.data[0];
+        const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+        expect(alias).toBe('PV1:header');
         done();
       });
     });
