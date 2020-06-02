@@ -1,0 +1,747 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render Editor with basic options should render normally 1`] = `
+<Fragment>
+  <div
+    className="gf-form-inline"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      PV
+    </FormLabel>
+    <div
+      className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "PV name",
+            "spellCheck": false,
+            "style": Object {},
+            "value": "pvname",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+    <Switch
+      checked={false}
+      label="Regex"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Operator
+    </FormLabel>
+    <div
+      className="max-width-30"
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "mean",
+            "spellCheck": false,
+            "value": "mean",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias"
+      style={Object {}}
+      type="text"
+      value="alias"
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias pattern
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias regex pattern"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=""
+    />
+  </div>
+  <Functions
+    funcs={Array []}
+    onChange={[Function]}
+    onRunQuery={[MockFunction]}
+  />
+</Fragment>
+`;
+
+exports[`Render Editor with basic options should render regex mode 1`] = `
+<Fragment>
+  <div
+    className="gf-form-inline"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      PV
+    </FormLabel>
+    <div
+      className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "PV name",
+            "spellCheck": false,
+            "style": Object {
+              "color": "#d69e2e",
+            },
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+    <Switch
+      checked={true}
+      label="Regex"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Operator
+    </FormLabel>
+    <div
+      className="max-width-30"
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "mean",
+            "spellCheck": false,
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias"
+      style={Object {}}
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias pattern
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias regex pattern"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=""
+    />
+  </div>
+  <Functions
+    funcs={Array []}
+    onChange={[Function]}
+    onRunQuery={[MockFunction]}
+  />
+</Fragment>
+`;
+
+exports[`Render Editor with basic options should render with alias pattern 1`] = `
+<Fragment>
+  <div
+    className="gf-form-inline"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      PV
+    </FormLabel>
+    <div
+      className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "PV name",
+            "spellCheck": false,
+            "style": Object {},
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+    <Switch
+      checked={false}
+      label="Regex"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Operator
+    </FormLabel>
+    <div
+      className="max-width-30"
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "mean",
+            "spellCheck": false,
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias pattern
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias regex pattern"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=".*"
+    />
+  </div>
+  <Functions
+    funcs={Array []}
+    onChange={[Function]}
+    onRunQuery={[MockFunction]}
+  />
+</Fragment>
+`;
+
+exports[`Render Editor with basic options should render with top function 1`] = `
+<Fragment>
+  <div
+    className="gf-form-inline"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      PV
+    </FormLabel>
+    <div
+      className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "PV name",
+            "spellCheck": false,
+            "style": Object {},
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+    <Switch
+      checked={false}
+      label="Regex"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Operator
+    </FormLabel>
+    <div
+      className="max-width-30"
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "mean",
+            "spellCheck": false,
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias"
+      style={Object {}}
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias pattern
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias regex pattern"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=""
+    />
+  </div>
+  <Functions
+    funcs={
+      Array [
+        Object {
+          "def": Object {
+            "category": "Filter Series",
+            "defaultParams": Array [
+              5,
+              "avg",
+            ],
+            "name": "top",
+            "params": Array [
+              Object {
+                "name": "number",
+                "type": "int",
+              },
+              Object {
+                "name": "value",
+                "options": Array [
+                  "avg",
+                  "min",
+                  "max",
+                  "absoluteMin",
+                  "absoluteMax",
+                  "sum",
+                ],
+                "type": "string",
+              },
+            ],
+          },
+          "params": Array [
+            "5",
+            "avg",
+          ],
+          "text": "top(5, avg)",
+        },
+      ]
+    }
+    onChange={[Function]}
+    onRunQuery={[MockFunction]}
+  />
+</Fragment>
+`;
