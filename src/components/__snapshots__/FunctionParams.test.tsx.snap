@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render should render component 1`] = `
+<Fragment>
+  <div
+    key="number"
+  >
+    <FunctionParam
+      index={0}
+      onChange={[Function]}
+      onRunQuery={[MockFunction]}
+      param="5"
+      paramDef={
+        Object {
+          "name": "number",
+          "type": "int",
+        }
+      }
+    />
+  </div>
+  <span
+    className="comma"
+    key="value"
+  >
+    , 
+  </span>
+  <div
+    key="value"
+  >
+    <FunctionParam
+      index={1}
+      onChange={[Function]}
+      onRunQuery={[MockFunction]}
+      param="avg"
+      paramDef={
+        Object {
+          "name": "value",
+          "options": Array [
+            "avg",
+            "min",
+            "max",
+            "absoluteMin",
+            "absoluteMax",
+            "sum",
+          ],
+          "type": "string",
+        }
+      }
+    />
+  </div>
+</Fragment>
+`;

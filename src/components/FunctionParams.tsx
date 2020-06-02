@@ -4,7 +4,7 @@ import { FunctionParam } from './FunctionParam';
 
 import { FunctionDescriptor } from '../types';
 
-interface FunctionParamsProps {
+export interface FunctionParamsProps {
   func: FunctionDescriptor;
   index: number;
   onChange: (func: FunctionDescriptor, index: number) => void;
@@ -39,8 +39,14 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
 
             return (
               <>
-                {paramIndex > 0 ? <span className="comma">,&nbsp;</span> : ''}
-                <div>
+                {paramIndex > 0 ? (
+                  <span className="comma" key={paramDef.name}>
+                    ,&nbsp;
+                  </span>
+                ) : (
+                  ''
+                )}
+                <div key={paramDef.name}>
                   <FunctionParam
                     param={param}
                     paramDef={paramDef}
