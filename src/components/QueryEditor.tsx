@@ -118,7 +118,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           <InlineFormLabel width={6} className="query-keyword">
             PV
           </InlineFormLabel>
-          <div className="max-width-30">
+          <div className="max-width-30" style={{ marginRight: '4px' }}>
             <Autosuggest
               suggestions={pvSuggestions}
               onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
