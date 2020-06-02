@@ -26,14 +26,14 @@ function addFuncDef(newFuncDef: FuncDef) {
 addFuncDef({
   name: 'scale',
   category: 'Transform',
-  params: [{ name: 'factor', type: 'float', options: ['100', '0.01', '10', '-1'] }],
+  params: [{ name: 'factor', type: 'float' }],
   defaultParams: ['100'],
 });
 
 addFuncDef({
   name: 'offset',
   category: 'Transform',
-  params: [{ name: 'delta', type: 'float', options: ['-100', '100'] }],
+  params: [{ name: 'delta', type: 'float' }],
   defaultParams: ['100'],
 });
 
