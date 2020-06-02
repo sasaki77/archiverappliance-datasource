@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@types/react-autosuggest": "^9.3.14",
-    "lodash": "^4.17.13",
     "react-autosuggest": "^10.0.2"
   },
   "homepage": "https://github.com/sasaki77/archiverappliance-datasource#readme"
