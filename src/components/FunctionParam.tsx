@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, FormEvent, FocusEvent } from 'react';
 import Autosuggest from 'react-autosuggest';
 
-interface FunctionParamProps {
+export interface FunctionParamProps {
   param: string;
   paramDef: { name: string; options?: string[]; type: string };
   index: number;
