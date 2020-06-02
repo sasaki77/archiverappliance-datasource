@@ -5,7 +5,7 @@ import { ButtonCascader, CascaderOption } from '@grafana/ui';
 import { FuncDef } from '../types';
 import { getCategories } from '../aafunc';
 
-interface FunctionAddProps {
+export interface FunctionAddProps {
   addFunc: (func: FuncDef) => void;
 }
 

@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render should render component 1`] = `
+<ButtonCascader
+  onChange={[Function]}
+  options={
+    Array [
+      Object {
+        "children": Array [
+          Object {
+            "label": "scale",
+            "value": Object {
+              "category": "Transform",
+              "defaultParams": Array [
+                "100",
+              ],
+              "name": "scale",
+              "params": Array [
+                Object {
+                  "name": "factor",
+                  "type": "float",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "offset",
+            "value": Object {
+              "category": "Transform",
+              "defaultParams": Array [
+                "100",
+              ],
+              "name": "offset",
+              "params": Array [
+                Object {
+                  "name": "delta",
+                  "type": "float",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "delta",
+            "value": Object {
+              "category": "Transform",
+              "defaultParams": Array [],
+              "name": "delta",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "fluctuation",
+            "value": Object {
+              "category": "Transform",
+              "defaultParams": Array [],
+              "name": "fluctuation",
+              "params": Array [],
+            },
+          },
+        ],
+        "label": "Transform",
+        "value": "Transform",
+      },
+      Object {
+        "children": Array [
+          Object {
+            "label": "top",
+            "value": Object {
+              "category": "Filter Series",
+              "defaultParams": Array [
+                "5",
+                "avg",
+              ],
+              "name": "top",
+              "params": Array [
+                Object {
+                  "name": "number",
+                  "type": "int",
+                },
+                Object {
+                  "name": "value",
+                  "options": Array [
+                    "avg",
+                    "min",
+                    "max",
+                    "absoluteMin",
+                    "absoluteMax",
+                    "sum",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "bottom",
+            "value": Object {
+              "category": "Filter Series",
+              "defaultParams": Array [
+                "5",
+                "avg",
+              ],
+              "name": "bottom",
+              "params": Array [
+                Object {
+                  "name": "number",
+                  "type": "int",
+                },
+                Object {
+                  "name": "value",
+                  "options": Array [
+                    "avg",
+                    "min",
+                    "max",
+                    "absoluteMin",
+                    "absoluteMax",
+                    "sum",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "exclude",
+            "value": Object {
+              "category": "Filter Series",
+              "defaultParams": Array [],
+              "name": "exclude",
+              "params": Array [
+                Object {
+                  "name": "pattern",
+                  "type": "string",
+                },
+              ],
+            },
+          },
+        ],
+        "label": "Filter Series",
+        "value": "Filter Series",
+      },
+      Object {
+        "children": Array [
+          Object {
+            "label": "maxNumPVs",
+            "value": Object {
+              "category": "Options",
+              "defaultParams": Array [
+                "100",
+              ],
+              "name": "maxNumPVs",
+              "params": Array [
+                Object {
+                  "name": "number",
+                  "type": "int",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "binInterval",
+            "value": Object {
+              "category": "Options",
+              "defaultParams": Array [
+                "900",
+              ],
+              "name": "binInterval",
+              "params": Array [
+                Object {
+                  "name": "interval",
+                  "type": "int",
+                },
+              ],
+            },
+          },
+        ],
+        "label": "Options",
+        "value": "Options",
+      },
+    ]
+  }
+>
+  Add
+</ButtonCascader>
+`;
