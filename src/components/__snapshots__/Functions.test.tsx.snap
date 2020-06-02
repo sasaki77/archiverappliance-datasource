@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render should render component 1`] = `
+<div
+  className="gf-form-inline"
+>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Functions
+    </FormLabel>
+  </div>
+  <div
+    className="gf-form"
+  />
+  <div
+    className="gf-form"
+  >
+    <FunctionAdd
+      addFunc={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form gf-form--grow"
+  >
+    <div
+      className="gf-form-label gf-form-label--grow"
+    />
+  </div>
+</div>
+`;
+
+exports[`Render should render with functions 1`] = `
+<div
+  className="gf-form-inline"
+>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Functions
+    </FormLabel>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FunctionElem
+      func={
+        Object {
+          "def": Object {
+            "category": "Filter Series",
+            "defaultParams": Array [
+              5,
+              "avg",
+            ],
+            "name": "top",
+            "params": Array [
+              Object {
+                "name": "number",
+                "type": "int",
+              },
+              Object {
+                "name": "value",
+                "options": Array [
+                  "avg",
+                  "min",
+                  "max",
+                  "absoluteMin",
+                  "absoluteMax",
+                  "sum",
+                ],
+                "type": "string",
+              },
+            ],
+          },
+          "params": Array [
+            "5",
+            "avg",
+          ],
+          "text": "top(5, avg)",
+        }
+      }
+      index={0}
+      key="0"
+      onChange={[Function]}
+      onMoveLeft={[Function]}
+      onMoveRight={[Function]}
+      onRemove={[Function]}
+      onRunQuery={[MockFunction]}
+    />
+    <FunctionElem
+      func={
+        Object {
+          "def": Object {
+            "category": "Transform",
+            "defaultParams": Array [
+              100,
+            ],
+            "name": "scale",
+            "params": Array [
+              Object {
+                "name": "factor",
+                "type": "float",
+              },
+            ],
+          },
+          "params": Array [
+            "0.001",
+          ],
+          "text": "scale(0.001)",
+        }
+      }
+      index={1}
+      key="1"
+      onChange={[Function]}
+      onMoveLeft={[Function]}
+      onMoveRight={[Function]}
+      onRemove={[Function]}
+      onRunQuery={[MockFunction]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FunctionAdd
+      addFunc={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form gf-form--grow"
+  >
+    <div
+      className="gf-form-label gf-form-label--grow"
+    />
+  </div>
+</div>
+`;

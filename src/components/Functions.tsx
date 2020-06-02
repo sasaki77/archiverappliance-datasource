@@ -5,7 +5,7 @@ import { FunctionAdd } from './FunctionAdd';
 import { FuncDef, FunctionDescriptor } from '../types';
 import { createFuncInstance } from '../aafunc';
 
-interface FunctionsProps {
+export interface FunctionsProps {
   funcs: FunctionDescriptor[];
   onChange: (func: FunctionDescriptor[]) => void;
   onRunQuery: () => void;
