@@ -38,15 +38,9 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
             }
 
             return (
-              <>
-                {paramIndex > 0 ? (
-                  <span className="comma" key={paramDef.name}>
-                    ,&nbsp;
-                  </span>
-                ) : (
-                  ''
-                )}
-                <div key={paramDef.name}>
+              <React.Fragment key={paramDef.name}>
+                {paramIndex > 0 ? <span className="comma">,&nbsp;</span> : ''}
+                <div>
                   <FunctionParam
                     param={param}
                     paramDef={paramDef}
@@ -55,7 +49,7 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
                     onChange={this.onParamChange}
                   />
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
       </>

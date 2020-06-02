@@ -2,9 +2,7 @@
 
 exports[`Render should render component 1`] = `
 <Fragment>
-  <div
-    key="number"
-  >
+  <div>
     <FunctionParam
       index={0}
       onChange={[Function]}
@@ -20,13 +18,10 @@ exports[`Render should render component 1`] = `
   </div>
   <span
     className="comma"
-    key="value"
   >
     , 
   </span>
-  <div
-    key="value"
-  >
+  <div>
     <FunctionParam
       index={1}
       onChange={[Function]}

@@ -20,4 +20,3 @@ describe('Render', () => {
     expect(toJson(wrapper)).toMatchSnapshot();
   });
 });
-
