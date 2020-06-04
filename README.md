@@ -25,5 +25,7 @@ It is recommend to use node 12.13.0
 ```
 npm install -g yarn
 yarn install
-npm run build
+yarn dev
 ```
+
+[grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
