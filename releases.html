@@ -86,16 +86,21 @@
 <li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">0.1.2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">1.0.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features-enhancements">Features / Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.1.2</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">0.1.1</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.1.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Features</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">0.1.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">0.1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Features</a></li>
 </ul>
 </li>
 </ul>
@@ -169,7 +174,29 @@
   <div class="section" id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.1.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>1.0.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>2020-06-05</strong></p>
+<div class="section" id="breaking-changes">
+<h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Grafana v6.X.X or earlier is not supported from this version</p></li>
+<li><p>Installation and update process is changed since <code class="docutils literal notranslate"><span class="pre">dist</span></code> folder was removed from master branch</p></li>
+</ul>
+</div>
+<div class="section" id="features-enhancements">
+<h3>Features / Enhancements<a class="headerlink" href="#features-enhancements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Support Grafana v7.0.0 or later</p></li>
+<li><p>Development process is changed with <a class="reference external" href="https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit">grafana-toolkit</a></p></li>
+<li><p>Source codes are migrated from JavaScript to TypeScript</p></li>
+<li><p>UI library is migrated from AngularJS to React</p></li>
+<li><p>Support variables for alias field and <a class="reference internal" href="functions.html"><span class="doc">Functions</span></a> parameter</p></li>
+<li><p>Support limit parameter for variable query</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>0.1.2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>2020-04-14</strong></p>
 <div class="section" id="features">
 <h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
@@ -179,22 +206,22 @@
 </ul>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>0.1.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p><strong>2020-04-07</strong></p>
 <div class="section" id="id3">
-<h3>Features<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h2>0.1.1<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><strong>2020-04-07</strong></p>
+<div class="section" id="id4">
+<h3>Features<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Support variables for <code class="docutils literal notranslate"><span class="pre">Operator</span></code> field</p></li>
 <li><p>Add maxNumPVs option function to set a maximum number of PVs for a target</p></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id4">
-<h2>0.1.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p><strong>2019-12-08</strong></p>
 <div class="section" id="id5">
-<h3>Features<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h2>0.1.0<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><strong>2019-12-08</strong></p>
+<div class="section" id="id6">
+<h3>Features<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Select multiple PVs by using Regex (Only supports wildcard pattern like <code class="docutils literal notranslate"><span class="pre">PV.*</span></code> and alternation pattern like <code class="docutils literal notranslate"><span class="pre">PV(1|2)</span></code>)</p></li>
 <li><p>Legend alias with regular expression pattern</p></li>

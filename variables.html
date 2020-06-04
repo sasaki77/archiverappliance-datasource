@@ -191,12 +191,16 @@ according to PV naming rules on your institute.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Maximum number of PV names you can use in variables is <strong>100</strong>.</p>
+<p>Default maximum number of PV names you can use in variables is <strong>100</strong>.</p>
+</div>
+<p>Limit parameter is available to change maxmum number. Parameters must be follow <code class="docutils literal notranslate"><span class="pre">?</span></code> character.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>PV:NAME:.*?limit<span class="o">=</span><span class="m">1000</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="variables-usage">
 <h2>Variables Usage<a class="headerlink" href="#variables-usage" title="Permalink to this headline">¶</a></h2>
-<p>Variables is allowd to use only in <code class="docutils literal notranslate"><span class="pre">PV</span></code> and <code class="docutils literal notranslate"><span class="pre">Operator</span></code> field input. Using variables in other fields is not supported.</p>
+<p>Variables is allowed to use in each field and <a class="reference internal" href="functions.html"><span class="doc">Functions</span></a> parameter except for <code class="docutils literal notranslate"><span class="pre">alias</span> <span class="pre">pattern</span></code> field.</p>
 <p>You can select multiple PVs from drop down menu with variables.</p>
 <p><img alt="Variables Usage" src="_images/aa-variables-usage.png" /></p>
 </div>

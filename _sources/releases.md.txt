@@ -1,4 +1,20 @@
 # Release Notes
+## 1.0.0
+
+**2020-06-05**
+
+### Breaking changes
+- Grafana v6.X.X or earlier is not supported from this version
+- Installation and update process is changed since `dist` folder was removed from master branch
+
+### Features / Enhancements
+- Support Grafana v7.0.0 or later
+- Development process is changed with [grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit)
+- Source codes are migrated from JavaScript to TypeScript
+- UI library is migrated from AngularJS to React
+- Support variables for alias field and [Functions](functions) parameter
+- Support limit parameter for variable query
+
 ## 0.1.2
 
 **2020-04-14**

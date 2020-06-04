@@ -18,7 +18,7 @@ Query format is explained in this documentation.
 See [Grafana Documentation](https://grafana.com/docs/grafana/latest/reference/templating/#adding-a-variable)
 for other settings.
 
-![Variable Settings](/img/aa-variables-settings.png)
+![Variable Settings](./img/aa-variables-settings.png)
 
 You can use regular expression pattern same as [Query Edit](query.html#select-multiple-pvs-by-regex).
 Only wildcard pattern and alternation pattern are available.
@@ -33,12 +33,18 @@ Below is a query in this case.
 ${group}:.*
 ```
 
-``` Note:: Maximum number of PV names you can use in variables is **100**.
+``` Note:: Default maximum number of PV names you can use in variables is **100**.
+```
+
+Limit parameter is available to change maxmum number. Parameters must be follow `?` character.
+
+```bash
+PV:NAME:.*?limit=1000
 ```
 
 ## Variables Usage
-Variables is allowd to use only in `PV` and `Operator` field input. Using variables in other fields is not supported.
+Variables is allowed to use in each field and [Functions](functions) parameter except for `alias pattern` field.
 
 You can select multiple PVs from drop down menu with variables.
 
-![Variables Usage](/img/aa-variables-usage.png)
+![Variables Usage](./img/aa-variables-usage.png)

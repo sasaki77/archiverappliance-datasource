@@ -81,7 +81,10 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#update">Update</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
@@ -158,13 +161,37 @@
 <p>This plugin is not registered in Grafana Plugin Repository.
 Please clone this plugin into your grafana plugins directory;
 the default path is <code class="docutils literal notranslate"><span class="pre">/var/lib/grafana/plugins</span></code>.</p>
-<p>Clone the codes from GitHub.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/sasaki77/archiverappliance-datasource
+<p>Clone the codes with tag specication from GitHub.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone -b &lt;verion&gt; https://github.com/sasaki77/archiverappliance-datasource
+</pre></div>
+</div>
+<p>For example, you can install v1.0.0 with following.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone -b <span class="m">1</span>.0.0 https://github.com/sasaki77/archiverappliance-datasource
 </pre></div>
 </div>
 <p>Restart Grafana after cloning.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl restart grafana-server
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Master branch has no longer dist folder from v1.0.0. Therefore, you can’t install it with master branch without build.</p>
+</div>
+<div class="section" id="update">
+<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+<p>To update the plugin, fetch repository from GitHub and checkout with version tag.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git fetch
+git checkout -b &lt;version&gt; &lt;version&gt;
+</pre></div>
+</div>
+<p>Verion list is available with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-l</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git tag -l
+<span class="m">0</span>.1.0
+<span class="m">0</span>.1.1
+<span class="m">0</span>.1.2
+<span class="m">1</span>.0.0
+</pre></div>
+</div>
 </div>
 </div>
 
