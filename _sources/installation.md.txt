@@ -9,7 +9,7 @@ Clone the codes with tag specication from GitHub.
 git clone -b <verion> https://github.com/sasaki77/archiverappliance-datasource
 ```
 
-For example, you can install v1.0.0 with following.
+For example, you can install v1.0.0 as following.
 
 ```bash
 git clone -b 1.0.0 https://github.com/sasaki77/archiverappliance-datasource
