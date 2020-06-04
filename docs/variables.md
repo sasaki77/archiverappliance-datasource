@@ -18,7 +18,7 @@ Query format is explained in this documentation.
 See [Grafana Documentation](https://grafana.com/docs/grafana/latest/reference/templating/#adding-a-variable)
 for other settings.
 
-![Variable Settings](/img/aa-variables-settings.png)
+![Variable Settings](./img/aa-variables-settings.png)
 
 You can use regular expression pattern same as [Query Edit](query.html#select-multiple-pvs-by-regex).
 Only wildcard pattern and alternation pattern are available.
@@ -47,4 +47,4 @@ Variables is allowed to use in each field and [Functions](functions) parameter e
 
 You can select multiple PVs from drop down menu with variables.
 
-![Variables Usage](/img/aa-variables-usage.png)
+![Variables Usage](./img/aa-variables-usage.png)
