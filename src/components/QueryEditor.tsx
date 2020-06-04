@@ -105,6 +105,27 @@ export class QueryEditor extends PureComponent<Props, State> {
     });
   };
 
+  onSuggestionsSelected = (
+    event: React.FormEvent<any>,
+    {
+      suggestion,
+      suggestionValue,
+      suggestionIndex,
+      sectionIndex,
+      method,
+    }: {
+      suggestion: any;
+      suggestionValue: string;
+      suggestionIndex: number;
+      sectionIndex: number | null;
+      method: 'click' | 'enter';
+    }
+  ) => {
+    if (method === 'enter') {
+      event.currentTarget.blur();
+    }
+  };
+
   render() {
     const query = defaults(this.props.query, defaultQuery);
     const { pvSuggestions, oprSuggestions } = this.state;
@@ -124,6 +145,7 @@ export class QueryEditor extends PureComponent<Props, State> {
               onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
               onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
               getSuggestionValue={getSuggestionValue}
+              onSuggestionSelected={this.onSuggestionsSelected}
               renderSuggestion={renderSuggestion}
               shouldRenderSuggestions={() => true}
               inputProps={{
@@ -154,6 +176,7 @@ export class QueryEditor extends PureComponent<Props, State> {
               suggestions={oprSuggestions}
               onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
               onSuggestionsClearRequested={this.onOprSuggestionsClearRequested}
+              onSuggestionSelected={this.onSuggestionsSelected}
               getSuggestionValue={getSuggestionValue}
               renderSuggestion={renderSuggestion}
               shouldRenderSuggestions={() => true}

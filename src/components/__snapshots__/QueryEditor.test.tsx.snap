@@ -38,6 +38,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -101,6 +102,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -216,6 +218,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -279,6 +282,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -392,6 +396,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -455,6 +460,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -572,6 +578,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
@@ -635,6 +642,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           }
         }
         multiSection={false}
+        onSuggestionSelected={[Function]}
         onSuggestionsClearRequested={[Function]}
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}

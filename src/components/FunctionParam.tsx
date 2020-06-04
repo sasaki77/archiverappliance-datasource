@@ -52,6 +52,27 @@ class FunctionParam extends React.PureComponent<FunctionParamProps, State> {
     });
   };
 
+  onSuggestionsSelected = (
+    event: React.FormEvent<any>,
+    {
+      suggestion,
+      suggestionValue,
+      suggestionIndex,
+      sectionIndex,
+      method,
+    }: {
+      suggestion: any;
+      suggestionValue: string;
+      suggestionIndex: number;
+      sectionIndex: number | null;
+      method: 'click' | 'enter';
+    }
+  ) => {
+    if (method === 'enter') {
+      event.currentTarget.blur();
+    }
+  };
+
   onFocus = (event: FocusEvent<any>) => {
     this.setState({
       focused: true,
@@ -85,6 +106,7 @@ class FunctionParam extends React.PureComponent<FunctionParamProps, State> {
           suggestions={suggestions}
           onSuggestionsFetchRequested={e => this.onPVSuggestionsFetchRequested(e, paramDef.options)}
           onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
+          onSuggestionSelected={this.onSuggestionsSelected}
           getSuggestionValue={getSuggestionValue}
           renderSuggestion={renderSuggestion}
           inputProps={{
