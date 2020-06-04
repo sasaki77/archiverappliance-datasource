@@ -2,12 +2,12 @@ import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
 import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
-import Autosuggest from 'react-autosuggest';
 import { getTemplateSrv } from '@grafana/runtime';
+import Autosuggest from 'react-autosuggest';
 import { DataSource } from '../DataSource';
-import { AADataSourceOptions, AAQuery, defaultQuery, operatorList } from '../types';
+import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescriptor } from '../types';
+
 import { Functions } from './Functions';
-import { FunctionDescriptor } from '../types';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 

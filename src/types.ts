@@ -6,7 +6,7 @@ export interface AAQuery extends DataQuery {
   operator: string;
   regex: boolean;
   aliasPattern: string;
-  functions: any[];
+  functions: FunctionDescriptor[];
 }
 
 export const defaultQuery: Partial<AAQuery> = {
@@ -18,6 +18,36 @@ export const defaultQuery: Partial<AAQuery> = {
   functions: [],
 };
 
+export interface TargetQuery {
+  target: string;
+  refId: string;
+  hide: boolean | undefined;
+  alias: string;
+  operator: string;
+  functions: FunctionDescriptor[];
+  regex: boolean;
+  aliasPattern: string;
+  options: { [key: string]: string };
+  from: Date;
+  to: Date;
+  interval: string;
+}
+
+export interface AADataQueryResponse {
+  data: {
+    data: {
+      meta: { name: string; PREC: string };
+      data: [{ secs: number; val: number; nanos: number; severity: number; status: number }];
+    };
+  };
+  status: number;
+  statusText: string;
+  ok: boolean;
+  redirected: boolean;
+  type: string;
+  url: string;
+}
+
 export interface FuncDef {
   defaultParams?: any;
   shortName?: any;
@@ -26,7 +56,19 @@ export interface FuncDef {
   description?: string;
   fake?: boolean;
   name: string;
-  params: Array<{ name: string; options?: string[]; type: string }>;
+  params: FuncDefParam[];
+}
+
+export interface FunctionDescriptor {
+  text: string;
+  params: string[];
+  def: FuncDef;
+}
+
+export interface FuncDefParam {
+  name: string;
+  options?: string[];
+  type: string;
 }
 
 export const operatorList: string[] = [
@@ -51,12 +93,6 @@ export const operatorList: string[] = [
   'skewness',
   'raw',
 ];
-
-export interface FunctionDescriptor {
-  text: string;
-  params: string[];
-  def: FuncDef;
-}
 
 /**
  * These are options configured for each DataSource instance

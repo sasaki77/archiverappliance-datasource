@@ -1,4 +1,5 @@
-import { getBackendSrv } from '@grafana/runtime';
+import _ from 'lodash';
+import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
   DataQueryResponse,
   DataQueryRequest,
@@ -8,31 +9,20 @@ import {
   FieldType,
   getFieldDisplayName,
 } from '@grafana/data';
-import { getTemplateSrv } from '@grafana/runtime';
-import _ from 'lodash';
-
-import { AAQuery, AADataSourceOptions, operatorList } from './types';
 import dataProcessor from './dataProcessor';
 import * as aafunc from './aafunc';
-
-/*
- * Variable format descriptions
- * ---
- * timeseries = {
- *   "target":"PV1", // Used as legend in Grafana
- *   "datapoints":[
- *     [622, 1450754160000], // Metric value as a float, unixtimestamp in milliseconds
- *     [365, 1450754220000]
- *   ]
- * }
- * timeseriesData = [ timeseries, timeseries, ... ]
- * timeseriesDataArray = [ timeseriesData, timeseriesData, ... ]
- */
+import {
+  AAQuery,
+  AADataSourceOptions,
+  TargetQuery,
+  AADataQueryResponse,
+  FunctionDescriptor,
+  operatorList,
+} from './types';
 
 export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
   name: string;
-  templateSrv: any;
   withCredentials?: boolean;
   headers: { [key: string]: string };
 
@@ -40,7 +30,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     super(instanceSettings);
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
-    this.templateSrv = getTemplateSrv();
     this.withCredentials = instanceSettings.withCredentials;
     this.headers = { 'Content-Type': 'application/json' };
     if (typeof instanceSettings.basicAuth === 'string' && instanceSettings.basicAuth.length > 0) {
@@ -50,37 +39,37 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   // Called from Grafana panels to get data
   async query(options: DataQueryRequest<AAQuery>): Promise<DataQueryResponse> {
-    const query = this.buildQueryParameters(options);
+    const rawTargets = this.buildQueryParameters(options);
 
     // Remove hidden target from query
-    query.targets = _.filter(query.targets, t => !t.hide);
+    const targets = _.filter(rawTargets, t => !t.hide);
 
-    if (query.targets.length <= 0) {
+    if (targets.length <= 0) {
       return Promise.resolve({ data: [] });
     }
 
-    const targetProcesses = _.map(query.targets, target => this.targetProcess(target));
+    const targetProcesses = _.map(targets, target => this.targetProcess(target));
 
-    return Promise.all(targetProcesses).then(timeseriesDataArray => this.postProcess(timeseriesDataArray));
+    return Promise.all(targetProcesses).then(dataFramesArray => this.postProcess(dataFramesArray));
   }
 
-  targetProcess(target: any[]) {
+  targetProcess(target: TargetQuery) {
     return this.buildUrls(target)
       .then((urls: string[]) => this.doMultiUrlRequests(urls))
       .then(responses => this.responseParse(responses))
-      .then(timeseriesData => this.setAlias(timeseriesData, target))
-      .then(timeseriesData => this.applyFunctions(timeseriesData, target));
+      .then(dataFrames => this.setAlias(dataFrames, target))
+      .then(dataFrames => this.applyFunctions(dataFrames, target));
   }
 
-  postProcess(timeseriesDataArray: any) {
-    const timeseriesData = _.flatten(timeseriesDataArray);
+  postProcess(dataFramesArray: MutableDataFrame[][]) {
+    const dataFrames = _.flatten(dataFramesArray);
 
-    return { data: timeseriesData };
+    return { data: dataFrames };
   }
 
-  buildUrls(target: any): Promise<string[]> {
+  buildUrls(target: TargetQuery): Promise<string[]> {
     // Get Option values
-    const maxNumPVs = target.options.maxNumPVs || 100;
+    const maxNumPVs = Number(target.options.maxNumPVs) || 100;
     const binInterval = target.options.binInterval || target.interval;
 
     const targetPVs = this.parseTargetPV(target.target);
@@ -146,7 +135,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return Promise.all(requests);
   }
 
-  responseParse(responses: any[]) {
+  responseParse(responses: AADataQueryResponse[]) {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         const values = _.map(targetRes.data, datapoint => datapoint.val);
@@ -165,9 +154,9 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return Promise.resolve(_.flatten(dataFramesArray));
   }
 
-  setAlias(dataFrameArray: MutableDataFrame[], target: any) {
+  async setAlias(dataFrames: MutableDataFrame[], target: TargetQuery): Promise<MutableDataFrame[]> {
     if (!target.alias) {
-      return Promise.resolve(dataFrameArray);
+      return Promise.resolve(dataFrames);
     }
 
     let pattern: RegExp;
@@ -175,7 +164,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       pattern = new RegExp(target.aliasPattern, '');
     }
 
-    const newDataFrameArray = _.map(dataFrameArray, dataFrame => {
+    const newDataFrames = _.map(dataFrames, dataFrame => {
       let alias = target.alias;
       const valfield = dataFrame.fields[1];
       const displayName = getFieldDisplayName(valfield, dataFrame);
@@ -196,21 +185,21 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         },
       };
 
-      return {
+      return new MutableDataFrame({
         ...dataFrame,
         fields: [dataFrame.fields[0], newValfield],
-      };
+      });
     });
 
-    return Promise.resolve(newDataFrameArray);
+    return Promise.resolve(newDataFrames);
   }
 
-  applyFunctions(timeseriesData: any, target: any) {
+  applyFunctions(dataFrames: MutableDataFrame[], target: TargetQuery) {
     if (target.functions === undefined) {
-      return Promise.resolve(timeseriesData);
+      return Promise.resolve(dataFrames);
     }
 
-    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series'], timeseriesData);
+    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series'], dataFrames);
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working
@@ -218,7 +207,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return { status: 'success', message: 'Data source is working', title: 'Success' };
   }
 
-  pvNamesFindQuery(query: string, maxPvs: number) {
+  pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
     if (!query) {
       return Promise.resolve([]);
     }
@@ -238,7 +227,8 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
      * ex1) PV:NAME:.*
      * ex2) PV:NAME:.*?limit=10
      */
-    const replacedQuery = this.templateSrv.replace(query, null, 'regex');
+    const templateSrv = getTemplateSrv();
+    const replacedQuery = templateSrv.replace(query, undefined, 'regex');
     const [pvQuery, paramsQuery] = replacedQuery.split('?', 2);
     const parsedPVs = this.parseTargetPV(pvQuery);
 
@@ -261,7 +251,14 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
   }
 
-  doRequest(options: any) {
+  doRequest(options: {
+    method?: string;
+    url: any;
+    requestId?: any;
+    withCredentials?: any;
+    headers?: any;
+    inspect?: any;
+  }) {
     const newOptions = { ...options };
     newOptions.withCredentials = this.withCredentials;
     newOptions.headers = this.headers;
@@ -270,77 +267,39 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return result;
   }
 
-  buildQueryParameters(options: any) {
-    /*
-     * options argument format
-     * ---
-     * {
-     *   ...
-     *   "range": { "from": "2015-12-22T03:06:13.851Z", "to": "2015-12-22T06:48:24.137Z" },
-     *   "interval": "5s",
-     *   "targets": [
-     *     { "refId":"A",
-     *       "target":"PV:NAME:.*",
-     *       "regex":true,
-     *       "operator":"mean",
-     *       "alias":"$3",
-     *       "aliasPattern":"(.*):(.*)",
-     *       "functions":[
-     *         {
-     *           "text":"top($top_num, max)",
-     *           "params":[ "$top_num", "max" ],
-     *           "def":{
-     *             "category":"Filter Series",
-     *             "defaultParams":[ 5, "avg" ],
-     *             "name":"top",
-     *             "params":[
-     *               { "name":"number", "type":"int" },
-     *               {
-     *                 "name":"value",
-     *                 "options":[ "avg", "min", "max", "absoluteMin", "absoluteMax", "sum" ],
-     *                 "type":"string"
-     *               }
-     *             ]
-     *           },
-     *         }
-     *       ],
-     *     }
-     *   ],
-     *   "format": "json",
-     *   "maxDataPoints": 2495 // decided by the panel
-     *   ...
-     * }
-     */
+  buildQueryParameters(options: DataQueryRequest<AAQuery>) {
+    const templateSrv = getTemplateSrv();
     const query = { ...options };
 
     // remove placeholder targets and undefined targets
     query.targets = _.filter(query.targets, target => target.target !== '' && typeof target.target !== 'undefined');
 
     if (query.targets.length <= 0) {
-      return query;
+      return [];
     }
 
-    const from = new Date(query.range.from);
-    const to = new Date(query.range.to);
+    const from = new Date(String(query.range.from));
+    const to = new Date(String(query.range.to));
     const rangeMsec = to.getTime() - from.getTime();
-    const intervalSec = _.floor(rangeMsec / (query.maxDataPoints * 1000));
+    const maxDataPoints = query.maxDataPoints || 2000;
+    const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));
 
     const interval = intervalSec >= 1 ? String(intervalSec) : '';
 
-    const targets = _.map(query.targets, target => {
+    const targets: TargetQuery[] = _.map(query.targets, target => {
       // Replace parameters with variables for each functions
       const functions = _.map(target.functions, func => {
         const newFunc = func;
-        newFunc.params = _.map(newFunc.params, param => this.templateSrv.replace(param, query.scopedVars, 'regex'));
+        newFunc.params = _.map(newFunc.params, param => templateSrv.replace(param, query.scopedVars, 'regex'));
         return newFunc;
       });
 
       return {
-        target: this.templateSrv.replace(target.target, query.scopedVars, 'regex'),
+        target: templateSrv.replace(target.target, query.scopedVars, 'regex'),
         refId: target.refId,
         hide: target.hide,
-        alias: this.templateSrv.replace(target.alias, query.scopedVars, 'regex'),
-        operator: this.templateSrv.replace(target.operator, query.scopedVars, 'regex'),
+        alias: templateSrv.replace(target.alias, query.scopedVars, 'regex'),
+        operator: templateSrv.replace(target.operator, query.scopedVars, 'regex'),
         functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,
@@ -351,9 +310,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       };
     });
 
-    query.targets = targets;
-
-    return query;
+    return targets;
   }
 
   parseTargetPV(targetPV: string) {
@@ -386,7 +343,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return queries;
   }
 
-  applyFunctionDefs(functionDefs: any, categories: string[], data: any) {
+  applyFunctionDefs(functionDefs: FunctionDescriptor[], categories: string[], dataFrames: MutableDataFrame[]) {
     const applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
 
     const promises = _.reduce(
@@ -398,18 +355,18 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
           return Promise.resolve(bindedFunc(res));
         }),
-      Promise.resolve(data)
+      Promise.resolve(dataFrames)
     );
 
     return promises;
   }
 
-  getOptions(functionDefs: any) {
+  getOptions(functionDefs: FunctionDescriptor[]) {
     const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
 
     const options = _.reduce(
       appliedOptionFuncs,
-      (optionMap: any, func: any) => {
+      (optionMap: { [key: string]: string }, func) => {
         [optionMap[func.def.name]] = func.params;
         return optionMap;
       },
@@ -419,7 +376,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return options;
   }
 
-  pickFuncDefsFromCategories(functionDefs: any, categories: string[]) {
+  pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], categories: string[]) {
     const allCategorisedFuncDefs = aafunc.getCategories();
 
     const requiredCategoryFuncNames = _.reduce(

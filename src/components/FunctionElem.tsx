@@ -1,9 +1,9 @@
 import React from 'react';
+import { FunctionDescriptor } from '../types';
+
 import { FunctionEditor } from './FunctionEditor';
 import { FunctionEditorControlsProps } from './FunctionEditorControls';
 import { FunctionParams } from './FunctionParams';
-
-import { FunctionDescriptor } from '../types';
 
 export interface FunctionElemProps extends FunctionEditorControlsProps {
   func: FunctionDescriptor;

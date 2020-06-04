@@ -51,9 +51,9 @@ function fluctuation(times: number[], values: number[]) {
 
 function transformWrapper(func: (...args: any) => { times: number[]; values: number[] }, ...args: any) {
   const funcArgs = args.slice(0, -1);
-  const dataFrameArray: MutableDataFrame[] = args[args.length - 1];
+  const dataFrames: MutableDataFrame[] = args[args.length - 1];
 
-  const tsData = _.map(dataFrameArray, dataFrame => {
+  const tsData = _.map(dataFrames, dataFrame => {
     const timesField = dataFrame.fields[0];
     const valField = dataFrame.fields[1];
     const vals = func(...funcArgs, timesField.values.toArray(), valField.values.toArray());
@@ -68,19 +68,19 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
       values: new ArrayVector(vals.values),
     };
 
-    return {
+    return new MutableDataFrame({
       ...dataFrame,
       fields: [newTimesField, newValfield],
-    };
+    });
   });
 
   return tsData;
 }
 
 // Filter Series
-function exclude(pattern: string, dataFrameArray: MutableDataFrame[]) {
+function exclude(pattern: string, dataFrames: MutableDataFrame[]) {
   const regex = new RegExp(pattern);
-  return _.filter(dataFrameArray, dataFrame => {
+  return _.filter(dataFrames, dataFrame => {
     const valfield = dataFrame.fields[1];
     const displayName = getFieldDisplayName(valfield, dataFrame);
     return !regex.test(displayName);
@@ -136,11 +136,11 @@ const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefi
 
 // [Support Funcs] Wrapper function for top and bottom function
 
-function extraction(order: string, n: number, orderFunc: string, dataFrameArray: MutableDataFrame[]) {
+function extraction(order: string, n: number, orderFunc: string, dataFrames: MutableDataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (ts: any) => orderByCallback(ts.fields[1].values.toArray());
+  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values.toArray());
 
-  const sortedTsData = _.sortBy(dataFrameArray, sortByIteratee);
+  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
   if (order === 'bottom') {
     return _.slice(sortedTsData, 0, n);
   }

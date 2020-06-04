@@ -1,8 +1,8 @@
-import React from 'react';
 import zip from 'lodash/zip';
-import { FunctionParam } from './FunctionParam';
-
+import React from 'react';
 import { FunctionDescriptor } from '../types';
+
+import { FunctionParam } from './FunctionParam';
 
 export interface FunctionParamsProps {
   func: FunctionDescriptor;

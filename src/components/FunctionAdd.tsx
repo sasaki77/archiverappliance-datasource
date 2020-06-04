@@ -1,9 +1,8 @@
 import React from 'react';
 import { reduce, each } from 'lodash';
 import { ButtonCascader, CascaderOption } from '@grafana/ui';
-
-import { FuncDef } from '../types';
 import { getCategories } from '../aafunc';
+import { FuncDef } from '../types';
 
 export interface FunctionAddProps {
   addFunc: (func: FuncDef) => void;

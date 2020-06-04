@@ -1,9 +1,10 @@
 import React from 'react';
 import { InlineFormLabel } from '@grafana/ui';
+import { createFuncInstance } from '../aafunc';
+import { FuncDef, FunctionDescriptor } from '../types';
+
 import { FunctionElem } from './FunctionElem';
 import { FunctionAdd } from './FunctionAdd';
-import { FuncDef, FunctionDescriptor } from '../types';
-import { createFuncInstance } from '../aafunc';
 
 export interface FunctionsProps {
   funcs: FunctionDescriptor[];

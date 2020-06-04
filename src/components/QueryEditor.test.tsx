@@ -1,8 +1,7 @@
+import defaults from 'lodash/defaults';
 import React from 'react';
 import { shallow } from 'enzyme';
-import defaults from 'lodash/defaults';
 import toJson from 'enzyme-to-json';
-
 import { QueryEditor } from './QueryEditor';
 import { DataSource } from '../DataSource';
 import { AAQuery, defaultQuery } from '../types';

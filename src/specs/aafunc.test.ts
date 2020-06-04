@@ -1,8 +1,15 @@
-import { MutableDataFrame, FieldType, getFieldDisplayName } from '@grafana/data';
 import split from 'lodash/split';
+import {
+  MutableDataFrame,
+  FieldType,
+  getFieldDisplayName,
+  DataSourceInstanceSettings,
+  DataQueryRequest,
+} from '@grafana/data';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
 import dataProcessor from '../dataProcessor';
+import { AAQuery, AADataSourceOptions } from '../types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -39,13 +46,13 @@ function createDefaultResponse() {
 }
 
 describe('Archiverappliance Functions', () => {
-  const ctx: any = {};
+  let ds: DataSource;
 
   beforeEach(() => {
-    ctx.instanceSettings = {
+    const instanceSettings = ({
       url: 'url_header:',
-    };
-    ctx.ds = new DataSource(ctx.instanceSettings);
+    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    ds = new DataSource(instanceSettings);
   });
 
   it('should return the server results with scale function', done => {
@@ -63,19 +70,19 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('scale'), [100])],
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('scale'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
       const dataFrame: MutableDataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -109,19 +116,19 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('offset'), [100])],
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('offset'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
       const dataFrame: MutableDataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -155,7 +162,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: 'PV',
@@ -165,9 +172,9 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
       const dataFrame: MutableDataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -200,7 +207,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: 'PV',
@@ -210,9 +217,9 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(1);
       const dataFrame: MutableDataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -274,19 +281,19 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('top'), [2, 'avg'])],
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('top'), ['2', 'avg'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(2);
       const dataFrameArray: MutableDataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
@@ -481,7 +488,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = {
+    const query = ({
       targets: [
         {
           target: '(PV1|PV2|PVA|PVB)',
@@ -491,9 +498,9 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    ctx.ds.query(query).then((result: any) => {
+    ds.query(query).then((result: any) => {
       expect(result.data).toHaveLength(2);
       const dataFrameArray: MutableDataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
@@ -506,22 +513,22 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return option variables if option functions are applied', done => {
-    const options = {
+    const options = ({
       targets: [
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), [1000])],
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    };
+    } as unknown) as DataQueryRequest<AAQuery>;
 
-    const query = ctx.ds.buildQueryParameters(options);
+    const targets = ds.buildQueryParameters(options);
 
-    expect(query.targets).toHaveLength(1);
-    expect(query.targets[0].options.maxNumPVs).toBe(1000);
+    expect(targets).toHaveLength(1);
+    expect(targets[0].options.maxNumPVs).toBe('1000');
     done();
   });
 });

@@ -1,7 +1,8 @@
-import { DataSource } from '../DataSource';
-import { MutableDataFrame, getFieldDisplayName } from '@grafana/data';
 import range from 'lodash/range';
 import split from 'lodash/split';
+import { MutableDataFrame, getFieldDisplayName, DataSourceInstanceSettings, DataQueryRequest } from '@grafana/data';
+import { DataSource } from '../DataSource';
+import { AADataSourceOptions, TargetQuery, AAQuery } from 'types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -38,26 +39,26 @@ function createDefaultResponse() {
 }
 
 describe('Archiverappliance Datasource', () => {
-  const ctx: any = {};
+  let ds: DataSource;
 
   beforeEach(() => {
-    ctx.instanceSettings = {
+    const instanceSettings = ({
       url: 'url_header:',
-    };
-    ctx.ds = new DataSource(ctx.instanceSettings);
+    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    ds = new DataSource(instanceSettings);
   });
 
   describe('Build URL tests', () => {
     it('should return an valid url', done => {
-      const target = {
+      const target = ({
         target: 'PV1',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -71,16 +72,16 @@ describe('Archiverappliance Datasource', () => {
           data: ['PV1', 'PV2'],
         })
       );
-      const target = {
+      const target = ({
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -98,16 +99,16 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      const target = {
+      const target = ({
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -125,16 +126,16 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      const target = {
+      const target = ({
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(100);
         done();
       });
@@ -147,31 +148,31 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      const target = {
+      const target = ({
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: { maxNumPVs: 300 },
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(300);
         done();
       });
     });
 
     it('should return an required bin interval url', done => {
-      const target = {
+      const target = ({
         target: 'PV1',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: { binInterval: 100 },
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.json?pv=mean_100(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -180,15 +181,15 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid multi urls when regex OR target', done => {
-      const target = {
+      const target = ({
         target: 'PV(A|B|C):(1|2):test',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds.buildUrls(target).then((url: any) => {
+      ds.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(6);
         expect(url[0]).toBe(
           'url_header:/data/getData.json?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
@@ -213,17 +214,16 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an Error when invalid data processing is required', done => {
-      const target = {
+      const target = ({
         target: 'PV1',
         operator: 'invalid',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      };
+      } as unknown) as TargetQuery;
 
-      ctx.ds
-        .buildUrls(target)
+      ds.buildUrls(target)
         .then(() => {})
         .catch(() => {
           done();
@@ -235,13 +235,13 @@ describe('Archiverappliance Datasource', () => {
       const to = new Date('2010-01-01T00:00:30.000Z');
       const options = {};
       const targets = [
-        { target: 'PV1', operator: 'mean', interval: '9', from, to, options },
-        { target: 'PV2', operator: 'raw', interval: '9', from, to, options },
-        { target: 'PV3', operator: '', interval: '9', from, to, options },
-        { target: 'PV4', interval: '9', from, to, options },
+        ({ target: 'PV1', operator: 'mean', interval: '9', from, to, options } as unknown) as TargetQuery,
+        ({ target: 'PV2', operator: 'raw', interval: '9', from, to, options } as unknown) as TargetQuery,
+        ({ target: 'PV3', operator: '', interval: '9', from, to, options } as unknown) as TargetQuery,
+        ({ target: 'PV4', interval: '9', from, to, options } as unknown) as TargetQuery,
       ];
 
-      const urlProcs = targets.map(target => ctx.ds.buildUrls(target));
+      const urlProcs = targets.map(target => ds.buildUrls(target));
 
       Promise.all(urlProcs).then(urls => {
         expect(urls).toHaveLength(4);
@@ -264,35 +264,35 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Build query parameters tests', () => {
     it('should return valid interval time in integer', done => {
-      const options = {
+      const options = ({
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
         maxDataPoints: 1800,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      const query = ctx.ds.buildQueryParameters(options);
+      const targets = ds.buildQueryParameters(options);
 
-      expect(query.targets).toHaveLength(1);
-      expect(query.targets[0].interval).toBe('2');
+      expect(targets).toHaveLength(1);
+      expect(targets[0].interval).toBe('2');
       done();
     });
 
     it('should return no interval data when interval time is less than 1 second', done => {
-      const options = {
+      const options = ({
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      const query = ctx.ds.buildQueryParameters(options);
+      const targets = ds.buildQueryParameters(options);
 
-      expect(query.targets).toHaveLength(1);
-      expect(query.targets[0].interval).toBe('');
+      expect(targets).toHaveLength(1);
+      expect(targets[0].interval).toBe('');
       done();
     });
 
     it('should return filtered array when target is empty or undefined', done => {
-      const options = {
+      const options = ({
         targets: [
           { target: 'PV', refId: 'A' },
           { target: '', refId: 'B' },
@@ -300,18 +300,18 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      const query = ctx.ds.buildQueryParameters(options);
+      const targets = ds.buildQueryParameters(options);
 
-      expect(query.targets).toHaveLength(1);
+      expect(targets).toHaveLength(1);
       done();
     });
   });
 
   describe('Query tests', () => {
     it('should return an empty array when no targets are set', done => {
-      ctx.ds.query({ targets: [] }).then((result: any) => {
+      ds.query(({ targets: [] } as unknown) as DataQueryRequest<AAQuery>).then((result: any) => {
         expect(result.data).toHaveLength(0);
         done();
       });
@@ -333,13 +333,13 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      const query = {
+      const query = ({
         targets: [{ target: 'PV', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      ctx.ds.query(query).then((result: any) => {
+      ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
@@ -372,7 +372,7 @@ describe('Archiverappliance Datasource', () => {
         });
       });
 
-      const query = {
+      const query = ({
         targets: [
           { target: 'PV1', refId: 'A', alias: 'alias' },
           { target: 'PV2', refId: 'B', alias: '' },
@@ -381,9 +381,9 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      ctx.ds.query(query).then((result: any) => {
+      ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(4);
         const dataFrameArray: MutableDataFrame[] = result.data;
         const pv1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
@@ -411,7 +411,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      const query = {
+      const query = ({
         targets: [
           {
             target: 'header:PV1',
@@ -422,9 +422,9 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      };
+      } as unknown) as DataQueryRequest<AAQuery>;
 
-      ctx.ds.query(query).then((result: any) => {
+      ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -442,7 +442,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.pvNamesFindQuery(null).then((result: any) => {
+      ds.pvNamesFindQuery(null, 100).then((result: any) => {
         expect(result).toHaveLength(0);
         done();
       });
@@ -455,7 +455,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.pvNamesFindQuery(undefined).then((result: any) => {
+      ds.pvNamesFindQuery(undefined, 100).then((result: any) => {
         expect(result).toHaveLength(0);
         done();
       });
@@ -468,7 +468,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.pvNamesFindQuery('').then((result: any) => {
+      ds.pvNamesFindQuery('', 100).then((result: any) => {
         expect(result).toHaveLength(0);
         done();
       });
@@ -481,7 +481,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.pvNamesFindQuery('metric').then((result: any) => {
+      ds.pvNamesFindQuery('metric', 100).then((result: any) => {
         expect(result).toHaveLength(3);
         expect(result[0]).toBe('metric_0');
         expect(result[1]).toBe('metric_1');
@@ -500,7 +500,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.metricFindQuery('metric').then((result: any) => {
+      ds.metricFindQuery('metric').then((result: any) => {
         expect(result).toHaveLength(3);
         expect(result[0].text).toBe('metric_0');
         expect(result[1].text).toBe('metric_1');
@@ -517,7 +517,7 @@ describe('Archiverappliance Datasource', () => {
         })
       );
 
-      ctx.ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result: any) => {
+      ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result: any) => {
         expect(result).toHaveLength(6);
         expect(result[0].text).toBe('PVA:1:test');
         expect(result[1].text).toBe('PVA:2:test');
@@ -542,7 +542,7 @@ describe('Archiverappliance Datasource', () => {
         });
       });
 
-      ctx.ds.metricFindQuery('PV?limit=5').then((result: any) => {
+      ds.metricFindQuery('PV?limit=5').then((result: any) => {
         expect(result).toHaveLength(5);
         expect(result[0].text).toBe('PV0');
         expect(result[1].text).toBe('PV1');
@@ -566,7 +566,7 @@ describe('Archiverappliance Datasource', () => {
         });
       });
 
-      ctx.ds.metricFindQuery('PV?limit=a').then((result: any) => {
+      ds.metricFindQuery('PV?limit=a').then((result: any) => {
         expect(result).toHaveLength(100);
         done();
       });

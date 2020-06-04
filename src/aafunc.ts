@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import { FuncDef } from './types';
+import { MutableDataFrame } from '@grafana/data';
 
-const funcIndex: any = [];
+const funcIndex: { [key: string]: FuncDef } = {};
 const categories: { [key: string]: FuncDef[] } = {
   Transform: [],
   'Filter Series': [],
@@ -109,7 +110,7 @@ class FuncInstance {
   params: string[];
   text: string;
 
-  constructor(funcDef: FuncDef, params: any[]) {
+  constructor(funcDef: FuncDef, params: string[]) {
     this.text = '';
     this.def = funcDef;
 
@@ -124,7 +125,7 @@ class FuncInstance {
     this.updateText();
   }
 
-  bindFunction(metricFunctions: any) {
+  bindFunction(metricFunctions: { [key: string]: (...args: any[]) => MutableDataFrame[] }) {
     const func = metricFunctions[this.def.name];
 
     if (!func) {
@@ -206,7 +207,7 @@ class FuncInstance {
   }
 }
 
-export function createFuncInstance(funcDef: FuncDef, params: any[]) {
+export function createFuncInstance(funcDef: FuncDef, params: string[]) {
   if (_.isString(funcDef)) {
     if (!funcIndex[funcDef]) {
       throw new Error(`Method not found ${funcDef.name}`);
