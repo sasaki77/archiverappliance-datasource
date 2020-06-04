@@ -20,11 +20,11 @@ from recommonmark.transform import AutoStructify
 # -- Project information -----------------------------------------------------
 
 project = 'Archiver Appliance Datasource'
-copyright = '2019, Shinya Sasaki'
+copyright = '2019-2020, Shinya Sasaki'
 author = 'Shinya Sasaki'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------
