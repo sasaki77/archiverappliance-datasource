@@ -29,3 +29,12 @@ yarn dev
 ```
 
 [grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
+
+## Build documentation
+
+```
+python -m venv env
+source env/bin/activate
+pip install sphinx commonmark recommonmark sphinx_rtd_theme
+make html
+```
