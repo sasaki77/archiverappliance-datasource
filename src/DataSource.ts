@@ -141,6 +141,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         const values = _.map(targetRes.data, datapoint => datapoint.val);
         const times = _.map(targetRes.data, datapoint => datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000));
         const frame = new MutableDataFrame({
+          name: targetRes.meta.name,
           fields: [
             { name: 'time', type: FieldType.time, values: times },
             { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },

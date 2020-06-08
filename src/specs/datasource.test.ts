@@ -344,8 +344,10 @@ describe('Archiverappliance Datasource', () => {
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
+        const seriesName = dataFrame.name;
         const displayName = getFieldDisplayName(dataFrame.fields[1], dataFrame);
 
+        expect(seriesName).toBe('PV');
         expect(displayName).toBe('PV');
         expect(valArray).toHaveLength(3);
         expect(timesArray).toHaveLength(3);
@@ -386,11 +388,19 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(4);
         const dataFrameArray: MutableDataFrame[] = result.data;
+        const seriesName1 = dataFrameArray[0].name;
+        const seriesName2 = dataFrameArray[1].name;
+        const seriesName3 = dataFrameArray[2].name;
+        const seriesName4 = dataFrameArray[3].name;
         const pv1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
         const pv2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
         const pv3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
         const pv4 = getFieldDisplayName(dataFrameArray[3].fields[1], dataFrameArray[3]);
 
+        expect(seriesName1).toBe('PV1');
+        expect(seriesName2).toBe('PV2');
+        expect(seriesName3).toBe('PV3');
+        expect(seriesName4).toBe('PV4');
         expect(pv1).toBe('alias');
         expect(pv2).toBe('PV2');
         expect(pv3).toBe('PV3');
@@ -427,7 +437,9 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).then((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
+        const seriesName = dataFrame.name;
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+        expect(seriesName).toBe('header:PV1');
         expect(alias).toBe('PV1:header');
         done();
       });
