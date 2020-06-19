@@ -1,4 +1,11 @@
 # Release Notes
+## 1.0.1
+
+**2020-06-19**
+
+### Bug Fixes
+- Add name field to DataFrame to use PV name in Data link
+
 ## 1.0.0
 
 **2020-06-05**
