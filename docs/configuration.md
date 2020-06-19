@@ -10,7 +10,7 @@ To add Archiver Appliance datasource, follow the below steps.
 
 ![Add new datasrouce](./img/aa-configuration-add-datasource.png)
 
-Please refer [How to add a data source](https://grafana.com/docs/grafana/latest/guides/getting_started/#how-to-add-a-data-source) for
+Please refer [How to add a data source](https://grafana.com/docs/grafana/latest/features/datasources/add-a-data-source/) for
 more information.
 
 ## Datasource Settings
