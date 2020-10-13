@@ -335,7 +335,7 @@ describe('Archiverappliance Datasource', () => {
 
       const query = ({
         targets: [{ target: 'PV', refId: 'A' }],
-        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -441,6 +441,78 @@ describe('Archiverappliance Datasource', () => {
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(seriesName).toBe('header:PV1');
         expect(alias).toBe('PV1:header');
+        done();
+      });
+    });
+
+    it('should return extrapolation data when operator is set as raw', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
+                { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+                { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              ],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', operator: 'raw' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+        maxDataPoints: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).then((result: any) => {
+        expect(result.data).toHaveLength(1);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toHaveLength(4);
+        expect(timesArray).toHaveLength(4);
+        expect(valArray[3]).toBe(2);
+        expect(timesArray[3]).toBe(1262390400000);
+        done();
+      });
+    });
+
+    it('should return extrapolation data when time range is narrow', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
+                { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+                { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              ],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        maxDataPoints: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).then((result: any) => {
+        expect(result.data).toHaveLength(1);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toHaveLength(4);
+        expect(timesArray).toHaveLength(4);
+        expect(valArray[3]).toBe(2);
+        expect(timesArray[3]).toBe(1262304030000);
         done();
       });
     });
