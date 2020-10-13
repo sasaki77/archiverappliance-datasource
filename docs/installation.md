@@ -1,7 +1,10 @@
 # Installation
+
 This plugin is not registered in Grafana Plugin Repository.
-Please clone this plugin into your grafana plugins directory;
+Please put this plugin into your grafana plugins directory;
 the default path is `/var/lib/grafana/plugins`.
+
+## Install with git
 
 Clone the codes with tag specication from GitHub.
 
@@ -24,7 +27,7 @@ systemctl restart grafana-server
 ``` Warning:: Master branch has no longer dist folder from v1.0.0. Therefore, you can't install it with master branch without build.
 ```
 
-## Update
+### Update
 To update the plugin, fetch repository from GitHub and checkout with version tag.
 
 ```bash
@@ -41,3 +44,23 @@ $ git tag -l
 0.1.2
 1.0.0
 ```
+
+## Install with .tar.gz file or .zip file
+Download the `.tar.gz` file or `.zip` file and extract it into your grafana plugins directory.
+
+Download link is available on [GitHub release page](https://github.com/sasaki77/archiverappliance-datasource/releases).
+
+For example, you can install v1.0.0 as following.
+
+```
+wget https://github.com/sasaki77/archiverappliance-datasource/archive/1.0.0.tar.gz
+tar -zxvf 1.0.0.tar.gz
+```
+
+Restart Grafana.
+
+```bash
+systemctl restart grafana-server
+```
+
+To update the plugin, follow the same step and remove the previous version.

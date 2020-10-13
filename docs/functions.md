@@ -30,8 +30,8 @@ Adds _delta_ to each datapoint.
 Examples:
 
 ```js
-scale(50)
-scale(-0.5)
+offset(50)
+offset(-0.5)
 ```
 
 ### _delta_
