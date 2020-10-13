@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Configuration" href="configuration.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Archiver Appliance Datasource
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -82,7 +84,11 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#update">Update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-with-git">Install with git</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#update">Update</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#install-with-tar-gz-file-or-zip-file">Install with .tar.gz file or .zip file</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -95,6 +101,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -133,7 +140,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Installation</li>
     
@@ -159,8 +166,10 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>This plugin is not registered in Grafana Plugin Repository.
-Please clone this plugin into your grafana plugins directory;
+Please put this plugin into your grafana plugins directory;
 the default path is <code class="docutils literal notranslate"><span class="pre">/var/lib/grafana/plugins</span></code>.</p>
+<div class="section" id="install-with-git">
+<h2>Install with git<a class="headerlink" href="#install-with-git" title="Permalink to this headline">¶</a></h2>
 <p>Clone the codes with tag specication from GitHub.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone -b &lt;verion&gt; https://github.com/sasaki77/archiverappliance-datasource
 </pre></div>
@@ -178,7 +187,7 @@ the default path is <code class="docutils literal notranslate"><span class="pre"
 <p>Master branch has no longer dist folder from v1.0.0. Therefore, you can’t install it with master branch without build.</p>
 </div>
 <div class="section" id="update">
-<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
 <p>To update the plugin, fetch repository from GitHub and checkout with version tag.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git fetch
 git checkout -b &lt;version&gt; &lt;version&gt;
@@ -192,6 +201,22 @@ git checkout -b &lt;version&gt; &lt;version&gt;
 <span class="m">1</span>.0.0
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="install-with-tar-gz-file-or-zip-file">
+<h2>Install with .tar.gz file or .zip file<a class="headerlink" href="#install-with-tar-gz-file-or-zip-file" title="Permalink to this headline">¶</a></h2>
+<p>Download the <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file or <code class="docutils literal notranslate"><span class="pre">.zip</span></code> file and extract it into your grafana plugins directory.</p>
+<p>Download link is available on <a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource/releases">GitHub release page</a>.</p>
+<p>For example, you can install v1.0.0 as following.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sasaki77</span><span class="o">/</span><span class="n">archiverappliance</span><span class="o">-</span><span class="n">datasource</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="mf">1.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="mf">1.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>Restart Grafana.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl restart grafana-server
+</pre></div>
+</div>
+<p>To update the plugin, follow the same step and remove the previous version.</p>
 </div>
 </div>
 
@@ -215,11 +240,19 @@ git checkout -b &lt;version&gt; &lt;version&gt;
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019-2020, Shinya Sasaki
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -230,7 +263,6 @@ git checkout -b &lt;version&gt; &lt;version&gt;
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
