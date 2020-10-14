@@ -78,7 +78,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('scale'), ['100'])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -124,7 +124,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('offset'), ['100'])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -170,7 +170,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('delta'), [])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -215,7 +215,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('fluctuation'), [])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -238,7 +238,7 @@ describe('Archiverappliance Functions', () => {
 
   it('should return the server results with top function', done => {
     datasourceRequestMock.mockImplementation(request => {
-      const pvname = unescape(split(request.url, /pv=(.*?)&/)[1]);
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
         pvdata = [
@@ -289,7 +289,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('top'), ['2', 'avg'])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -474,7 +474,7 @@ describe('Archiverappliance Functions', () => {
 
   it('should return the server results with exclude function', done => {
     datasourceRequestMock.mockImplementation(request => {
-      const pvname = unescape(split(request.url, /pv=(.*?)&/)[1]);
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       const pvdata = [
         {
           meta: { name: pvname, PREC: '0' },
@@ -496,7 +496,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('exclude'), ['PV[0-9]'])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 
@@ -521,7 +521,7 @@ describe('Archiverappliance Functions', () => {
           functions: [aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
         },
       ],
-      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
     } as unknown) as DataQueryRequest<AAQuery>;
 

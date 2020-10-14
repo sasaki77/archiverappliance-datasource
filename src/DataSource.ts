@@ -56,7 +56,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   targetProcess(target: TargetQuery) {
     return this.buildUrls(target)
       .then((urls: string[]) => this.doMultiUrlRequests(urls))
-      .then(responses => this.responseParse(responses))
+      .then(responses => this.responseParse(responses, target))
       .then(dataFrames => this.setAlias(dataFrames, target))
       .then(dataFrames => this.applyFunctions(dataFrames, target));
   }
@@ -135,7 +135,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return Promise.all(requests);
   }
 
-  responseParse(responses: AADataQueryResponse[]) {
+  responseParse(responses: AADataQueryResponse[], target: TargetQuery) {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         const values = _.map(targetRes.data, datapoint => datapoint.val);
@@ -152,7 +152,25 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       return dataFrames;
     });
 
-    return Promise.resolve(_.flatten(dataFramesArray));
+    const dataFrames = _.flatten(dataFramesArray);
+
+    // Except for raw operator
+    if (target.operator !== 'raw' && target.interval !== '') {
+      return Promise.resolve(dataFrames);
+    }
+
+    // Extrapolation for raw operator
+    const to_msec = target.to.getTime();
+    const extrapolationDataFrames = _.map(dataFrames, dataframe => {
+      const latestval = dataframe.get(dataframe.length - 1);
+      const addval = { time: to_msec, value: latestval['value'] };
+
+      dataframe.add(addval);
+
+      return dataframe;
+    });
+
+    return Promise.resolve(extrapolationDataFrames);
   }
 
   async setAlias(dataFrames: MutableDataFrame[], target: TargetQuery): Promise<MutableDataFrame[]> {
