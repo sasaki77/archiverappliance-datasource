@@ -105,6 +105,13 @@ addFuncDef({
   defaultParams: ['900'],
 });
 
+addFuncDef({
+  name: 'disableAutoRaw',
+  category: 'Options',
+  params: [{ name: 'disableAutoRaw', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
 class FuncInstance {
   def: FuncDef;
   params: string[];

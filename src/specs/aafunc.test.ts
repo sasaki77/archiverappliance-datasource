@@ -531,4 +531,24 @@ describe('Archiverappliance Functions', () => {
     expect(targets[0].options.maxNumPVs).toBe('1000');
     done();
   });
+
+  it('should return 1 second interval when interval time is less than 1 second and disableAutoRaw is true', done => {
+    const options = ({
+      targets: [
+        {
+          target: 'PV1',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableAutoRaw'), ['true'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    const targets = ds.buildQueryParameters(options);
+
+    expect(targets).toHaveLength(1);
+    expect(targets[0].interval).toBe('1');
+    done();
+  });
 });

@@ -303,8 +303,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const maxDataPoints = query.maxDataPoints || 2000;
     const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));
 
-    const interval = intervalSec >= 1 ? String(intervalSec) : '';
-
     const targets: TargetQuery[] = _.map(query.targets, target => {
       // Replace parameters with variables for each functions
       const functions = _.map(target.functions, func => {
@@ -312,6 +310,9 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         newFunc.params = _.map(newFunc.params, param => templateSrv.replace(param, query.scopedVars, 'regex'));
         return newFunc;
       });
+
+      const options = this.getOptions(target.functions);
+      const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
 
       return {
         target: templateSrv.replace(target.target, query.scopedVars, 'regex'),
@@ -322,7 +323,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,
-        options: this.getOptions(target.functions),
+        options,
         from,
         to,
         interval,
