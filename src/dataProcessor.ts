@@ -148,6 +148,20 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Mut
   return _.reverse(_.slice(sortedTsData, -n));
 }
 
+// [Support Funcs] Wrapper function for sort by AggFuncs
+function sortByAggFuncs(orderFunc: string, order: string, dataFrames: MutableDataFrame[]) {
+  const orderByCallback = datapointsAggFuncs[orderFunc];
+  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values.toArray());
+
+  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
+
+  if (order === 'asc') {
+    return sortedTsData;
+  }
+
+  return _.reverse(sortedTsData);
+}
+
 // Function list
 
 const functions = {
@@ -160,6 +174,13 @@ const functions = {
   top: _.partial(extraction, 'top'),
   bottom: _.partial(extraction, 'bottom'),
   exclude,
+  // Sort
+  sortByAvg: _.partial(sortByAggFuncs, 'avg'),
+  sortByMax: _.partial(sortByAggFuncs, 'max'),
+  sortByMin: _.partial(sortByAggFuncs, 'min'),
+  sortBySum: _.partial(sortByAggFuncs, 'sum'),
+  sortByAbsMax: _.partial(sortByAggFuncs, 'absoluteMax'),
+  sortByAbsMin: _.partial(sortByAggFuncs, 'absoluteMin'),
 };
 
 export default {

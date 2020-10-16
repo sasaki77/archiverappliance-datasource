@@ -144,6 +144,132 @@ exports[`Render should render component 1`] = `
       Object {
         "children": Array [
           Object {
+            "label": "sortByAvg",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortByAvg",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "sortByMax",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortByMax",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "sortByMin",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortByMin",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "sortBySum",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortBySum",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "sortByAbsMax",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortByAbsMax",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          Object {
+            "label": "sortByAbsMin",
+            "value": Object {
+              "category": "Sort",
+              "defaultParams": Array [
+                "desc",
+              ],
+              "name": "sortByAbsMin",
+              "params": Array [
+                Object {
+                  "name": "order",
+                  "options": Array [
+                    "desc",
+                    "asc",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+        ],
+        "label": "Sort",
+        "value": "Sort",
+      },
+      Object {
+        "children": Array [
+          Object {
             "label": "maxNumPVs",
             "value": Object {
               "category": "Options",
