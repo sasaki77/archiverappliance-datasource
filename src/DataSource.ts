@@ -218,7 +218,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       return Promise.resolve(dataFrames);
     }
 
-    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series'], dataFrames);
+    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series', 'Sort'], dataFrames);
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working

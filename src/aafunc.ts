@@ -6,6 +6,7 @@ const funcIndex: { [key: string]: FuncDef } = {};
 const categories: { [key: string]: FuncDef[] } = {
   Transform: [],
   'Filter Series': [],
+  Sort: [],
   Options: [],
 };
 
@@ -87,6 +88,49 @@ addFuncDef({
   category: 'Filter Series',
   params: [{ name: 'pattern', type: 'string' }],
   defaultParams: [''],
+});
+
+// Sort
+addFuncDef({
+  name: 'sortByAvg',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
+});
+
+addFuncDef({
+  name: 'sortByMax',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
+});
+
+addFuncDef({
+  name: 'sortByMin',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
+});
+
+addFuncDef({
+  name: 'sortBySum',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
+});
+
+addFuncDef({
+  name: 'sortByAbsMax',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
+});
+
+addFuncDef({
+  name: 'sortByAbsMin',
+  category: 'Sort',
+  params: [{ name: 'order', type: 'string', options: ['desc', 'asc'] }],
+  defaultParams: ['desc'],
 });
 
 // Options

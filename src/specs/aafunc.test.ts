@@ -512,6 +512,432 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
+  it('should return the server results with sortByMax function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 1, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMax'), ['desc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV2');
+      expect(pvname2).toBe('PV1');
+      expect(pvname3).toBe('PV3');
+      done();
+    });
+  });
+
+  it('should return the server results with sortByMin function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV3');
+      expect(pvname2).toBe('PV1');
+      expect(pvname3).toBe('PV2');
+      done();
+    });
+  });
+
+  it('should return the server results with sortByAvg function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['desc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV2');
+      expect(pvname2).toBe('PV1');
+      expect(pvname3).toBe('PV3');
+      done();
+    });
+  });
+
+  it('should return the server results with sortBySum function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV3');
+      expect(pvname2).toBe('PV1');
+      expect(pvname3).toBe('PV2');
+      done();
+    });
+  });
+
+  it('should return the server results with sortByAbsMax function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: -10, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV3');
+      expect(pvname2).toBe('PV2');
+      expect(pvname3).toBe('PV1');
+      done();
+    });
+  });
+
+  it('should return the server results with sortByAbsMin function', done => {
+    datasourceRequestMock.mockImplementation(request => {
+      const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
+      let pvdata = [];
+      if (pvname === 'PV1') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else if (pvname === 'PV2') {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: -6, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 7, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 8, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      } else {
+        pvdata = [
+          {
+            meta: { name: pvname, PREC: '0' },
+            data: [
+              { secs: 1262304001, val: -5, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 10, nanos: 789000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 10, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ];
+      }
+
+      return Promise.resolve({
+        _request: request,
+        data: pvdata,
+      });
+    });
+
+    const query = ({
+      targets: [
+        {
+          target: '(PV1|PV2|PV3)',
+          refId: 'A',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameArray: MutableDataFrame[] = result.data;
+      const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
+      const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
+      const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
+
+      expect(pvname1).toBe('PV3');
+      expect(pvname2).toBe('PV2');
+      expect(pvname3).toBe('PV1');
+      done();
+    });
+  });
+
   it('should return option variables if option functions are applied', done => {
     const options = ({
       targets: [
