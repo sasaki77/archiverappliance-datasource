@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Release Notes" href="releases.html" />
+    <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="Variables" href="variables.html" /> 
 </head>
 
@@ -102,13 +102,24 @@
 <li class="toctree-l3"><a class="reference internal" href="#exclude"><em>exclude</em></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#sort-functions">Sort Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyavg"><em>sortByAvg</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbymax"><em>sortByMax</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbymin"><em>sortByMin</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbysum"><em>sortBySum</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmax"><em>sortByAbsMax</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmin"><em>sortByAbsMin</em></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#options-functions">Options Functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#maxnumpvs"><em>maxNumPVs</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bininterval"><em>binInterval</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disableautoraw"><em>disableAutoRaw</em></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="tips.html">Tips</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
 </ul>
 
@@ -185,6 +196,7 @@
 <ul class="simple">
 <li><p><strong>Transform:</strong> converts the timeseries datapoints from its datapoint values.</p></li>
 <li><p><strong>Filter Series:</strong> picks up some series that meet certain condition.</p></li>
+<li><p><strong>Sort:</strong> sorts the list of timeseries.</p></li>
 <li><p><strong>Options:</strong> adds option parameters.</p></li>
 </ul>
 </div>
@@ -283,6 +295,93 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </div>
 </div>
 </div>
+<div class="section" id="sort-functions">
+<h2>Sort Functions<a class="headerlink" href="#sort-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sortbyavg">
+<h3><em>sortByAvg</em><a class="headerlink" href="#sortbyavg" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortByAvg">
+<code class="sig-name descname">sortByAvg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAvg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the average value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortbymax">
+<h3><em>sortByMax</em><a class="headerlink" href="#sortbymax" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortByMax">
+<code class="sig-name descname">sortByMax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the maximum value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortbymin">
+<h3><em>sortByMin</em><a class="headerlink" href="#sortbymin" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortByMin">
+<code class="sig-name descname">sortByMin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the minimum value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortbysum">
+<h3><em>sortBySum</em><a class="headerlink" href="#sortbysum" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortBySum">
+<code class="sig-name descname">sortBySum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortBySum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the total value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortBySum</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortBySum</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortbyabsmax">
+<h3><em>sortByAbsMax</em><a class="headerlink" href="#sortbyabsmax" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortByAbsMax">
+<code class="sig-name descname">sortByAbsMax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the absolute maximum value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sortbyabsmin">
+<h3><em>sortByAbsMin</em><a class="headerlink" href="#sortbyabsmin" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="sortByAbsMin">
+<code class="sig-name descname">sortByAbsMin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Sort the list of timeseries by the absolute minimum value across the time period specified.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="options-functions">
 <h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="maxnumpvs">
@@ -312,6 +411,20 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 </pre></div>
 </div>
 </div>
+<div class="section" id="disableautoraw">
+<h3><em>disableAutoRaw</em><a class="headerlink" href="#disableautoraw" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="disableAutoRaw">
+<code class="sig-name descname">disableAutoRaw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">boolean</span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableAutoRaw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Disable auto raw fueature.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -323,7 +436,7 @@ For example, if binInterval is set 100 and operator in query is set mean then re
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="releases.html" class="btn btn-neutral float-right" title="Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tips.html" class="btn btn-neutral float-right" title="Tips" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="variables.html" class="btn btn-neutral float-left" title="Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
