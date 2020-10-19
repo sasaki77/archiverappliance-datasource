@@ -152,7 +152,7 @@ addFuncDef({
 addFuncDef({
   name: 'disableAutoRaw',
   category: 'Options',
-  params: [{ name: 'disableAutoRaw', type: 'string', options: ['true', 'false'] }],
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
   defaultParams: ['true'],
 });
 
