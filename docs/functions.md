@@ -4,6 +4,7 @@ Functions are categorized into below groups.
 
 - **Transform:** converts the timeseries datapoints from its datapoint values.
 - **Filter Series:** picks up some series that meet certain condition.
+- **Sort:** sorts the list of timeseries.
 - **Options:** adds option parameters.
 
 ## Transform Functions
@@ -88,6 +89,85 @@ Examples:
 exclude(PV[0-9])
 ```
 
+## Sort Functions
+### _sortByAvg_
+``` function:: sortByAvg(order)
+```
+
+Sort the list of timeseries by the average value across the time period specified.
+
+Examples:
+
+```js
+sortByAvg(desc)
+sortByAvg(asc)
+```
+
+### _sortByMax_
+``` function:: sortByMax(order)
+```
+
+Sort the list of timeseries by the maximum value across the time period specified.
+
+Examples:
+
+```js
+sortByMax(desc)
+sortByMax(asc)
+```
+
+### _sortByMin_
+``` function:: sortByMin(order)
+```
+
+Sort the list of timeseries by the minimum value across the time period specified.
+
+Examples:
+
+```js
+sortByMin(desc)
+sortByMin(asc)
+```
+
+### _sortBySum_
+``` function:: sortBySum(order)
+```
+
+Sort the list of timeseries by the total value across the time period specified.
+
+Examples:
+
+```js
+sortBySum(desc)
+sortBySum(asc)
+```
+
+### _sortByAbsMax_
+``` function:: sortByAbsMax(order)
+```
+
+Sort the list of timeseries by the absolute maximum value across the time period specified.
+
+Examples:
+
+```js
+sortByAbsMax(desc)
+sortByAbsMax(asc)
+```
+
+### _sortByAbsMin_
+``` function:: sortByAbsMin(order)
+```
+
+Sort the list of timeseries by the absolute minimum value across the time period specified.
+
+Examples:
+
+```js
+sortByAbsMin(desc)
+sortByAbsMin(asc)
+```
+
 ## Options Functions
 ### _maxNumPVs_
 ``` function:: maxNumPVs(number)
@@ -112,4 +192,17 @@ Examples:
 
 ```js
 binInterval(100)
+```
+
+### _disableAutoRaw_
+``` function:: disableAutoRaw(boolean)
+```
+
+Disable auto raw fueature.
+
+Examples:
+
+```js
+disableAutoRaw(true)
+disableAutoRaw(false)
 ```

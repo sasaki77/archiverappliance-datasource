@@ -31,4 +31,5 @@ Documentation
    query
    variables
    functions
+   tips
    releases

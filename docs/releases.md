@@ -1,4 +1,10 @@
 # Release Notes
+## 1.1.0
+### Features
+- Add extrapolation feature for raw operator
+- Add disableAutoRaw function
+- Add sort functions
+
 ## 1.0.1
 
 **2020-06-19**
