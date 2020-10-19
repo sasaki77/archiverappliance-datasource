@@ -4,6 +4,7 @@
 - Add extrapolation feature for raw operator
 - Add disableAutoRaw function
 - Add sort functions
+- Add last operator
 
 ## 1.0.1
 

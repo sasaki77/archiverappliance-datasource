@@ -240,12 +240,13 @@ describe('Archiverappliance Datasource', () => {
         ({ target: 'PV3', operator: '', interval: '9', from, to, options } as unknown) as TargetQuery,
         ({ target: 'PV4', interval: '9', from, to, options } as unknown) as TargetQuery,
         ({ target: 'PV5', operator: 'max', interval: '', from, to, options } as unknown) as TargetQuery,
+        ({ target: 'PV6', operator: 'last', interval: '9', from, to, options } as unknown) as TargetQuery,
       ];
 
       const urlProcs = targets.map(target => ds.buildUrls(target));
 
       Promise.all(urlProcs).then(urls => {
-        expect(urls).toHaveLength(5);
+        expect(urls).toHaveLength(6);
         expect(urls[0][0]).toBe(
           'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -260,6 +261,9 @@ describe('Archiverappliance Datasource', () => {
         );
         expect(urls[4][0]).toBe(
           'url_header:/data/getData.json?pv=PV5&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+        );
+        expect(urls[5][0]).toBe(
+          'url_header:/data/getData.json?pv=PV6&from=2010-01-01T00:00:30.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });

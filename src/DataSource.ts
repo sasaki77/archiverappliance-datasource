@@ -104,8 +104,8 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   buildUrl(pvname: string, operator: string, interval: string, from: Date, to: Date) {
     const pv = (() => {
-      // raw Operator
-      if (operator === 'raw' || interval === '') {
+      // raw Operator or last Operator or interval is less than 1 sec
+      if (operator === 'raw' || operator === 'last' || interval === '') {
         return `${pvname}`;
       }
 
@@ -122,9 +122,9 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       throw new Error('Data Processing Operator is invalid.');
     })();
 
-    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(
-      pv
-    )}&from=${from.toISOString()}&to=${to.toISOString()}`;
+    const from_str = operator === 'last' ? to.toISOString() : from.toISOString();
+
+    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(pv)}&from=${from_str}&to=${to.toISOString()}`;
 
     return url;
   }

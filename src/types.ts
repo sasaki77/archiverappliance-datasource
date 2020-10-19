@@ -92,6 +92,7 @@ export const operatorList: string[] = [
   'kurtosis',
   'skewness',
   'raw',
+  'last',
 ];
 
 /**

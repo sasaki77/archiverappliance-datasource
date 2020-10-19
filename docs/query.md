@@ -5,7 +5,7 @@
 
 - **PV:** set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1|PV:2)`).
 - **Regex:** enable/disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex).
-- **Operator:** controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` is also available to retrieve the data without processing.
+- **Operator:** controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range.
 - **Alias:** set alias for legend.
 - **Alias pattern:** set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern)
 - **Function:** apply processing function for retrieved data. Refer [Apply Processing Functions](#apply-processing-functions)
