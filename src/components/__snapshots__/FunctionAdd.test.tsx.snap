@@ -321,6 +321,26 @@ exports[`Render should render component 1`] = `
               ],
             },
           },
+          Object {
+            "label": "disableExtrapol",
+            "value": Object {
+              "category": "Options",
+              "defaultParams": Array [
+                "true",
+              ],
+              "name": "disableExtrapol",
+              "params": Array [
+                Object {
+                  "name": "boolean",
+                  "options": Array [
+                    "true",
+                    "false",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
         ],
         "label": "Options",
         "value": "Options",

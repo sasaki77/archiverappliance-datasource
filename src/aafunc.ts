@@ -156,6 +156,13 @@ addFuncDef({
   defaultParams: ['true'],
 });
 
+addFuncDef({
+  name: 'disableExtrapol',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
 class FuncInstance {
   def: FuncDef;
   params: string[];

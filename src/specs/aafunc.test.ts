@@ -977,4 +977,47 @@ describe('Archiverappliance Functions', () => {
     expect(targets[0].interval).toBe('1');
     done();
   });
+
+  it('should return non extrapolation data when disableExtrapol func is set', done => {
+    datasourceRequestMock.mockImplementation(request =>
+      Promise.resolve({
+        data: [
+          {
+            meta: { name: 'PV', PREC: '0' },
+            data: [
+              { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
+              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
+              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+            ],
+          },
+        ],
+      })
+    );
+
+    const query = ({
+      targets: [
+        {
+          target: 'PV',
+          refId: 'A',
+          operator: 'raw',
+          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableExtrapol'), ['true'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(1);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(valArray).toHaveLength(3);
+      expect(timesArray).toHaveLength(3);
+      expect(valArray[2]).toBe(2);
+      expect(timesArray[2]).toBe(1262304002789);
+      done();
+    });
+  });
 });
