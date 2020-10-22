@@ -206,3 +206,16 @@ Examples:
 disableAutoRaw(true)
 disableAutoRaw(false)
 ```
+
+### _disableExtrapol_
+``` function:: disableExtrapol(boolean)
+```
+
+Disable [extrapolation for raw data](tips.html#extrapolation-for-raw-operation).
+
+Examples:
+
+```js
+disableExtrapol(true)
+disableExtrapol(false)
+```
