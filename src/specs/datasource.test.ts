@@ -48,6 +48,40 @@ describe('Archiverappliance Datasource', () => {
     ds = new DataSource(instanceSettings);
   });
 
+  describe('testDatasource tests', () => {
+    it('should return success message', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          status: 200,
+          message: 'Success',
+        })
+      );
+
+      ds.testDatasource().then((result: any) => {
+        expect(result.status).toBe('success');
+        expect(result.message).toBe('Data source is working');
+        expect(result.title).toBe('Success');
+        done();
+      });
+    });
+
+    it('should return error message', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          status: 404,
+          message: 'Bad gateway',
+        })
+      );
+
+      ds.testDatasource().then((result: any) => {
+        expect(result.status).toBe('error');
+        expect(result.message).toBe('Bad gateway');
+        expect(result.title).toBe('Failed');
+        done();
+      });
+    });
+  });
+
   describe('Build URL tests', () => {
     it('should return an valid url', done => {
       const target = ({

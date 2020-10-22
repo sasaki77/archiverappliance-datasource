@@ -223,7 +223,20 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   // Called from Grafana data source configuration page to make sure the connection is working
   async testDatasource() {
-    return { status: 'success', message: 'Data source is working', title: 'Success' };
+    return this.doRequest({
+      url: `${this.url}/bpl/getVersion`,
+      method: 'GET',
+    }).then(response => {
+      if (response.status === 200) {
+        return { status: 'success', message: 'Data source is working', title: 'Success' };
+      }
+
+      return {
+        status: 'error',
+        title: 'Failed',
+        message: response.message,
+      };
+    });
   }
 
   pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
