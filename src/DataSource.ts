@@ -154,8 +154,8 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
     const dataFrames = _.flatten(dataFramesArray);
 
-    // Except for raw operator
-    if (target.operator !== 'raw' && target.interval !== '') {
+    // Except for raw operator or extrapolation is disabled
+    if ((target.operator !== 'raw' && target.interval !== '') || target.options.disableExtrapol === 'true') {
       return Promise.resolve(dataFrames);
     }
 
