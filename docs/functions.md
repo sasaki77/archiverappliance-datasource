@@ -198,7 +198,7 @@ binInterval(100)
 ``` function:: disableAutoRaw(boolean)
 ```
 
-Disable auto raw fueature.
+Disable [auto raw feature](tips.html#auto-raw-operation).
 
 Examples:
 
