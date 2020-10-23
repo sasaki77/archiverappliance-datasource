@@ -36,9 +36,9 @@ function createDefaultResponse() {
       {
         meta: { name: 'PV', PREC: '0' },
         data: [
-          { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-          { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-          { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          { millis: 1262304000123, val: 0 },
+          { millis: 1262304001456, val: 1 },
+          { millis: 1262304002789, val: 2 },
         ],
       },
     ],
@@ -62,8 +62,8 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: 'PV', PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ],
@@ -108,8 +108,8 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: 'PV', PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ],
@@ -154,8 +154,8 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: 'PV', PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ],
@@ -198,9 +198,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: 'PV', PREC: '0' },
             data: [
-              { secs: 1262304001, val: 100, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 200, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 300, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 100 },
+              { millis: 1262304002789, val: 200 },
+              { millis: 1262304002789, val: 300 },
             ],
           },
         ],
@@ -245,9 +245,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 1, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ];
@@ -256,9 +256,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -267,9 +267,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -478,7 +478,7 @@ describe('Archiverappliance Functions', () => {
       const pvdata = [
         {
           meta: { name: pvname, PREC: '0' },
-          data: [{ secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 }],
+          data: [{ millis: 1262304001456, val: 0 }],
         },
       ];
 
@@ -521,9 +521,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 1, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ];
@@ -532,9 +532,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -543,9 +543,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -592,9 +592,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
             ],
           },
         ];
@@ -603,9 +603,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -614,9 +614,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -663,9 +663,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
             ],
           },
         ];
@@ -674,9 +674,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -685,9 +685,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -734,9 +734,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
             ],
           },
         ];
@@ -745,9 +745,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -756,9 +756,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 0, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 0 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -805,9 +805,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
             ],
           },
         ];
@@ -816,9 +816,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 3, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 4, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 5, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 3 },
+              { millis: 1262304002789, val: 4 },
+              { millis: 1262304002789, val: 5 },
             ],
           },
         ];
@@ -827,9 +827,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: -10, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 0, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: -10 },
+              { millis: 1262304002789, val: 0 },
+              { millis: 1262304002789, val: 0 },
             ],
           },
         ];
@@ -876,9 +876,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 3, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
             ],
           },
         ];
@@ -887,9 +887,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: -6, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 7, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 8, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: -6 },
+              { millis: 1262304002789, val: 7 },
+              { millis: 1262304002789, val: 8 },
             ],
           },
         ];
@@ -898,9 +898,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: pvname, PREC: '0' },
             data: [
-              { secs: 1262304001, val: -5, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 10, nanos: 789000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 10, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304001456, val: -5 },
+              { millis: 1262304002789, val: 10 },
+              { millis: 1262304002789, val: 10 },
             ],
           },
         ];
@@ -985,9 +985,9 @@ describe('Archiverappliance Functions', () => {
           {
             meta: { name: 'PV', PREC: '0' },
             data: [
-              { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-              { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-              { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+              { millis: 1262304000123, val: 0 },
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
             ],
           },
         ],

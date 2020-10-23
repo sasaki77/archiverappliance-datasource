@@ -29,9 +29,9 @@ function createDefaultResponse() {
       {
         meta: { name: 'PV', PREC: '0' },
         data: [
-          { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-          { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-          { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+          { millis: 1262304000123, val: 0 },
+          { millis: 1262304001456, val: 1 },
+          { millis: 1262304002789, val: 2 },
         ],
       },
     ],
@@ -94,7 +94,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -117,10 +117,10 @@ describe('Archiverappliance Datasource', () => {
 
       ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[1]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -144,10 +144,10 @@ describe('Archiverappliance Datasource', () => {
 
       ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[1]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV2)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -208,7 +208,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
-          'url_header:/data/getData.json?pv=mean_100(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_100(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -226,22 +226,22 @@ describe('Archiverappliance Datasource', () => {
       ds.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(6);
         expect(url[0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[1]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVA%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVA%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[2]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVB%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVB%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[3]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVB%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVB%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[4]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVC%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVC%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[5]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PVC%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVC%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -282,22 +282,22 @@ describe('Archiverappliance Datasource', () => {
       Promise.all(urlProcs).then(urls => {
         expect(urls).toHaveLength(6);
         expect(urls[0][0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(urls[1][0]).toBe(
-          'url_header:/data/getData.json?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=PV2&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(urls[2][0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV3)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV3)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(urls[3][0]).toBe(
-          'url_header:/data/getData.json?pv=mean_9(PV4)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PV4)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(urls[4][0]).toBe(
-          'url_header:/data/getData.json?pv=PV5&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=PV5&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(urls[5][0]).toBe(
-          'url_header:/data/getData.json?pv=PV6&from=2010-01-01T00:00:30.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=PV6&from=2010-01-01T00:00:30.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
@@ -366,9 +366,9 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-                { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-                { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
               ],
             },
           ],
@@ -401,7 +401,7 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return the server results with alias', done => {
       datasourceRequestMock.mockImplementation(request => {
-        const pv = request.url.slice(33, 36);
+        const pv = request.url.slice(31, 34);
         Promise.resolve({
           status: 'success',
           data: { data: ['value1', 'value2', 'value3'] },
@@ -494,9 +494,9 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-                { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-                { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
               ],
             },
           ],
@@ -530,9 +530,9 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { secs: 1262304000, val: 0, nanos: 123000000, severity: 0, status: 0 },
-                { secs: 1262304001, val: 1, nanos: 456000000, severity: 0, status: 0 },
-                { secs: 1262304002, val: 2, nanos: 789000000, severity: 0, status: 0 },
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
               ],
             },
           ],

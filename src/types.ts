@@ -36,8 +36,8 @@ export interface TargetQuery {
 export interface AADataQueryResponse {
   data: {
     data: {
-      meta: { name: string; PREC: string };
-      data: [{ secs: number; val: number; nanos: number; severity: number; status: number }];
+      meta: { name: string; waveform: boolean; PREC: string };
+      data: [{ millis: number; val: number | number[] | string | string[] }];
     };
   };
   status: number;
