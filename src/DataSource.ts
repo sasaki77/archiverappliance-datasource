@@ -124,7 +124,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
     const from_str = operator === 'last' ? to.toISOString() : from.toISOString();
 
-    const url = `${this.url}/data/getData.json?pv=${encodeURIComponent(pv)}&from=${from_str}&to=${to.toISOString()}`;
+    const url = `${this.url}/data/getData.qw?pv=${encodeURIComponent(pv)}&from=${from_str}&to=${to.toISOString()}`;
 
     return url;
   }
@@ -139,7 +139,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         const values = _.map(targetRes.data, datapoint => datapoint.val);
-        const times = _.map(targetRes.data, datapoint => datapoint.secs * 1000 + _.floor(datapoint.nanos / 1000000));
+        const times = _.map(targetRes.data, datapoint => datapoint.millis);
         const frame = new MutableDataFrame({
           name: targetRes.meta.name,
           fields: [
