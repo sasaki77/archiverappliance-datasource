@@ -91,6 +91,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tips</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#binning-interval">Binning interval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#auto-raw-operation">Auto raw operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extrapolation-for-raw-operation">Extrapolation for raw operation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
@@ -173,6 +174,12 @@ Basically, the interval is determined by width of panel and time range.</p>
 <h2>Auto raw operation<a class="headerlink" href="#auto-raw-operation" title="Permalink to this headline">¶</a></h2>
 <p>When a binning interval is less than 1 second, raw data is retrieved even if other operator is set.
 To disable auto raw operation, <a class="reference external" href="functions.html#disableAutoRaw">disableAutoRaw</a> function is available.</p>
+</div>
+<div class="section" id="extrapolation-for-raw-operation">
+<h2>Extrapolation for raw operation<a class="headerlink" href="#extrapolation-for-raw-operation" title="Permalink to this headline">¶</a></h2>
+<p>In raw operator mode, the retrieved data is extrapolated by last data value.
+This feature prevents a graph from cutting of or not being desplayed.
+To disable the extrapolation, <a class="reference external" href="functions.html#disableExtrapol">disableExtrapol</a> function is available.</p>
 </div>
 </div>
 

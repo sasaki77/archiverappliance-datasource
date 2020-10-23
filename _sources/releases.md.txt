@@ -1,4 +1,13 @@
 # Release Notes
+## 1.1.1
+
+**2020-10-23**
+
+### Features / Enhancements
+- Add disableExtrapol function
+- Fix testDatasource for datasource test
+- Change retrieving data format from json to qw
+
 ## 1.1.0
 
 **2020-10-19**
