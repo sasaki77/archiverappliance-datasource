@@ -235,29 +235,28 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     }
 
     const newDataFrames = _.map(dataFrames, dataFrame => {
-      let alias = target.alias;
-      const valfield = dataFrame.fields[1];
-      const displayName = getFieldDisplayName(valfield, dataFrame);
+      const valfields = _.filter(dataFrame.fields, field => field.name !== 'time');
 
-      if (pattern) {
-        alias = displayName.replace(pattern, alias);
-      }
+      const newValfields = _.map(valfields, valfield => {
+        const displayName = getFieldDisplayName(valfield, dataFrame);
+        const alias = pattern ? displayName.replace(pattern, target.alias) : target.alias;
 
-      const newValfield = {
-        ...valfield,
-        config: {
-          ...valfield.config,
-          displayName: alias,
-        },
-        state: {
-          ...valfield.state,
-          displayName: alias,
-        },
-      };
+        return {
+          ...valfield,
+          config: {
+            ...valfield.config,
+            displayName: alias,
+          },
+          state: {
+            ...valfield.state,
+            displayName: alias,
+          },
+        };
+      });
 
       return new MutableDataFrame({
         ...dataFrame,
-        fields: [dataFrame.fields[0], newValfield],
+        fields: [dataFrame.fields[0]].concat(newValfields),
       });
     });
 
