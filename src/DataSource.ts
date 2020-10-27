@@ -15,6 +15,7 @@ import {
   AAQuery,
   AADataSourceOptions,
   TargetQuery,
+  AADataQueryData,
   AADataQueryResponse,
   FunctionDescriptor,
   operatorList,
@@ -138,17 +139,12 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   responseParse(responses: AADataQueryResponse[], target: TargetQuery) {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
-        const values = _.map(targetRes.data, datapoint => datapoint.val);
-        const times = _.map(targetRes.data, datapoint => datapoint.millis);
-        const frame = new MutableDataFrame({
-          name: targetRes.meta.name,
-          fields: [
-            { name: 'time', type: FieldType.time, values: times },
-            { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },
-          ],
-        });
-        return frame;
+        if (targetRes.meta.waveform) {
+          return this.parseArrayResponse(targetRes);
+        }
+        return this.parseScalarResponse(targetRes);
       });
+
       return dataFrames;
     });
 
@@ -163,7 +159,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const to_msec = target.to.getTime();
     const extrapolationDataFrames = _.map(dataFrames, dataframe => {
       const latestval = dataframe.get(dataframe.length - 1);
-      const addval = { time: to_msec, value: latestval['value'] };
+      const addval = { ...latestval, time: to_msec };
 
       dataframe.add(addval);
 
@@ -171,6 +167,61 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
 
     return Promise.resolve(extrapolationDataFrames);
+  }
+
+  parseArrayResponse(targetRes: AADataQueryData) {
+    const columnValues = _.map(targetRes.data, datapoint => datapoint.val);
+
+    // Type check for columnValues
+    if (!this.isNumbers(columnValues)) {
+      return new MutableDataFrame();
+    }
+
+    const rowValues = _.unzip(columnValues);
+    const times = _.map(targetRes.data, datapoint => datapoint.millis);
+    const fields = [{ name: 'time', type: FieldType.time, values: times }];
+
+    // Add fields for each waveform elements
+    _.reduce(
+      rowValues,
+      (fields, val, i) => {
+        const field = {
+          name: `${targetRes.meta.name}[${i}]`,
+          type: FieldType.number,
+          values: val,
+        };
+        fields.push(field);
+        return fields;
+      },
+      fields
+    );
+
+    const frame = new MutableDataFrame({
+      name: targetRes.meta.name,
+      fields,
+    });
+
+    return frame;
+  }
+
+  isNumbers(array: Array<number | string | number[] | string[]>): array is number[][] {
+    if (Array.isArray(array[0])) {
+      return typeof array[0][0] === 'number';
+    }
+    return false;
+  }
+
+  parseScalarResponse(targetRes: AADataQueryData): MutableDataFrame {
+    const values = _.map(targetRes.data, datapoint => datapoint.val);
+    const times = _.map(targetRes.data, datapoint => datapoint.millis);
+    const frame = new MutableDataFrame({
+      name: targetRes.meta.name,
+      fields: [
+        { name: 'time', type: FieldType.time, values: times },
+        { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },
+      ],
+    });
+    return frame;
   }
 
   async setAlias(dataFrames: MutableDataFrame[], target: TargetQuery): Promise<MutableDataFrame[]> {
@@ -184,29 +235,28 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     }
 
     const newDataFrames = _.map(dataFrames, dataFrame => {
-      let alias = target.alias;
-      const valfield = dataFrame.fields[1];
-      const displayName = getFieldDisplayName(valfield, dataFrame);
+      const valfields = _.filter(dataFrame.fields, field => field.name !== 'time');
 
-      if (pattern) {
-        alias = displayName.replace(pattern, alias);
-      }
+      const newValfields = _.map(valfields, valfield => {
+        const displayName = getFieldDisplayName(valfield, dataFrame);
+        const alias = pattern ? displayName.replace(pattern, target.alias) : target.alias;
 
-      const newValfield = {
-        ...valfield,
-        config: {
-          ...valfield.config,
-          displayName: alias,
-        },
-        state: {
-          ...valfield.state,
-          displayName: alias,
-        },
-      };
+        return {
+          ...valfield,
+          config: {
+            ...valfield.config,
+            displayName: alias,
+          },
+          state: {
+            ...valfield.state,
+            displayName: alias,
+          },
+        };
+      });
 
       return new MutableDataFrame({
         ...dataFrame,
-        fields: [dataFrame.fields[0], newValfield],
+        fields: [dataFrame.fields[0]].concat(newValfields),
       });
     });
 

@@ -399,6 +399,78 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
+    it('should return array data when waveform is true', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'header:PV1', PREC: '0', waveform: true },
+              data: [
+                { millis: 1262304000123, val: [1, 2, 3] },
+                { millis: 1262304001456, val: [4, 5, 6] },
+                { millis: 1262304002789, val: [7, 8, 9, 10] },
+              ],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [
+          {
+            target: 'header:PV1',
+            refId: 'A',
+          },
+        ],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        maxDataPoints: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).then((result: any) => {
+        expect(result.data).toHaveLength(1);
+        const dataFrame: MutableDataFrame = result.data[0];
+        expect(dataFrame.fields).toHaveLength(5);
+
+        const seriesName = dataFrame.name;
+        expect(seriesName).toBe('header:PV1');
+
+        const timesArray = dataFrame.fields[0].values.toArray();
+        expect(timesArray[0]).toBe(1262304000123);
+
+        const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+        const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
+        const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
+        expect(name1).toBe('header:PV1[0]');
+        expect(name2).toBe('header:PV1[1]');
+        expect(name3).toBe('header:PV1[2]');
+
+        const valArray1 = dataFrame.fields[1].values.toArray();
+        const valArray2 = dataFrame.fields[2].values.toArray();
+        const valArray3 = dataFrame.fields[3].values.toArray();
+        const valArray4 = dataFrame.fields[4].values.toArray();
+        expect(valArray1).toHaveLength(4);
+        expect(valArray2).toHaveLength(4);
+        expect(valArray3).toHaveLength(4);
+        expect(valArray4).toHaveLength(4);
+
+        expect(valArray1[0]).toBe(1);
+        expect(valArray1[1]).toBe(4);
+        expect(valArray1[2]).toBe(7);
+        expect(valArray1[3]).toBe(7);
+
+        expect(valArray2[0]).toBe(2);
+        expect(valArray2[1]).toBe(5);
+        expect(valArray2[2]).toBe(8);
+        expect(valArray2[3]).toBe(8);
+
+        expect(valArray4[0]).toBe(undefined);
+        expect(valArray4[1]).toBe(undefined);
+        expect(valArray4[2]).toBe(10);
+        expect(valArray4[3]).toBe(10);
+        done();
+      });
+    });
+
     it('should return the server results with alias', done => {
       datasourceRequestMock.mockImplementation(request => {
         const pv = request.url.slice(31, 34);
@@ -483,6 +555,46 @@ describe('Archiverappliance Datasource', () => {
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(seriesName).toBe('header:PV1');
         expect(alias).toBe('PV1:header');
+        done();
+      });
+    });
+
+    it('should return the server results with alias pattern for array data', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'header:PV1', PREC: '0', waveform: true },
+              data: [{ millis: 1262304000123, val: [1, 2, 3] }],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [
+          {
+            target: 'header:PV1',
+            refId: 'A',
+            alias: '$1',
+            aliasPattern: 'header:PV1(.*)',
+          },
+        ],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        maxDataPoints: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).then((result: any) => {
+        expect(result.data).toHaveLength(1);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const seriesName = dataFrame.name;
+        const alias1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+        const alias2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
+        const alias3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
+        expect(seriesName).toBe('header:PV1');
+        expect(alias1).toBe('[0]');
+        expect(alias2).toBe('[1]');
+        expect(alias3).toBe('[2]');
         done();
       });
     });

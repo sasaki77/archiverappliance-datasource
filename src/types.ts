@@ -33,12 +33,14 @@ export interface TargetQuery {
   interval: string;
 }
 
+export interface AADataQueryData {
+  meta: { name: string; waveform: boolean; PREC: string };
+  data: [{ millis: number; val: number | number[] | string | string[] }];
+}
+
 export interface AADataQueryResponse {
   data: {
-    data: {
-      meta: { name: string; waveform: boolean; PREC: string };
-      data: [{ millis: number; val: number | number[] | string | string[] }];
-    };
+    data: AADataQueryData;
   };
   status: number;
   statusText: string;
