@@ -5,6 +5,7 @@ import { MutableDataFrame } from '@grafana/data';
 const funcIndex: { [key: string]: FuncDef } = {};
 const categories: { [key: string]: FuncDef[] } = {
   Transform: [],
+  'Array to Scalar': [],
   'Filter Series': [],
   Sort: [],
   Options: [],
@@ -49,6 +50,29 @@ addFuncDef({
 addFuncDef({
   name: 'fluctuation',
   category: 'Transform',
+  params: [],
+  defaultParams: [],
+});
+
+// Array to Scalar
+
+addFuncDef({
+  name: 'toScalarByAvg',
+  category: 'Array to Scalar',
+  params: [],
+  defaultParams: [],
+});
+
+addFuncDef({
+  name: 'toScalarByMax',
+  category: 'Array to Scalar',
+  params: [],
+  defaultParams: [],
+});
+
+addFuncDef({
+  name: 'toScalarByMin',
+  category: 'Array to Scalar',
   params: [],
   defaultParams: [],
 });

@@ -236,6 +236,80 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
+  it('should return correct scalar data with toScalar funcs', done => {
+    datasourceRequestMock.mockImplementation(request =>
+      Promise.resolve({
+        data: [
+          {
+            meta: { name: 'header:PV1', PREC: '0', waveform: true },
+            data: [
+              { millis: 1262304000123, val: [1, 2, 3] },
+              { millis: 1262304001456, val: [4, 5, 6] },
+              { millis: 1262304002789, val: [7, 8, 9, 10] },
+            ],
+          },
+        ],
+      })
+    );
+
+    const query = ({
+      targets: [
+        {
+          target: 'header:PV1',
+          refId: 'A',
+          functions: [
+            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByAvg'), []),
+            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByMax'), []),
+            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByMin'), []),
+          ],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(3);
+      const dataFrameAvg: MutableDataFrame = result.data[0];
+      const dataFrameMax: MutableDataFrame = result.data[1];
+      const dataFrameMin: MutableDataFrame = result.data[2];
+
+      const seriesNameAvg = dataFrameAvg.name;
+      const seriesNameMax = dataFrameMax.name;
+      const seriesNameMin = dataFrameMin.name;
+      expect(seriesNameAvg).toBe('header:PV1');
+      expect(seriesNameMax).toBe('header:PV1');
+      expect(seriesNameMin).toBe('header:PV1');
+
+      const valArrayAvg = dataFrameAvg.fields[1].values.toArray();
+      const valArrayMax = dataFrameMax.fields[1].values.toArray();
+      const valArrayMin = dataFrameMin.fields[1].values.toArray();
+
+      expect(valArrayAvg).toHaveLength(4);
+      expect(valArrayMax).toHaveLength(4);
+      expect(valArrayMin).toHaveLength(4);
+      expect(valArrayAvg[0]).toBe(2);
+      expect(valArrayMax[0]).toBe(3);
+      expect(valArrayMin[0]).toBe(1);
+
+      const nameAvg = getFieldDisplayName(dataFrameAvg.fields[1], dataFrameAvg);
+      const nameMax = getFieldDisplayName(dataFrameMax.fields[1], dataFrameMax);
+      const nameMin = getFieldDisplayName(dataFrameMin.fields[1], dataFrameMin);
+      expect(nameAvg).toBe('header:PV1 (avg)');
+      expect(nameMax).toBe('header:PV1 (max)');
+      expect(nameMin).toBe('header:PV1 (min)');
+
+      const timesArrayAvg = dataFrameAvg.fields[0].values.toArray();
+      const timesArrayMax = dataFrameMax.fields[0].values.toArray();
+      const timesArrayMin = dataFrameMin.fields[0].values.toArray();
+      expect(timesArrayAvg[0]).toBe(1262304000123);
+      expect(timesArrayMax[0]).toBe(1262304000123);
+      expect(timesArrayMin[0]).toBe(1262304000123);
+
+      done();
+    });
+  });
+
   it('should return the server results with top function', done => {
     datasourceRequestMock.mockImplementation(request => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);

@@ -16,6 +16,7 @@ import {
   AADataSourceOptions,
   TargetQuery,
   AADataQueryData,
+  AADataQueryDataNumberArray,
   AADataQueryResponse,
   FunctionDescriptor,
   operatorList,
@@ -140,12 +141,16 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         if (targetRes.meta.waveform) {
+          const toScalarFuncs = this.getToScalarFuncs(target.functions);
+          if (toScalarFuncs.length > 0) {
+            return this.parseArrayResponseToScalar(targetRes, toScalarFuncs);
+          }
           return this.parseArrayResponse(targetRes);
         }
         return this.parseScalarResponse(targetRes);
       });
 
-      return dataFrames;
+      return _.flatten(dataFrames);
     });
 
     const dataFrames = _.flatten(dataFramesArray);
@@ -170,12 +175,12 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   parseArrayResponse(targetRes: AADataQueryData) {
-    const columnValues = _.map(targetRes.data, datapoint => datapoint.val);
-
     // Type check for columnValues
-    if (!this.isNumbers(columnValues)) {
+    if (!this.isNumberArray(targetRes)) {
       return new MutableDataFrame();
     }
+
+    const columnValues = _.map(targetRes.data, datapoint => datapoint.val);
 
     const rowValues = _.unzip(columnValues);
     const times = _.map(targetRes.data, datapoint => datapoint.millis);
@@ -204,10 +209,42 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return frame;
   }
 
-  isNumbers(array: Array<number | string | number[] | string[]>): array is number[][] {
-    if (Array.isArray(array[0])) {
-      return typeof array[0][0] === 'number';
+  parseArrayResponseToScalar(targetRes: AADataQueryData, toScalarFuncs: Array<{ func: any; label: string }>) {
+    // Type check for columnValues
+    if (!this.isNumberArray(targetRes)) {
+      return new MutableDataFrame();
     }
+
+    const frames = _.map(toScalarFuncs, func => {
+      const values = _.map(targetRes.data, datapoint => func.func(datapoint.val));
+      const times = _.map(targetRes.data, datapoint => datapoint.millis);
+      const frame = new MutableDataFrame({
+        name: targetRes.meta.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: times },
+          {
+            name: 'value',
+            type: FieldType.number,
+            values: values,
+            config: { displayName: `${targetRes.meta.name} (${func.label})` },
+          },
+        ],
+      });
+      return frame;
+    });
+
+    return frames;
+  }
+
+  isNumberArray(response: AADataQueryData): response is AADataQueryDataNumberArray {
+    if (!response.meta.waveform) {
+      return false;
+    }
+
+    if (Array.isArray(response.data[0].val)) {
+      return typeof response.data[0].val[0] === 'number';
+    }
+
     return false;
   }
 
@@ -442,6 +479,18 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     );
 
     return promises;
+  }
+
+  getToScalarFuncs(functionDefs: FunctionDescriptor[]): any[] {
+    const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Array to Scalar']);
+    const functions: { [key: string]: any } = { toScalarByMax: _.max, toScalarByMin: _.min, toScalarByAvg: _.mean };
+    const labels: { [key: string]: string } = { toScalarByMax: 'max', toScalarByMin: 'min', toScalarByAvg: 'avg' };
+
+    const funcs = _.map(appliedOptionFuncs, func => {
+      return { func: functions[func.def.name], label: labels[func.def.name] };
+    });
+
+    return funcs;
   }
 
   getOptions(functionDefs: FunctionDescriptor[]) {
