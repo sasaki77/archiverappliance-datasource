@@ -8,7 +8,7 @@ import {
 } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
-import dataProcessor from '../dataProcessor';
+import { seriesFunctions } from '../dataProcessor';
 import { AAQuery, AADataSourceOptions } from '../types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
@@ -75,7 +75,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('scale'), ['100'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('scale'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -121,7 +121,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('offset'), ['100'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('offset'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -167,7 +167,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('delta'), [])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('delta'), [])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -212,7 +212,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('fluctuation'), [])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('fluctuation'), [])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -258,9 +258,9 @@ describe('Archiverappliance Functions', () => {
           target: 'header:PV1',
           refId: 'A',
           functions: [
-            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByAvg'), []),
-            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByMax'), []),
-            aafunc.createFuncInstance(aafunc.getFuncDef('toScalarByMin'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByAvg'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMax'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMin'), []),
           ],
         },
       ],
@@ -360,7 +360,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('top'), ['2', 'avg'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('top'), ['2', 'avg'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -440,8 +440,8 @@ describe('Archiverappliance Functions', () => {
         })
     );
 
-    const topFunction = dataProcessor.aaFunctions.top;
-    const bottomFunction = dataProcessor.aaFunctions.bottom;
+    const topFunction = seriesFunctions.top;
+    const bottomFunction = seriesFunctions.bottom;
 
     const minTopData = topFunction(3, 'min', timeseriesData);
     const maxTopData = topFunction(1, 'max', timeseriesData);
@@ -567,7 +567,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PVA|PVB)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('exclude'), ['PV[0-9]'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('exclude'), ['PV[0-9]'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -636,7 +636,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -707,7 +707,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['asc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -778,7 +778,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -849,7 +849,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['asc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -920,7 +920,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -991,7 +991,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -1018,7 +1018,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -1038,7 +1038,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV1',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableAutoRaw'), ['true'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('disableAutoRaw'), ['true'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
@@ -1074,7 +1074,7 @@ describe('Archiverappliance Functions', () => {
           target: 'PV',
           refId: 'A',
           operator: 'raw',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableExtrapol'), ['true'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('disableExtrapol'), ['true'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },

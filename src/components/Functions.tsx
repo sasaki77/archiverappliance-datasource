@@ -1,6 +1,6 @@
 import React from 'react';
 import { InlineFormLabel } from '@grafana/ui';
-import { createFuncInstance } from '../aafunc';
+import { createFuncDescriptor } from '../aafunc';
 import { FuncDef, FunctionDescriptor } from '../types';
 
 import { FunctionElem } from './FunctionElem';
@@ -27,7 +27,7 @@ class Functions extends React.PureComponent<FunctionsProps> {
 
   addFunction = (funcDef: FuncDef) => {
     const { onChange, onRunQuery } = this.props;
-    const newFunc = createFuncInstance(funcDef, funcDef.defaultParams);
+    const newFunc = createFuncDescriptor(funcDef, funcDef.defaultParams);
     const newFuncs = [...this.props.funcs];
     newFuncs.push(newFunc);
     onChange(newFuncs);

@@ -1,6 +1,7 @@
 import _ from 'lodash';
-import { FuncDef } from './types';
+import { FuncDef, FunctionDescriptor } from './types';
 import { MutableDataFrame } from '@grafana/data';
+import { arrayFunctions, seriesFunctions } from 'dataProcessor';
 
 const funcIndex: { [key: string]: FuncDef } = {};
 const categories: { [key: string]: FuncDef[] } = {
@@ -22,6 +23,43 @@ function addFuncDef(newFuncDef: FuncDef) {
   }
   funcIndex[funcDef.name] = funcDef;
   funcIndex[funcDef.shortName || funcDef.name] = funcDef;
+}
+
+function pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], requireCatecories: string[]) {
+  const requiredCategoryFuncNames = _.reduce(
+    requireCatecories,
+    (funcNames: string[], category: string) => _.concat(funcNames, _.map(categories[category], 'name')),
+    []
+  );
+
+  const pickedFuncDefs = _.filter(functionDefs, func => _.includes(requiredCategoryFuncNames, func.def.name));
+
+  return pickedFuncDefs;
+}
+
+function bindFunction(
+  metricFunctions: { [key: string]: (...args: any[]) => MutableDataFrame[] },
+  funcDef: FunctionDescriptor
+) {
+  const func = metricFunctions[funcDef.def.name];
+
+  if (!func) {
+    throw new Error(`Method not found ${funcDef.def.name}`);
+  }
+
+  // Bind function arguments
+  let bindedFunc = func;
+  let param;
+  for (let i = 0; i < funcDef.params.length; i += 1) {
+    param = funcDef.params[i];
+
+    // Convert numeric params
+    if (funcDef.def.params[i].type === 'int' || funcDef.def.params[i].type === 'float') {
+      param = Number(param);
+    }
+    bindedFunc = _.partial(bindedFunc, param);
+  }
+  return bindedFunc;
 }
 
 // Transform
@@ -187,123 +225,62 @@ addFuncDef({
   defaultParams: ['true'],
 });
 
-class FuncInstance {
-  def: FuncDef;
-  params: string[];
-  text: string;
-
-  constructor(funcDef: FuncDef, params: string[]) {
-    this.text = '';
-    this.def = funcDef;
-
-    if (params) {
-      this.params = params;
-    } else {
-      // Create with default params
-      this.params = [];
-      this.params = funcDef.defaultParams.slice(0);
-    }
-
-    this.updateText();
-  }
-
-  bindFunction(metricFunctions: { [key: string]: (...args: any[]) => MutableDataFrame[] }) {
-    const func = metricFunctions[this.def.name];
-
-    if (!func) {
-      throw new Error(`Method not found ${this.def.name}`);
-    }
-
-    // Bind function arguments
-    let bindedFunc = func;
-    let param;
-    for (let i = 0; i < this.params.length; i += 1) {
-      param = this.params[i];
-
-      // Convert numeric params
-      if (this.def.params[i].type === 'int' || this.def.params[i].type === 'float') {
-        param = Number(param);
-      }
-      bindedFunc = _.partial(bindedFunc, param);
-    }
-    return bindedFunc;
-  }
-
-  render(metricExp: string): string {
-    const str = `${this.def.name}(`;
-    const parameters = _.map(this.params, (value, index) => {
-      const paramType = this.def.params[index].type;
-      if (paramType === 'int' || paramType === 'float' || paramType === 'value_or_series' || paramType === 'boolean') {
-        return value;
-      }
-
-      if (paramType === 'int_or_interval' && $.isNumeric(value)) {
-        return value;
-      }
-
-      return `'${value}'`;
-    });
-
-    if (metricExp) {
-      parameters.unshift(metricExp);
-    }
-
-    return `${str}${parameters.join(', ')})`;
-  }
-
-  _hasMultipleParamsInString(strValue: string, index: number) {
-    if (strValue.indexOf(',') === -1) {
-      return false;
-    }
-
-    return this.def.params[index + 1];
-  }
-
-  updateParam(strValue: string, index: number) {
-    // handle optional parameters
-    // if string contains ',' and next param is optional, split and update both
-    if (this._hasMultipleParamsInString(strValue, index)) {
-      _.each(strValue.split(','), (partVal: string, idx: number) => {
-        this.updateParam(partVal.trim(), idx);
-      });
-      return;
-    }
-
-    if (strValue === '') {
-      this.params.splice(index, 1);
-    } else {
-      this.params[index] = strValue;
-    }
-
-    this.updateText();
-  }
-
-  updateText() {
-    if (this.params.length === 0) {
-      this.text = `${this.def.name}()`;
-      return;
-    }
-
-    const text = `${this.def.name}(${this.params.join(', ')})`;
-    this.text = text;
-  }
-}
-
-export function createFuncInstance(funcDef: FuncDef, params: string[]) {
-  if (_.isString(funcDef)) {
-    if (!funcIndex[funcDef]) {
-      throw new Error(`Method not found ${funcDef.name}`);
-    }
-    return new FuncInstance(funcIndex[funcDef], params);
-  }
-
-  return new FuncInstance(funcDef, params);
-}
-
 export function getFuncDef(name: string) {
   return funcIndex[name];
 }
 
 export function getCategories() {
   return categories;
+}
+
+export function createFuncDescriptor(funcDef: FuncDef, params?: string[]): FunctionDescriptor {
+  if (!params) {
+    // Create with default params
+    const defaultParams = funcDef.defaultParams.slice(0);
+    return { def: funcDef, params: defaultParams };
+  }
+
+  return { def: funcDef, params: params };
+}
+
+export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames: MutableDataFrame[]) {
+  const applyFuncDefs = pickFuncDefsFromCategories(functionDefs, ['Transform', 'Filter Series', 'Sort']);
+
+  const promises = _.reduce(
+    applyFuncDefs,
+    (prevPromise, func) =>
+      prevPromise.then(res => {
+        const bindedFunc = bindFunction(seriesFunctions, func);
+
+        return Promise.resolve(bindedFunc(res));
+      }),
+    Promise.resolve(dataFrames)
+  );
+
+  return promises;
+}
+
+export function getToScalarFuncs(functionDefs: FunctionDescriptor[]): any[] {
+  const appliedOptionFuncs = pickFuncDefsFromCategories(functionDefs, ['Array to Scalar']);
+
+  const funcs = _.map(appliedOptionFuncs, func => {
+    return arrayFunctions[func.def.name];
+  });
+
+  return funcs;
+}
+
+export function getOptions(functionDefs: FunctionDescriptor[]) {
+  const appliedOptionFuncs = pickFuncDefsFromCategories(functionDefs, ['Options']);
+
+  const options = _.reduce(
+    appliedOptionFuncs,
+    (optionMap: { [key: string]: string }, func) => {
+      [optionMap[func.def.name]] = func.params;
+      return optionMap;
+    },
+    {}
+  );
+
+  return options;
 }

@@ -9,8 +9,6 @@ import {
   FieldType,
   getFieldDisplayName,
 } from '@grafana/data';
-import dataProcessor from './dataProcessor';
-import * as aafunc from './aafunc';
 import {
   AAQuery,
   AADataSourceOptions,
@@ -18,9 +16,9 @@ import {
   AADataQueryData,
   AADataQueryDataNumberArray,
   AADataQueryResponse,
-  FunctionDescriptor,
   operatorList,
 } from './types';
+import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
 
 export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
@@ -141,7 +139,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         if (targetRes.meta.waveform) {
-          const toScalarFuncs = this.getToScalarFuncs(target.functions);
+          const toScalarFuncs = getToScalarFuncs(target.functions);
           if (toScalarFuncs.length > 0) {
             return this.parseArrayResponseToScalar(targetRes, toScalarFuncs);
           }
@@ -305,7 +303,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       return Promise.resolve(dataFrames);
     }
 
-    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series', 'Sort'], dataFrames);
+    return applyFunctionDefs(target.functions, dataFrames);
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working
@@ -411,7 +409,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         return newFunc;
       });
 
-      const options = this.getOptions(target.functions);
+      const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
 
       return {
@@ -461,64 +459,5 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
 
     return queries;
-  }
-
-  applyFunctionDefs(functionDefs: FunctionDescriptor[], categories: string[], dataFrames: MutableDataFrame[]) {
-    const applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
-
-    const promises = _.reduce(
-      applyFuncDefs,
-      (prevPromise, func) =>
-        prevPromise.then(res => {
-          const funcInstance = aafunc.createFuncInstance(func.def, func.params);
-          const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
-
-          return Promise.resolve(bindedFunc(res));
-        }),
-      Promise.resolve(dataFrames)
-    );
-
-    return promises;
-  }
-
-  getToScalarFuncs(functionDefs: FunctionDescriptor[]): any[] {
-    const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Array to Scalar']);
-    const functions: { [key: string]: any } = { toScalarByMax: _.max, toScalarByMin: _.min, toScalarByAvg: _.mean };
-    const labels: { [key: string]: string } = { toScalarByMax: 'max', toScalarByMin: 'min', toScalarByAvg: 'avg' };
-
-    const funcs = _.map(appliedOptionFuncs, func => {
-      return { func: functions[func.def.name], label: labels[func.def.name] };
-    });
-
-    return funcs;
-  }
-
-  getOptions(functionDefs: FunctionDescriptor[]) {
-    const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
-
-    const options = _.reduce(
-      appliedOptionFuncs,
-      (optionMap: { [key: string]: string }, func) => {
-        [optionMap[func.def.name]] = func.params;
-        return optionMap;
-      },
-      {}
-    );
-
-    return options;
-  }
-
-  pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], categories: string[]) {
-    const allCategorisedFuncDefs = aafunc.getCategories();
-
-    const requiredCategoryFuncNames = _.reduce(
-      categories,
-      (funcNames: string[], category: string) => _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name')),
-      []
-    );
-
-    const pickedFuncDefs = _.filter(functionDefs, func => _.includes(requiredCategoryFuncNames, func.def.name));
-
-    return pickedFuncDefs;
   }
 }

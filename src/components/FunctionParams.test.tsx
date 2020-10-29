@@ -24,7 +24,6 @@ const setup = (propOverrides?: object) => {
         ],
       },
       params: ['5', 'avg'],
-      text: 'top(5, avg)',
     },
     index: 1,
     onChange: jest.fn(),

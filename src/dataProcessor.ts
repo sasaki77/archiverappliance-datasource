@@ -90,21 +90,19 @@ function exclude(pattern: string, dataFrames: MutableDataFrame[]) {
 // [Support Funcs] Datapoints aggregation functions
 
 function datapointsAvg(values: number[]) {
-  return _.meanBy(values, value => value);
+  return _.mean(values);
 }
 
 function datapointsMin(values: number[]) {
-  const minPoint = _.minBy(values, value => value);
-  return minPoint;
+  return _.min(values);
 }
 
 function datapointsMax(values: number[]) {
-  const maxPoint = _.maxBy(values, value => value);
-  return maxPoint;
+  return _.max(values);
 }
 
 function datapointsSum(values: number[]) {
-  return _.sumBy(values, value => value);
+  return _.sum(values);
 }
 
 function datapointsAbsMin(values: number[]) {
@@ -183,8 +181,10 @@ const functions = {
   sortByAbsMin: _.partial(sortByAggFuncs, 'absoluteMin'),
 };
 
-export default {
-  get aaFunctions() {
-    return functions;
-  },
+const arrayFunctions: { [key: string]: { func: any; label: string } } = {
+  toScalarByAvg: { func: datapointsAvg, label: 'avg' },
+  toScalarByMax: { func: datapointsMax, label: 'max' },
+  toScalarByMin: { func: datapointsMin, label: 'min' },
 };
+
+export { functions as seriesFunctions, arrayFunctions };

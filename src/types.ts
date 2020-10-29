@@ -72,7 +72,6 @@ export interface FuncDef {
 }
 
 export interface FunctionDescriptor {
-  text: string;
   params: string[];
   def: FuncDef;
 }
