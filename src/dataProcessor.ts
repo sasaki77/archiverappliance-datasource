@@ -48,6 +48,25 @@ function fluctuation(times: number[], values: number[]) {
   };
 }
 
+function movingAverage(windowSize: number, times: number[], values: number[]) {
+  if (values.length < windowSize) {
+    return {
+      times: times,
+      values: values,
+    };
+  }
+
+  const newSeries = _.map(values, (_value, i) => {
+    const window = _.slice(values, _.max([0, i - windowSize + 1]), i + 1);
+    return _.mean(window);
+  });
+
+  return {
+    times: times,
+    values: newSeries,
+  };
+}
+
 // [Support Funcs] Transform wrapper
 
 function transformWrapper(func: (...args: any) => { times: number[]; values: number[] }, ...args: any) {
@@ -169,6 +188,7 @@ const functions = {
   offset: _.partial(transformWrapper, offset),
   delta: _.partial(transformWrapper, delta),
   fluctuation: _.partial(transformWrapper, fluctuation),
+  movingAverage: _.partial(transformWrapper, movingAverage),
   // Filter Series
   top: _.partial(extraction, 'top'),
   bottom: _.partial(extraction, 'bottom'),

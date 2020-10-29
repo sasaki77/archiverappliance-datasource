@@ -236,6 +236,69 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
+  it('should return the server results with movingAverage function', done => {
+    datasourceRequestMock.mockImplementation(request =>
+      Promise.resolve({
+        _request: request,
+        data: [
+          {
+            meta: { name: 'PV', PREC: '0' },
+            data: [
+              { millis: 1262304001456, val: 1 },
+              { millis: 1262304002789, val: 2 },
+              { millis: 1262304002789, val: 3 },
+              { millis: 1262304002790, val: 4 },
+              { millis: 1262304002791, val: 5 },
+              { millis: 1262304002792, val: 6 },
+              { millis: 1262304002793, val: 7 },
+            ],
+          },
+        ],
+      })
+    );
+
+    const query = ({
+      targets: [
+        {
+          target: 'PV',
+          refId: 'A',
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('movingAverage'), ['3'])],
+        },
+        {
+          target: 'PV',
+          refId: 'B',
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('movingAverage'), ['8'])],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(2);
+      const dataFrame: MutableDataFrame = result.data[0];
+      const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+      const timesArray = dataFrame.fields[0].values.toArray();
+      const valArray = dataFrame.fields[1].values.toArray();
+
+      expect(pvname).toBe('PV');
+      expect(timesArray).toHaveLength(7);
+      expect(valArray).toHaveLength(7);
+      expect(valArray[0]).toBe(1);
+      expect(valArray[1]).toBe(1.5);
+      expect(valArray[2]).toBe(2);
+      expect(valArray[6]).toBe(6);
+
+      const dataFrame2: MutableDataFrame = result.data[1];
+      const valArray2 = dataFrame2.fields[1].values.toArray();
+      const timesArray2 = dataFrame2.fields[0].values.toArray();
+      expect(timesArray2).toHaveLength(7);
+      expect(valArray2).toHaveLength(7);
+      expect(valArray2[6]).toBe(7);
+      done();
+    });
+  });
+
   it('should return correct scalar data with toScalar funcs', done => {
     datasourceRequestMock.mockImplementation(request =>
       Promise.resolve({

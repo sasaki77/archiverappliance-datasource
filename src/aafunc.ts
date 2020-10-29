@@ -92,6 +92,13 @@ addFuncDef({
   defaultParams: [],
 });
 
+addFuncDef({
+  name: 'movingAverage',
+  category: 'Transform',
+  params: [{ name: 'windowSize', type: 'int' }],
+  defaultParams: ['10'],
+});
+
 // Array to Scalar
 
 addFuncDef({

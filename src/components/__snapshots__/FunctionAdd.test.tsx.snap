@@ -57,6 +57,22 @@ exports[`Render should render component 1`] = `
               "params": Array [],
             },
           },
+          Object {
+            "label": "movingAverage",
+            "value": Object {
+              "category": "Transform",
+              "defaultParams": Array [
+                "10",
+              ],
+              "name": "movingAverage",
+              "params": Array [
+                Object {
+                  "name": "windowSize",
+                  "type": "int",
+                },
+              ],
+            },
+          },
         ],
         "label": "Transform",
         "value": "Transform",
