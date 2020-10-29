@@ -90,6 +90,33 @@ exports[`Render should render component 1`] = `
               "params": Array [],
             },
           },
+          Object {
+            "label": "toScalarBySum",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarBySum",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByMed",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByMed",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByStd",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByStd",
+              "params": Array [],
+            },
+          },
         ],
         "label": "Array to Scalar",
         "value": "Array to Scalar",

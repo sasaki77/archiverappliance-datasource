@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { MutableDataFrame, ArrayVector, getFieldDisplayName } from '@grafana/data';
+import * as math from 'mathjs';
 
 // Transform
 
@@ -185,6 +186,9 @@ const arrayFunctions: { [key: string]: { func: any; label: string } } = {
   toScalarByAvg: { func: datapointsAvg, label: 'avg' },
   toScalarByMax: { func: datapointsMax, label: 'max' },
   toScalarByMin: { func: datapointsMin, label: 'min' },
+  toScalarBySum: { func: datapointsSum, label: 'sum' },
+  toScalarByMed: { func: math.median, label: 'median' },
+  toScalarByStd: { func: math.std, label: 'std' },
 };
 
 export { functions as seriesFunctions, arrayFunctions };

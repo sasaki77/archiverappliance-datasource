@@ -40,7 +40,9 @@
     "react-test-renderer": "16.13.1"
   },
   "dependencies": {
+    "@types/mathjs": "^6.0.7",
     "@types/react-autosuggest": "^10.0.0",
+    "mathjs": "^7.5.1",
     "react-autosuggest": "^10.0.2"
   },
   "homepage": "https://github.com/sasaki77/archiverappliance-datasource#readme"

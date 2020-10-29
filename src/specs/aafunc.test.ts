@@ -261,6 +261,9 @@ describe('Archiverappliance Functions', () => {
             aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByAvg'), []),
             aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMax'), []),
             aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMin'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarBySum'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMed'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByStd'), []),
           ],
         },
       ],
@@ -269,42 +272,72 @@ describe('Archiverappliance Functions', () => {
     } as unknown) as DataQueryRequest<AAQuery>;
 
     ds.query(query).then((result: any) => {
-      expect(result.data).toHaveLength(3);
+      expect(result.data).toHaveLength(6);
       const dataFrameAvg: MutableDataFrame = result.data[0];
       const dataFrameMax: MutableDataFrame = result.data[1];
       const dataFrameMin: MutableDataFrame = result.data[2];
+      const dataFrameSum: MutableDataFrame = result.data[3];
+      const dataFrameMed: MutableDataFrame = result.data[4];
+      const dataFrameStd: MutableDataFrame = result.data[5];
 
       const seriesNameAvg = dataFrameAvg.name;
       const seriesNameMax = dataFrameMax.name;
       const seriesNameMin = dataFrameMin.name;
+      const seriesNameSum = dataFrameSum.name;
+      const seriesNameMed = dataFrameMed.name;
+      const seriesNameStd = dataFrameStd.name;
       expect(seriesNameAvg).toBe('header:PV1');
       expect(seriesNameMax).toBe('header:PV1');
       expect(seriesNameMin).toBe('header:PV1');
+      expect(seriesNameSum).toBe('header:PV1');
+      expect(seriesNameMed).toBe('header:PV1');
+      expect(seriesNameStd).toBe('header:PV1');
 
       const valArrayAvg = dataFrameAvg.fields[1].values.toArray();
       const valArrayMax = dataFrameMax.fields[1].values.toArray();
       const valArrayMin = dataFrameMin.fields[1].values.toArray();
+      const valArraySum = dataFrameSum.fields[1].values.toArray();
+      const valArrayMed = dataFrameMed.fields[1].values.toArray();
+      const valArrayStd = dataFrameStd.fields[1].values.toArray();
 
       expect(valArrayAvg).toHaveLength(4);
       expect(valArrayMax).toHaveLength(4);
       expect(valArrayMin).toHaveLength(4);
+      expect(valArraySum).toHaveLength(4);
+      expect(valArrayMed).toHaveLength(4);
+      expect(valArrayStd).toHaveLength(4);
       expect(valArrayAvg[0]).toBe(2);
       expect(valArrayMax[0]).toBe(3);
       expect(valArrayMin[0]).toBe(1);
+      expect(valArraySum[0]).toBe(6);
+      expect(valArrayMed[0]).toBe(2);
+      expect(valArrayStd[0]).toBe(1);
 
       const nameAvg = getFieldDisplayName(dataFrameAvg.fields[1], dataFrameAvg);
       const nameMax = getFieldDisplayName(dataFrameMax.fields[1], dataFrameMax);
       const nameMin = getFieldDisplayName(dataFrameMin.fields[1], dataFrameMin);
+      const nameSum = getFieldDisplayName(dataFrameSum.fields[1], dataFrameSum);
+      const nameMed = getFieldDisplayName(dataFrameMed.fields[1], dataFrameMed);
+      const nameStd = getFieldDisplayName(dataFrameStd.fields[1], dataFrameStd);
       expect(nameAvg).toBe('header:PV1 (avg)');
       expect(nameMax).toBe('header:PV1 (max)');
       expect(nameMin).toBe('header:PV1 (min)');
+      expect(nameSum).toBe('header:PV1 (sum)');
+      expect(nameMed).toBe('header:PV1 (median)');
+      expect(nameStd).toBe('header:PV1 (std)');
 
       const timesArrayAvg = dataFrameAvg.fields[0].values.toArray();
       const timesArrayMax = dataFrameMax.fields[0].values.toArray();
       const timesArrayMin = dataFrameMin.fields[0].values.toArray();
+      const timesArraySum = dataFrameSum.fields[0].values.toArray();
+      const timesArrayMed = dataFrameMed.fields[0].values.toArray();
+      const timesArrayStd = dataFrameStd.fields[0].values.toArray();
       expect(timesArrayAvg[0]).toBe(1262304000123);
       expect(timesArrayMax[0]).toBe(1262304000123);
       expect(timesArrayMin[0]).toBe(1262304000123);
+      expect(timesArraySum[0]).toBe(1262304000123);
+      expect(timesArrayMed[0]).toBe(1262304000123);
+      expect(timesArrayStd[0]).toBe(1262304000123);
 
       done();
     });

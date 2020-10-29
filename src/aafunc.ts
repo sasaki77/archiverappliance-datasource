@@ -115,6 +115,27 @@ addFuncDef({
   defaultParams: [],
 });
 
+addFuncDef({
+  name: 'toScalarBySum',
+  category: 'Array to Scalar',
+  params: [],
+  defaultParams: [],
+});
+
+addFuncDef({
+  name: 'toScalarByMed',
+  category: 'Array to Scalar',
+  params: [],
+  defaultParams: [],
+});
+
+addFuncDef({
+  name: 'toScalarByStd',
+  category: 'Array to Scalar',
+  params: [],
+  defaultParams: [],
+});
+
 // Filter Series
 
 addFuncDef({
