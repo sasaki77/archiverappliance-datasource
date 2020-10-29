@@ -9,17 +9,16 @@ import {
   FieldType,
   getFieldDisplayName,
 } from '@grafana/data';
-import dataProcessor from './dataProcessor';
-import * as aafunc from './aafunc';
 import {
   AAQuery,
   AADataSourceOptions,
   TargetQuery,
   AADataQueryData,
+  AADataQueryDataNumberArray,
   AADataQueryResponse,
-  FunctionDescriptor,
   operatorList,
 } from './types';
+import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
 
 export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
@@ -140,12 +139,16 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         if (targetRes.meta.waveform) {
+          const toScalarFuncs = getToScalarFuncs(target.functions);
+          if (toScalarFuncs.length > 0) {
+            return this.parseArrayResponseToScalar(targetRes, toScalarFuncs);
+          }
           return this.parseArrayResponse(targetRes);
         }
         return this.parseScalarResponse(targetRes);
       });
 
-      return dataFrames;
+      return _.flatten(dataFrames);
     });
 
     const dataFrames = _.flatten(dataFramesArray);
@@ -170,12 +173,12 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   parseArrayResponse(targetRes: AADataQueryData) {
-    const columnValues = _.map(targetRes.data, datapoint => datapoint.val);
-
     // Type check for columnValues
-    if (!this.isNumbers(columnValues)) {
+    if (!this.isNumberArray(targetRes)) {
       return new MutableDataFrame();
     }
+
+    const columnValues = _.map(targetRes.data, datapoint => datapoint.val);
 
     const rowValues = _.unzip(columnValues);
     const times = _.map(targetRes.data, datapoint => datapoint.millis);
@@ -204,10 +207,42 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return frame;
   }
 
-  isNumbers(array: Array<number | string | number[] | string[]>): array is number[][] {
-    if (Array.isArray(array[0])) {
-      return typeof array[0][0] === 'number';
+  parseArrayResponseToScalar(targetRes: AADataQueryData, toScalarFuncs: Array<{ func: any; label: string }>) {
+    // Type check for columnValues
+    if (!this.isNumberArray(targetRes)) {
+      return new MutableDataFrame();
     }
+
+    const frames = _.map(toScalarFuncs, func => {
+      const values = _.map(targetRes.data, datapoint => func.func(datapoint.val));
+      const times = _.map(targetRes.data, datapoint => datapoint.millis);
+      const frame = new MutableDataFrame({
+        name: targetRes.meta.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: times },
+          {
+            name: 'value',
+            type: FieldType.number,
+            values: values,
+            config: { displayName: `${targetRes.meta.name} (${func.label})` },
+          },
+        ],
+      });
+      return frame;
+    });
+
+    return frames;
+  }
+
+  isNumberArray(response: AADataQueryData): response is AADataQueryDataNumberArray {
+    if (!response.meta.waveform) {
+      return false;
+    }
+
+    if (Array.isArray(response.data[0].val)) {
+      return typeof response.data[0].val[0] === 'number';
+    }
+
     return false;
   }
 
@@ -268,7 +303,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       return Promise.resolve(dataFrames);
     }
 
-    return this.applyFunctionDefs(target.functions, ['Transform', 'Filter Series', 'Sort'], dataFrames);
+    return applyFunctionDefs(target.functions, dataFrames);
   }
 
   // Called from Grafana data source configuration page to make sure the connection is working
@@ -374,7 +409,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         return newFunc;
       });
 
-      const options = this.getOptions(target.functions);
+      const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
 
       return {
@@ -424,52 +459,5 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
 
     return queries;
-  }
-
-  applyFunctionDefs(functionDefs: FunctionDescriptor[], categories: string[], dataFrames: MutableDataFrame[]) {
-    const applyFuncDefs = this.pickFuncDefsFromCategories(functionDefs, categories);
-
-    const promises = _.reduce(
-      applyFuncDefs,
-      (prevPromise, func) =>
-        prevPromise.then(res => {
-          const funcInstance = aafunc.createFuncInstance(func.def, func.params);
-          const bindedFunc = funcInstance.bindFunction(dataProcessor.aaFunctions);
-
-          return Promise.resolve(bindedFunc(res));
-        }),
-      Promise.resolve(dataFrames)
-    );
-
-    return promises;
-  }
-
-  getOptions(functionDefs: FunctionDescriptor[]) {
-    const appliedOptionFuncs = this.pickFuncDefsFromCategories(functionDefs, ['Options']);
-
-    const options = _.reduce(
-      appliedOptionFuncs,
-      (optionMap: { [key: string]: string }, func) => {
-        [optionMap[func.def.name]] = func.params;
-        return optionMap;
-      },
-      {}
-    );
-
-    return options;
-  }
-
-  pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], categories: string[]) {
-    const allCategorisedFuncDefs = aafunc.getCategories();
-
-    const requiredCategoryFuncNames = _.reduce(
-      categories,
-      (funcNames: string[], category: string) => _.concat(funcNames, _.map(allCategorisedFuncDefs[category], 'name')),
-      []
-    );
-
-    const pickedFuncDefs = _.filter(functionDefs, func => _.includes(requiredCategoryFuncNames, func.def.name));
-
-    return pickedFuncDefs;
   }
 }

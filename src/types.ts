@@ -38,6 +38,16 @@ export interface AADataQueryData {
   data: [{ millis: number; val: number | number[] | string | string[] }];
 }
 
+export interface AADataQueryDataScalar {
+  meta: { name: string; waveform: boolean; PREC: string };
+  data: [{ millis: number; val: number | string }];
+}
+
+export interface AADataQueryDataNumberArray {
+  meta: { name: string; waveform: boolean; PREC: string };
+  data: [{ millis: number; val: number[] }];
+}
+
 export interface AADataQueryResponse {
   data: {
     data: AADataQueryData;
@@ -62,7 +72,6 @@ export interface FuncDef {
 }
 
 export interface FunctionDescriptor {
-  text: string;
   params: string[];
   def: FuncDef;
 }

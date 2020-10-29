@@ -37,7 +37,6 @@ exports[`Render should render component 1`] = `
           "5",
           "avg",
         ],
-        "text": "top(5, avg)",
       }
     }
     index={1}
@@ -81,7 +80,6 @@ exports[`Render should render component 1`] = `
           "5",
           "avg",
         ],
-        "text": "top(5, avg)",
       }
     }
     index={1}

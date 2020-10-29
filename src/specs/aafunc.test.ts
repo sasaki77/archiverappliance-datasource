@@ -8,7 +8,7 @@ import {
 } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
-import dataProcessor from '../dataProcessor';
+import { seriesFunctions } from '../dataProcessor';
 import { AAQuery, AADataSourceOptions } from '../types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
@@ -75,7 +75,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('scale'), ['100'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('scale'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -121,7 +121,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('offset'), ['100'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('offset'), ['100'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -167,7 +167,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('delta'), [])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('delta'), [])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -212,7 +212,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('fluctuation'), [])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('fluctuation'), [])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -232,6 +232,113 @@ describe('Archiverappliance Functions', () => {
       expect(valArray[0]).toBe(0);
       expect(valArray[1]).toBe(100);
       expect(valArray[2]).toBe(200);
+      done();
+    });
+  });
+
+  it('should return correct scalar data with toScalar funcs', done => {
+    datasourceRequestMock.mockImplementation(request =>
+      Promise.resolve({
+        data: [
+          {
+            meta: { name: 'header:PV1', PREC: '0', waveform: true },
+            data: [
+              { millis: 1262304000123, val: [1, 2, 3] },
+              { millis: 1262304001456, val: [4, 5, 6] },
+              { millis: 1262304002789, val: [7, 8, 9, 10] },
+            ],
+          },
+        ],
+      })
+    );
+
+    const query = ({
+      targets: [
+        {
+          target: 'header:PV1',
+          refId: 'A',
+          functions: [
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByAvg'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMax'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMin'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarBySum'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMed'), []),
+            aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByStd'), []),
+          ],
+        },
+      ],
+      range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+      maxDataPoints: 1000,
+    } as unknown) as DataQueryRequest<AAQuery>;
+
+    ds.query(query).then((result: any) => {
+      expect(result.data).toHaveLength(6);
+      const dataFrameAvg: MutableDataFrame = result.data[0];
+      const dataFrameMax: MutableDataFrame = result.data[1];
+      const dataFrameMin: MutableDataFrame = result.data[2];
+      const dataFrameSum: MutableDataFrame = result.data[3];
+      const dataFrameMed: MutableDataFrame = result.data[4];
+      const dataFrameStd: MutableDataFrame = result.data[5];
+
+      const seriesNameAvg = dataFrameAvg.name;
+      const seriesNameMax = dataFrameMax.name;
+      const seriesNameMin = dataFrameMin.name;
+      const seriesNameSum = dataFrameSum.name;
+      const seriesNameMed = dataFrameMed.name;
+      const seriesNameStd = dataFrameStd.name;
+      expect(seriesNameAvg).toBe('header:PV1');
+      expect(seriesNameMax).toBe('header:PV1');
+      expect(seriesNameMin).toBe('header:PV1');
+      expect(seriesNameSum).toBe('header:PV1');
+      expect(seriesNameMed).toBe('header:PV1');
+      expect(seriesNameStd).toBe('header:PV1');
+
+      const valArrayAvg = dataFrameAvg.fields[1].values.toArray();
+      const valArrayMax = dataFrameMax.fields[1].values.toArray();
+      const valArrayMin = dataFrameMin.fields[1].values.toArray();
+      const valArraySum = dataFrameSum.fields[1].values.toArray();
+      const valArrayMed = dataFrameMed.fields[1].values.toArray();
+      const valArrayStd = dataFrameStd.fields[1].values.toArray();
+
+      expect(valArrayAvg).toHaveLength(4);
+      expect(valArrayMax).toHaveLength(4);
+      expect(valArrayMin).toHaveLength(4);
+      expect(valArraySum).toHaveLength(4);
+      expect(valArrayMed).toHaveLength(4);
+      expect(valArrayStd).toHaveLength(4);
+      expect(valArrayAvg[0]).toBe(2);
+      expect(valArrayMax[0]).toBe(3);
+      expect(valArrayMin[0]).toBe(1);
+      expect(valArraySum[0]).toBe(6);
+      expect(valArrayMed[0]).toBe(2);
+      expect(valArrayStd[0]).toBe(1);
+
+      const nameAvg = getFieldDisplayName(dataFrameAvg.fields[1], dataFrameAvg);
+      const nameMax = getFieldDisplayName(dataFrameMax.fields[1], dataFrameMax);
+      const nameMin = getFieldDisplayName(dataFrameMin.fields[1], dataFrameMin);
+      const nameSum = getFieldDisplayName(dataFrameSum.fields[1], dataFrameSum);
+      const nameMed = getFieldDisplayName(dataFrameMed.fields[1], dataFrameMed);
+      const nameStd = getFieldDisplayName(dataFrameStd.fields[1], dataFrameStd);
+      expect(nameAvg).toBe('header:PV1 (avg)');
+      expect(nameMax).toBe('header:PV1 (max)');
+      expect(nameMin).toBe('header:PV1 (min)');
+      expect(nameSum).toBe('header:PV1 (sum)');
+      expect(nameMed).toBe('header:PV1 (median)');
+      expect(nameStd).toBe('header:PV1 (std)');
+
+      const timesArrayAvg = dataFrameAvg.fields[0].values.toArray();
+      const timesArrayMax = dataFrameMax.fields[0].values.toArray();
+      const timesArrayMin = dataFrameMin.fields[0].values.toArray();
+      const timesArraySum = dataFrameSum.fields[0].values.toArray();
+      const timesArrayMed = dataFrameMed.fields[0].values.toArray();
+      const timesArrayStd = dataFrameStd.fields[0].values.toArray();
+      expect(timesArrayAvg[0]).toBe(1262304000123);
+      expect(timesArrayMax[0]).toBe(1262304000123);
+      expect(timesArrayMin[0]).toBe(1262304000123);
+      expect(timesArraySum[0]).toBe(1262304000123);
+      expect(timesArrayMed[0]).toBe(1262304000123);
+      expect(timesArrayStd[0]).toBe(1262304000123);
+
       done();
     });
   });
@@ -286,7 +393,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('top'), ['2', 'avg'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('top'), ['2', 'avg'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -366,8 +473,8 @@ describe('Archiverappliance Functions', () => {
         })
     );
 
-    const topFunction = dataProcessor.aaFunctions.top;
-    const bottomFunction = dataProcessor.aaFunctions.bottom;
+    const topFunction = seriesFunctions.top;
+    const bottomFunction = seriesFunctions.bottom;
 
     const minTopData = topFunction(3, 'min', timeseriesData);
     const maxTopData = topFunction(1, 'max', timeseriesData);
@@ -493,7 +600,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PVA|PVB)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('exclude'), ['PV[0-9]'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('exclude'), ['PV[0-9]'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -562,7 +669,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -633,7 +740,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['asc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -704,7 +811,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -775,7 +882,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByMin'), ['asc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByMin'), ['asc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -846,7 +953,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -917,7 +1024,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: '(PV1|PV2|PV3)',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('sortByAbsMax'), ['desc'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -944,7 +1051,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('maxNumPVs'), ['1000'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
@@ -964,7 +1071,7 @@ describe('Archiverappliance Functions', () => {
         {
           target: 'PV1',
           refId: 'A',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableAutoRaw'), ['true'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('disableAutoRaw'), ['true'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
@@ -1000,7 +1107,7 @@ describe('Archiverappliance Functions', () => {
           target: 'PV',
           refId: 'A',
           operator: 'raw',
-          functions: [aafunc.createFuncInstance(aafunc.getFuncDef('disableExtrapol'), ['true'])],
+          functions: [aafunc.createFuncDescriptor(aafunc.getFuncDef('disableExtrapol'), ['true'])],
         },
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },

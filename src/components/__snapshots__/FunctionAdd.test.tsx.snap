@@ -64,6 +64,66 @@ exports[`Render should render component 1`] = `
       Object {
         "children": Array [
           Object {
+            "label": "toScalarByAvg",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByAvg",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByMax",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByMax",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByMin",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByMin",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarBySum",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarBySum",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByMed",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByMed",
+              "params": Array [],
+            },
+          },
+          Object {
+            "label": "toScalarByStd",
+            "value": Object {
+              "category": "Array to Scalar",
+              "defaultParams": Array [],
+              "name": "toScalarByStd",
+              "params": Array [],
+            },
+          },
+        ],
+        "label": "Array to Scalar",
+        "value": "Array to Scalar",
+      },
+      Object {
+        "children": Array [
+          Object {
             "label": "top",
             "value": Object {
               "category": "Filter Series",
