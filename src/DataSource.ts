@@ -48,15 +48,28 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       return Promise.resolve({ data: [] });
     }
 
-    const targetProcesses = _.map(targets, target => this.targetProcess(target));
+    // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
+    const urlsArray = _.map(targets, target => this.buildUrls(target));
 
-    return Promise.all(targetProcesses).then(dataFramesArray => this.postProcess(dataFramesArray));
+    // Wait for building URLs then create target data
+    const targetProcesses = Promise.all(urlsArray).then(urlsArray => {
+      // Create promises to retrieve data for each targets: [[Responses for target 1], [Reponses for target 2] , ...]
+      const responsePromisesArray = this.createUrlRequests(urlsArray);
+
+      // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
+      const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
+        return Promise.all(responsePromises).then(responses => this.targetProcess(responses, targets[i]));
+      });
+
+      // Wait all target data processings
+      return Promise.all(targetProcesses);
+    });
+
+    return targetProcesses.then(dataFramesArray => this.postProcess(dataFramesArray));
   }
 
-  targetProcess(target: TargetQuery) {
-    return this.buildUrls(target)
-      .then((urls: string[]) => this.doMultiUrlRequests(urls))
-      .then(responses => this.responseParse(responses, target))
+  targetProcess(responses: any, target: TargetQuery) {
+    return this.responseParse(responses, target)
       .then(dataFrames => this.setAlias(dataFrames, target))
       .then(dataFrames => this.applyFunctions(dataFrames, target));
   }
@@ -129,10 +142,20 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return url;
   }
 
-  doMultiUrlRequests(urls: string[]) {
-    const requests = _.map(urls, url => this.doRequest({ url, method: 'GET' }));
+  createUrlRequests(urlsArray: string[][]) {
+    const requestHash: { [key: string]: Promise<any> } = {};
 
-    return Promise.all(requests);
+    const requestsArray = _.map(urlsArray, urls => {
+      const requests = _.map(urls, url => {
+        if (!(url in requestHash)) {
+          requestHash[url] = this.doRequest({ url, method: 'GET' });
+        }
+        return requestHash[url];
+      });
+      return requests;
+    });
+
+    return requestsArray;
   }
 
   responseParse(responses: AADataQueryResponse[], target: TargetQuery) {

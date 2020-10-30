@@ -1,5 +1,6 @@
 import range from 'lodash/range';
 import split from 'lodash/split';
+import { min, max } from 'lodash';
 import { MutableDataFrame, getFieldDisplayName, DataSourceInstanceSettings, DataQueryRequest } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from 'types';
@@ -395,6 +396,48 @@ describe('Archiverappliance Datasource', () => {
         expect(timesArray).toHaveLength(3);
         expect(valArray[0]).toBe(0);
         expect(timesArray[0]).toBe(1262304000123);
+        done();
+      });
+    });
+
+    it('should return the server results once for each url', done => {
+      let counter = 0;
+      datasourceRequestMock.mockImplementation(request => {
+        counter += 1;
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [{ millis: 1262304000123, val: counter }],
+            },
+          ],
+        });
+      });
+
+      const query = ({
+        targets: [
+          { target: 'PV1', refId: 'A' },
+          { target: 'PV1', refId: 'B' },
+          { target: 'PV1', refId: 'C', operator: 'max' },
+          { target: 'PV2', refId: 'D' },
+        ],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
+        maxDataPoints: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).then((result: any) => {
+        expect(result.data).toHaveLength(4);
+        const dataFrame1: MutableDataFrame = result.data[0];
+        const dataFrame2: MutableDataFrame = result.data[1];
+        const dataFrame3: MutableDataFrame = result.data[2];
+        const dataFrame4: MutableDataFrame = result.data[3];
+        const valArray1 = dataFrame1.fields[1].values.toArray();
+        const valArray2 = dataFrame2.fields[1].values.toArray();
+        const valArray3 = dataFrame3.fields[1].values.toArray();
+        const valArray4 = dataFrame4.fields[1].values.toArray();
+
+        expect(min([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(1);
+        expect(max([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(3);
         done();
       });
     });
