@@ -3,6 +3,7 @@
 Functions are categorized into below groups.
 
 - **Transform:** converts the timeseries datapoints from its datapoint values.
+- **Array to Scalar:** converts the array data to scalar timeseries data with some method.
 - **Filter Series:** picks up some series that meet certain condition.
 - **Sort:** sorts the list of timeseries.
 - **Options:** adds option parameters.
@@ -46,6 +47,57 @@ Calculates difference between datapoint and its before point at each point.
 ```
 
 Subtracts first datapoint value from each datapoint.
+
+### _movingAverage_
+``` function:: movingAverage(windowSize)
+```
+
+Calculates the moving average of datapoints over a fixed number of past points, specified by windowSize param.
+
+Examples:
+
+```js
+movingAverage(10)
+movingAverage(50)
+```
+
+## Array to Scalar Functions
+
+### _toScalarByAvg_
+``` function:: toScalarByAvg()
+```
+
+Converts the array data to the scalar data with the average value.
+
+### _toScalarByMax_
+``` function:: toScalarByMax()
+```
+
+Converts the array data to the scalar data with the maximum value.
+
+### _toScalarByMin_
+``` function:: toScalarByMin()
+```
+
+Converts the array data to the scalar data with the minimum value.
+
+### _toScalarBySum_
+``` function:: toScalarBySum()
+```
+
+Converts the array data to the scalar data with the total value.
+
+### _toScalarByMed_
+``` function:: toScalarByMed()
+```
+
+Converts the array data to the scalar data with the median value.
+
+### _toScalarByStd_
+``` function:: toScalarByStd()
+```
+
+Converts the array data to the scalar data with the standard deviation value.
 
 ## Filter Series Functions
 
