@@ -1,4 +1,14 @@
 # Release Notes
+## 1.2.0
+
+**2020-10-30**
+
+### Features / Enhancements
+- Support array data 
+- Add `Array to Scalar` functions
+- Add `movingAverage` function
+- Improve query process to retrieve data from Archiver Applicance efficiently
+
 ## 1.1.1
 
 **2020-10-23**
