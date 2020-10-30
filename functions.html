@@ -94,6 +94,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#offset"><em>offset</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#delta"><em>delta</em></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fluctuation"><em>fluctuation</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#movingaverage"><em>movingAverage</em></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#array-to-scalar-functions">Array to Scalar Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbyavg"><em>toScalarByAvg</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymax"><em>toScalarByMax</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymin"><em>toScalarByMin</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbysum"><em>toScalarBySum</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymed"><em>toScalarByMed</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbystd"><em>toScalarByStd</em></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#filter-series-functions">Filter Series Functions</a><ul>
@@ -196,6 +206,7 @@
 <p>Functions are categorized into below groups.</p>
 <ul class="simple">
 <li><p><strong>Transform:</strong> converts the timeseries datapoints from its datapoint values.</p></li>
+<li><p><strong>Array to Scalar:</strong> converts the array data to scalar timeseries data with some method.</p></li>
 <li><p><strong>Filter Series:</strong> picks up some series that meet certain condition.</p></li>
 <li><p><strong>Sort:</strong> sorts the list of timeseries.</p></li>
 <li><p><strong>Options:</strong> adds option parameters.</p></li>
@@ -248,6 +259,77 @@
 <dd></dd></dl>
 
 <p>Subtracts first datapoint value from each datapoint.</p>
+</div>
+<div class="section" id="movingaverage">
+<h3><em>movingAverage</em><a class="headerlink" href="#movingaverage" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="movingAverage">
+<code class="sig-name descname">movingAverage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">windowSize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#movingAverage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Calculates the moving average of datapoints over a fixed number of past points, specified by windowSize param.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">movingAverage</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+<span class="nx">movingAverage</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="array-to-scalar-functions">
+<h2>Array to Scalar Functions<a class="headerlink" href="#array-to-scalar-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="toscalarbyavg">
+<h3><em>toScalarByAvg</em><a class="headerlink" href="#toscalarbyavg" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarByAvg">
+<code class="sig-name descname">toScalarByAvg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByAvg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the average value.</p>
+</div>
+<div class="section" id="toscalarbymax">
+<h3><em>toScalarByMax</em><a class="headerlink" href="#toscalarbymax" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarByMax">
+<code class="sig-name descname">toScalarByMax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the maximum value.</p>
+</div>
+<div class="section" id="toscalarbymin">
+<h3><em>toScalarByMin</em><a class="headerlink" href="#toscalarbymin" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarByMin">
+<code class="sig-name descname">toScalarByMin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the minimum value.</p>
+</div>
+<div class="section" id="toscalarbysum">
+<h3><em>toScalarBySum</em><a class="headerlink" href="#toscalarbysum" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarBySum">
+<code class="sig-name descname">toScalarBySum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarBySum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the total value.</p>
+</div>
+<div class="section" id="toscalarbymed">
+<h3><em>toScalarByMed</em><a class="headerlink" href="#toscalarbymed" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarByMed">
+<code class="sig-name descname">toScalarByMed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the median value.</p>
+</div>
+<div class="section" id="toscalarbystd">
+<h3><em>toScalarByStd</em><a class="headerlink" href="#toscalarbystd" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="toScalarByStd">
+<code class="sig-name descname">toScalarByStd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByStd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Converts the array data to the scalar data with the standard deviation value.</p>
 </div>
 </div>
 <div class="section" id="filter-series-functions">

@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#binning-interval">Binning interval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#auto-raw-operation">Auto raw operation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extrapolation-for-raw-operation">Extrapolation for raw operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#array-data-support">Array data support</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
@@ -180,6 +181,71 @@ To disable auto raw operation, <a class="reference external" href="functions.htm
 <p>In raw operator mode, the retrieved data is extrapolated by last data value.
 This feature prevents a graph from cutting of or not being desplayed.
 To disable the extrapolation, <a class="reference external" href="functions.html#disableExtrapol">disableExtrapol</a> function is available.</p>
+</div>
+<div class="section" id="array-data-support">
+<h2>Array data support<a class="headerlink" href="#array-data-support" title="Permalink to this headline">¶</a></h2>
+<p>The plugin supports array data from version 1.2.0.</p>
+<p>Array data is managed like a table in the plugin. Following is a example of array data that has 3 elements:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>PV:NAME[0]</p></th>
+<th class="head"><p>PV:NAME[1]</p></th>
+<th class="head"><p>PV:NAME[2]</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2020-01-02 03:04:00</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>2020-01-02 03:05:00</p></td>
+<td><p>4</p></td>
+<td><p>5</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>2020-01-02 03:06:00</p></td>
+<td><p>7</p></td>
+<td><p>8</p></td>
+<td><p>9</p></td>
+</tr>
+</tbody>
+</table>
+<p>The data has a column for <code class="docutils literal notranslate"><span class="pre">time</span></code> and columns for each array elements. Column name for a array element is set as PV name with suffix for an index.
+This table format called <a class="reference external" href="https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/#wide-format">wide format data frame</a> is available from most of Grafana panel.</p>
+<p>The plugin also supports conversion from array data to scalar data with the <a class="reference external" href="functions.html#array-to-scalar-functions">Array to Scalar</a> functions.
+Above array data becomes as following with <a class="reference external" href="functions.html#toscalarbymin">toScalarByMin</a>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 58%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>PV:NAME (min)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2020-01-02 03:04:00</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>2020-01-02 03:05:00</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>2020-01-02 03:06:00</p></td>
+<td><p>7</p></td>
+</tr>
+</tbody>
+</table>
+<p>You can use as many <code class="docutils literal notranslate"><span class="pre">Array</span> <span class="pre">to</span> <span class="pre">Scalar</span></code> functions as you need for same array data.
+The other functions except <code class="docutils literal notranslate"><span class="pre">Options</span></code> are not supported for array data.</p>
 </div>
 </div>
 
