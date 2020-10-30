@@ -14,9 +14,9 @@ import {
   AADataSourceOptions,
   TargetQuery,
   AADataQueryData,
-  AADataQueryDataNumberArray,
   AADataQueryResponse,
   operatorList,
+  isNumberArray,
 } from './types';
 import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
 
@@ -197,7 +197,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   parseArrayResponse(targetRes: AADataQueryData) {
     // Type check for columnValues
-    if (!this.isNumberArray(targetRes)) {
+    if (!isNumberArray(targetRes)) {
       return new MutableDataFrame();
     }
 
@@ -232,7 +232,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   parseArrayResponseToScalar(targetRes: AADataQueryData, toScalarFuncs: Array<{ func: any; label: string }>) {
     // Type check for columnValues
-    if (!this.isNumberArray(targetRes)) {
+    if (!isNumberArray(targetRes)) {
       return new MutableDataFrame();
     }
 
@@ -255,18 +255,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
 
     return frames;
-  }
-
-  isNumberArray(response: AADataQueryData): response is AADataQueryDataNumberArray {
-    if (!response.meta.waveform) {
-      return false;
-    }
-
-    if (Array.isArray(response.data[0].val)) {
-      return typeof response.data[0].val[0] === 'number';
-    }
-
-    return false;
   }
 
   parseScalarResponse(targetRes: AADataQueryData): MutableDataFrame {

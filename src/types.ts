@@ -106,6 +106,18 @@ export const operatorList: string[] = [
   'last',
 ];
 
+export function isNumberArray(response: AADataQueryData): response is AADataQueryDataNumberArray {
+  if (!response.meta.waveform) {
+    return false;
+  }
+
+  if (Array.isArray(response.data[0].val)) {
+    return typeof response.data[0].val[0] === 'number';
+  }
+
+  return false;
+}
+
 /**
  * These are options configured for each DataSource instance
  */
