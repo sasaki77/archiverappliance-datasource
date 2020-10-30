@@ -7,7 +7,7 @@
 - Support array data 
 - Add `Array to Scalar` functions
 - Add `movingAverage` function
-- Improve query process to retrieve data from Archiver Applicance efficiently
+- Improve query process to retrieve data from Archiver Appliance efficiently
 
 ## 1.1.1
 
