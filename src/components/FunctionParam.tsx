@@ -88,11 +88,12 @@ class FunctionParam extends React.PureComponent<FunctionParamProps, State> {
   };
 
   calcInputWidth = (focused: boolean, param: string, placeholder: string) => {
+    const paramLength = param.length;
+
     if (focused) {
-      return '90px';
+      return paramLength < 13 ? `13ch` : `${paramLength + 2}ch`;
     }
 
-    const paramLength = param.length;
     return paramLength < 1 ? `${placeholder.length}ch` : `${paramLength}ch`;
   };
 
