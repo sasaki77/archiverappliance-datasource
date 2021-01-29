@@ -29,7 +29,7 @@ This section lists the available configuration options for the Archiver Applianc
 
 | Configuration | Description |
 |---------------|-------------|
-| **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1|PV:2)`). |
+| **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`). |
 | **Regex** | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex). |
 | **Operator** | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
 | **Alias** | Set alias for legend. |
