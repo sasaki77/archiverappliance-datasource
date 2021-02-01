@@ -61,9 +61,9 @@ Default maximum number of PV names you can use in variables is 100. Limit parame
 PV:NAME:.*?limit=1000
 ```
 
-## Dev setup
+## Development setup
 
-It is recommend to use node 12.13.0
+It is recommend to use node 12.x.
 
 ```
 npm install -g yarn
@@ -72,6 +72,63 @@ yarn dev
 ```
 
 [grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
+
+### Test environment with Docker Compose
+Thanks to [pklaus / docker-archiver-appliance](https://github.com/pklaus/docker-archiver-appliance) and [pklaus / archiver-appliance-with-example-ioc](https://github.com/pklaus/archiver-appliance-with-example-ioc), the test environment is available with Docker Compose.
+
+```bash
+docker-compose up
+```
+
+The following containers are runinng after `docker-compse up`.
+
+| Name | Description |
+|---------------|-------------|
+| **grafana** | Runs a Grafana server. |
+| **archappl** | Runs a EPICS Archiver Appliance. |
+| **redis** | Runs a datastore for the persistance of the appliance configuration. |
+| **example** | Runs a example EPICS IOC to be archived. |
+
+To set up the Archiver Appliance, open http://localhost:17665/mgmt/ui/index.html. You can add the PVs served by the example IOC on this page.
+Enter the following lines in the input field and then clicking the `Archive` button.
+the Archive will be start a few minuites later.
+
+```
+root:circle:tick
+root:circle:step
+root:circle:period
+root:line:b
+root:aiExample
+root:aiExample1
+root:ai1
+root:aiExample2
+root:ai2
+root:aiExample3
+root:ai3
+root:EXAMPLE:version
+root:compressExample
+root:circle:angle
+root:line:a
+root:circle:x
+root:circle:y
+root:calcExample
+root:calcExample1
+root:calc1
+root:calcExample2
+root:calc2
+root:calcExample3
+root:calc3
+```
+
+![Archiver-Appliance-mgmt-page](https://sasaki77.github.io/archiverappliance-datasource/_images/aa-test-mgmt-page.png)
+
+To add a data source, open Grafana (http://localhost:3000). On the data sources page, add a data source and set URL as http://archappl:17665/retrieval.
+
+![test-configuration](https://sasaki77.github.io/archiverappliance-datasource/_images/aa-test-configuration.png)
+
+The following is a example query with this test environment.
+
+![test-query](https://sasaki77.github.io/archiverappliance-datasource/_images/aa-test-query.png)
 
 ## Build documentation
 
