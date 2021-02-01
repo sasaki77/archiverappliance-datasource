@@ -32,4 +32,5 @@ Documentation
    variables
    functions
    tips
+   development
    releases

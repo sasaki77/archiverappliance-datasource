@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Development &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release Notes" href="releases.html" />
+    <link rel="prev" title="Tips" href="tips.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Archiver Appliance Datasource
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query.html">Query Edit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tips.html">Tips</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#development-setup">Development setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-environment-with-docker-compose">Test environment with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-documentation">Build documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Archiver Appliance Datasource</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Development</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/development.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="development-setup">
+<h2>Development setup<a class="headerlink" href="#development-setup" title="Permalink to this headline">¶</a></h2>
+<p>To develop the plugin, the followings are required.</p>
+<ul class="simple">
+<li><p>NodeJS 12.x</p></li>
+<li><p>yarn</p></li>
+</ul>
+<p>Below is a example to build the plugin.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span> <span class="o">-</span><span class="n">g</span> <span class="n">yarn</span>
+<span class="n">yarn</span> <span class="n">install</span>
+<span class="n">yarn</span> <span class="n">dev</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit">grafana-toolkit</a> is used to develop the plugin. Please refer grafana-toolkit documentation for more information.</p>
+</div>
+<div class="section" id="test-environment-with-docker-compose">
+<h2>Test environment with Docker Compose<a class="headerlink" href="#test-environment-with-docker-compose" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to <a class="reference external" href="https://github.com/pklaus/docker-archiver-appliance">pklaus / docker-archiver-appliance</a> and <a class="reference external" href="https://github.com/pklaus/archiver-appliance-with-example-ioc">pklaus / archiver-appliance-with-example-ioc</a>, the test environment is available with Docker Compose.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose up
+</pre></div>
+</div>
+<p>The following containers are runinng after <code class="docutils literal notranslate"><span class="pre">docker-compse</span> <span class="pre">up</span></code>.</p>
+<ul class="simple">
+<li><p><strong>grafana</strong>: Runs a Grafana server.</p></li>
+<li><p><strong>archappl</strong>: Runs a EPICS Archiver Appliance.</p></li>
+<li><p><strong>redis</strong>: Runs a datastore for the persistance of the appliance configuration.</p></li>
+<li><p><strong>example</strong>: Runs a example EPICS IOC to be archived.</p></li>
+</ul>
+<p>To set up the Archiver Appliance, open <a class="reference external" href="http://localhost:17665/mgmt/ui/index.html">http://localhost:17665/mgmt/ui/index.html</a>. You can add the PVs served by the example IOC on this page.
+Enter the following lines in the input field and then clicking the <code class="docutils literal notranslate"><span class="pre">Archive</span></code> button.
+the Archive will be start a few minuites later.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">tick</span>
+<span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">step</span>
+<span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">period</span>
+<span class="n">root</span><span class="p">:</span><span class="n">line</span><span class="p">:</span><span class="n">b</span>
+<span class="n">root</span><span class="p">:</span><span class="n">aiExample</span>
+<span class="n">root</span><span class="p">:</span><span class="n">aiExample1</span>
+<span class="n">root</span><span class="p">:</span><span class="n">ai1</span>
+<span class="n">root</span><span class="p">:</span><span class="n">aiExample2</span>
+<span class="n">root</span><span class="p">:</span><span class="n">ai2</span>
+<span class="n">root</span><span class="p">:</span><span class="n">aiExample3</span>
+<span class="n">root</span><span class="p">:</span><span class="n">ai3</span>
+<span class="n">root</span><span class="p">:</span><span class="n">EXAMPLE</span><span class="p">:</span><span class="n">version</span>
+<span class="n">root</span><span class="p">:</span><span class="n">compressExample</span>
+<span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">angle</span>
+<span class="n">root</span><span class="p">:</span><span class="n">line</span><span class="p">:</span><span class="n">a</span>
+<span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">x</span>
+<span class="n">root</span><span class="p">:</span><span class="n">circle</span><span class="p">:</span><span class="n">y</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calcExample</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calcExample1</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calc1</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calcExample2</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calc2</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calcExample3</span>
+<span class="n">root</span><span class="p">:</span><span class="n">calc3</span>
+</pre></div>
+</div>
+<p><img alt="Archiver-Appliance-mgmt-page" src="_images/aa-test-mgmt-page.png" /></p>
+<p>To add a data source, open Grafana (<a class="reference external" href="http://localhost:3000">http://localhost:3000</a>). On the data sources page, add a data source and set URL as <code class="docutils literal notranslate"><span class="pre">http://archappl:17665/retrieval</span></code>.</p>
+<p><img alt="test-configuration" src="_images/aa-test-configuration.png" /></p>
+<p>The following is a example query with this test environment.</p>
+<p><img alt="test-query" src="_images/aa-test-query.png" /></p>
+</div>
+<div class="section" id="build-documentation">
+<h2>Build documentation<a class="headerlink" href="#build-documentation" title="Permalink to this headline">¶</a></h2>
+<p>You can build the documentation as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">env</span>
+<span class="n">source</span> <span class="n">env</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span> <span class="n">commonmark</span> <span class="n">recommonmark</span> <span class="n">sphinx_rtd_theme</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="releases.html" class="btn btn-neutral float-right" title="Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tips.html" class="btn btn-neutral float-left" title="Tips" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2019-2020, Shinya Sasaki
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
