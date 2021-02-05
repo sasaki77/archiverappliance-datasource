@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, from } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
@@ -50,21 +50,30 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     // Remove hidden target from query
     const targets = _.filter(rawTargets, t => !t.hide);
 
+    // There're no target query
     if (targets.length <= 0) {
       return new Observable<DataQueryResponse>(subscriber => {
         subscriber.next({ data: [] });
       });
     }
 
+    const stream = _.filter(targets, t => t.stream);
+
+    // No stream query
+    if (stream.length === 0) {
+      return from(this.doQuery(targets));
+    }
+
+    // Stream query
+    const caps = _.reduce(targets, (result: {[key: string]: number}, t, i) => {
+      result[t.refId] = parseInt(t.strmCap, 10);
+      return result;
+    }, {});
     return new Observable<DataQueryResponse>(subscriber => {
       const id = uuidv4();
 
       this.doQuery(targets).then((data) => {
         subscriber.next(data);
-
-        //const frame_len = _.map(data.data, (frame) => frame.length);
-        //console.log(frame_names);
-        //console.log(frame_len);
 
         const frames  = _.reduce(
           data.data,
@@ -73,9 +82,10 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
               return result;
             }
 
+            const cap = dframe.refId ? caps[dframe.refId] || dframe.length : dframe.length;
             const frame = new CircularDataFrame({
               append: 'tail',
-              capacity: dframe.length,
+              capacity: cap,
             });
             frame.name = dframe.name;
 
@@ -89,17 +99,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
           {}
         );
 
-        const frame_names = _.map(data.data, (frame) => frame.name);
-        const new_data = _.map(frame_names, (name) => {
-          if(name === undefined) {
-            return;
-          }
-          return frames[name];
-        });
-
-        console.log(new_data);
-
-
         const new_targets = _.map(targets, (target) => {
           return {
             ...target,
@@ -110,7 +109,8 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
           }
         });
         this.timerIDs[id] = undefined;
-        this.timerLoop(subscriber, new_targets, id, frames);
+        const interval = Number(stream[0].strmInt) || options.intervalMs;
+        this.timerLoop(subscriber, new_targets, id, frames, interval);
       });
 
       return () => {
@@ -119,20 +119,18 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
   }
 
-  timerLoop = async (subscriber:Subscriber<DataQueryResponse>, targets: TargetQuery[], id: string, frames: {[key: string] : CircularDataFrame}) => {
+  timerLoop = async (subscriber:Subscriber<DataQueryResponse>, targets: TargetQuery[], id: string, frames: {[key: string] : CircularDataFrame}, interval: number) => {
     this.updateTargetDate(targets);
     const data = await this.doQueryStream(targets, frames);
-    //frame.add({ time: Date.now(), value: Math.random() });
 
     subscriber.next(data);
     if (id in this.timerIDs) {
-      this.timerIDs[id] = setTimeout(this.timerLoop, 100, subscriber, targets, id, frames);
+      this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, targets, id, frames, interval);
     }
   }
 
   updateTargetDate(targets: TargetQuery[]) {
     return _.map(targets, target => {
-      console.log(target)
       target.from = target.to;
       target.to = new Date(Date.now());
       return target;
@@ -176,9 +174,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       // Create promises to retrieve data for each targets: [[Responses for target 1], [Reponses for target 2] , ...]
       const responsePromisesArray = this.createUrlRequests(urlsArray);
 
-      // ここでデータフレームの統合を行う
-      // フレームのnameごとにCircularバッファーを用意しておく
-
       // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
       const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
         return Promise.all(responsePromises)
@@ -197,16 +192,13 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   mergeFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
     const from = target.from.getTime();
-    console.log("milli = " + from);
     const frames = _.map(dataFrames, (frame) => {
       if(frame.name === undefined || !(frame.name in cirFrames)) {
-        //console.log("just return")
         return frame;
       }
       for (let i = 0; i < frame.length; i++) {
         const fields = frame.get(i);
-        console.log(fields["time"])
-        if(fields["time"] < from+1 ){
+        if(fields["time"] < from + 1 ){
            continue;
         }
         cirFrames[frame.name].add(frame.get(i));
@@ -303,7 +295,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const requestsArray = _.map(urlsArray, urls => {
       const requests = _.map(urls, url => {
         if (!(url in requestHash)) {
-          console.log(url);
           requestHash[url] = this.doRequest({ url, method: 'GET' });
         }
         return requestHash[url];
@@ -315,17 +306,16 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   responseParse(responses: AADataQueryResponse[], target: TargetQuery) {
-    console.log(responses);
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         if (targetRes.meta.waveform) {
           const toScalarFuncs = getToScalarFuncs(target.functions);
           if (toScalarFuncs.length > 0) {
-            return this.parseArrayResponseToScalar(targetRes, toScalarFuncs);
+            return this.parseArrayResponseToScalar(targetRes, toScalarFuncs, target);
           }
-          return this.parseArrayResponse(targetRes);
+          return this.parseArrayResponse(targetRes, target);
         }
-        return this.parseScalarResponse(targetRes);
+        return this.parseScalarResponse(targetRes, target);
       });
 
       return _.flatten(dataFrames);
@@ -352,7 +342,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return Promise.resolve(extrapolationDataFrames);
   }
 
-  parseArrayResponse(targetRes: AADataQueryData) {
+  parseArrayResponse(targetRes: AADataQueryData, target: TargetQuery) {
     // Type check for columnValues
     if (!isNumberArray(targetRes)) {
       return new MutableDataFrame();
@@ -380,6 +370,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     );
 
     const frame = new MutableDataFrame({
+      refId: target.refId,
       name: targetRes.meta.name,
       fields,
     });
@@ -387,7 +378,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return frame;
   }
 
-  parseArrayResponseToScalar(targetRes: AADataQueryData, toScalarFuncs: Array<{ func: any; label: string }>) {
+  parseArrayResponseToScalar(targetRes: AADataQueryData, toScalarFuncs: Array<{ func: any; label: string }>, target: TargetQuery) {
     // Type check for columnValues
     if (!isNumberArray(targetRes)) {
       return new MutableDataFrame();
@@ -397,6 +388,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       const values = _.map(targetRes.data, datapoint => func.func(datapoint.val));
       const times = _.map(targetRes.data, datapoint => datapoint.millis);
       const frame = new MutableDataFrame({
+        refId: target.refId,
         name: targetRes.meta.name,
         fields: [
           { name: 'time', type: FieldType.time, values: times },
@@ -414,18 +406,17 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return frames;
   }
 
-  parseScalarResponse(targetRes: AADataQueryData): MutableDataFrame {
-    console.log(targetRes);
+  parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): MutableDataFrame {
     const values = _.map(targetRes.data, datapoint => datapoint.val);
     const times = _.map(targetRes.data, datapoint => datapoint.millis);
     const frame = new MutableDataFrame({
+      refId: target.refId,
       name: targetRes.meta.name,
       fields: [
         { name: 'time', type: FieldType.time, values: times },
         { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },
       ],
     });
-    console.log(frame);
     return frame;
   }
 
@@ -588,6 +579,9 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         hide: target.hide,
         alias: templateSrv.replace(target.alias, query.scopedVars, 'regex'),
         operator: templateSrv.replace(target.operator, query.scopedVars, 'regex'),
+        stream: target.stream,
+        strmInt: target.strmInt,
+        strmCap: target.strmCap,
         functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,

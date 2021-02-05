@@ -60,6 +60,22 @@ export class QueryEditor extends PureComponent<Props, State> {
     onChange({ ...query, functions: funcs });
   };
 
+  onStreamChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    const { onChange, onRunQuery, query } = this.props;
+    onChange({ ...query, stream: !query.stream });
+    onRunQuery();
+  };
+
+  onStrmIntChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, strmInt: event.target.value });
+  };
+
+  onStrmCapChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, strmCap: event.target.value });
+  };
+
   onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
       event.currentTarget.blur();
@@ -216,6 +232,38 @@ export class QueryEditor extends PureComponent<Props, State> {
             placeholder="Alias regex pattern"
             style={{ color: colorYellow }}
             onChange={this.onAliaspatternChange}
+            onBlur={onRunQuery}
+            onKeyDown={this.onKeydownEnter}
+          />
+        </div>
+        <div className="gf-form-inline">
+          <LegacyForms.Switch
+            checked={query.stream}
+            label="Stream"
+            labelClass={'width-6  query-keyword'}
+            onChange={this.onStreamChange}
+          />
+          <InlineFormLabel width={6} className="query-keyword">
+            Interval
+          </InlineFormLabel>
+          <input
+            type="text"
+            value={query.strmInt}
+            className="gf-form-input max-width-10"
+            placeholder="auto"
+            onChange={this.onStrmIntChange}
+            onBlur={onRunQuery}
+            onKeyDown={this.onKeydownEnter}
+          />
+          <InlineFormLabel width={6} className="query-keyword">
+            Capacity
+          </InlineFormLabel>
+          <input
+            type="text"
+            value={query.strmCap}
+            className="gf-form-input max-width-10"
+            placeholder="auto"
+            onChange={this.onStrmCapChange}
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
           />
