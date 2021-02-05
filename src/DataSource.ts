@@ -1,6 +1,9 @@
 import _ from 'lodash';
+import { Observable, Subscriber } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
+  CircularDataFrame,
   DataQueryResponse,
   DataQueryRequest,
   DataSourceInstanceSettings,
@@ -8,6 +11,7 @@ import {
   MutableDataFrame,
   FieldType,
   getFieldDisplayName,
+  LoadingState,
 } from '@grafana/data';
 import {
   AAQuery,
@@ -25,6 +29,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   name: string;
   withCredentials?: boolean;
   headers: { [key: string]: string };
+  timerIDs:{ [key: string]: any };
 
   constructor(instanceSettings: DataSourceInstanceSettings<AADataSourceOptions>) {
     super(instanceSettings);
@@ -32,22 +37,116 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     this.name = instanceSettings.name;
     this.withCredentials = instanceSettings.withCredentials;
     this.headers = { 'Content-Type': 'application/json' };
+    this.timerIDs = {};
     if (typeof instanceSettings.basicAuth === 'string' && instanceSettings.basicAuth.length > 0) {
       this.headers.Authorization = instanceSettings.basicAuth;
     }
   }
 
   // Called from Grafana panels to get data
-  async query(options: DataQueryRequest<AAQuery>): Promise<DataQueryResponse> {
+  query(options: DataQueryRequest<AAQuery>): Observable<DataQueryResponse> {
     const rawTargets = this.buildQueryParameters(options);
 
     // Remove hidden target from query
     const targets = _.filter(rawTargets, t => !t.hide);
 
     if (targets.length <= 0) {
-      return Promise.resolve({ data: [] });
+      return new Observable<DataQueryResponse>(subscriber => {
+        subscriber.next({ data: [] });
+      });
     }
 
+    return new Observable<DataQueryResponse>(subscriber => {
+      const id = uuidv4();
+
+      this.doQuery(targets).then((data) => {
+        subscriber.next(data);
+
+        //const frame_len = _.map(data.data, (frame) => frame.length);
+        //console.log(frame_names);
+        //console.log(frame_len);
+
+        const frames  = _.reduce(
+          data.data,
+          (result: {[key: string]: CircularDataFrame<any>} , dframe, i) => {
+            if (dframe.name === undefined) {
+              return result;
+            }
+
+            const frame = new CircularDataFrame({
+              append: 'tail',
+              capacity: dframe.length,
+            });
+            frame.name = dframe.name;
+
+            for (const field of dframe.fields){
+              frame.addField(field);
+            }
+
+            result[frame.name] = frame;
+            return result;
+          },
+          {}
+        );
+
+        const frame_names = _.map(data.data, (frame) => frame.name);
+        const new_data = _.map(frame_names, (name) => {
+          if(name === undefined) {
+            return;
+          }
+          return frames[name];
+        });
+
+        console.log(new_data);
+
+
+        const new_targets = _.map(targets, (target) => {
+          return {
+            ...target,
+            options: {
+              ...target.options,
+              disableExtrapol: "true"
+            }
+          }
+        });
+        this.timerIDs[id] = undefined;
+        this.timerLoop(subscriber, new_targets, id, frames);
+      });
+
+      return () => {
+        this.timerClear(id);
+      };
+    });
+  }
+
+  timerLoop = async (subscriber:Subscriber<DataQueryResponse>, targets: TargetQuery[], id: string, frames: {[key: string] : CircularDataFrame}) => {
+    this.updateTargetDate(targets);
+    const data = await this.doQueryStream(targets, frames);
+    //frame.add({ time: Date.now(), value: Math.random() });
+
+    subscriber.next(data);
+    if (id in this.timerIDs) {
+      this.timerIDs[id] = setTimeout(this.timerLoop, 100, subscriber, targets, id, frames);
+    }
+  }
+
+  updateTargetDate(targets: TargetQuery[]) {
+    return _.map(targets, target => {
+      console.log(target)
+      target.from = target.to;
+      target.to = new Date(Date.now());
+      return target;
+    });
+  }
+
+  timerClear(id: string) {
+    for (const id in this.timerIDs) {
+      clearTimeout(this.timerIDs[id]);
+    }
+    this.timerIDs = {};
+  }
+
+  doQuery(targets: TargetQuery[]) : Promise<{data: MutableDataFrame<any>[]}> {
     // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
     const urlsArray = _.map(targets, target => this.buildUrls(target));
 
@@ -68,6 +167,56 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return targetProcesses.then(dataFramesArray => this.postProcess(dataFramesArray));
   }
 
+  doQueryStream(targets: TargetQuery[], frames: {[key: string] : CircularDataFrame}) : Promise<DataQueryResponse> {
+    // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
+    const urlsArray = _.map(targets, target => this.buildUrls(target));
+
+    // Wait for building URLs then create target data
+    const targetProcesses = Promise.all(urlsArray).then(urlsArray => {
+      // Create promises to retrieve data for each targets: [[Responses for target 1], [Reponses for target 2] , ...]
+      const responsePromisesArray = this.createUrlRequests(urlsArray);
+
+      // ここでデータフレームの統合を行う
+      // フレームのnameごとにCircularバッファーを用意しておく
+
+      // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
+      const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
+        return Promise.all(responsePromises)
+        .then(responses => this.responseParse(responses, targets[i]))
+        .then(dataFrames => this.mergeFrames(dataFrames, frames, targets[i]))
+        .then(dataFrames => this.setAlias(dataFrames, targets[i]))
+        .then(dataFrames => this.applyFunctions(dataFrames, targets[i]));
+      });
+
+      // Wait all target data processings
+      return Promise.all(targetProcesses);
+    });
+
+    return targetProcesses.then(dataFramesArray => this.streamPostProcess(dataFramesArray));
+  }
+
+  mergeFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
+    const from = target.from.getTime();
+    console.log("milli = " + from);
+    const frames = _.map(dataFrames, (frame) => {
+      if(frame.name === undefined || !(frame.name in cirFrames)) {
+        //console.log("just return")
+        return frame;
+      }
+      for (let i = 0; i < frame.length; i++) {
+        const fields = frame.get(i);
+        console.log(fields["time"])
+        if(fields["time"] < from+1 ){
+           continue;
+        }
+        cirFrames[frame.name].add(frame.get(i));
+      }
+      return cirFrames[frame.name];
+    });
+
+    return Promise.resolve(frames);
+  }
+
   targetProcess(responses: any, target: TargetQuery) {
     return this.responseParse(responses, target)
       .then(dataFrames => this.setAlias(dataFrames, target))
@@ -78,6 +227,12 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const dataFrames = _.flatten(dataFramesArray);
 
     return { data: dataFrames };
+  }
+
+  streamPostProcess(dataFramesArray: MutableDataFrame[][]) {
+    const dataFrames = _.flatten(dataFramesArray);
+
+    return { data: dataFrames, state: LoadingState.Streaming };
   }
 
   buildUrls(target: TargetQuery): Promise<string[]> {
@@ -100,7 +255,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       pvnamesArray =>
         new Promise((resolve, reject) => {
           const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
-          let urls;
+          let urls: string[] = [];
 
           try {
             urls = _.map(pvnames, pvname =>
@@ -148,6 +303,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const requestsArray = _.map(urlsArray, urls => {
       const requests = _.map(urls, url => {
         if (!(url in requestHash)) {
+          console.log(url);
           requestHash[url] = this.doRequest({ url, method: 'GET' });
         }
         return requestHash[url];
@@ -159,6 +315,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   responseParse(responses: AADataQueryResponse[], target: TargetQuery) {
+    console.log(responses);
     const dataFramesArray = _.map(responses, response => {
       const dataFrames = _.map(response.data, targetRes => {
         if (targetRes.meta.waveform) {
@@ -258,6 +415,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   parseScalarResponse(targetRes: AADataQueryData): MutableDataFrame {
+    console.log(targetRes);
     const values = _.map(targetRes.data, datapoint => datapoint.val);
     const times = _.map(targetRes.data, datapoint => datapoint.millis);
     const frame = new MutableDataFrame({
@@ -267,6 +425,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         { name: 'value', type: FieldType.number, values: values, config: { displayName: targetRes.meta.name } },
       ],
     });
+    console.log(frame);
     return frame;
   }
 

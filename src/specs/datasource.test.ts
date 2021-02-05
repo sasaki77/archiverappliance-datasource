@@ -354,7 +354,7 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Query tests', () => {
     it('should return an empty array when no targets are set', done => {
-      ds.query(({ targets: [] } as unknown) as DataQueryRequest<AAQuery>).then((result: any) => {
+      ds.query(({ targets: [] } as unknown) as DataQueryRequest<AAQuery>).subscribe((result: any) => {
         expect(result.data).toHaveLength(0);
         done();
       });
@@ -382,7 +382,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
@@ -425,7 +425,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
         const dataFrame1: MutableDataFrame = result.data[0];
         const dataFrame2: MutableDataFrame = result.data[1];
@@ -469,7 +469,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(5);
@@ -542,7 +542,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
         const dataFrameArray: MutableDataFrame[] = result.data;
         const seriesName1 = dataFrameArray[0].name;
@@ -591,7 +591,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const seriesName = dataFrame.name;
@@ -627,7 +627,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const seriesName = dataFrame.name;
@@ -664,7 +664,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
@@ -700,7 +700,7 @@ describe('Archiverappliance Datasource', () => {
         maxDataPoints: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      ds.query(query).then((result: any) => {
+      ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
