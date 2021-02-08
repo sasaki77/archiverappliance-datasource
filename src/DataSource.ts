@@ -167,6 +167,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   mergeResToCirFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
     const from = target.from.getTime();
+    const to = target.to.getTime();
     const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
 
     const frames = _.map(d, (frame) => {
@@ -183,10 +184,10 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       // Update frame data
       for (let i = 0; i < frame.length; i++) {
         const fields = frame.get(i);
-        if(fields["time"] < from + 1 ){
+        if (fields['time'] < from + 1 || fields['time'] > to) {
            continue;
         }
-        cirFrames[frame.name].add(frame.get(i));
+        cirFrames[frame.name].add(fields);
       }
       return cirFrames[frame.name];
     });
