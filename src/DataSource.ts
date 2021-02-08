@@ -65,40 +65,14 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     }
 
     // Stream query
-    const caps = _.reduce(targets, (result: {[key: string]: number}, t, i) => {
-      result[t.refId] = parseInt(t.strmCap, 10);
-      return result;
-    }, {});
     return new Observable<DataQueryResponse>(subscriber => {
       const id = uuidv4();
 
-      this.doQuery(targets).then((data) => {
+      const cirFrames: {[key: string]: CircularDataFrame<any>} = {};
+      this.doQueryStream(targets, cirFrames).then((data) => {
         subscriber.next(data);
 
-        const frames  = _.reduce(
-          data.data,
-          (result: {[key: string]: CircularDataFrame<any>} , dframe, i) => {
-            if (dframe.name === undefined) {
-              return result;
-            }
-
-            const cap = dframe.refId ? caps[dframe.refId] || dframe.length : dframe.length;
-            const frame = new CircularDataFrame({
-              append: 'tail',
-              capacity: cap,
-            });
-            frame.name = dframe.name;
-
-            for (const field of dframe.fields){
-              frame.addField(field);
-            }
-
-            result[frame.name] = frame;
-            return result;
-          },
-          {}
-        );
-
+        // Create new targets to disable auto Extrapolation
         const new_targets = _.map(targets, (target) => {
           return {
             ...target,
@@ -108,9 +82,10 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
             }
           }
         });
+
         this.timerIDs[id] = undefined;
         const interval = Number(stream[0].strmInt) || options.intervalMs;
-        this.timerLoop(subscriber, new_targets, id, frames, interval);
+        this.timerLoop(subscriber, new_targets, id, cirFrames, interval);
       });
 
       return () => {
@@ -192,10 +167,18 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   mergeFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
     const from = target.from.getTime();
-    const frames = _.map(dataFrames, (frame) => {
-      if(frame.name === undefined || !(frame.name in cirFrames)) {
+    const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
+
+    const frames = _.map(d, (frame) => {
+      if(frame.name === undefined) {
         return frame;
       }
+
+      if (!(frame.name in cirFrames)) {
+        cirFrames[frame.name] = this.createStreamFrame(target, frame);
+        return cirFrames[frame.name];
+      }
+
       for (let i = 0; i < frame.length; i++) {
         const fields = frame.get(i);
         if(fields["time"] < from + 1 ){
@@ -207,6 +190,23 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     });
 
     return Promise.resolve(frames);
+  }
+
+  createStreamFrame(target: TargetQuery, dataFrame: MutableDataFrame){
+    const c = parseInt(target.strmCap, 10);
+    const cap = dataFrame.refId ? c || dataFrame.length : dataFrame.length;
+
+    const new_frame = new CircularDataFrame({
+      append: 'tail',
+      capacity: cap,
+    });
+
+    new_frame.name = dataFrame.name;
+    for (const field of dataFrame.fields) {
+      new_frame.addField(field);
+    }
+
+    return new_frame;
   }
 
   targetProcess(responses: any, target: TargetQuery) {
