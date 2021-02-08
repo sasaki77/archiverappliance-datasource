@@ -67,13 +67,13 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     // Stream query
     return new Observable<DataQueryResponse>(subscriber => {
       const id = uuidv4();
-
       const cirFrames: {[key: string]: CircularDataFrame<any>} = {};
+
       this.doQueryStream(targets, cirFrames).then((data) => {
         subscriber.next(data);
 
         // Create new targets to disable auto Extrapolation
-        const new_targets = _.map(targets, (target) => {
+        const new_t = _.map(targets, (target) => {
           return {
             ...target,
             options: {
@@ -85,7 +85,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
         this.timerIDs[id] = undefined;
         const interval = Number(stream[0].strmInt) || options.intervalMs;
-        this.timerLoop(subscriber, new_targets, id, cirFrames, interval);
+        this.timerLoop(subscriber, new_t, id, cirFrames, interval);
       });
 
       return () => {
@@ -153,7 +153,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
       const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
         return Promise.all(responsePromises)
         .then(responses => this.responseParse(responses, targets[i]))
-        .then(dataFrames => this.mergeFrames(dataFrames, frames, targets[i]))
+        .then(dataFrames => this.mergeResToCirFrames(dataFrames, frames, targets[i]))
         .then(dataFrames => this.setAlias(dataFrames, targets[i]))
         .then(dataFrames => this.applyFunctions(dataFrames, targets[i]));
       });
@@ -165,7 +165,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     return targetProcesses.then(dataFramesArray => this.streamPostProcess(dataFramesArray));
   }
 
-  mergeFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
+  mergeResToCirFrames(dataFrames: MutableDataFrame[], cirFrames: {[key: string] : CircularDataFrame}, target: TargetQuery): Promise<MutableDataFrame[]>{
     const from = target.from.getTime();
     const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
 
@@ -174,11 +174,13 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         return frame;
       }
 
+      // Create frame for new arrival data
       if (!(frame.name in cirFrames)) {
         cirFrames[frame.name] = this.createStreamFrame(target, frame);
         return cirFrames[frame.name];
       }
 
+      // Update frame data
       for (let i = 0; i < frame.length; i++) {
         const fields = frame.get(i);
         if(fields["time"] < from + 1 ){
