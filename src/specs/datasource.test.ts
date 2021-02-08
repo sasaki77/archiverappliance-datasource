@@ -1,9 +1,10 @@
 import range from 'lodash/range';
 import split from 'lodash/split';
 import { min, max } from 'lodash';
-import { MutableDataFrame, getFieldDisplayName, DataSourceInstanceSettings, DataQueryRequest } from '@grafana/data';
+import { MutableDataFrame, getFieldDisplayName, DataSourceInstanceSettings, DataQueryRequest, LoadingState } from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from 'types';
+import {take, toArray} from 'rxjs/Operators';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -713,7 +714,196 @@ describe('Archiverappliance Datasource', () => {
         done();
       });
     });
+
+    it('should return normal data when the stream is enabled but rangeRaw is absent', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).subscribe((result: any) => {
+        expect(result.data).toHaveLength(1);
+        expect(result.state).toEqual(expect.not.objectContaining({state: LoadingState.Streaming}));
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toHaveLength(4);
+        expect(timesArray).toHaveLength(4);
+        expect(valArray[3]).toBe(2);
+        expect(timesArray[3]).toBe(1262304030000);
+        done();
+      });
+    });
+
+    it('should return normal data when the stream is enabled but rangeRaw is not now', done => {
+      datasourceRequestMock.mockImplementation(request =>
+        Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        })
+      );
+
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+        rangeRaw: {to: 'now-5m'},
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      ds.query(query).subscribe((result: any) => {
+        expect(result.data).toHaveLength(1);
+        expect(result.state).toEqual(expect.not.objectContaining({state: LoadingState.Streaming}));
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toHaveLength(4);
+        expect(timesArray).toHaveLength(4);
+        expect(valArray[3]).toBe(2);
+        expect(timesArray[3]).toBe(1262304030000);
+        done();
+      });
+    });
+
+    it('should return stream data when the stream is enabled', done => {
+      datasourceRequestMock.mockImplementation(request => {
+        const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
+        const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
+
+        const from_ms = new Date(from_str).getTime();
+        const to_ms = new Date(to_str).getTime();
+
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: from_ms+1, val: 0 },
+                { millis: Math.floor((from_ms+to_ms)/2), val: 1 },
+                { millis: to_ms, val: 2 },
+              ],
+            },
+          ]
+        })
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmCap: '9' }],
+        range: { from: new Date(now-1000*1000), to: new Date(now) },
+        rangeRaw: {to: 'now'},
+        maxDataPoints: 1000,
+        intervalMs: 1000
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(
+        take(3),
+        toArray()
+      );
+
+      d.subscribe((results: any[]) => {
+        expect(results).toHaveLength(3);
+        const result = results[2];
+        expect(result.data).toHaveLength(1);
+        expect(result.state).toEqual(LoadingState.Streaming);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toEqual([0, 1, 2, 0, 1, 2, 0, 1, 2]);
+        expect(timesArray).toHaveLength(9);
+
+        const diff = timesArray[8] - timesArray[5]
+        expect(diff).toBeGreaterThanOrEqual(1000);
+        expect(diff).toBeLessThan(2000);
+
+        done();
+      });
+    });
+
+    it('should return stream data with strmInt while without strmCap', done => {
+      datasourceRequestMock.mockImplementation(request => {
+        const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
+        const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
+
+        const from_ms = new Date(from_str).getTime();
+        const to_ms = new Date(to_str).getTime();
+
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: from_ms-1, val: 0 },
+                { millis: Math.floor((from_ms+to_ms)/2), val: 1 },
+                { millis: to_ms, val: 2 },
+              ],
+            },
+          ]
+        })
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '2000' }],
+        range: { from: new Date(now-1000*1000), to: new Date(now) },
+        rangeRaw: {to: 'now'},
+        maxDataPoints: 1000,
+        intervalMs: 1000
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(
+        take(3),
+        toArray()
+      );
+
+      d.subscribe((results: any[]) => {
+        expect(results).toHaveLength(3);
+        const result = results[2];
+        expect(result.data).toHaveLength(1);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toEqual([2, 1, 2]);
+        expect(timesArray).toHaveLength(3);
+
+        const diff = timesArray[2] - timesArray[0]
+        expect(diff).toBeGreaterThanOrEqual(2000);
+        expect(diff).toBeLessThan(3000);
+
+        done();
+      });
+    });
   });
+
 
   describe('PV name find query tests', () => {
     it('should return the pv name results when a target is null', done => {
