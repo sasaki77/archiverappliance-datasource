@@ -60,7 +60,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     const stream = _.filter(targets, t => t.stream);
 
     // No stream query
-    if (stream.length === 0 || (options.rangeRaw && options.rangeRaw.to !== "now")) {
+    if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== "now") {
       return from(this.doQuery(targets));
     }
 
