@@ -902,6 +902,59 @@ describe('Archiverappliance Datasource', () => {
         done();
       });
     });
+
+    it('should ignore out of range data on stream', done => {
+      datasourceRequestMock.mockImplementation(request => {
+        const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
+        const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
+
+        const from_ms = new Date(from_str).getTime();
+        const to_ms = new Date(to_str).getTime();
+
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: from_ms, val: 0 },
+                { millis: from_ms+1, val: 1 },
+                { millis: to_ms, val: 2 },
+                { millis: to_ms+1, val: 3 },
+              ],
+            },
+          ]
+        })
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmCap: '12' }],
+        range: { from: new Date(now-1000*1000), to: new Date(now) },
+        rangeRaw: {to: 'now'},
+        maxDataPoints: 1000,
+        intervalMs: 1000
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(
+        take(3),
+        toArray()
+      );
+
+      d.subscribe((results: any[]) => {
+        expect(results).toHaveLength(3);
+        const result = results[2];
+        expect(result.data).toHaveLength(1);
+        expect(result.state).toEqual(LoadingState.Streaming);
+        const dataFrame: MutableDataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toEqual([0, 1, 2, 3, 1, 2, 1, 2]);
+        expect(timesArray).toHaveLength(8);
+
+        done();
+      });
+    });
   });
 
 
