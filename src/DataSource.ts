@@ -113,7 +113,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
   }
 
   timerClear(id: string) {
-    for (const id in this.timerIDs) {
+    if (id in this.timerIDs) {
       clearTimeout(this.timerIDs[id]);
     }
     this.timerIDs = {};
