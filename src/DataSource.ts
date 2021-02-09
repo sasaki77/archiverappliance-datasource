@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Observable, Subscriber, from } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import ms from 'ms';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
   CircularDataFrame,
@@ -84,7 +85,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         });
 
         this.timerIDs[id] = undefined;
-        const interval = Number(stream[0].strmInt) || options.intervalMs;
+        const interval = (stream[0].strmInt && ms(stream[0].strmInt)) || options.intervalMs;
         this.timerLoop(subscriber, new_t, id, cirFrames, interval);
       });
 
