@@ -108,7 +108,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp('.*' + escapedValue, 'i');
 
-    const suggestions = operatorList.filter(operator => regex.test(operator));
+    const suggestions = operatorList.filter((operator) => regex.test(operator));
 
     this.setState({
       oprSuggestions: suggestions,

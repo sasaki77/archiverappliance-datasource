@@ -20,7 +20,7 @@ jest.mock(
       datasourceRequest: datasourceRequestMock,
     }),
     getTemplateSrv: () => ({
-      replace: jest.fn().mockImplementation(query => query),
+      replace: jest.fn().mockImplementation((query) => query),
     }),
   }),
   { virtual: true }
@@ -55,8 +55,8 @@ describe('Archiverappliance Functions', () => {
     ds = new DataSource(instanceSettings);
   });
 
-  it('should return the server results with scale function', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return the server results with scale function', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         data: [
           {
@@ -100,8 +100,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with offset function', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return the server results with offset function', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         _request: request,
         data: [
@@ -146,8 +146,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with delta function', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return the server results with delta function', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         _request: request,
         data: [
@@ -190,8 +190,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with fluctuation function', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return the server results with fluctuation function', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         _request: request,
         data: [
@@ -236,8 +236,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with movingAverage function', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return the server results with movingAverage function', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         _request: request,
         data: [
@@ -299,8 +299,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return correct scalar data with toScalar funcs', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return correct scalar data with toScalar funcs', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         data: [
           {
@@ -406,8 +406,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with top function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with top function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -526,7 +526,7 @@ describe('Archiverappliance Functions', () => {
     ];
 
     const timeseriesData: MutableDataFrame[] = data.map(
-      d =>
+      (d) =>
         new MutableDataFrame({
           name: d.name,
           fields: [
@@ -614,7 +614,7 @@ describe('Archiverappliance Functions', () => {
     ];
 
     const timeseriesDataAbs: MutableDataFrame[] = absData.map(
-      d =>
+      (d) =>
         new MutableDataFrame({
           name: d.name,
           fields: [
@@ -642,8 +642,8 @@ describe('Archiverappliance Functions', () => {
     expect(absMaxBottomData[0].name).toBe('min');
   });
 
-  it('should return the server results with exclude function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with exclude function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       const pvdata = [
         {
@@ -682,8 +682,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortByMax function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortByMax function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -753,8 +753,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortByMin function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortByMin function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -824,8 +824,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortByAvg function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortByAvg function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -895,8 +895,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortBySum function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortBySum function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -966,8 +966,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortByAbsMax function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortByAbsMax function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1037,8 +1037,8 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return the server results with sortByAbsMin function', done => {
-    datasourceRequestMock.mockImplementation(request => {
+  it('should return the server results with sortByAbsMin function', (done) => {
+    datasourceRequestMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1108,7 +1108,7 @@ describe('Archiverappliance Functions', () => {
     });
   });
 
-  it('should return option variables if option functions are applied', done => {
+  it('should return option variables if option functions are applied', (done) => {
     const options = ({
       targets: [
         {
@@ -1128,7 +1128,7 @@ describe('Archiverappliance Functions', () => {
     done();
   });
 
-  it('should return 1 second interval when interval time is less than 1 second and disableAutoRaw is true', done => {
+  it('should return 1 second interval when interval time is less than 1 second and disableAutoRaw is true', (done) => {
     const options = ({
       targets: [
         {
@@ -1148,8 +1148,8 @@ describe('Archiverappliance Functions', () => {
     done();
   });
 
-  it('should return non extrapolation data when disableExtrapol func is set', done => {
-    datasourceRequestMock.mockImplementation(request =>
+  it('should return non extrapolation data when disableExtrapol func is set', (done) => {
+    datasourceRequestMock.mockImplementation((request) =>
       Promise.resolve({
         data: [
           {

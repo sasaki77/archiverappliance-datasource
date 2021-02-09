@@ -32,7 +32,7 @@ function pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], requireC
     []
   );
 
-  const pickedFuncDefs = _.filter(functionDefs, func => _.includes(requiredCategoryFuncNames, func.def.name));
+  const pickedFuncDefs = _.filter(functionDefs, (func) => _.includes(requiredCategoryFuncNames, func.def.name));
 
   return pickedFuncDefs;
 }
@@ -277,7 +277,7 @@ export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames
   const promises = _.reduce(
     applyFuncDefs,
     (prevPromise, func) =>
-      prevPromise.then(res => {
+      prevPromise.then((res) => {
         const bindedFunc = bindFunction(seriesFunctions, func);
 
         return Promise.resolve(bindedFunc(res));
@@ -291,7 +291,7 @@ export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames
 export function getToScalarFuncs(functionDefs: FunctionDescriptor[]): any[] {
   const appliedOptionFuncs = pickFuncDefsFromCategories(functionDefs, ['Array to Scalar']);
 
-  const funcs = _.map(appliedOptionFuncs, func => {
+  const funcs = _.map(appliedOptionFuncs, (func) => {
     return arrayFunctions[func.def.name];
   });
 

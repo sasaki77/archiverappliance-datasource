@@ -6,9 +6,9 @@ export interface AAQuery extends DataQuery {
   operator: string;
   regex: boolean;
   aliasPattern: string;
-  stream: boolean,
-  strmInt: string,
-  strmCap: string,
+  stream: boolean;
+  strmInt: string;
+  strmCap: string;
   functions: FunctionDescriptor[];
 }
 

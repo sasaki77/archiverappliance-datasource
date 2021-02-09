@@ -8,7 +8,7 @@ import { AAQuery, defaultQuery } from '../types';
 
 const setup = (propOverrides?: object) => {
   const datasourceMock: unknown = {
-    createQuery: jest.fn(q => q),
+    createQuery: jest.fn((q) => q),
     pvNamesFindQuery: jest.fn((q, num) => ['PV']),
   };
   const datasource: DataSource = datasourceMock as DataSource;
@@ -24,7 +24,7 @@ const setup = (propOverrides?: object) => {
     refId: 'A',
     stream: false,
     strmInt: '',
-    strmCap: ''
+    strmCap: '',
   };
 
   const props: any = {

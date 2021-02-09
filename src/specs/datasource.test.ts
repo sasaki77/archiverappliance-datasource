@@ -1,10 +1,16 @@
 import range from 'lodash/range';
 import split from 'lodash/split';
 import { min, max } from 'lodash';
-import { MutableDataFrame, getFieldDisplayName, DataSourceInstanceSettings, DataQueryRequest, LoadingState } from '@grafana/data';
+import {
+  MutableDataFrame,
+  getFieldDisplayName,
+  DataSourceInstanceSettings,
+  DataQueryRequest,
+  LoadingState,
+} from '@grafana/data';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from 'types';
-import {take, toArray} from 'rxjs/Operators';
+import { take, toArray } from 'rxjs/operators';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -15,7 +21,7 @@ jest.mock(
       datasourceRequest: datasourceRequestMock,
     }),
     getTemplateSrv: () => ({
-      replace: jest.fn().mockImplementation(query => query),
+      replace: jest.fn().mockImplementation((query) => query),
     }),
   }),
   { virtual: true }
@@ -51,8 +57,8 @@ describe('Archiverappliance Datasource', () => {
   });
 
   describe('testDatasource tests', () => {
-    it('should return success message', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return success message', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           status: 200,
           message: 'Success',
@@ -67,8 +73,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return error message', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return error message', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           status: 404,
           message: 'Bad gateway',
@@ -85,7 +91,7 @@ describe('Archiverappliance Datasource', () => {
   });
 
   describe('Build URL tests', () => {
-    it('should return an valid url', done => {
+    it('should return an valid url', (done) => {
       const target = ({
         target: 'PV1',
         interval: '9',
@@ -102,8 +108,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an valid multi urls', done => {
-      datasourceRequestMock.mockImplementation(requesty =>
+    it('should return an valid multi urls', (done) => {
+      datasourceRequestMock.mockImplementation((requesty) =>
         Promise.resolve({
           data: ['PV1', 'PV2'],
         })
@@ -128,8 +134,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an valid unique urls', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return an valid unique urls', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: ['PV1', 'PV2', 'PV1'],
         })
@@ -155,10 +161,10 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an 100 urls', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return an 100 urls', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
-          data: range(1000).map(num => String(num)),
+          data: range(1000).map((num) => String(num)),
         })
       );
 
@@ -177,10 +183,10 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an required number of urls', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return an required number of urls', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
-          data: range(1000).map(num => String(num)),
+          data: range(1000).map((num) => String(num)),
         })
       );
 
@@ -199,7 +205,7 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an required bin interval url', done => {
+    it('should return an required bin interval url', (done) => {
       const target = ({
         target: 'PV1',
         interval: '9',
@@ -216,7 +222,7 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an valid multi urls when regex OR target', done => {
+    it('should return an valid multi urls when regex OR target', (done) => {
       const target = ({
         target: 'PV(A|B|C):(1|2):test',
         interval: '9',
@@ -249,7 +255,7 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return an Error when invalid data processing is required', done => {
+    it('should return an Error when invalid data processing is required', (done) => {
       const target = ({
         target: 'PV1',
         operator: 'invalid',
@@ -266,7 +272,7 @@ describe('Archiverappliance Datasource', () => {
         });
     });
 
-    it('should return an data processing url', done => {
+    it('should return an data processing url', (done) => {
       const from = new Date('2010-01-01T00:00:00.000Z');
       const to = new Date('2010-01-01T00:00:30.000Z');
       const options = {};
@@ -279,9 +285,9 @@ describe('Archiverappliance Datasource', () => {
         ({ target: 'PV6', operator: 'last', interval: '9', from, to, options } as unknown) as TargetQuery,
       ];
 
-      const urlProcs = targets.map(target => ds.buildUrls(target));
+      const urlProcs = targets.map((target) => ds.buildUrls(target));
 
-      Promise.all(urlProcs).then(urls => {
+      Promise.all(urlProcs).then((urls) => {
         expect(urls).toHaveLength(6);
         expect(urls[0][0]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
@@ -307,7 +313,7 @@ describe('Archiverappliance Datasource', () => {
   });
 
   describe('Build query parameters tests', () => {
-    it('should return valid interval time in integer', done => {
+    it('should return valid interval time in integer', (done) => {
       const options = ({
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
@@ -321,7 +327,7 @@ describe('Archiverappliance Datasource', () => {
       done();
     });
 
-    it('should return no interval data when interval time is less than 1 second', done => {
+    it('should return no interval data when interval time is less than 1 second', (done) => {
       const options = ({
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
@@ -335,7 +341,7 @@ describe('Archiverappliance Datasource', () => {
       done();
     });
 
-    it('should return filtered array when target is empty or undefined', done => {
+    it('should return filtered array when target is empty or undefined', (done) => {
       const options = ({
         targets: [
           { target: 'PV', refId: 'A' },
@@ -354,15 +360,15 @@ describe('Archiverappliance Datasource', () => {
   });
 
   describe('Query tests', () => {
-    it('should return an empty array when no targets are set', done => {
+    it('should return an empty array when no targets are set', (done) => {
       ds.query(({ targets: [] } as unknown) as DataQueryRequest<AAQuery>).subscribe((result: any) => {
         expect(result.data).toHaveLength(0);
         done();
       });
     });
 
-    it('should return the server results when a target is set', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the server results when a target is set', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -401,9 +407,9 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the server results once for each url', done => {
+    it('should return the server results once for each url', (done) => {
       let counter = 0;
-      datasourceRequestMock.mockImplementation(request => {
+      datasourceRequestMock.mockImplementation((request) => {
         counter += 1;
         return Promise.resolve({
           data: [
@@ -443,8 +449,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return array data when waveform is true', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return array data when waveform is true', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -515,8 +521,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the server results with alias', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return the server results with alias', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const pv = request.url.slice(31, 34);
         Promise.resolve({
           status: 'success',
@@ -567,8 +573,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the server results with alias pattern', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the server results with alias pattern', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -603,8 +609,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the server results with alias pattern for array data', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the server results with alias pattern for array data', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -643,8 +649,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return extrapolation data when operator is set as raw', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return extrapolation data when operator is set as raw', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -679,8 +685,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return extrapolation data when time range is narrow', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return extrapolation data when time range is narrow', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -715,8 +721,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return normal data when the stream is enabled but rangeRaw is absent', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return normal data when the stream is enabled but rangeRaw is absent', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -740,7 +746,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        expect(result.state).toEqual(expect.not.objectContaining({state: LoadingState.Streaming}));
+        expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
@@ -753,8 +759,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return normal data when the stream is enabled but rangeRaw is not now', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return normal data when the stream is enabled but rangeRaw is not now', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: [
             {
@@ -770,16 +776,16 @@ describe('Archiverappliance Datasource', () => {
       );
 
       const query = ({
-        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: ''  }],
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
         intervalMs: 1000,
-        rangeRaw: {to: 'now-5m'},
+        rangeRaw: { to: 'now-5m' },
       } as unknown) as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        expect(result.state).toEqual(expect.not.objectContaining({state: LoadingState.Streaming}));
+        expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: MutableDataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
@@ -792,8 +798,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return stream data when the stream is enabled', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return stream data when the stream is enabled', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
@@ -805,28 +811,25 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { millis: from_ms+1, val: 0 },
-                { millis: Math.floor((from_ms+to_ms)/2), val: 1 },
+                { millis: from_ms + 1, val: 0 },
+                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
                 { millis: to_ms, val: 2 },
               ],
             },
-          ]
-        })
+          ],
+        });
       });
 
       const now = Date.now();
       const query = ({
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '', strmCap: '9' }],
-        range: { from: new Date(now-1000*1000), to: new Date(now) },
-        rangeRaw: {to: 'now'},
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
-        intervalMs: 1000
+        intervalMs: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      const d = ds.query(query).pipe(
-        take(3),
-        toArray()
-      );
+      const d = ds.query(query).pipe(take(3), toArray());
 
       d.subscribe((results: any[]) => {
         expect(results).toHaveLength(3);
@@ -840,7 +843,7 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray).toEqual([0, 1, 2, 0, 1, 2, 0, 1, 2]);
         expect(timesArray).toHaveLength(9);
 
-        const diff = timesArray[8] - timesArray[5]
+        const diff = timesArray[8] - timesArray[5];
         expect(diff).toBeGreaterThanOrEqual(1000);
         expect(diff).toBeLessThan(2000);
 
@@ -848,8 +851,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return stream data with strmInt while without strmCap', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return stream data with strmInt while without strmCap', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
@@ -861,28 +864,25 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { millis: from_ms-1, val: 0 },
-                { millis: Math.floor((from_ms+to_ms)/2), val: 1 },
+                { millis: from_ms - 1, val: 0 },
+                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
                 { millis: to_ms, val: 2 },
               ],
             },
-          ]
-        })
+          ],
+        });
       });
 
       const now = Date.now();
       const query = ({
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '2000' }],
-        range: { from: new Date(now-1000*1000), to: new Date(now) },
-        rangeRaw: {to: 'now'},
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
-        intervalMs: 1000
+        intervalMs: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      const d = ds.query(query).pipe(
-        take(3),
-        toArray()
-      );
+      const d = ds.query(query).pipe(take(3), toArray());
 
       d.subscribe((results: any[]) => {
         expect(results).toHaveLength(3);
@@ -895,7 +895,7 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray).toEqual([2, 1, 2]);
         expect(timesArray).toHaveLength(3);
 
-        const diff = timesArray[2] - timesArray[0]
+        const diff = timesArray[2] - timesArray[0];
         expect(diff).toBeGreaterThanOrEqual(2000);
         expect(diff).toBeLessThan(3000);
 
@@ -903,8 +903,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return stream data with unit strmInt while without strmCap', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return stream data with unit strmInt while without strmCap', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
@@ -916,28 +916,25 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { millis: from_ms-1, val: 0 },
-                { millis: Math.floor((from_ms+to_ms)/2), val: 1 },
+                { millis: from_ms - 1, val: 0 },
+                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
                 { millis: to_ms, val: 2 },
               ],
             },
-          ]
-        })
+          ],
+        });
       });
 
       const now = Date.now();
       const query = ({
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '2s' }],
-        range: { from: new Date(now-1000*1000), to: new Date(now) },
-        rangeRaw: {to: 'now'},
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
-        intervalMs: 1000
+        intervalMs: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      const d = ds.query(query).pipe(
-        take(3),
-        toArray()
-      );
+      const d = ds.query(query).pipe(take(3), toArray());
 
       d.subscribe((results: any[]) => {
         expect(results).toHaveLength(3);
@@ -950,7 +947,7 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray).toEqual([2, 1, 2]);
         expect(timesArray).toHaveLength(3);
 
-        const diff = timesArray[2] - timesArray[0]
+        const diff = timesArray[2] - timesArray[0];
         expect(diff).toBeGreaterThanOrEqual(2000);
         expect(diff).toBeLessThan(3000);
 
@@ -958,8 +955,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should ignore out of range data on stream', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should ignore out of range data on stream', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
@@ -972,28 +969,25 @@ describe('Archiverappliance Datasource', () => {
               meta: { name: 'PV', PREC: '0' },
               data: [
                 { millis: from_ms, val: 0 },
-                { millis: from_ms+1, val: 1 },
+                { millis: from_ms + 1, val: 1 },
                 { millis: to_ms, val: 2 },
-                { millis: to_ms+1, val: 3 },
+                { millis: to_ms + 1, val: 3 },
               ],
             },
-          ]
-        })
+          ],
+        });
       });
 
       const now = Date.now();
       const query = ({
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '', strmCap: '12' }],
-        range: { from: new Date(now-1000*1000), to: new Date(now) },
-        rangeRaw: {to: 'now'},
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
-        intervalMs: 1000
+        intervalMs: 1000,
       } as unknown) as DataQueryRequest<AAQuery>;
 
-      const d = ds.query(query).pipe(
-        take(3),
-        toArray()
-      );
+      const d = ds.query(query).pipe(take(3), toArray());
 
       d.subscribe((results: any[]) => {
         expect(results).toHaveLength(3);
@@ -1012,10 +1006,9 @@ describe('Archiverappliance Datasource', () => {
     });
   });
 
-
   describe('PV name find query tests', () => {
-    it('should return the pv name results when a target is null', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results when a target is null', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: ['metric_0', 'metric_1', 'metric_2'],
         })
@@ -1027,8 +1020,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results when a target is undefined', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results when a target is undefined', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: ['metric_0', 'metric_1', 'metric_2'],
         })
@@ -1040,8 +1033,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results when a target is empty', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results when a target is empty', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: ['metric_0', 'metric_1', 'metric_2'],
         })
@@ -1053,8 +1046,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results when a target is set', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results when a target is set', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           data: ['metric_0', 'metric_1', 'metric_2'],
         })
@@ -1071,8 +1064,8 @@ describe('Archiverappliance Datasource', () => {
   });
 
   describe('Metric find query tests', () => {
-    it('should return the pv name results for metricFindQuery', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results for metricFindQuery', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           _request: request,
           data: ['metric_0', 'metric_1', 'metric_2'],
@@ -1088,8 +1081,8 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results for metricFindQuery with regex OR', done => {
-      datasourceRequestMock.mockImplementation(request =>
+    it('should return the pv name results for metricFindQuery with regex OR', (done) => {
+      datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           _request: request,
           data: [unescape(split(request.url, /regex=(.*)/)[1])],
@@ -1108,12 +1101,12 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results for metricFindQuery with limit parameter', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return the pv name results for metricFindQuery with limit parameter', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
-        const data = [...Array(limit).keys()].map(i => `${pvname}${i}`);
+        const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
 
         return Promise.resolve({
           _request: request,
@@ -1132,12 +1125,12 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return the pv name results for metricFindQuery with invalid limit parameter', done => {
-      datasourceRequestMock.mockImplementation(request => {
+    it('should return the pv name results for metricFindQuery with invalid limit parameter', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
-        const data = [...Array(limit).keys()].map(i => `${pvname}${i}`);
+        const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
 
         return Promise.resolve({
           _request: request,
