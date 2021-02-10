@@ -811,8 +811,8 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { millis: from_ms + 1, val: 0 },
-                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                { millis: from_ms + 2001, val: 0 },
+                { millis: Math.floor((from_ms + 2000 + to_ms) / 2), val: 1 },
                 { millis: to_ms, val: 2 },
               ],
             },
@@ -968,8 +968,8 @@ describe('Archiverappliance Datasource', () => {
             {
               meta: { name: 'PV', PREC: '0' },
               data: [
-                { millis: from_ms, val: 0 },
-                { millis: from_ms + 1, val: 1 },
+                { millis: from_ms + 2000, val: 0 },
+                { millis: from_ms + 2002, val: 1 },
                 { millis: to_ms, val: 2 },
                 { millis: to_ms + 1, val: 3 },
               ],
@@ -1001,6 +1001,105 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray).toEqual([0, 1, 2, 3, 1, 2, 1, 2]);
         expect(timesArray).toHaveLength(8);
 
+        done();
+      });
+    });
+
+    it('should return raw url when strmInt is less than 1000', (done) => {
+      let i = 0;
+      datasourceRequestMock.mockImplementation((request) => {
+        if (i === 0) {
+          expect(request.url.includes('mean_10')).toBeTruthy();
+        } else {
+          expect(request.url.includes('mean')).toBeFalsy();
+        }
+        i++;
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [],
+            },
+          ],
+        });
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '999', strmCap: '12' }],
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 100,
+        intervalMs: 10000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(take(2), toArray());
+
+      d.subscribe((results: any[]) => {
+        done();
+      });
+    });
+
+    it('should return mean url when strmInt is greater than 1000', (done) => {
+      let i = 0;
+      datasourceRequestMock.mockImplementation((request) => {
+        if (i === 0) {
+          expect(request.url.includes('mean_10')).toBeTruthy();
+        } else {
+          expect(request.url.includes('mean_1')).toBeTruthy();
+        }
+        i++;
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [],
+            },
+          ],
+        });
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '1500', strmCap: '12' }],
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 100,
+        intervalMs: 10000,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(take(2), toArray());
+
+      d.subscribe((results: any[]) => {
+        done();
+      });
+    });
+
+    it('should return raw url when the range is narrow', (done) => {
+      datasourceRequestMock.mockImplementation((request) => {
+        expect(request.url.includes('mean')).toBeFalsy();
+        return Promise.resolve({
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [],
+            },
+          ],
+        });
+      });
+
+      const now = Date.now();
+      const query = ({
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '1500', strmCap: '12' }],
+        range: { from: new Date(now - 100 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1000,
+        intervalMs: 100,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(take(2), toArray());
+
+      d.subscribe((results: any[]) => {
         done();
       });
     });

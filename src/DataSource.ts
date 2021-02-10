@@ -67,26 +67,37 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
     // Stream query
     return new Observable<DataQueryResponse>((subscriber) => {
+      // Create new targets to disable auto Extrapolation
+      const t = _.map(targets, (target) => {
+        return {
+          ...target,
+          options: {
+            ...target.options,
+            disableExtrapol: 'true',
+          },
+        };
+      });
+
       const id = uuidv4();
       const cirFrames: { [key: string]: CircularDataFrame<any> } = {};
 
-      this.doQueryStream(targets, cirFrames).then((data) => {
+      this.doQueryStream(t, cirFrames).then((data) => {
         subscriber.next(data);
 
-        // Create new targets to disable auto Extrapolation
-        const new_t = _.map(targets, (target) => {
+        const interval = (stream[0].strmInt && ms(stream[0].strmInt)) || options.intervalMs;
+
+        // Create new targets to update interval time
+        const new_t = _.map(t, (target) => {
+          const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
+          const int = interval >= 1000 ? t_int : '';
+
           return {
             ...target,
-            options: {
-              ...target.options,
-              disableExtrapol: 'true',
-            },
+            interval: int,
           };
         });
 
-        this.timerIDs[id] = undefined;
-        const interval = (stream[0].strmInt && ms(stream[0].strmInt)) || options.intervalMs;
-        this.timerLoop(subscriber, new_t, id, cirFrames, interval);
+        this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, new_t, id, cirFrames, interval);
       });
 
       return () => {
@@ -113,8 +124,10 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
   updateTargetDate(targets: TargetQuery[]) {
     return _.map(targets, (target) => {
-      target.from = target.to;
-      target.to = new Date(Date.now());
+      // AA should probably not able to return latest data near the "now".
+      // So, the time range is set from 2 secs ago from last update date and to 500 msecs ago from "now".
+      target.from = new Date(target.to.getTime() - 2000);
+      target.to = new Date(Date.now() - 500);
       return target;
     });
   }
@@ -177,7 +190,6 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     cirFrames: { [key: string]: CircularDataFrame },
     target: TargetQuery
   ): Promise<MutableDataFrame[]> {
-    const from = target.from.getTime();
     const to = target.to.getTime();
     const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
 
@@ -192,10 +204,12 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
         return cirFrames[frame.name];
       }
 
+      const last_time = cirFrames[frame.name].get(cirFrames[frame.name].length - 1)['time'];
+
       // Update frame data
       for (let i = 0; i < frame.length; i++) {
         const fields = frame.get(i);
-        if (fields['time'] < from + 1 || fields['time'] > to) {
+        if (fields['time'] <= last_time || fields['time'] > to) {
           continue;
         }
         cirFrames[frame.name].add(fields);
