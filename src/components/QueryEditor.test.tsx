@@ -8,7 +8,7 @@ import { AAQuery, defaultQuery } from '../types';
 
 const setup = (propOverrides?: object) => {
   const datasourceMock: unknown = {
-    createQuery: jest.fn(q => q),
+    createQuery: jest.fn((q) => q),
     pvNamesFindQuery: jest.fn((q, num) => ['PV']),
   };
   const datasource: DataSource = datasourceMock as DataSource;
@@ -22,6 +22,9 @@ const setup = (propOverrides?: object) => {
     aliasPattern: '',
     functions: [],
     refId: 'A',
+    stream: false,
+    strmInt: '',
+    strmCap: '',
   };
 
   const props: any = {
@@ -56,6 +59,12 @@ describe('Render Editor with basic options', () => {
 
   it('should render with alias pattern', () => {
     const props = defaults({ aliasPattern: '.*' }, defaultQuery);
+    const { wrapper } = setup({ query: props });
+    expect(toJson(wrapper)).toMatchSnapshot();
+  });
+
+  it('should render with stream', () => {
+    const props = defaults({ stream: true }, defaultQuery);
     const { wrapper } = setup({ query: props });
     expect(toJson(wrapper)).toMatchSnapshot();
   });

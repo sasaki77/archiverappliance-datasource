@@ -105,7 +105,7 @@ class FunctionParam extends React.PureComponent<FunctionParamProps, State> {
       <div className="aa-func-param">
         <Autosuggest
           suggestions={suggestions}
-          onSuggestionsFetchRequested={e => this.onPVSuggestionsFetchRequested(e, paramDef.options)}
+          onSuggestionsFetchRequested={(e) => this.onPVSuggestionsFetchRequested(e, paramDef.options)}
           onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
           onSuggestionSelected={this.onSuggestionsSelected}
           getSuggestionValue={getSuggestionValue}

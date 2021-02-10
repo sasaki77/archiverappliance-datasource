@@ -13,7 +13,7 @@ const getAllFunctionNames = (categories: { [key: string]: FuncDef[] }) => {
     categories,
     (list, category, key) => {
       const nlist: CascaderOption[] = [];
-      each(category, func => nlist.push({ label: func.name, value: func }));
+      each(category, (func) => nlist.push({ label: func.name, value: func }));
       list.push({ label: key, value: key, children: nlist });
       return list;
     },

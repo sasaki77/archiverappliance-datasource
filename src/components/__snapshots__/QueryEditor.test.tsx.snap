@@ -170,6 +170,46 @@ exports[`Render Editor with basic options should render normally 1`] = `
       value=""
     />
   </div>
+  <div
+    className="gf-form-inline"
+  >
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+  </div>
   <Functions
     funcs={Array []}
     onChange={[Function]}
@@ -346,6 +386,46 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           "color": "#d69e2e",
         }
       }
+      type="text"
+      value=""
+    />
+  </div>
+  <div
+    className="gf-form-inline"
+  >
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
       type="text"
       value=""
     />
@@ -532,6 +612,264 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
       value=".*"
     />
   </div>
+  <div
+    className="gf-form-inline"
+  >
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+  </div>
+  <Functions
+    funcs={Array []}
+    onChange={[Function]}
+    onRunQuery={[MockFunction]}
+  />
+</Fragment>
+`;
+
+exports[`Render Editor with basic options should render with stream 1`] = `
+<Fragment>
+  <div
+    className="gf-form-inline"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      PV
+    </FormLabel>
+    <div
+      className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "PV name",
+            "spellCheck": false,
+            "style": Object {},
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionSelected={[Function]}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+    <Switch
+      checked={false}
+      label="Regex"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Operator
+    </FormLabel>
+    <div
+      className="max-width-30"
+    >
+      <Autosuggest
+        alwaysRenderSuggestions={false}
+        focusInputOnSuggestionClick={true}
+        getSuggestionValue={[Function]}
+        highlightFirstSuggestion={false}
+        id="1"
+        inputProps={
+          Object {
+            "className": "gf-form-input",
+            "onBlur": [MockFunction],
+            "onChange": [Function],
+            "onKeyDown": [Function],
+            "placeholder": "mean",
+            "spellCheck": false,
+            "value": "",
+          }
+        }
+        multiSection={false}
+        onSuggestionSelected={[Function]}
+        onSuggestionsClearRequested={[Function]}
+        onSuggestionsFetchRequested={[Function]}
+        renderSuggestion={[Function]}
+        renderSuggestionsContainer={[Function]}
+        shouldRenderSuggestions={[Function]}
+        suggestions={Array []}
+        theme={
+          Object {
+            "container": "react-autosuggest__container",
+            "containerOpen": "react-autosuggest__container--open",
+            "input": "react-autosuggest__input",
+            "inputFocused": "react-autosuggest__input--focused",
+            "inputOpen": "react-autosuggest__input--open",
+            "sectionContainer": "react-autosuggest__section-container",
+            "sectionContainerFirst": "react-autosuggest__section-container--first",
+            "sectionTitle": "react-autosuggest__section-title",
+            "suggestion": "react-autosuggest__suggestion",
+            "suggestionFirst": "react-autosuggest__suggestion--first",
+            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
+            "suggestionsContainer": "react-autosuggest__suggestions-container",
+            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
+            "suggestionsList": "react-autosuggest__suggestions-list",
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="gf-form"
+  >
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias"
+      style={Object {}}
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Alias pattern
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-30"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="Alias regex pattern"
+      style={
+        Object {
+          "color": "#d69e2e",
+        }
+      }
+      type="text"
+      value=""
+    />
+  </div>
+  <div
+    className="gf-form-inline"
+  >
+    <Switch
+      checked={true}
+      label="Stream"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+  </div>
   <Functions
     funcs={Array []}
     onChange={[Function]}
@@ -706,6 +1044,46 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           "color": "#d69e2e",
         }
       }
+      type="text"
+      value=""
+    />
+  </div>
+  <div
+    className="gf-form-inline"
+  >
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-6  query-keyword"
+      onChange={[Function]}
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-10"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
       type="text"
       value=""
     />

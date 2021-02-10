@@ -7,14 +7,14 @@ import * as math from 'mathjs';
 function scale(factor: number, times: number[], values: number[]) {
   return {
     times: times,
-    values: _.map(values, value => value * factor),
+    values: _.map(values, (value) => value * factor),
   };
 }
 
 function offset(delta: number, times: number[], values: number[]) {
   return {
     times: times,
-    values: _.map(values, value => value + delta),
+    values: _.map(values, (value) => value + delta),
   };
 }
 
@@ -73,7 +73,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
   const funcArgs = args.slice(0, -1);
   const dataFrames: MutableDataFrame[] = args[args.length - 1];
 
-  const tsData = _.map(dataFrames, dataFrame => {
+  const tsData = _.map(dataFrames, (dataFrame) => {
     const timesField = dataFrame.fields[0];
     const valField = dataFrame.fields[1];
     const vals = func(...funcArgs, timesField.values.toArray(), valField.values.toArray());
@@ -100,7 +100,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
 // Filter Series
 function exclude(pattern: string, dataFrames: MutableDataFrame[]) {
   const regex = new RegExp(pattern);
-  return _.filter(dataFrames, dataFrame => {
+  return _.filter(dataFrames, (dataFrame) => {
     const valfield = dataFrame.fields[1];
     const displayName = getFieldDisplayName(valfield, dataFrame);
     return !regex.test(displayName);
@@ -126,7 +126,7 @@ function datapointsSum(values: number[]) {
 }
 
 function datapointsAbsMin(values: number[]) {
-  const minPoint = _.minBy(values, value => Math.abs(value));
+  const minPoint = _.minBy(values, (value) => Math.abs(value));
 
   if (minPoint === undefined) {
     return minPoint;
@@ -135,7 +135,7 @@ function datapointsAbsMin(values: number[]) {
 }
 
 function datapointsAbsMax(values: number[]) {
-  const maxPoint = _.maxBy(values, value => Math.abs(value));
+  const maxPoint = _.maxBy(values, (value) => Math.abs(value));
 
   if (maxPoint === undefined) {
     return maxPoint;

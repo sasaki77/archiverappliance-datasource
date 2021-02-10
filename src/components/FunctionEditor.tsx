@@ -68,10 +68,10 @@ class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEd
         {(showPopper, hidePopper, popperProps) => {
           return (
             <>
-              {this.triggerRef && (
+              {this.triggerRef.current && (
                 <Popover
                   {...popperProps}
-                  referenceElement={this.triggerRef.current || undefined}
+                  referenceElement={this.triggerRef.current}
                   wrapperClassName="popper"
                   className="popper__background"
                   onMouseLeave={() => {

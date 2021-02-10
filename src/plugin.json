@@ -5,6 +5,7 @@
   "type": "datasource",
 
   "metrics": true,
+  "streaming": true,
   "annotations": false,
 
   "info": {
