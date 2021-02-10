@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { FuncDef, FunctionDescriptor } from './types';
 import { MutableDataFrame } from '@grafana/data';
-import { arrayFunctions, seriesFunctions } from 'dataProcessor';
+import { arrayFunctions, seriesFunctions } from './dataProcessor';
 
 const funcIndex: { [key: string]: FuncDef } = {};
 const categories: { [key: string]: FuncDef[] } = {
