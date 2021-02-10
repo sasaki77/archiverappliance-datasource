@@ -9,7 +9,7 @@ import {
   LoadingState,
 } from '@grafana/data';
 import { DataSource } from '../DataSource';
-import { AADataSourceOptions, TargetQuery, AAQuery } from 'types';
+import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
 import { take, toArray } from 'rxjs/operators';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
