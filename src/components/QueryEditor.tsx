@@ -193,7 +193,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             onChange={this.onRegexChange}
           />
         </div>
-        <div className="gf-form">
+        <div className="gf-form-inline">
           <InlineFormLabel
             width={6}
             className="query-keyword"
@@ -215,7 +215,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             Operator
           </InlineFormLabel>
-          <div className="max-width-30">
+          <div className="max-width-30" style={{ marginRight: '4px' }}>
             <Autosuggest
               suggestions={oprSuggestions}
               onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
@@ -235,6 +235,55 @@ export class QueryEditor extends PureComponent<Props, State> {
               }}
             />
           </div>
+          <LegacyForms.Switch
+            checked={query.stream}
+            label="Stream"
+            labelClass={'width-7  query-keyword'}
+            tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+            onChange={this.onStreamChange}
+          />
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
+                <code>1m</code>, <code>1h</code>. The default is determined by width of panel and time range.
+              </p>
+            }
+          >
+            Interval
+          </InlineFormLabel>
+          <input
+            type="text"
+            value={query.strmInt}
+            className="gf-form-input max-width-7"
+            placeholder="auto"
+            onChange={this.onStrmIntChange}
+            onBlur={onRunQuery}
+            onKeyDown={this.onKeydownEnter}
+          />
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
+                detemined by initial data size.
+              </p>
+            }
+          >
+            Capacity
+          </InlineFormLabel>
+          <input
+            type="text"
+            value={query.strmCap}
+            className="gf-form-input max-width-7"
+            placeholder="auto"
+            onChange={this.onStrmCapChange}
+            onBlur={onRunQuery}
+            onKeyDown={this.onKeydownEnter}
+          />
         </div>
         <div className="gf-form">
           <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Set alias for the legend.</p>}>
@@ -278,57 +327,6 @@ export class QueryEditor extends PureComponent<Props, State> {
             placeholder="Alias regex pattern"
             style={{ color: colorYellow }}
             onChange={this.onAliaspatternChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
-        </div>
-        <div className="gf-form-inline">
-          <LegacyForms.Switch
-            checked={query.stream}
-            label="Stream"
-            labelClass={'width-6  query-keyword'}
-            tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-            onChange={this.onStreamChange}
-          />
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
-                <code>1m</code>, <code>1h</code>. The default is determined by width of panel and time range.
-              </p>
-            }
-          >
-            Interval
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.strmInt}
-            className="gf-form-input max-width-10"
-            placeholder="auto"
-            onChange={this.onStrmIntChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
-                detemined by initial data size.
-              </p>
-            }
-          >
-            Capacity
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.strmCap}
-            className="gf-form-input max-width-10"
-            placeholder="auto"
-            onChange={this.onStrmCapChange}
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
           />
