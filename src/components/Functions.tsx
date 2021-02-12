@@ -79,7 +79,17 @@ class Functions extends React.PureComponent<FunctionsProps> {
     return (
       <div className="gf-form-inline">
         <div className="gf-form">
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Functions are used to apply post processing to the data. You can add, move and remove functions. Select
+                preffered functions from categoires. Some functions require parameters. You can edit parameters after
+                adding the function. Functions are applied from left to right.
+              </p>
+            }
+          >
             Functions
           </InlineFormLabel>
         </div>

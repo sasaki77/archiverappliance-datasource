@@ -152,7 +152,16 @@ export class QueryEditor extends PureComponent<Props, State> {
     return (
       <>
         <div className="gf-form-inline">
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation
+                pattern (e.g. <code>(PV:1|PV:2)</code>)
+              </p>
+            }
+          >
             PV
           </InlineFormLabel>
           <div className="max-width-30" style={{ marginRight: '4px' }}>
@@ -179,12 +188,31 @@ export class QueryEditor extends PureComponent<Props, State> {
           <LegacyForms.Switch
             checked={query.regex}
             label="Regex"
-            labelClass={'width-6  query-keyword'}
+            labelClass={'width-7  query-keyword'}
+            tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
             onChange={this.onRegexChange}
           />
         </div>
         <div className="gf-form">
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Controls processing of data during data retrieval. Refer{' '}
+                <a
+                  href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Archiver Appliance User Guide
+                </a>{' '}
+                about processing of data. Special operator <code>raw</code> and <code>last</code> are also available.{' '}
+                <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve
+                the last data in the specified time range.
+              </p>
+            }
+          >
             Operator
           </InlineFormLabel>
           <div className="max-width-30">
@@ -209,7 +237,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           </div>
         </div>
         <div className="gf-form">
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Set alias for the legend.</p>}>
             Alias
           </InlineFormLabel>
           <input
@@ -222,7 +250,25 @@ export class QueryEditor extends PureComponent<Props, State> {
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
           />
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={7}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name.
+                Matched characters within parentheses can be used in <code>Alias</code> text input like <code>$1</code>,{' '}
+                <code>$2</code>, …, <code>$n</code>. Refer the{' '}
+                <a
+                  href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  documentation
+                </a>{' '}
+                for more detail.
+              </p>
+            }
+          >
             Alias pattern
           </InlineFormLabel>
           <input
@@ -241,9 +287,19 @@ export class QueryEditor extends PureComponent<Props, State> {
             checked={query.stream}
             label="Stream"
             labelClass={'width-6  query-keyword'}
+            tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
             onChange={this.onStreamChange}
           />
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
+                <code>1m</code>, <code>1h</code>. The default is determined by width of panel and time range.
+              </p>
+            }
+          >
             Interval
           </InlineFormLabel>
           <input
@@ -255,7 +311,16 @@ export class QueryEditor extends PureComponent<Props, State> {
             onBlur={onRunQuery}
             onKeyDown={this.onKeydownEnter}
           />
-          <InlineFormLabel width={6} className="query-keyword">
+          <InlineFormLabel
+            width={6}
+            className="query-keyword"
+            tooltip={
+              <p>
+                The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
+                detemined by initial data size.
+              </p>
+            }
+          >
             Capacity
           </InlineFormLabel>
           <input
