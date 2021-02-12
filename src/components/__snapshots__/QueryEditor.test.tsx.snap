@@ -7,6 +7,15 @@ exports[`Render Editor with basic options should render normally 1`] = `
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
+          <code>
+            (PV:1|PV:2)
+          </code>
+          )
+        </p>
+      }
       width={6}
     >
       PV
@@ -68,21 +77,59 @@ exports[`Render Editor with basic options should render normally 1`] = `
     <Switch
       checked={false}
       label="Regex"
-      labelClass="width-6  query-keyword"
+      labelClass="width-7  query-keyword"
       onChange={[Function]}
+      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
     />
   </div>
   <div
-    className="gf-form"
+    className="gf-form-inline"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Controls processing of data during data retrieval. Refer
+           
+          <a
+            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Archiver Appliance User Guide
+          </a>
+           
+          about processing of data. Special operator 
+          <code>
+            raw
+          </code>
+           and 
+          <code>
+            last
+          </code>
+           are also available.
+           
+          <code>
+            raw
+          </code>
+           allows to retrieve the data without processing. 
+          <code>
+            last
+          </code>
+           allows to retrieve the last data in the specified time range.
+        </p>
+      }
       width={6}
     >
       Operator
     </FormLabel>
     <div
       className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -129,12 +176,77 @@ exports[`Render Editor with basic options should render normally 1`] = `
         }
       />
     </div>
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-7  query-keyword"
+      onChange={[Function]}
+      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
+          <code>
+            1s
+          </code>
+          ,
+           
+          <code>
+            1m
+          </code>
+          , 
+          <code>
+            1h
+          </code>
+          . The default is determined by width of panel and time range.
+        </p>
+      }
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
+        </p>
+      }
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
   </div>
   <div
     className="gf-form"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set alias for the legend.
+        </p>
+      }
       width={6}
     >
       Alias
@@ -151,7 +263,39 @@ exports[`Render Editor with basic options should render normally 1`] = `
     />
     <FormLabel
       className="query-keyword"
-      width={6}
+      tooltip={
+        <p>
+          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
+          <code>
+            Alias
+          </code>
+           text input like 
+          <code>
+            $1
+          </code>
+          ,
+           
+          <code>
+            $2
+          </code>
+          , …, 
+          <code>
+            $n
+          </code>
+          . Refer the
+           
+          <a
+            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            documentation
+          </a>
+           
+          for more detail.
+        </p>
+      }
+      width={7}
     >
       Alias pattern
     </FormLabel>
@@ -166,46 +310,6 @@ exports[`Render Editor with basic options should render normally 1`] = `
           "color": "#d69e2e",
         }
       }
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <Switch
-      checked={false}
-      label="Stream"
-      labelClass="width-6  query-keyword"
-      onChange={[Function]}
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
       type="text"
       value=""
     />
@@ -225,6 +329,15 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
+          <code>
+            (PV:1|PV:2)
+          </code>
+          )
+        </p>
+      }
       width={6}
     >
       PV
@@ -288,21 +401,59 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
     <Switch
       checked={true}
       label="Regex"
-      labelClass="width-6  query-keyword"
+      labelClass="width-7  query-keyword"
       onChange={[Function]}
+      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
     />
   </div>
   <div
-    className="gf-form"
+    className="gf-form-inline"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Controls processing of data during data retrieval. Refer
+           
+          <a
+            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Archiver Appliance User Guide
+          </a>
+           
+          about processing of data. Special operator 
+          <code>
+            raw
+          </code>
+           and 
+          <code>
+            last
+          </code>
+           are also available.
+           
+          <code>
+            raw
+          </code>
+           allows to retrieve the data without processing. 
+          <code>
+            last
+          </code>
+           allows to retrieve the last data in the specified time range.
+        </p>
+      }
       width={6}
     >
       Operator
     </FormLabel>
     <div
       className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -349,12 +500,77 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         }
       />
     </div>
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-7  query-keyword"
+      onChange={[Function]}
+      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
+          <code>
+            1s
+          </code>
+          ,
+           
+          <code>
+            1m
+          </code>
+          , 
+          <code>
+            1h
+          </code>
+          . The default is determined by width of panel and time range.
+        </p>
+      }
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
+        </p>
+      }
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
   </div>
   <div
     className="gf-form"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set alias for the legend.
+        </p>
+      }
       width={6}
     >
       Alias
@@ -371,7 +587,39 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
     />
     <FormLabel
       className="query-keyword"
-      width={6}
+      tooltip={
+        <p>
+          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
+          <code>
+            Alias
+          </code>
+           text input like 
+          <code>
+            $1
+          </code>
+          ,
+           
+          <code>
+            $2
+          </code>
+          , …, 
+          <code>
+            $n
+          </code>
+          . Refer the
+           
+          <a
+            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            documentation
+          </a>
+           
+          for more detail.
+        </p>
+      }
+      width={7}
     >
       Alias pattern
     </FormLabel>
@@ -386,46 +634,6 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           "color": "#d69e2e",
         }
       }
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <Switch
-      checked={false}
-      label="Stream"
-      labelClass="width-6  query-keyword"
-      onChange={[Function]}
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
       type="text"
       value=""
     />
@@ -445,6 +653,15 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
+          <code>
+            (PV:1|PV:2)
+          </code>
+          )
+        </p>
+      }
       width={6}
     >
       PV
@@ -506,21 +723,59 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
     <Switch
       checked={false}
       label="Regex"
-      labelClass="width-6  query-keyword"
+      labelClass="width-7  query-keyword"
       onChange={[Function]}
+      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
     />
   </div>
   <div
-    className="gf-form"
+    className="gf-form-inline"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Controls processing of data during data retrieval. Refer
+           
+          <a
+            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Archiver Appliance User Guide
+          </a>
+           
+          about processing of data. Special operator 
+          <code>
+            raw
+          </code>
+           and 
+          <code>
+            last
+          </code>
+           are also available.
+           
+          <code>
+            raw
+          </code>
+           allows to retrieve the data without processing. 
+          <code>
+            last
+          </code>
+           allows to retrieve the last data in the specified time range.
+        </p>
+      }
       width={6}
     >
       Operator
     </FormLabel>
     <div
       className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -567,12 +822,77 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         }
       />
     </div>
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-7  query-keyword"
+      onChange={[Function]}
+      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
+          <code>
+            1s
+          </code>
+          ,
+           
+          <code>
+            1m
+          </code>
+          , 
+          <code>
+            1h
+          </code>
+          . The default is determined by width of panel and time range.
+        </p>
+      }
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
+        </p>
+      }
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
   </div>
   <div
     className="gf-form"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set alias for the legend.
+        </p>
+      }
       width={6}
     >
       Alias
@@ -593,7 +913,39 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
     />
     <FormLabel
       className="query-keyword"
-      width={6}
+      tooltip={
+        <p>
+          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
+          <code>
+            Alias
+          </code>
+           text input like 
+          <code>
+            $1
+          </code>
+          ,
+           
+          <code>
+            $2
+          </code>
+          , …, 
+          <code>
+            $n
+          </code>
+          . Refer the
+           
+          <a
+            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            documentation
+          </a>
+           
+          for more detail.
+        </p>
+      }
+      width={7}
     >
       Alias pattern
     </FormLabel>
@@ -612,46 +964,6 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
       value=".*"
     />
   </div>
-  <div
-    className="gf-form-inline"
-  >
-    <Switch
-      checked={false}
-      label="Stream"
-      labelClass="width-6  query-keyword"
-      onChange={[Function]}
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
   <Functions
     funcs={Array []}
     onChange={[Function]}
@@ -667,6 +979,15 @@ exports[`Render Editor with basic options should render with stream 1`] = `
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
+          <code>
+            (PV:1|PV:2)
+          </code>
+          )
+        </p>
+      }
       width={6}
     >
       PV
@@ -728,21 +1049,59 @@ exports[`Render Editor with basic options should render with stream 1`] = `
     <Switch
       checked={false}
       label="Regex"
-      labelClass="width-6  query-keyword"
+      labelClass="width-7  query-keyword"
       onChange={[Function]}
+      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
     />
   </div>
   <div
-    className="gf-form"
+    className="gf-form-inline"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Controls processing of data during data retrieval. Refer
+           
+          <a
+            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Archiver Appliance User Guide
+          </a>
+           
+          about processing of data. Special operator 
+          <code>
+            raw
+          </code>
+           and 
+          <code>
+            last
+          </code>
+           are also available.
+           
+          <code>
+            raw
+          </code>
+           allows to retrieve the data without processing. 
+          <code>
+            last
+          </code>
+           allows to retrieve the last data in the specified time range.
+        </p>
+      }
       width={6}
     >
       Operator
     </FormLabel>
     <div
       className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -789,12 +1148,77 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         }
       />
     </div>
+    <Switch
+      checked={true}
+      label="Stream"
+      labelClass="width-7  query-keyword"
+      onChange={[Function]}
+      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
+          <code>
+            1s
+          </code>
+          ,
+           
+          <code>
+            1m
+          </code>
+          , 
+          <code>
+            1h
+          </code>
+          . The default is determined by width of panel and time range.
+        </p>
+      }
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
+        </p>
+      }
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
   </div>
   <div
     className="gf-form"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set alias for the legend.
+        </p>
+      }
       width={6}
     >
       Alias
@@ -811,7 +1235,39 @@ exports[`Render Editor with basic options should render with stream 1`] = `
     />
     <FormLabel
       className="query-keyword"
-      width={6}
+      tooltip={
+        <p>
+          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
+          <code>
+            Alias
+          </code>
+           text input like 
+          <code>
+            $1
+          </code>
+          ,
+           
+          <code>
+            $2
+          </code>
+          , …, 
+          <code>
+            $n
+          </code>
+          . Refer the
+           
+          <a
+            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            documentation
+          </a>
+           
+          for more detail.
+        </p>
+      }
+      width={7}
     >
       Alias pattern
     </FormLabel>
@@ -826,46 +1282,6 @@ exports[`Render Editor with basic options should render with stream 1`] = `
           "color": "#d69e2e",
         }
       }
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <Switch
-      checked={true}
-      label="Stream"
-      labelClass="width-6  query-keyword"
-      onChange={[Function]}
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
       type="text"
       value=""
     />
@@ -885,6 +1301,15 @@ exports[`Render Editor with basic options should render with top function 1`] = 
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
+          <code>
+            (PV:1|PV:2)
+          </code>
+          )
+        </p>
+      }
       width={6}
     >
       PV
@@ -946,21 +1371,59 @@ exports[`Render Editor with basic options should render with top function 1`] = 
     <Switch
       checked={false}
       label="Regex"
-      labelClass="width-6  query-keyword"
+      labelClass="width-7  query-keyword"
       onChange={[Function]}
+      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
     />
   </div>
   <div
-    className="gf-form"
+    className="gf-form-inline"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Controls processing of data during data retrieval. Refer
+           
+          <a
+            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Archiver Appliance User Guide
+          </a>
+           
+          about processing of data. Special operator 
+          <code>
+            raw
+          </code>
+           and 
+          <code>
+            last
+          </code>
+           are also available.
+           
+          <code>
+            raw
+          </code>
+           allows to retrieve the data without processing. 
+          <code>
+            last
+          </code>
+           allows to retrieve the last data in the specified time range.
+        </p>
+      }
       width={6}
     >
       Operator
     </FormLabel>
     <div
       className="max-width-30"
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -1007,12 +1470,77 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         }
       />
     </div>
+    <Switch
+      checked={false}
+      label="Stream"
+      labelClass="width-7  query-keyword"
+      onChange={[Function]}
+      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
+          <code>
+            1s
+          </code>
+          ,
+           
+          <code>
+            1m
+          </code>
+          , 
+          <code>
+            1h
+          </code>
+          . The default is determined by width of panel and time range.
+        </p>
+      }
+      width={6}
+    >
+      Interval
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
+        </p>
+      }
+      width={6}
+    >
+      Capacity
+    </FormLabel>
+    <input
+      className="gf-form-input max-width-7"
+      onBlur={[MockFunction]}
+      onChange={[Function]}
+      onKeyDown={[Function]}
+      placeholder="auto"
+      type="text"
+      value=""
+    />
   </div>
   <div
     className="gf-form"
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Set alias for the legend.
+        </p>
+      }
       width={6}
     >
       Alias
@@ -1029,7 +1557,39 @@ exports[`Render Editor with basic options should render with top function 1`] = 
     />
     <FormLabel
       className="query-keyword"
-      width={6}
+      tooltip={
+        <p>
+          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
+          <code>
+            Alias
+          </code>
+           text input like 
+          <code>
+            $1
+          </code>
+          ,
+           
+          <code>
+            $2
+          </code>
+          , …, 
+          <code>
+            $n
+          </code>
+          . Refer the
+           
+          <a
+            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            documentation
+          </a>
+           
+          for more detail.
+        </p>
+      }
+      width={7}
     >
       Alias pattern
     </FormLabel>
@@ -1044,46 +1604,6 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           "color": "#d69e2e",
         }
       }
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <Switch
-      checked={false}
-      label="Stream"
-      labelClass="width-6  query-keyword"
-      onChange={[Function]}
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-10"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
       type="text"
       value=""
     />

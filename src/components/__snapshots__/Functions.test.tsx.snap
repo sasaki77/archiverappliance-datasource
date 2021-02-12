@@ -9,6 +9,11 @@ exports[`Render should render component 1`] = `
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Functions are used to apply post processing to the data. You can add, move and remove functions. Select preffered functions from categoires. Some functions require parameters. You can edit parameters after adding the function. Functions are applied from left to right.
+        </p>
+      }
       width={6}
     >
       Functions
@@ -43,6 +48,11 @@ exports[`Render should render with functions 1`] = `
   >
     <FormLabel
       className="query-keyword"
+      tooltip={
+        <p>
+          Functions are used to apply post processing to the data. You can add, move and remove functions. Select preffered functions from categoires. Some functions require parameters. You can edit parameters after adding the function. Functions are applied from left to right.
+        </p>
+      }
       width={6}
     >
       Functions
