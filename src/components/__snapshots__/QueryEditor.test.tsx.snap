@@ -30,6 +30,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -52,6 +53,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -133,6 +135,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -154,6 +157,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -352,6 +356,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -376,6 +381,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -457,6 +463,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -478,6 +485,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -676,6 +684,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -698,6 +707,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -779,6 +789,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -800,6 +811,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -1002,6 +1014,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -1024,6 +1037,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -1105,6 +1119,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -1126,6 +1141,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -1324,6 +1340,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -1346,6 +1363,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
@@ -1427,6 +1445,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
+        containerProps={Object {}}
         focusInputOnSuggestionClick={true}
         getSuggestionValue={[Function]}
         highlightFirstSuggestion={false}
@@ -1448,6 +1467,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         onSuggestionsFetchRequested={[Function]}
         renderSuggestion={[Function]}
         renderSuggestionsContainer={[Function]}
+        shouldKeepSuggestionsOnSelect={[Function]}
         shouldRenderSuggestions={[Function]}
         suggestions={Array []}
         theme={
