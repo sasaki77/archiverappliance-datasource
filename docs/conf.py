@@ -38,6 +38,7 @@ extensions = [
     "sphinx_rtd_theme",
     'recommonmark',
     'sphinx.ext.autosectionlabel',
+    'sphinx_markdown_tables',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,6 +65,10 @@ pygments_style = 'sphinx'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+source_parsers = {
+    '.md': 'recommonmark.parser.CommonMarkParser',
+}
+
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
@@ -86,5 +91,6 @@ def setup(app):
         'enable_eval_rst': True,
         }, True)
     app.add_transform(AutoStructify)
+    app.add_stylesheet('css/custom.css')
 
 autosectionlabel_prefix_document = True
