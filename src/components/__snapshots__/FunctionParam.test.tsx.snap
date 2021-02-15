@@ -6,6 +6,7 @@ exports[`Render should render component 1`] = `
 >
   <Autosuggest
     alwaysRenderSuggestions={false}
+    containerProps={Object {}}
     focusInputOnSuggestionClick={true}
     getSuggestionValue={[Function]}
     highlightFirstSuggestion={false}
@@ -32,6 +33,7 @@ exports[`Render should render component 1`] = `
     onSuggestionsFetchRequested={[Function]}
     renderSuggestion={[Function]}
     renderSuggestionsContainer={[Function]}
+    shouldKeepSuggestionsOnSelect={[Function]}
     shouldRenderSuggestions={[Function]}
     suggestions={Array []}
     theme={
