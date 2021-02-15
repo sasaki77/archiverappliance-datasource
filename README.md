@@ -30,11 +30,11 @@ This section lists the available configuration options for the Archiver Applianc
 | Configuration | Description |
 |---------------|-------------|
 | **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`). |
-| **Regex** | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex). |
+| **Regex** | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](https://sasaki77.github.io/archiverappliance-datasource/query.html#select-multiple-pvs-by-regex). |
 | **Operator** | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
 | **Alias** | Set alias for legend. |
-| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern) |
-| **Function** | Apply processing function for retrieved data. Refer [Apply Processing Functions](#apply-processing-functions) |
+| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern) |
+| **Function** | Apply processing function for retrieved data. Refer [Apply Processing Functions](https://sasaki77.github.io/archiverappliance-datasource/query.html#apply-processing-functions) |
 
 ### Variables
 
