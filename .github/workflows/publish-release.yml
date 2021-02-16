@@ -1,0 +1,70 @@
+name: publish-release.yml
+on:
+  push:
+    tags:
+    - '*' # run this action exclusively on tags
+jobs:
+  build-and-test-plugin:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12]
+        continue-on-error: [false]
+    continue-on-error: ${{ matrix.continue-on-error }}
+    steps:
+      - name: Checkout Github repository
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Setup Go environment 
+        uses: actions/setup-go@v2
+      - name: Run Go tests using Mage
+        uses: magefile/mage-action@v1
+        with:
+          version: latest
+          args: vtest
+      - name: Run Mage
+        uses: magefile/mage-action@v1
+        with:
+          version: latest
+          args: -v buildAll
+      - name: Install Frontend Tools
+        run: |
+          npm install -g yarn
+          yarn install
+      - name: Build Frontend
+        run: |
+          yarn build
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            This release as been been automatically generated.
+          draft: false
+          prerelease: true
+      - name: Prepare Release
+        run: |
+          REPO_DIRECTORY=${PWD##*/}
+          ls
+          pushd ../
+          zip -r $REPO_DIRECTORY/archiver-datasource-backend.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
+          popd
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./archiver-datasource-backend.zip
+          asset_name: archiver-datasource-backend.zip
+          asset_content_type: application/zip
