@@ -7,6 +7,9 @@
   "metrics": true,
   "streaming": true,
   "annotations": false,
+  "backend": true,
+  "alerting": true,
+  "executable": "gpx_archiver-datasource-backend",
 
   "info": {
     "description": "Archiver Appliance Datasource",
