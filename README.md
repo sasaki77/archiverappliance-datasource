@@ -14,9 +14,25 @@ See [Archiver Appliance site](https://slacmshankar.github.io/epicsarchiver_docs/
 - Using PV names for Grafana variables
 - Transform your data with processing functions
 
-## Installation
+## Installing the plugin
+
+### Install using releases
+
+1. Download a pre-built release from the releases page.
+
+2. Unzip the contents in the Grafana plugins folder.
+
+3. This plugin is unsigned. It must be specially listed by name in the Grafana `configure.ini` file to allow Grafana to use it. Add `https://github.com/n-wbrown/archiver-datasource-backend` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section.
+
+### Install using Git
 
 Clone this plugin into grafana plugins directory; the default is /var/lib/grafana/plugins.
+
+### Configuring the plugin
+
+Please consult [https://sasaki77.github.io/archiverappliance-datasource/configuration.html] for instructions to configure the plugin following installation.
+
+###
 
 ## Documentaion
 Documentation is available at [https://sasaki77.github.io/archiverappliance-datasource](https://sasaki77.github.io/archiverappliance-datasource).
