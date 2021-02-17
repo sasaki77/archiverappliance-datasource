@@ -138,3 +138,12 @@ source env/bin/activate
 pip install sphinx commonmark recommonmark sphinx_rtd_theme sphinx-markdown-tables
 make html
 ```
+
+## Build Status
+
+| Build: | Status: | 
+| :---: | :---: | 
+| Latest release | ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/publish-release.yml/badge.svg) |
+| Master Branch | ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/build-and-test.yml/badge.svg?branch=master)
+| Local Master Branch | ![awaiting build](../../workflows/build-and-test.yml/badge.svg?branch=master)
+| Local Latest Branch | ![awaiting build](../../workflows/build-and-test.yml/badge.svg?)
