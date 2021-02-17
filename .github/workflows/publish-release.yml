@@ -6,6 +6,8 @@ on:
 jobs:
   build-and-test-plugin:
     runs-on: ubuntu-latest
+    env:
+      zip-name: archiverappliance-datasource
     strategy:
       matrix:
         node: [12]
@@ -27,19 +29,22 @@ jobs:
         with:
           version: latest
           args: vtest
-      - name: Run Mage
+      - name: Build backend
         uses: magefile/mage-action@v1
         with:
           version: latest
           args: -v buildAll
-      - name: Install Frontend Tools
+      - name: Install frontend tools
         run: |
           npm install -g yarn
           yarn install
-      - name: Build Frontend
+      - name: List all Yarn packages
+        run: | 
+          yarn list
+      - name: Build frontend
         run: |
           yarn build
-      - name: Create Release
+      - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -52,19 +57,22 @@ jobs:
           draft: false
           prerelease: true
       - name: Prepare Release
+        env:
+          ZIP_NAME: ${{ env.zip-name }}
         run: |
           REPO_DIRECTORY=${PWD##*/}
           ls
           pushd ../
-          zip -r $REPO_DIRECTORY/archiver-datasource-backend.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
+          zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZIP_NAME: ${{ env.zip-name }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./archiver-datasource-backend.zip
-          asset_name: archiver-datasource-backend.zip
+          asset_path: ./$ZIP_NAME.zip
+          asset_name: $ZIP_NAME.zip
           asset_content_type: application/zip
