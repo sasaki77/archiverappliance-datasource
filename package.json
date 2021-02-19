@@ -1,9 +1,6 @@
 {
   "name": "sasaki77-archiver-appliance",
   "private": true,
-  "backend": true,
-  "alerting": true,
-  "executable": "gpx_archiver-datasource-backend",
   "version": "1.2.0",
   "description": "ArchiverAppliance",
   "main": "index.js",
