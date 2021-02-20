@@ -1,5 +1,6 @@
 {
   "name": "sasaki77-archiver-appliance",
+  "alerting": true,
   "private": true,
   "version": "1.2.0",
   "description": "ArchiverAppliance",
