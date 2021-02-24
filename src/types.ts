@@ -132,6 +132,7 @@ export function isNumberArray(response: AADataQueryData): response is AADataQuer
  */
 export interface AADataSourceOptions extends DataSourceJsonData {
   path?: string;
+  useBackend?: boolean;
 }
 
 /**
