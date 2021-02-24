@@ -4,7 +4,6 @@ import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { LegacyForms } from '@grafana/ui';
 import { AADataSourceOptions } from '../types';
 
-
 export type Props = DataSourcePluginOptionsEditorProps<AADataSourceOptions>;
 
 export class ConfigEditor extends PureComponent<Props> {
