@@ -852,6 +852,7 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data with strmInt while without strmCap', (done) => {
+      jest.setTimeout(10000);
       datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
@@ -875,7 +876,7 @@ describe('Archiverappliance Datasource', () => {
 
       const now = Date.now();
       const query = ({
-        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '2000' }],
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '3000' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
@@ -897,13 +898,14 @@ describe('Archiverappliance Datasource', () => {
 
         const diff = timesArray[2] - timesArray[0];
         expect(diff).toBeGreaterThanOrEqual(2000);
-        expect(diff).toBeLessThan(3000);
+        expect(diff).toBeLessThan(4000);
 
         done();
       });
     });
 
     it('should return stream data with unit strmInt while without strmCap', (done) => {
+      jest.setTimeout(10000);
       datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
@@ -927,7 +929,7 @@ describe('Archiverappliance Datasource', () => {
 
       const now = Date.now();
       const query = ({
-        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '2s' }],
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '3s' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
@@ -949,7 +951,7 @@ describe('Archiverappliance Datasource', () => {
 
         const diff = timesArray[2] - timesArray[0];
         expect(diff).toBeGreaterThanOrEqual(2000);
-        expect(diff).toBeLessThan(3000);
+        expect(diff).toBeLessThan(4000);
 
         done();
       });
