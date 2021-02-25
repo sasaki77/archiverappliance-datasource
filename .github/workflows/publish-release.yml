@@ -75,3 +75,20 @@ jobs:
           asset_path: ./${{ env.zip-name }}.zip
           asset_name: ${{ env.zip-name }}.zip
           asset_content_type: application/zip
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Python Dependencies 
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
+      - name: Build Sphinx Documentation
+        run: | 
+          cd docs
+          make html
+      - name: Deploy Documentation to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build
