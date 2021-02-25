@@ -37,7 +37,7 @@ export class ConfigEditor extends PureComponent<Props> {
               checked={options.jsonData.useBackend ?? false}
               label="Use Backend"
               labelClass={'width-13'}
-              tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+              tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
               onChange={this.onUseBEChange}
             />
           </div>

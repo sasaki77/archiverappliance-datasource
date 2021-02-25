@@ -51,7 +51,7 @@ exports[`Render should render component 1`] = `
         label="Use Backend"
         labelClass="width-13"
         onChange={[Function]}
-        tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+        tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
       />
     </div>
   </div>
