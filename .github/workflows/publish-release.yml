@@ -18,63 +18,63 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      # - name: Setup NodeJS environment
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: ${{ matrix.node }}
-      # - name: Setup Go environment 
-      #   uses: actions/setup-go@v2
-      # - name: Run Go tests using Mage
-      #   uses: magefile/mage-action@v1
-      #   with:
-      #     version: latest
-      #     args: vtest
-      # - name: Build backend
-      #   uses: magefile/mage-action@v1
-      #   with:
-      #     version: latest
-      #     args: -v buildAll
-      # - name: Install frontend tools
-      #   run: |
-      #     npm install -g yarn
-      #     yarn install
-      # - name: List all Yarn packages
-      #   run: | 
-      #     yarn list
-      # - name: Build frontend
-      #   run: |
-      #     yarn build
-      # - name: Create release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ github.ref }}
-      #     body: |
-      #       This release as been been automatically generated.
-      #     draft: false
-      #     prerelease: true
-      # - name: Prepare Release
-      #   env:
-      #     ZIP_NAME: ${{ env.zip-name }}
-      #   run: |
-      #     REPO_DIRECTORY=${PWD##*/}
-      #     ls
-      #     pushd ../
-      #     zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
-      #     popd
-      # - name: Upload Release Asset
-      #   id: upload-release-asset 
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-      #     asset_path: ./${{ env.zip-name }}.zip
-      #     asset_name: ${{ env.zip-name }}.zip
-      #     asset_content_type: application/zip
+      - name: Setup NodeJS environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Setup Go environment 
+        uses: actions/setup-go@v2
+      - name: Run Go tests using Mage
+        uses: magefile/mage-action@v1
+        with:
+          version: latest
+          args: vtest
+      - name: Build backend
+        uses: magefile/mage-action@v1
+        with:
+          version: latest
+          args: -v buildAll
+      - name: Install frontend tools
+        run: |
+          npm install -g yarn
+          yarn install
+      - name: List all Yarn packages
+        run: | 
+          yarn list
+      - name: Build frontend
+        run: |
+          yarn build
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            This release as been been automatically generated.
+          draft: false
+          prerelease: true
+      - name: Prepare Release
+        env:
+          ZIP_NAME: ${{ env.zip-name }}
+        run: |
+          REPO_DIRECTORY=${PWD##*/}
+          ls
+          pushd ../
+          zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
+          popd
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./${{ env.zip-name }}.zip
+          asset_name: ${{ env.zip-name }}.zip
+          asset_content_type: application/zip
       - name: Set up Python environment
         uses: actions/setup-python@v2
         with:
