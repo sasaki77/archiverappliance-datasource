@@ -2,13 +2,12 @@ import _ from 'lodash';
 import { Observable, Subscriber, from } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import ms from 'ms';
-import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { DataSourceWithBackend, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import {
   CircularDataFrame,
   DataQueryResponse,
   DataQueryRequest,
   DataSourceInstanceSettings,
-  DataSourceApi,
   MutableDataFrame,
   FieldType,
   getFieldDisplayName,
@@ -25,9 +24,10 @@ import {
 } from './types';
 import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
 
-export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
+export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
   name: string;
+  useBackend?: boolean | undefined;
   withCredentials?: boolean;
   headers: { [key: string]: string };
   timerIDs: { [key: string]: any };
@@ -36,6 +36,7 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
     super(instanceSettings);
     this.url = instanceSettings.url;
     this.name = instanceSettings.name;
+    this.useBackend = instanceSettings.jsonData.useBackend;
     this.withCredentials = instanceSettings.withCredentials;
     this.headers = { 'Content-Type': 'application/json' };
     this.timerIDs = {};
@@ -62,6 +63,9 @@ export class DataSource extends DataSourceApi<AAQuery, AADataSourceOptions> {
 
     // No stream query
     if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== 'now') {
+      if (this.useBackend) {
+          return super.query(options);
+      }
       return from(this.doQuery(targets));
     }
 

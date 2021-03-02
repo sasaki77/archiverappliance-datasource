@@ -6,6 +6,7 @@ import {
   DataSourceInstanceSettings,
   DataQueryRequest,
 } from '@grafana/data';
+import * as runtime from '@grafana/runtime'
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
 import { seriesFunctions } from '../dataProcessor';
@@ -13,17 +14,16 @@ import { AAQuery, AADataSourceOptions } from '../types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
-jest.mock(
-  '@grafana/runtime',
-  () => ({
-    getBackendSrv: () => ({
-      datasourceRequest: datasourceRequestMock,
-    }),
-    getTemplateSrv: () => ({
-      replace: jest.fn().mockImplementation((query) => query),
-    }),
-  }),
-  { virtual: true }
+jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
+  () => {
+    return {datasourceRequest: datasourceRequestMock} as any as runtime.BackendSrv;
+  }
+);
+
+jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
+  () => {
+      return {replace: jest.fn().mockImplementation((query) => query)} as any as runtime.TemplateSrv;
+  }
 );
 
 beforeEach(() => {
@@ -51,6 +51,9 @@ describe('Archiverappliance Functions', () => {
   beforeEach(() => {
     const instanceSettings = ({
       url: 'url_header:',
+      jsonData: {
+        useBackend: false
+      },
     } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
     ds = new DataSource(instanceSettings);
   });
