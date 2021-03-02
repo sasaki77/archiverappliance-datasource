@@ -7,7 +7,7 @@ on:
 jobs:
   build-publish-docs:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout Github repository
         uses: actions/checkout@v2
