@@ -83,3 +83,14 @@ To see details of each function, refer [Functions](functions).
 
 ``` Note:: Functions are applied from left to right.
 ```
+
+## Alerts
+The plugin supports alerts. Alerts allow you to notify and identify problems.
+You can create alerts on `Alert` tab.
+
+See [Grafana Documentation](https://grafana.com/docs/grafana/latest/alerting/) for more information about alerts.
+
+![Alerts](./img/aa-alerts.png)
+
+``` Note:: Go backend included in the plugin reteives archived data from Archiver Appliance to calculate alert condition.
+```

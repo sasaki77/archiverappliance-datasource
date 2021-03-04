@@ -1,4 +1,17 @@
 # Release Notes
+## 1.3.0
+
+**2021-03-XX**
+
+### Features / Enhancements
+- Add stream feature for live updating
+- Add Go Backend and alerts feature
+- Add "Use Backend" button for configuration
+- Add help text for the query fields
+
+### Bug fixes
+- Fix text width of Function parmeter during focusing on it
+
 ## 1.2.0
 
 **2020-10-30**
