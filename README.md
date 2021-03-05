@@ -13,6 +13,8 @@ See [Archiver Appliance site](https://slacmshankar.github.io/epicsarchiver_docs/
 - Data retrieval with data processing (See [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) for processing of data)
 - Using PV names for Grafana variables
 - Transform your data with processing functions
+- Live update with stream feature
+- Find and notify problems with alerting feature
 
 ## Installing the plugin
 
@@ -22,7 +24,7 @@ See [Archiver Appliance site](https://slacmshankar.github.io/epicsarchiver_docs/
 
 2. Unzip the contents in the Grafana plugins folder.
 
-3. This plugin is unsigned. It must be specially listed by name in the Grafana `configure.ini` file to allow Grafana to use it. Add `https://github.com/n-wbrown/archiver-datasource-backend` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section.
+3. This plugin is unsigned. It must be specially listed by name in the Grafana `grafana.ini` file to allow Grafana to use it. Add `sasaki77-archiverappliance-datasource` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section.
 
 ### Install using Git
 
@@ -48,6 +50,9 @@ This section lists the available configuration options for the Archiver Applianc
 | **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`). |
 | **Regex** | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](https://sasaki77.github.io/archiverappliance-datasource/query.html#select-multiple-pvs-by-regex). |
 | **Operator** | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
+| **Stream** | Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.|
+| **Interval** | Streaming interval in milliseconds. You can also use a number with unit. e.g. `1s`, `1m`, `1h`. The default is determined by a width of panel and time range. |
+| **Capacity** | The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size. | 
 | **Alias** | Set alias for legend. |
 | **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern) |
 | **Function** | Apply processing function for retrieved data. Refer [Apply Processing Functions](https://sasaki77.github.io/archiverappliance-datasource/query.html#apply-processing-functions) |

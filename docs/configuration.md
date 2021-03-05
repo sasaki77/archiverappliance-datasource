@@ -25,3 +25,6 @@ more information.
 
 ### Auth
 Basically, no need to configure.
+
+### Misc
+- **Use Backend:** enable GO backend to retrieve the archive data for visualization. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client.
