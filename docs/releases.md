@@ -1,7 +1,7 @@
 # Release Notes
 ## 1.3.0
 
-**2021-03-XX**
+**2021-03-05**
 
 ### Features / Enhancements
 - Add stream feature for live updating
