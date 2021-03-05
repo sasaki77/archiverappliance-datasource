@@ -87,11 +87,8 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-with-git">Install with git</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#update">Update</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#install-with-tar-gz-file-or-zip-file">Install with .tar.gz file or .zip file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-using-releases">Install using releases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-using-git">Install using git</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -99,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="variables.html">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tips.html">Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
 </ul>
 
@@ -174,55 +172,19 @@
 <p>This plugin is not registered in Grafana Plugin Repository.
 Please put this plugin into your grafana plugins directory;
 the default path is <code class="docutils literal notranslate"><span class="pre">/var/lib/grafana/plugins</span></code>.</p>
-<div class="section" id="install-with-git">
-<h2>Install with git<a class="headerlink" href="#install-with-git" title="Permalink to this headline">¶</a></h2>
-<p>Clone the codes with tag specication from GitHub.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone -b &lt;verion&gt; https://github.com/sasaki77/archiverappliance-datasource
-</pre></div>
-</div>
-<p>For example, you can install v1.0.0 as following.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone -b <span class="m">1</span>.0.0 https://github.com/sasaki77/archiverappliance-datasource
-</pre></div>
-</div>
-<p>Restart Grafana after cloning.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl restart grafana-server
-</pre></div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Master branch has no longer dist folder from v1.0.0. Therefore, you can’t install it with master branch without build.</p>
-</div>
-<div class="section" id="update">
-<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
-<p>To update the plugin, fetch repository from GitHub and checkout with version tag.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git fetch
-git checkout -b &lt;version&gt; &lt;version&gt;
-</pre></div>
-</div>
-<p>Verion list is available with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-l</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git tag -l
-<span class="m">0</span>.1.0
-<span class="m">0</span>.1.1
-<span class="m">0</span>.1.2
-<span class="m">1</span>.0.0
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="install-with-tar-gz-file-or-zip-file">
-<h2>Install with .tar.gz file or .zip file<a class="headerlink" href="#install-with-tar-gz-file-or-zip-file" title="Permalink to this headline">¶</a></h2>
-<p>Download the <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> file or <code class="docutils literal notranslate"><span class="pre">.zip</span></code> file and extract it into your grafana plugins directory.</p>
-<p>Download link is available on <a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource/releases">GitHub release page</a>.</p>
-<p>For example, you can install v1.0.0 as following.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sasaki77</span><span class="o">/</span><span class="n">archiverappliance</span><span class="o">-</span><span class="n">datasource</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="mf">1.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-<span class="n">tar</span> <span class="o">-</span><span class="n">zxvf</span> <span class="mf">1.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-</pre></div>
-</div>
-<p>Restart Grafana.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl restart grafana-server
-</pre></div>
-</div>
+<div class="section" id="install-using-releases">
+<h2>Install using releases<a class="headerlink" href="#install-using-releases" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>Download a pre-built release from the <a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource/releases">releases page</a>.</p></li>
+<li><p>Unzip the contents in the Grafana plugins folder. The default path is <code class="docutils literal notranslate"><span class="pre">/var/lib/grafana/plugins</span></code>.</p></li>
+<li><p>This plugin is unsigned. It must be specially listed by name in the Grafana <code class="docutils literal notranslate"><span class="pre">grafana.ini</span></code> file to allow Grafana to use it. Add <code class="docutils literal notranslate"><span class="pre">sasaki77-archiverappliance-datasource</span></code> to the <code class="docutils literal notranslate"><span class="pre">allow_loading_unsigned_plugins</span></code> parameter in the <code class="docutils literal notranslate"><span class="pre">[plugins]</span></code> section.</p></li>
+</ol>
 <p>To update the plugin, follow the same step and remove the previous version.</p>
+</div>
+<div class="section" id="install-using-git">
+<h2>Install using git<a class="headerlink" href="#install-using-git" title="Permalink to this headline">¶</a></h2>
+<p>We decided not to provide a git branch for a installation from version 1.3.0.</p>
+<p>To install using git, please refer the development page.</p>
 </div>
 </div>
 

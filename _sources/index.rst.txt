@@ -20,6 +20,8 @@ Features
 * Data retrieval with data processing (See `Archiver Appliance User Guide <https://slacmshankar.github.io/epicsarchiver_docs/userguide.html>`_ for processing of data)
 * Using PV names for Grafana variables
 * Transform your data with processing functions
+* Live update with stream feature
+* Find and notify problems with alerting feature
 
 Documentation
 -------------
@@ -32,4 +34,5 @@ Documentation
    variables
    functions
    tips
+   development
    releases
