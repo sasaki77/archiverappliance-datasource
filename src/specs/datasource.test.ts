@@ -1210,7 +1210,7 @@ describe('Archiverappliance Datasource', () => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
-        const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
+        const data = [`${pvname}${limit}`];
 
         return Promise.resolve({
           _request: request,
@@ -1219,12 +1219,8 @@ describe('Archiverappliance Datasource', () => {
       });
 
       ds.metricFindQuery('PV?limit=5').then((result: any) => {
-        expect(result).toHaveLength(5);
-        expect(result[0].text).toBe('PV0');
-        expect(result[1].text).toBe('PV1');
-        expect(result[2].text).toBe('PV2');
-        expect(result[3].text).toBe('PV3');
-        expect(result[4].text).toBe('PV4');
+        expect(result).toHaveLength(1);
+        expect(result[0].text).toBe('PV5');
         done();
       });
     });
@@ -1234,7 +1230,7 @@ describe('Archiverappliance Datasource', () => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
-        const data = [...Array(limit).keys()].map((i) => `${pvname}${i}`);
+        const data = [`${pvname}${limit}`];
 
         return Promise.resolve({
           _request: request,
@@ -1243,7 +1239,8 @@ describe('Archiverappliance Datasource', () => {
       });
 
       ds.metricFindQuery('PV?limit=a').then((result: any) => {
-        expect(result).toHaveLength(100);
+        expect(result).toHaveLength(1);
+        expect(result[0].text).toBe('PV100');
         done();
       });
     });
