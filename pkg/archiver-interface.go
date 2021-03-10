@@ -61,7 +61,6 @@ func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.Chec
 }
 
 func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery, pluginctx backend.PluginContext) backend.DataResponse {
-
     // Unmarshal the json into our queryModel
     var qm ArchiverQueryModel
 
@@ -113,7 +112,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 
         // add values 
         frame.Fields = append(frame.Fields, 
-            data.NewField("values", nil, singleResponse.Values),
+            data.NewField(singleResponse.Name, nil, singleResponse.Values),
         )
 
         // add the frames to the response
