@@ -294,3 +294,26 @@ func TestIsolateBasicQuery(t *testing.T) {
         })
     }
 }
+
+func TestFrameBuilder(t *testing.T) {
+    var tests = []struct{
+        sD SingleData
+        name string
+    }{
+        {
+            sD: SingleData{
+                Name: "testing_name",
+            },
+            name: "testing_name",
+        },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s", idx, testCase.name)
+        t.Run(testName, func(t *testing.T) {
+            result := FrameBuilder(testCase.sD)
+            if testCase.name != result.Fields[1].Name {
+                t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
+            }
+        })
+    }
+}

@@ -11,6 +11,7 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
 type ArchiverQueryModel struct {
@@ -282,3 +283,19 @@ func IsolateBasicQuery(unparsed string) []string {
     return result
 }
 
+func FrameBuilder(singleResponse SingleData) *data.Frame {
+        // create data frame response
+        frame := data.NewFrame("response")
+
+        //add the time dimension
+        frame.Fields = append(frame.Fields,
+            data.NewField("time", nil, singleResponse.Times),
+        )
+
+        // add values 
+        frame.Fields = append(frame.Fields,
+            data.NewField(singleResponse.Name, nil, singleResponse.Values),
+        )
+
+        return frame
+}
