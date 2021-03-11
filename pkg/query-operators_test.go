@@ -29,6 +29,7 @@ func TestOperatorValidator(t *testing.T) {
 func TestCreateOperatorQuery(t *testing.T) {
     var tests = []struct{
         input ArchiverQueryModel
+        
         output string
     }{
         {
@@ -68,6 +69,13 @@ func TestCreateOperatorQuery(t *testing.T) {
                 Operator: "raw",
             },
             output: "",
+        },
+        {
+            input: ArchiverQueryModel{
+                IntervalMs: InitIntPointer(10000),
+                Operator: "",
+            },
+            output: "mean_10",
         },
     }
     for idx, testCase := range tests {

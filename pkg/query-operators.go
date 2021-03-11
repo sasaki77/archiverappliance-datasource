@@ -57,10 +57,27 @@ func CreateOperatorQuery(qm ArchiverQueryModel) (string, error) {
     }
 
     // No operators are necessary in this case
-    if qm.Operator == "" || qm.Operator == "raw" || qm.Operator == "last" {
+    if ( qm.Operator == "" && qm.IntervalMs == nil ) || qm.Operator == "raw" || qm.Operator == "last" {
         return "", nil
     }
 
+    // Automatically reduce data size for large querires
+    // The IntervalMs should only be non-null when the query is made from the frontend, not the alerting system
+    if qm.Operator == "" && qm.IntervalMs != nil {
+        interval := float64(*qm.IntervalMs)
+        interval = interval/1000 // convert to seconds
+        if interval <= 1 {
+            return "", nil
+        }
+        var autoOpBuilder strings.Builder
+        autoOpBuilder.WriteString("mean")
+        autoOpBuilder.WriteString("_")
+        autoOpBuilder.WriteString(strconv.Itoa(int(interval)))
+        return autoOpBuilder.String(), nil
+    }
+
+
+    // Determine the bin interval size given by the user and detect issues
     var binInterval *int
     binInterval = nil
     intervals := qm.IdentifyFunctionsByName("binInterval")

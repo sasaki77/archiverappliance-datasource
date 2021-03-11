@@ -72,6 +72,43 @@ func TestBuildQueryUrl(t *testing.T) {
                     "alias": null,
                     "aliasPattern": null,
                     "constant":6.5, 
+                    "functions":[], 
+                    "hide":false ,
+                    "operator": null,
+                    "refId":"A" ,
+                    "regex":true ,
+                    "target":"MR1K[1,3]:BEND:PIP:1:PMON"}`),
+                MaxDataPoints:0,
+                QueryType: "",
+                RefID:"A",
+                TimeRange: backend.TimeRange{
+                    From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")), 
+                    To: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+                },
+            },
+            pluginctx: backend.PluginContext{
+                 DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval",},
+            },
+            qm: ArchiverQueryModel{
+                IntervalMs: InitIntPointer(2000),
+                Functions: []FunctionDescriptorQueryModel{},
+                Operator: "",
+                QueryText: "",
+                QueryType: nil,
+                RefId: "A",
+                Regex: true,
+                Target: "MR1K[1,3]:BEND:PIP:1:PMON",
+            },
+            output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_2%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T14%3A30%3A41.678-08%3A00",
+        },
+        {
+            target: "MR1K1:BEND:PIP:1:PMON",
+            query: backend.DataQuery{
+                Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+                JSON: json.RawMessage(`{
+                    "alias": null,
+                    "aliasPattern": null,
+                    "constant":6.5, 
                     "functions":[
                         {
                             "def":{
@@ -231,7 +268,6 @@ func TestArchiverSingleQueryParser(t *testing.T) {
             }
         })
     }
-
 }
 
 func TestBuildRegexUrl(t *testing.T) {

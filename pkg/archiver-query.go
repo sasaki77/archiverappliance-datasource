@@ -27,6 +27,9 @@ type ArchiverQueryModel struct {
     Operator string `json:"operator"` // ?
     Regex bool `json:"regex"` // configured by the user's setting of the "Regex" field in the panel
     Functions []FunctionDescriptorQueryModel `json:"functions"` // collection of functions to be applied to the data by the archiver
+
+    // Only appears for visualization queries
+    IntervalMs *int `json:"intervalMs,omitempty"`
     /*
         Functions is a few layers deep:
         Functions []FunctionDescriptorQueryModel contains: 
@@ -85,6 +88,9 @@ func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.Plu
     if opErr != nil {
         log.DefaultLogger.Warn("Operator has not been properly created")
     }
+
+    log.DefaultLogger.Debug("pluginctx","pluginctx", pluginctx)
+    log.DefaultLogger.Debug("query","query", query)
 
     var targetPv string
     if len(opQuery) > 0 {
