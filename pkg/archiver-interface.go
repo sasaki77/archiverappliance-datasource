@@ -9,7 +9,6 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
-	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
 func newArchiverDataSource() datasource.ServeOpts {
@@ -102,18 +101,8 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 
     // for each query response, compile the data into response.Frames
     for _, singleResponse := range responseData {
-        // create data frame response
-        frame := data.NewFrame("response")
 
-        //add the time dimension
-        frame.Fields = append(frame.Fields,
-            data.NewField("time", nil, singleResponse.Times),
-        )
-
-        // add values 
-        frame.Fields = append(frame.Fields, 
-            data.NewField(singleResponse.Name, nil, singleResponse.Values),
-        )
+        frame := FrameBuilder(singleResponse)
 
         // add the frames to the response
         response.Frames = append(response.Frames, frame)
