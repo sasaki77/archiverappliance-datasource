@@ -71,7 +71,6 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     }
 
     // make the query and compile the results into a SingleData instance
-    responseData := make([]SingleData, 0)
     targetPvList := make([]string,0)
     if qm.Regex {
         // If the user is using a regex to specify the PVs, parse and resolve the regex expression first
@@ -86,9 +85,10 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     }
 
     // execute the individual queries
-    for _, targetPv := range targetPvList {
+    responseData := make([]SingleData, len(targetPvList))
+    for idx, targetPv := range targetPvList {
         parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-        responseData = append(responseData, parsedResponse)
+        responseData[idx] = parsedResponse
     }
 
     // Apply Functions to the data
