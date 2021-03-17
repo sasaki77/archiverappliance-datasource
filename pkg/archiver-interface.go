@@ -1,14 +1,14 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"net/http"
-
-	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+    "context"
+    "encoding/json"
+    "net/http"
+    
+    "github.com/grafana/grafana-plugin-sdk-go/backend"
+    "github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
+    "github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
+    "github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
 func newArchiverDataSource() datasource.ServeOpts {
@@ -85,10 +85,26 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     }
 
     // execute the individual queries
-    responseData := make([]SingleData, len(targetPvList))
-    for idx, targetPv := range targetPvList {
-        parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-        responseData[idx] = parsedResponse
+    responseData := make([]SingleData, 0, len(targetPvList))
+    parsedResponsePipe := make(chan SingleData)
+    parallel := true 
+    for _, targetPv := range targetPvList {
+        if parallel {
+            go func(targetPv string, pipe chan SingleData) {
+                // defer waitMgr.Done()
+                parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
+                pipe <- parsedResponse
+            }(targetPv, parsedResponsePipe)
+        } else {
+            parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
+            responseData = append(responseData, parsedResponse)
+        }
+    }
+    if parallel {
+        for range targetPvList {
+            parsedResponse := <- parsedResponsePipe
+            responseData = append(responseData, parsedResponse)
+        }
     }
 
     // Apply Functions to the data
