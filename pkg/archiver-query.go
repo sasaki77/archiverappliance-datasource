@@ -89,8 +89,8 @@ func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.Plu
         log.DefaultLogger.Warn("Operator has not been properly created")
     }
 
-    log.DefaultLogger.Debug("pluginctx","pluginctx", pluginctx)
-    log.DefaultLogger.Debug("query","query", query)
+    // log.DefaultLogger.Debug("pluginctx","pluginctx", pluginctx)
+    // log.DefaultLogger.Debug("query","query", query)
 
     var targetPv string
     if len(opQuery) > 0 {

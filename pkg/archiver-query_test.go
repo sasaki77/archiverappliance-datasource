@@ -312,6 +312,10 @@ func TestIsolateBasicQuery(t *testing.T) {
         {inputUnparsed: "(this:is:1|this:is:2)", output: []string{"this:is:1", "this:is:2"}},
         {inputUnparsed: "(this:is:1)", output: []string{"this:is:1"}},
         {inputUnparsed: "this:is:1", output: []string{"this:is:1"}},
+        {inputUnparsed: "(this):is:1", output: []string{"this:is:1"}},
+        {inputUnparsed: "before:(this)", output: []string{"before:this"}},
+        {inputUnparsed: "before:(this|that):is:1", output: []string{"before:this:is:1","before:that:is:1"}},
+        {inputUnparsed: "before:(this|that):(is|was):1", output: []string{"before:this:is:1","before:that:is:1","before:this:was:1","before:that:was:1"}},
     }
 
     for idx, testCase := range tests {
