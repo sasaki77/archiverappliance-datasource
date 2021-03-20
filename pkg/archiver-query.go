@@ -8,6 +8,7 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
+    "regexp"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -279,15 +280,51 @@ func IsolateBasicQuery(unparsed string) []string {
     // Non-regex queries can request multiple PVs using this syntax: (PV:NAME:1|PV:NAME:2|...)
     // This function takes queries in this format and breaks them up into a list of individual PVs
     unparsed_clean := strings.TrimSpace(unparsed)
-    if unparsed_clean[0] != '(' || unparsed_clean[len(unparsed_clean)-1] != ')' {
-        // if the statement doesn't have the parentheses, no parsing is necessary
-        return []string{unparsed_clean}
+
+    multiFinder, _ := regexp.Compile(`\([^)]*?\)`)
+    // Identify parenthesis-bound sections
+    multiPhrases := multiFinder.FindAllString(unparsed_clean, -1)
+    // Locate parenthesis-bound sections
+    // phraseIdx := multiFinder.FindAllStringIndex(unparsed, -1)
+
+    // A list of all the possible phrases
+    phraseParts := make([][]string, 0, len(multiPhrases))
+
+    for idx, _ := range multiPhrases {
+        // Strip parenthesis
+        multiPhrases[idx] = strings.Trim(multiPhrases[idx], "()")
+        phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
     }
-    // remove leading and following parentheses
-    unparsed_clean = unparsed_clean[1:len(unparsed_clean)-1]
-    result := strings.Split(unparsed_clean, "|")
-    return result
+
+    // insertionSet := PermuteQuery(phraseParts)
+
+
+    return multiPhrases
 }
+
+func PermuteQuery( inputData [][]string) [][]string {
+    return permuteQueryRecurse(inputData,[]string{}) 
+}
+
+func permuteQueryRecurse( inputData [][]string, trace []string) [][]string {
+    // If you're at the end, return
+    if len(trace) == len(inputData) {
+        output := make([][]string,0,1)
+        output = append(output, trace)
+        return output
+    }
+
+    targetIdx := len(trace)
+    output := make([][]string, 0, len(inputData[targetIdx]))
+    for _, value := range inputData[targetIdx] {
+        response := permuteQueryRecurse(inputData, append(trace, value))
+        for _, oneOutput := range response {
+            output = append(output, oneOutput)
+        }
+    }
+    return output
+}
+
 
 func FrameBuilder(singleResponse SingleData) *data.Frame {
         // create data frame response
