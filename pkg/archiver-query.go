@@ -311,17 +311,42 @@ func IsolateBasicQuery(unparsed string) []string {
 }
 
 func PermuteQuery( inputData [][]string) [][]string {
+    /*
+        Generate all ordered permutations of the input strings to make the following operation occur: 
+
+        input:
+            {
+                {"a", "b"}
+                {"c", "d"}
+            }
+
+        output:
+            {
+                {"a", "c"}
+                {"a", "d"}
+                {"d", "c"}
+                {"b", "d"}
+            }
+    */
     return permuteQueryRecurse(inputData,[]string{}) 
 }
 
 func permuteQueryRecurse( inputData [][]string, trace []string) [][]string {
-    // If you're at the end, return
+    /* 
+        recursive method for visitng all the permutations. 
+    */
+
+    // If you've assigned a value for each phrase, just return the full sequence of phrases 
     if len(trace) == len(inputData) {
         output := make([][]string,0,1)
         output = append(output, trace)
         return output
     }
 
+    /*
+        When values aren't assigned to all phrases, begin by assigning the first unassigned value 
+        to each of the possible values and recursing on the result of that
+    */
     targetIdx := len(trace)
     output := make([][]string, 0, len(inputData[targetIdx]))
     for _, value := range inputData[targetIdx] {
@@ -334,6 +359,15 @@ func permuteQueryRecurse( inputData [][]string, trace []string) [][]string {
 }
 
 func SelectiveInsert( input string, idxs [][]int, inserts []string) string {
+    /*
+        Selectively replace portions of the input string
+
+        idxs indicates the indices which will be removed
+
+        inserts provides the new string that will be put into the input string at the place designated by idxs
+
+        idxs and inserts should have the same length and are matched with each other element-wise to support any number of substitutions
+    */
     var builder strings.Builder
 
     prevIdx := 0
@@ -342,12 +376,16 @@ func SelectiveInsert( input string, idxs [][]int, inserts []string) string {
     if len(idxs) != len(inserts) {
         return ""
     }
+
+    // At each place marked by idx, insert the corresponding new string
     for idx, val := range idxs {
         firstVal := val[0]
         builder.WriteString(input[prevIdx:firstVal])
         builder.WriteString(inserts[idx])
         prevIdx = val[1]
     }
+
+    // Handle any trailing string 
     if prevIdx < len(input) {
         lastVal := len(input)
         builder.WriteString(input[prevIdx:lastVal])
