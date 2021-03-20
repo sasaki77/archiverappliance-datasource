@@ -370,6 +370,57 @@ func TestPermuteQuery(t *testing.T) {
     }
 }
 
+func TestSelectiveInsert(t *testing.T) {
+    var tests = []struct{
+        input string
+        idxs [][]int
+        inserts []string
+        output string
+    }{
+        {
+            input: "hello there",
+            idxs: [][]int{{0,5}},
+            inserts: []string{"be"},
+            output: "be there",
+        },
+        {
+            input: "hello there",
+            idxs: [][]int{{6,11}},
+            inserts: []string{"friend"},
+            output: "hello friend",
+        },
+        {
+            input: "hello there",
+            idxs: [][]int{{0,4}, {6,11}},
+            inserts: []string{"y", "what's up"},
+            output: "yo what's up",
+        },
+        {
+            input: "This won't work",
+            idxs: [][]int{{0,4}, {6,11}},
+            inserts: []string{"y"},
+            output: "",
+        },
+        // {
+        //     input: ,
+        //     idxs: ,
+        //     inserts: ,
+        //     outpu:, 
+        // },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s, %s", idx, testCase.input, testCase.output)
+        t.Run(testName, func(t *testing.T) {
+            result := SelectiveInsert(testCase.input, testCase.idxs, testCase.inserts)
+            if testCase.output != result {
+                t.Errorf("Incorrect output - Wanted: %v Got: %v", testCase.output, result)
+            }
+        })
+    }
+
+
+}
+
 func TestFrameBuilder(t *testing.T) {
     var tests = []struct{
         sD SingleData

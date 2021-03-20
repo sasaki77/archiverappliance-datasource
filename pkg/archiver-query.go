@@ -293,13 +293,20 @@ func IsolateBasicQuery(unparsed string) []string {
     for idx, _ := range multiPhrases {
         // Strip parenthesis
         multiPhrases[idx] = strings.Trim(multiPhrases[idx], "()")
+        // Break parsed phrases on "|"
         phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
     }
 
-    // insertionSet := PermuteQuery(phraseParts)
+    // list of all the configurations for the in-order phrases to be inserted
+    phraseCase := PermuteQuery(phraseParts)
 
+    result := make([]string, 0, len(phraseCase))
 
-    return multiPhrases
+    // for idx, _ := range phraseCase {
+
+    // }
+
+    return result
 }
 
 func PermuteQuery( inputData [][]string) [][]string {
@@ -325,6 +332,28 @@ func permuteQueryRecurse( inputData [][]string, trace []string) [][]string {
     return output
 }
 
+func SelectiveInsert( input string, idxs [][]int, inserts []string) string {
+    var builder strings.Builder
+
+    prevIdx := 0
+
+    // return a blank string if the arguments are bad
+    if len(idxs) != len(inserts) {
+        return ""
+    }
+    for idx, val := range idxs {
+        firstVal := val[0]
+        builder.WriteString(input[prevIdx:firstVal])
+        builder.WriteString(inserts[idx])
+        prevIdx = val[1]
+    }
+    if prevIdx < len(input) {
+        lastVal := len(input)
+        builder.WriteString(input[prevIdx:lastVal])
+    }
+
+    return builder.String()
+}
 
 func FrameBuilder(singleResponse SingleData) *data.Frame {
         // create data frame response
