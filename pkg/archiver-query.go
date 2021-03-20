@@ -285,7 +285,7 @@ func IsolateBasicQuery(unparsed string) []string {
     // Identify parenthesis-bound sections
     multiPhrases := multiFinder.FindAllString(unparsed_clean, -1)
     // Locate parenthesis-bound sections
-    // phraseIdx := multiFinder.FindAllStringIndex(unparsed, -1)
+    phraseIdxs := multiFinder.FindAllStringIndex(unparsed, -1)
 
     // A list of all the possible phrases
     phraseParts := make([][]string, 0, len(multiPhrases))
@@ -302,9 +302,10 @@ func IsolateBasicQuery(unparsed string) []string {
 
     result := make([]string, 0, len(phraseCase))
 
-    // for idx, _ := range phraseCase {
-
-    // }
+    for _, phrase := range phraseCase {
+        createdString := SelectiveInsert(unparsed_clean, phraseIdxs, phrase)
+        result = append(result, createdString)
+    }
 
     return result
 }
