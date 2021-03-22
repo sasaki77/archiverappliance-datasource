@@ -324,7 +324,7 @@ func PermuteQuery( inputData [][]string) [][]string {
             {
                 {"a", "c"}
                 {"a", "d"}
-                {"d", "c"}
+                {"b", "c"}
                 {"b", "d"}
             }
     */
