@@ -312,6 +312,11 @@ func TestIsolateBasicQuery(t *testing.T) {
         {inputUnparsed: "(this:is:1|this:is:2)", output: []string{"this:is:1", "this:is:2"}},
         {inputUnparsed: "(this:is:1)", output: []string{"this:is:1"}},
         {inputUnparsed: "this:is:1", output: []string{"this:is:1"}},
+        {inputUnparsed: "(this):is:1", output: []string{"this:is:1"}},
+        {inputUnparsed: "before:(this)", output: []string{"before:this"}},
+        {inputUnparsed: "before:(this|that):is:1", output: []string{"before:this:is:1","before:that:is:1"}},
+        {inputUnparsed: "before:(this|that):(is|was):1", output: []string{"before:this:is:1","before:this:was:1","before:that:is:1","before:that:was:1"}},
+        {inputUnparsed: "()", output: []string{""}},
     }
 
     for idx, testCase := range tests {
@@ -326,6 +331,89 @@ func TestIsolateBasicQuery(t *testing.T) {
                 if testCase.output[idx] != result[idx] {
                     t.Errorf("got %v, want %v", result, testCase.output)
                 }
+            }
+        })
+    }
+}
+
+func TestPermuteQuery(t *testing.T) {
+    var tests = []struct{
+        input [][]string
+        output [][]string
+    }{
+        {input: [][]string{{"a","d"},{"b","c"}},    output: [][]string{{"a", "b"},{"a", "c"},{"d", "b"},{"d", "c"}}},
+        {input: [][]string{{"a"},{"b","c"}},        output: [][]string{{"a", "b"},{"a", "c"}}},
+        {input: [][]string{{"a"},{"b"}},            output: [][]string{{"a", "b"}}},
+        {input: [][]string{{"a"}},                  output: [][]string{{"a"}}},
+        {input: [][]string{{"a", "b"}},             output: [][]string{{"a"},{"b"}}},
+        {input: [][]string{{}},                     output: [][]string{}},
+        {input: [][]string{},                       output: [][]string{{}}},
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s, %s", idx, testCase.input, testCase.output)
+        t.Run(testName, func(t *testing.T) {
+            result := PermuteQuery(testCase.input)
+            if len(result) != len(testCase.output) {
+                t.Fatalf("Lengths differ (0th index) - Wanted: %v (%v) Got: %v (%v)", testCase.output, len(testCase.output), result, len(result))
+            }
+            for idx, _ := range(testCase.output) {
+                if len(result[idx]) != len(testCase.output[idx]) {
+                    t.Fatalf("Lengths differ (1st index) - Wanted: %v (%v) Got: %v (%v)", testCase.output[idx], len(testCase.output[idx]), result[idx], len(result[idx]))
+                }
+                for jdx, _ := range(testCase.output[idx]) {
+                    if testCase.output[idx][jdx] != result[idx][jdx] {
+                        t.Errorf("got %v, want %v at [%v][%v]", result, testCase.output, idx, jdx)
+                    }
+                }
+            }
+        })
+    }
+}
+
+func TestSelectiveInsert(t *testing.T) {
+    var tests = []struct{
+        input string
+        idxs [][]int
+        inserts []string
+        output string
+    }{
+        {
+            input: "hello there",
+            idxs: [][]int{{0,5}},
+            inserts: []string{"be"},
+            output: "be there",
+        },
+        {
+            input: "hello there",
+            idxs: [][]int{{6,11}},
+            inserts: []string{"friend"},
+            output: "hello friend",
+        },
+        {
+            input: "hello there",
+            idxs: [][]int{{0,4}, {6,11}},
+            inserts: []string{"y", "what's up"},
+            output: "yo what's up",
+        },
+        {
+            input: "This won't work",
+            idxs: [][]int{{0,4}, {6,11}},
+            inserts: []string{"y"},
+            output: "",
+        },
+        // {
+        //     input: ,
+        //     idxs: ,
+        //     inserts: ,
+        //     outpu:, 
+        // },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s, %s", idx, testCase.input, testCase.output)
+        t.Run(testName, func(t *testing.T) {
+            result := SelectiveInsert(testCase.input, testCase.idxs, testCase.inserts)
+            if testCase.output != result {
+                t.Errorf("Incorrect output - Wanted: %v Got: %v", testCase.output, result)
             }
         })
     }
