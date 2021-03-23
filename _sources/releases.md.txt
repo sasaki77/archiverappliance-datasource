@@ -1,4 +1,16 @@
 # Release Notes
+## 1.3.1
+
+**2021-03-23**
+
+### Features / Enhancements
+- Reduce query size when using backend data source for visualization
+- Support alternation pattern like `(pv:1|pv:2):other` with backend data source
+
+### Bug fixes
+- Fix stream parameters to be able to use variables
+- Fix the problem that all plots were displayed with the name "values" when using the backend data source 
+
 ## 1.3.0
 
 **2021-03-05**
