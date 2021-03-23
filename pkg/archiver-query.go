@@ -8,6 +8,7 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
+    "regexp"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -89,8 +90,8 @@ func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.Plu
         log.DefaultLogger.Warn("Operator has not been properly created")
     }
 
-    log.DefaultLogger.Debug("pluginctx","pluginctx", pluginctx)
-    log.DefaultLogger.Debug("query","query", query)
+    // log.DefaultLogger.Debug("pluginctx","pluginctx", pluginctx)
+    // log.DefaultLogger.Debug("query","query", query)
 
     var targetPv string
     if len(opQuery) > 0 {
@@ -279,14 +280,118 @@ func IsolateBasicQuery(unparsed string) []string {
     // Non-regex queries can request multiple PVs using this syntax: (PV:NAME:1|PV:NAME:2|...)
     // This function takes queries in this format and breaks them up into a list of individual PVs
     unparsed_clean := strings.TrimSpace(unparsed)
-    if unparsed_clean[0] != '(' || unparsed_clean[len(unparsed_clean)-1] != ')' {
-        // if the statement doesn't have the parentheses, no parsing is necessary
-        return []string{unparsed_clean}
+
+    multiFinder, _ := regexp.Compile(`\([^)]*?\)`)
+    // Identify parenthesis-bound sections
+    multiPhrases := multiFinder.FindAllString(unparsed_clean, -1)
+    // Locate parenthesis-bound sections
+    phraseIdxs := multiFinder.FindAllStringIndex(unparsed, -1)
+
+    // A list of all the possible phrases
+    phraseParts := make([][]string, 0, len(multiPhrases))
+
+    for idx, _ := range multiPhrases {
+        // Strip parenthesis
+        multiPhrases[idx] = strings.Trim(multiPhrases[idx], "()")
+        // Break parsed phrases on "|"
+        phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
     }
-    // remove leading and following parentheses
-    unparsed_clean = unparsed_clean[1:len(unparsed_clean)-1]
-    result := strings.Split(unparsed_clean, "|")
+
+    // list of all the configurations for the in-order phrases to be inserted
+    phraseCase := PermuteQuery(phraseParts)
+
+    result := make([]string, 0, len(phraseCase))
+
+    for _, phrase := range phraseCase {
+        createdString := SelectiveInsert(unparsed_clean, phraseIdxs, phrase)
+        result = append(result, createdString)
+    }
+
     return result
+}
+
+func PermuteQuery( inputData [][]string) [][]string {
+    /*
+        Generate all ordered permutations of the input strings to make the following operation occur: 
+
+        input:
+            {
+                {"a", "b"}
+                {"c", "d"}
+            }
+
+        output:
+            {
+                {"a", "c"}
+                {"a", "d"}
+                {"b", "c"}
+                {"b", "d"}
+            }
+    */
+    return permuteQueryRecurse(inputData,[]string{}) 
+}
+
+func permuteQueryRecurse( inputData [][]string, trace []string) [][]string {
+    /* 
+        recursive method for visitng all the permutations. 
+    */
+
+    // If you've assigned a value for each phrase, just return the full sequence of phrases 
+    if len(trace) == len(inputData) {
+        output := make([][]string,0,1)
+        output = append(output, trace)
+        return output
+    }
+
+    /*
+        When values aren't assigned to all phrases, begin by assigning the first unassigned value 
+        to each of the possible values and recursing on the result of that
+    */
+    targetIdx := len(trace)
+    output := make([][]string, 0, len(inputData[targetIdx]))
+    for _, value := range inputData[targetIdx] {
+        response := permuteQueryRecurse(inputData, append(trace, value))
+        for _, oneOutput := range response {
+            output = append(output, oneOutput)
+        }
+    }
+    return output
+}
+
+func SelectiveInsert( input string, idxs [][]int, inserts []string) string {
+    /*
+        Selectively replace portions of the input string
+
+        idxs indicates the indices which will be removed
+
+        inserts provides the new string that will be put into the input string at the place designated by idxs
+
+        idxs and inserts should have the same length and are matched with each other element-wise to support any number of substitutions
+    */
+    var builder strings.Builder
+
+    prevIdx := 0
+
+    // return a blank string if the arguments are bad
+    if len(idxs) != len(inserts) {
+        return ""
+    }
+
+    // At each place marked by idx, insert the corresponding new string
+    for idx, val := range idxs {
+        firstVal := val[0]
+        builder.WriteString(input[prevIdx:firstVal])
+        builder.WriteString(inserts[idx])
+        prevIdx = val[1]
+    }
+
+    // Handle any trailing string 
+    if prevIdx < len(input) {
+        lastVal := len(input)
+        builder.WriteString(input[prevIdx:lastVal])
+    }
+
+    return builder.String()
 }
 
 func FrameBuilder(singleResponse SingleData) *data.Frame {
