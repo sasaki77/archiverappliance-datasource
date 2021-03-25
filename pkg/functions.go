@@ -180,6 +180,11 @@ func Delta(allData []SingleData) []SingleData {
             newValues = append(newValues, oneData.Values[idx] - oneData.Values[idx-1])
             newTimes = append(newTimes, oneData.Times[idx])
         }
+        if len(newValues) == 0 {
+            // handle 1-length data
+            newValues = append(newValues, 0)
+            newTimes = append(newTimes, oneData.Times[0])
+        }
         newSd := SingleData{
             Name: oneData.Name,
             Values: newValues,

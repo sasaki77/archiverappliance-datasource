@@ -92,6 +92,20 @@ func TestDelta(t *testing.T) {
                 },
             },
         },
+        {
+            inputSd: []SingleData{
+                {
+                    Times: TimeArrayHelper(0,1),
+                    Values: []float64{2},
+                },
+            },
+            output: []SingleData{
+                {
+                    Times: TimeArrayHelper(0,1),
+                    Values: []float64{0},
+                },
+            },
+        },
     }
     for tdx, testCase := range tests {
         testName := fmt.Sprintf("case: %d", tdx)
