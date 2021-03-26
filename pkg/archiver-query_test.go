@@ -390,7 +390,7 @@ func TestLocateOuterParen(t *testing.T) {
             for idx, _ := range(testCase.outputPhrases) {
                 for i := 0; i<2; i++ {
                     if testCase.outputIdxs[idx][i] != result.Idxs[idx][i] {
-                        t.Errorf("got %v, want %v", result.Idxs, testCase.outputIdxs)
+                        t.Errorf("got %v, want %v", result.Idxs[idx], testCase.outputIdxs[idx])
                     }
                 }
             }
