@@ -92,7 +92,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 
     // For debugging
     parallel := true
-    timeoutDurationSeconds := 120 // units are seconds
+    timeoutDurationSeconds := 30 // units are seconds
 
     for _, targetPv := range targetPvList {
         if parallel {
