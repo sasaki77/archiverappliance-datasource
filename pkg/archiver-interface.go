@@ -4,7 +4,9 @@ import (
     "context"
     "encoding/json"
     "net/http"
-    
+    "time"
+    "strconv"
+
     "github.com/grafana/grafana-plugin-sdk-go/backend"
     "github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
     "github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
@@ -87,7 +89,11 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     // execute the individual queries
     responseData := make([]SingleData, 0, len(targetPvList))
     parsedResponsePipe := make(chan SingleData)
-    parallel := true 
+
+    // For debugging
+    parallel := true
+    timeoutDurationSeconds := 120 // units are seconds
+
     for _, targetPv := range targetPvList {
         if parallel {
             go func(targetPv string, pipe chan SingleData) {
@@ -100,10 +106,19 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
             responseData = append(responseData, parsedResponse)
         }
     }
+
+    timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
+    timeoutPipe := time.After(timeoutDuration)
+
     if parallel {
-        for range targetPvList {
-            parsedResponse := <- parsedResponsePipe
-            responseData = append(responseData, parsedResponse)
+        responseCollector:for range targetPvList {
+            select {
+                case parsedResponse := <-parsedResponsePipe:
+                    responseData = append(responseData, parsedResponse)
+                case <-timeoutPipe:
+                    log.DefaultLogger.Warn("Timeout limit for requests has been reached")
+                    break responseCollector
+            }
         }
     }
 
