@@ -321,9 +321,27 @@ type ParenLoc struct {
 }
 
 func LocateOuterParen(inputData string) ParenLoc {
-    var f ParenLoc;
-    f.Phrases = append(f.Phrases, inputData)
-    return f
+    var output ParenLoc;
+
+    nestCounter := 0
+    var stashInitPos int
+    for pos, char := range inputData {
+        if char == '(' {
+            if nestCounter == 0 {
+                stashInitPos = pos
+            }
+            nestCounter++
+        }
+        if char == ')' {
+            if nestCounter == 1 {
+                // A completed 1st-level parenthesis set has been completed 
+                output.Phrases = append(output.Phrases, inputData[stashInitPos:pos+1])
+                output.Idxs = append(output.Idxs, []int{stashInitPos, pos+1})
+            }
+            nestCounter--
+        }
+    }
+    return output
 }
 
 func PermuteQuery( inputData [][]string) [][]string {
