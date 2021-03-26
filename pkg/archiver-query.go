@@ -310,6 +310,22 @@ func IsolateBasicQuery(unparsed string) []string {
     return result
 }
 
+// func IsolateBasicQueryRecurse( inputData string) []string {
+// 
+// 
+// }
+
+type ParenLoc struct {
+    Phrases []string
+    Idxs [][]int
+}
+
+func LocateOuterParen(inputData string) ParenLoc {
+    var f ParenLoc;
+    f.Phrases = append(f.Phrases, inputData)
+    return f
+}
+
 func PermuteQuery( inputData [][]string) [][]string {
     /*
         Generate all ordered permutations of the input strings to make the following operation occur: 

@@ -317,6 +317,7 @@ func TestIsolateBasicQuery(t *testing.T) {
         {inputUnparsed: "before:(this|that):is:1", output: []string{"before:this:is:1","before:that:is:1"}},
         {inputUnparsed: "before:(this|that):(is|was):1", output: []string{"before:this:is:1","before:this:was:1","before:that:is:1","before:that:was:1"}},
         {inputUnparsed: "()", output: []string{""}},
+        {inputUnparsed: "((this|that):is:1|this:is:2)", output: []string{"this:is:1", "that:is:1", "this:is:2"}},
     }
 
     for idx, testCase := range tests {
@@ -330,6 +331,67 @@ func TestIsolateBasicQuery(t *testing.T) {
             for idx, _ := range(testCase.output) {
                 if testCase.output[idx] != result[idx] {
                     t.Errorf("got %v, want %v", result, testCase.output)
+                }
+            }
+        })
+    }
+}
+
+func TestLocateOuterParen(t *testing.T) {
+    var tests = []struct{
+        input string
+        outputPhrases []string
+        outputIdxs  [][]int
+    }{
+        {
+            input:           "one (two (three)) (four five) six",
+            outputPhrases:  []string{"(two (three))","(four five)"},
+            outputIdxs:     [][]int{{4,17},{18,29}},
+        },
+        {
+            input:           "one (match) (here)",
+            outputPhrases:  []string{"(match)","(here)"},
+            outputIdxs:     [][]int{{4,11},{12,18}},
+        },
+        {
+            input:           "one (match) here",
+            outputPhrases:  []string{"(match)"},
+            outputIdxs:     [][]int{{4,11}},
+        },
+        {
+            input:           "no matches here",
+            outputPhrases:  []string{},
+            outputIdxs:     [][]int{},
+        },
+        // {
+        //     input:           "",  
+        //     outputPhrases:  []string{},
+        //     outputIdxs:     [][]int{},
+        // },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s, ", idx, testCase.input)
+        t.Run(testName, func(t *testing.T) {
+            result := LocateOuterParen(testCase.input)
+            // Check Phrases 
+            if len(result.Phrases) != len(testCase.outputPhrases) {
+                t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.outputPhrases, result.Phrases)
+            }
+            for idx, _ := range(testCase.outputPhrases) {
+                if testCase.outputPhrases[idx] != result.Phrases[idx] {
+                    t.Errorf("got %v, want %v", result.Phrases, testCase.outputPhrases)
+                }
+            }
+
+            // Check indices
+            if len(result.Idxs) != len(testCase.outputIdxs) {
+                t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.outputIdxs, result.Idxs)
+            }
+            for idx, _ := range(testCase.outputPhrases) {
+                for i := 0; i<2; i++ {
+                    if testCase.outputIdxs[idx][i] != result.Idxs[idx][i] {
+                        t.Errorf("got %v, want %v", result.Idxs, testCase.outputIdxs)
+                    }
                 }
             }
         })
