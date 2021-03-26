@@ -8,7 +8,6 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
-    "regexp"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -281,11 +280,11 @@ func IsolateBasicQuery(unparsed string) []string {
     // This function takes queries in this format and breaks them up into a list of individual PVs
     unparsed_clean := strings.TrimSpace(unparsed)
 
-    multiFinder, _ := regexp.Compile(`\([^)]*?\)`)
+    phrases := LocateOuterParen(unparsed)
     // Identify parenthesis-bound sections
-    multiPhrases := multiFinder.FindAllString(unparsed_clean, -1)
+    multiPhrases := phrases.Phrases
     // Locate parenthesis-bound sections
-    phraseIdxs := multiFinder.FindAllStringIndex(unparsed, -1)
+    phraseIdxs := phrases.Idxs
 
     // A list of all the possible phrases
     phraseParts := make([][]string, 0, len(multiPhrases))
