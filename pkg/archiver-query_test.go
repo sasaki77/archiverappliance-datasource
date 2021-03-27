@@ -337,6 +337,49 @@ func TestIsolateBasicQuery(t *testing.T) {
     }
 }
 
+func TestSplitLowestLevelOnly(t *testing.T) {
+    var tests = []struct{
+        input string
+        output []string
+    }{
+        {
+            input:   "one (two (three)) (four five) six",
+            output:  []string{"one (two (three)) (four five) six"},
+        },
+        {
+            input:   "one two |three",
+            output:  []string{"one two ", "three"},
+        },
+        {
+            input:   "one two |three | four",
+            output:  []string{"one two ", "three ", " four"},
+        },
+        {
+            input:   "one (two |three) | four",
+            output:  []string{"one (two |three) ", " four"},
+        },
+        // {
+        //     input:   "one (two (three)) (four five) six",
+        //     output:  []string{"one (two (three)) (four five) six"},
+        // },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %s", idx, testCase.input)
+        t.Run(testName, func(t *testing.T) {
+            result := SplitLowestLevelOnly(testCase.input)
+            if len(result) != len(testCase.output) {
+                t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
+            }
+            for idx, _ := range(testCase.output) {
+                if testCase.output[idx] != result[idx] {
+                    t.Errorf("got %v, want %v", result, testCase.output)
+                }
+            }
+        })
+    }
+}
+
+
 func TestLocateOuterParen(t *testing.T) {
     var tests = []struct{
         input string

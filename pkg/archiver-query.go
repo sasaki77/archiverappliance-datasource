@@ -290,8 +290,8 @@ func IsolateBasicQuery(unparsed string) []string {
     phraseParts := make([][]string, 0, len(multiPhrases))
 
     for idx, _ := range multiPhrases {
-        // Strip parenthesis
-        multiPhrases[idx] = strings.Trim(multiPhrases[idx], "()")
+        // Strip leading and ending parenthesis
+        multiPhrases[idx] = multiPhrases[idx][1:len(multiPhrases[idx])-1]
         // Break parsed phrases on "|"
         phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
     }
@@ -309,10 +309,25 @@ func IsolateBasicQuery(unparsed string) []string {
     return result
 }
 
-// func IsolateBasicQueryRecurse( inputData string) []string {
-// 
-// 
-// }
+func SplitLowestLevelOnly(inputData string) []string {
+    output := make([]string,0,5)
+    nestCounter := 0
+    stashInitPos := 0
+    for pos, char := range inputData {
+        switch {
+            case char == '(':
+                nestCounter++
+            case char == ')':
+                nestCounter--
+        }
+        if char == '|' && nestCounter == 0 {
+            output = append(output, inputData[stashInitPos:pos])
+            stashInitPos = pos+1
+        }
+    }
+    output = append(output, inputData[stashInitPos:])
+    return output 
+}
 
 type ParenLoc struct {
     Phrases []string
