@@ -280,11 +280,15 @@ func IsolateBasicQuery(unparsed string) []string {
     // This function takes queries in this format and breaks them up into a list of individual PVs
     unparsed_clean := strings.TrimSpace(unparsed)
 
-    phrases := LocateOuterParen(unparsed)
+    phrases := LocateOuterParen(unparsed_clean)
     // Identify parenthesis-bound sections
     multiPhrases := phrases.Phrases
     // Locate parenthesis-bound sections
     phraseIdxs := phrases.Idxs
+
+    if len(multiPhrases) == 0 {
+        return []string{unparsed_clean}
+    }
 
     // A list of all the possible phrases
     phraseParts := make([][]string, 0, len(multiPhrases))
@@ -293,7 +297,7 @@ func IsolateBasicQuery(unparsed string) []string {
         // Strip leading and ending parenthesis
         multiPhrases[idx] = multiPhrases[idx][1:len(multiPhrases[idx])-1]
         // Break parsed phrases on "|"
-        phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
+        phraseParts = append(phraseParts, SplitLowestLevelOnly(multiPhrases[idx]))
     }
 
     // list of all the configurations for the in-order phrases to be inserted
@@ -304,6 +308,14 @@ func IsolateBasicQuery(unparsed string) []string {
     for _, phrase := range phraseCase {
         createdString := SelectiveInsert(unparsed_clean, phraseIdxs, phrase)
         result = append(result, createdString)
+    }
+
+    for pos, chunk := range result {
+        parseAttempt := IsolateBasicQuery(chunk)
+        if len(parseAttempt) > 1 {
+            result = append(result[:pos], result[pos+1:]...) // pop partially parsed entry
+            result = append(result, parseAttempt...)
+        }
     }
 
     return result
