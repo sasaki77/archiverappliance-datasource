@@ -286,6 +286,7 @@ func IsolateBasicQuery(unparsed string) []string {
     // Locate parenthesis-bound sections
     phraseIdxs := phrases.Idxs
 
+    // If there are no sub-phrases in this string, return immediately to prevent further recursion
     if len(multiPhrases) == 0 {
         return []string{unparsed_clean}
     }
@@ -305,16 +306,18 @@ func IsolateBasicQuery(unparsed string) []string {
 
     result := make([]string, 0, len(phraseCase))
 
+    // Build results by substituting all phrase combinations in place for 1st-level substitutions 
     for _, phrase := range phraseCase {
         createdString := SelectiveInsert(unparsed_clean, phraseIdxs, phrase)
         result = append(result, createdString)
     }
 
+    // For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
     for pos, chunk := range result {
         parseAttempt := IsolateBasicQuery(chunk)
         if len(parseAttempt) > 1 {
             result = append(result[:pos], result[pos+1:]...) // pop partially parsed entry
-            result = append(result, parseAttempt...)
+            result = append(result, parseAttempt...) // add new entires at the end of the list. 
         }
     }
 
@@ -342,11 +345,15 @@ func SplitLowestLevelOnly(inputData string) []string {
 }
 
 type ParenLoc struct {
+    // Use to identify unenenclosed parenthesis, and their content
     Phrases []string
     Idxs [][]int
 }
 
 func LocateOuterParen(inputData string) ParenLoc {
+    // read through a string to identify all paired sets of parentheses that are not contained within another set of parenthesis. 
+    // When found, report the indexes of all instantces as well as the content contained within the parenthesis.
+    // This function ignores internal parenthesis. 
     var output ParenLoc;
 
     nestCounter := 0
