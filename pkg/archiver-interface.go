@@ -52,8 +52,10 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 }
 
 func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
-    var status = backend.HealthStatusOk
-    var message = "This is a fake success message"
+    // var status = backend.HealthStatusOk
+    // var message = "This is a fake success message"
+    var status = backend.HealthStatusError
+    var message = "This is a fake failure message"
 
     return &backend.CheckHealthResult{
         Status:     status,
@@ -88,45 +90,34 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 
     // execute the individual queries
     responseData := make([]SingleData, 0, len(targetPvList))
-    parsedResponsePipe := make(chan SingleData)
+    responsePipe := make(chan []SingleData)
 
-    // For debugging
-    parallel := true
     timeoutDurationSeconds := 30 // units are seconds
 
     for _, targetPv := range targetPvList {
-        if parallel {
-            go func(targetPv string, pipe chan SingleData) {
-                // defer waitMgr.Done()
-                parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-                pipe <- parsedResponse
-            }(targetPv, parsedResponsePipe)
-        } else {
+        go func(targetPv string, pipe chan []SingleData) {
             parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-            responseData = append(responseData, parsedResponse)
-        }
+
+            // Apply Functions to the data
+            responseData, funcErr := ApplyFunctions([]SingleData{parsedResponse}, qm)
+            if funcErr != nil {
+                log.DefaultLogger.Warn("Error applying functions")
+            }
+            pipe <- responseData
+        }(targetPv, responsePipe)
     }
 
     timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
     timeoutPipe := time.After(timeoutDuration)
 
-    if parallel {
-        responseCollector:for range targetPvList {
-            select {
-                case parsedResponse := <-parsedResponsePipe:
-                    responseData = append(responseData, parsedResponse)
-                case <-timeoutPipe:
-                    log.DefaultLogger.Warn("Timeout limit for requests has been reached")
-                    break responseCollector
-            }
+    responseCollector:for range targetPvList {
+        select {
+            case response := <-responsePipe:
+                responseData = append(responseData, response...)
+            case <-timeoutPipe:
+                log.DefaultLogger.Warn("Timeout limit for requests has been reached")
+                break responseCollector
         }
-    }
-
-    // Apply Functions to the data
-    var funcErr error
-    responseData, funcErr = ApplyFunctions(responseData, qm)
-    if funcErr != nil {
-        log.DefaultLogger.Warn("Error applying functions")
     }
 
 
