@@ -33,21 +33,44 @@ type ArchiverDatasource struct {
     im instancemgmt.InstanceManager
 }
 
+type QueryMgr struct {
+    Res backend.DataResponse
+    QRefID string
+}
+
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
     // Structure defined by grafana-plugin-sdk-go. QueryData should unpack the req argument into individual queries.
 
     // create response struct
     response := backend.NewQueryDataResponse()
-    // IMPLEMENT HERE
+
+    responsePipe := make(chan QueryMgr)
+
     for _, q := range req.Queries {
-
-        res := td.query(ctx, q, req.PluginContext)
-
-        // save the response in a hashmap
-        // based on with RefID as identifier
-        response.Responses[q.RefID] = res
+        go func (ctx context.Context, q backend.DataQuery, req *backend.QueryDataRequest, responsePipe chan QueryMgr) {
+            res := td.query(ctx, q, req.PluginContext)
+            responsePipe <-QueryMgr{
+                Res: res,
+                QRefID: q.RefID,
+            }
+        }(ctx, q, req, responsePipe)
     }
 
+    timeoutDurationSeconds := 30 // units are seconds
+    timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
+    timeoutPipe := time.After(timeoutDuration)
+
+    queryCollector:for range req.Queries {
+        // save the response in a hashmap
+        // based on with RefID as identifier
+        select {
+            case rtn := <-responsePipe:
+                response.Responses[rtn.QRefID] = rtn.Res
+            case <- timeoutPipe:
+                log.DefaultLogger.Warn("Timeout limit for QueryData has been reached")
+                break queryCollector
+        }
+    }
     return response, nil
 }
 
@@ -115,7 +138,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
             case response := <-responsePipe:
                 responseData = append(responseData, response...)
             case <-timeoutPipe:
-                log.DefaultLogger.Warn("Timeout limit for requests has been reached")
+                log.DefaultLogger.Warn("Timeout limit for query has been reached")
                 break responseCollector
         }
     }
