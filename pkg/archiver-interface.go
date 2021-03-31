@@ -115,8 +115,12 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     responseData := make([]SingleData, 0, len(targetPvList))
     responsePipe := make(chan []SingleData)
 
+    // Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
     timeoutDurationSeconds := 30 // units are seconds
+    timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
+    timeoutPipe := time.After(timeoutDuration)
 
+    // create goroutines for individual requests and application of functions 
     for _, targetPv := range targetPvList {
         go func(targetPv string, pipe chan []SingleData) {
             parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
@@ -130,9 +134,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
         }(targetPv, responsePipe)
     }
 
-    timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
-    timeoutPipe := time.After(timeoutDuration)
-
+    // Collect responses from the request goroutines 
     responseCollector:for range targetPvList {
         select {
             case response := <-responsePipe:
