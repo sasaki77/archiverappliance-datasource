@@ -8,7 +8,6 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
-    "regexp"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -281,20 +280,25 @@ func IsolateBasicQuery(unparsed string) []string {
     // This function takes queries in this format and breaks them up into a list of individual PVs
     unparsed_clean := strings.TrimSpace(unparsed)
 
-    multiFinder, _ := regexp.Compile(`\([^)]*?\)`)
+    phrases := LocateOuterParen(unparsed_clean)
     // Identify parenthesis-bound sections
-    multiPhrases := multiFinder.FindAllString(unparsed_clean, -1)
+    multiPhrases := phrases.Phrases
     // Locate parenthesis-bound sections
-    phraseIdxs := multiFinder.FindAllStringIndex(unparsed, -1)
+    phraseIdxs := phrases.Idxs
+
+    // If there are no sub-phrases in this string, return immediately to prevent further recursion
+    if len(multiPhrases) == 0 {
+        return []string{unparsed_clean}
+    }
 
     // A list of all the possible phrases
     phraseParts := make([][]string, 0, len(multiPhrases))
 
     for idx, _ := range multiPhrases {
-        // Strip parenthesis
-        multiPhrases[idx] = strings.Trim(multiPhrases[idx], "()")
+        // Strip leading and ending parenthesis
+        multiPhrases[idx] = multiPhrases[idx][1:len(multiPhrases[idx])-1]
         // Break parsed phrases on "|"
-        phraseParts = append(phraseParts, strings.Split(multiPhrases[idx], "|"))
+        phraseParts = append(phraseParts, SplitLowestLevelOnly(multiPhrases[idx]))
     }
 
     // list of all the configurations for the in-order phrases to be inserted
@@ -302,12 +306,75 @@ func IsolateBasicQuery(unparsed string) []string {
 
     result := make([]string, 0, len(phraseCase))
 
+    // Build results by substituting all phrase combinations in place for 1st-level substitutions 
     for _, phrase := range phraseCase {
         createdString := SelectiveInsert(unparsed_clean, phraseIdxs, phrase)
         result = append(result, createdString)
     }
 
+    // For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
+    for pos, chunk := range result {
+        parseAttempt := IsolateBasicQuery(chunk)
+        if len(parseAttempt) > 1 {
+            result = append(result[:pos], result[pos+1:]...) // pop partially parsed entry
+            result = append(result, parseAttempt...) // add new entires at the end of the list. 
+        }
+    }
+
     return result
+}
+
+func SplitLowestLevelOnly(inputData string) []string {
+    output := make([]string,0,5)
+    nestCounter := 0
+    stashInitPos := 0
+    for pos, char := range inputData {
+        switch {
+            case char == '(':
+                nestCounter++
+            case char == ')':
+                nestCounter--
+        }
+        if char == '|' && nestCounter == 0 {
+            output = append(output, inputData[stashInitPos:pos])
+            stashInitPos = pos+1
+        }
+    }
+    output = append(output, inputData[stashInitPos:])
+    return output 
+}
+
+type ParenLoc struct {
+    // Use to identify unenenclosed parenthesis, and their content
+    Phrases []string
+    Idxs [][]int
+}
+
+func LocateOuterParen(inputData string) ParenLoc {
+    // read through a string to identify all paired sets of parentheses that are not contained within another set of parenthesis. 
+    // When found, report the indexes of all instantces as well as the content contained within the parenthesis.
+    // This function ignores internal parenthesis. 
+    var output ParenLoc;
+
+    nestCounter := 0
+    var stashInitPos int
+    for pos, char := range inputData {
+        if char == '(' {
+            if nestCounter == 0 {
+                stashInitPos = pos
+            }
+            nestCounter++
+        }
+        if char == ')' {
+            if nestCounter == 1 {
+                // A completed 1st-level parenthesis set has been completed 
+                output.Phrases = append(output.Phrases, inputData[stashInitPos:pos+1])
+                output.Idxs = append(output.Idxs, []int{stashInitPos, pos+1})
+            }
+            nestCounter--
+        }
+    }
+    return output
 }
 
 func PermuteQuery( inputData [][]string) [][]string {
