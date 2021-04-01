@@ -1,13 +1,14 @@
 package main
 
 import (
-	"encoding/json"
-	"net/http"
+    "encoding/json"
+    "net/http"
     "net/url"
-	"time"
+    "time"
     "strings"
     "strconv"
     "io/ioutil"
+    "sync"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -273,6 +274,11 @@ func ExecuteSingleQuery(target string, query backend.DataQuery, pluginctx backen
     queryResponse, _ := ArchiverSingleQuery(queryUrl)
     parsedResponse, _ := ArchiverSingleQueryParser(queryResponse)
     return parsedResponse, nil
+}
+
+func SingleQueryRoutine(targetPv string, query backend.DataQuery, pluginctx backend.PluginContext, qm ArchiverQueryModel, responseData []SingleData, idx int, waitMgr *sync.WaitGroup) {
+        parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
+        responseData[idx] = parsedResponse
 }
 
 func IsolateBasicQuery(unparsed string) []string {

@@ -129,6 +129,7 @@ func (fdqm FunctionDescriptorQueryModel) ExtractParamString (target string) (str
 
 func ApplyFunctions(responseData []SingleData, qm ArchiverQueryModel) ([]SingleData, error) {
     // iterate through the list of functions
+    // This should be applied to the entirety of the single query as some functions need knowldege off the data series in order to work
     newData := responseData
     for _, fdqm := range qm.Functions {
         var err error

@@ -19,6 +19,7 @@ type SingleDataOrder struct {
 }
 
 func FilterIndexer(allData []SingleData, value string) ([]float64, error) {
+    // determine a single value for each SingleData. Useful for sorting or ranking SingleData
     rank := make([]float64, len(allData))
     for idx, sData := range allData {
         data := sData.Values
@@ -98,6 +99,9 @@ func FilterIndexer(allData []SingleData, value string) ([]float64, error) {
 }
 
 func SortCore(allData []SingleData, value string, order string) ([]SingleData, error) {
+    // Sort allData
+    // The order parameter chooses whether the order of the sort is ascending or descending
+    // The value parameter determines how the rank of each SingleData entry is measured 
     newData := make([]SingleData, 0, len(allData))
     rank, idxErr  := FilterIndexer(allData, value)
     if idxErr != nil {
