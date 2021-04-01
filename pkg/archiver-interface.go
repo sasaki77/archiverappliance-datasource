@@ -75,10 +75,9 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 }
 
 func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
-    // var status = backend.HealthStatusOk
-    // var message = "This is a fake success message"
-    var status = backend.HealthStatusError
-    var message = "This is a fake failure message"
+    // the frontend health check is still used at this time
+    var status = backend.HealthStatusOk
+    var message = "This is a fake success message"
 
     return &backend.CheckHealthResult{
         Status:     status,
@@ -113,24 +112,18 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 
     // execute the individual queries
     responseData := make([]SingleData, 0, len(targetPvList))
-    responsePipe := make(chan []SingleData)
+    responsePipe := make(chan SingleData)
 
     // Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
     timeoutDurationSeconds := 30 // units are seconds
     timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds)+"s")
     timeoutPipe := time.After(timeoutDuration)
 
-    // create goroutines for individual requests and application of functions 
+    // create goroutines for individual requests 
     for _, targetPv := range targetPvList {
-        go func(targetPv string, pipe chan []SingleData) {
+        go func(targetPv string, pipe chan SingleData) {
             parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-
-            // Apply Functions to the data
-            responseData, funcErr := ApplyFunctions([]SingleData{parsedResponse}, qm)
-            if funcErr != nil {
-                log.DefaultLogger.Warn("Error applying functions")
-            }
-            pipe <- responseData
+            pipe <- parsedResponse
         }(targetPv, responsePipe)
     }
 
@@ -138,13 +131,19 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     responseCollector:for range targetPvList {
         select {
             case response := <-responsePipe:
-                responseData = append(responseData, response...)
+                responseData = append(responseData, response)
             case <-timeoutPipe:
                 log.DefaultLogger.Warn("Timeout limit for query has been reached")
                 break responseCollector
         }
     }
 
+    // Apply Functions to the data
+    var funcErr error
+    responseData, funcErr = ApplyFunctions(responseData, qm)
+    if funcErr != nil {
+        log.DefaultLogger.Warn("Error applying functions")
+    }
 
     // for each query response, compile the data into response.Frames
     for _, singleResponse := range responseData {
