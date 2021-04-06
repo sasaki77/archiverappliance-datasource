@@ -23,6 +23,7 @@ import {
   isNumberArray,
 } from './types';
 import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
+import {locateOuterParen, permuteQuery, splitLowestLevelOnly, selectiveInsert} from './utils';
 
 export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
@@ -631,33 +632,43 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     return targets;
   }
 
-  parseTargetPV(targetPV: string) {
-    /*
-     * ex) targetPV = ABC(1|2|3)EFG(5|6)
-     *     then
-     *     splitQueries = ['ABC','(1|2|3'), 'EFG', '(5|6)']
-     *     queries = [
-     *     ABC1EFG5, ABC1EFG6, ABC2EFG6,
-     *     ABC2EFG6, ABC3EFG5, ABC3EFG6
-     *     ]
-     */
-    const splitQueries = _.split(targetPV, /(\(.*?\))/);
-    let queries = [''];
+  parseTargetPV(targetPV: string): string[]{
+    // ex) A(1(2))(3|4)B
+    // parenPhraseData = {phrases: [(1(2)), (3|4)], idxs: [[1,6], [7,11]]}
+    // phraseParts = [[1(2)], [3,4]]
+    // 1stresult = [A1(2)3B, A1(2)4B]
+    // 2ndresult = [A123B, A124B]
+    const parenPhraseData = locateOuterParen(targetPV);
 
-    _.forEach(splitQueries, (splitQuery, i) => {
-      // Fixed string like 'ABC'
-      if (i % 2 === 0) {
-        queries = _.map(queries, (query) => `${query}${splitQuery}`);
-        return;
-      }
+    // Identify parenthesis-bound sections
+    const parenPhrases = parenPhraseData.phrases;
 
-      // Regex OR string like '(1|2|3)'
-      const orElems = _.split(_.trim(splitQuery, '()'), '|');
+    // If there are no sub-phrases in this string, return immediately to prevent further recursion
+    if(parenPhrases.length === 0) {
+        return [targetPV];
+    }
 
-      const newQueries = _.map(queries, (query) => _.map(orElems, (orElem) => `${query}${orElem}`));
-      queries = _.flatten(newQueries);
+    // A list of all the possible phrases
+    const phraseParts = _.map(parenPhrases, (phrase, i) => {
+      const stripedPhrase = phrase.slice(1, phrase.length-1);
+      return splitLowestLevelOnly(stripedPhrase);
     });
 
-    return queries;
+    // list of all the configurations for the in-order phrases to be inserted
+    const phraseCase = permuteQuery(phraseParts);
+
+    //// Build results by substituting all phrase combinations in place for 1st-level substitutions 
+    const result = _.map(phraseCase, (phrase) => selectiveInsert(targetPV, parenPhraseData.idxs, phrase));
+
+    // For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
+    result.forEach((chunk, pos) => {
+        const parseAttempt = this.parseTargetPV(chunk);
+        if(parseAttempt.length > 1) {
+            result.splice(pos, 1) // pop partially parsed entry
+            result.push(...parseAttempt) // add new entires at the end of the list. 
+        }
+    });
+
+    return result;
   }
 }
