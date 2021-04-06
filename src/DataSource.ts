@@ -23,7 +23,7 @@ import {
   isNumberArray,
 } from './types';
 import { applyFunctionDefs, getOptions, getToScalarFuncs } from './aafunc';
-import {locateOuterParen, permuteQuery, splitLowestLevelOnly, selectiveInsert} from './utils';
+import { locateOuterParen, permuteQuery, splitLowestLevelOnly, selectiveInsert } from './utils';
 
 export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptions> {
   url?: string | undefined;
@@ -65,7 +65,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     // No stream query
     if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== 'now') {
       if (this.useBackend) {
-          return super.query(options);
+        return super.query(options);
       }
       return from(this.doQuery(targets));
     }
@@ -632,7 +632,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     return targets;
   }
 
-  parseTargetPV(targetPV: string): string[]{
+  parseTargetPV(targetPV: string): string[] {
     // ex) A(1(2))(3|4)B
     // parenPhraseData = {phrases: [(1(2)), (3|4)], idxs: [[1,6], [7,11]]}
     // phraseParts = [[1(2)], [3,4]]
@@ -644,29 +644,29 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const parenPhrases = parenPhraseData.phrases;
 
     // If there are no sub-phrases in this string, return immediately to prevent further recursion
-    if(parenPhrases.length === 0) {
-        return [targetPV];
+    if (parenPhrases.length === 0) {
+      return [targetPV];
     }
 
     // A list of all the possible phrases
     const phraseParts = _.map(parenPhrases, (phrase, i) => {
-      const stripedPhrase = phrase.slice(1, phrase.length-1);
+      const stripedPhrase = phrase.slice(1, phrase.length - 1);
       return splitLowestLevelOnly(stripedPhrase);
     });
 
     // list of all the configurations for the in-order phrases to be inserted
     const phraseCase = permuteQuery(phraseParts);
 
-    //// Build results by substituting all phrase combinations in place for 1st-level substitutions 
+    //// Build results by substituting all phrase combinations in place for 1st-level substitutions
     const result = _.map(phraseCase, (phrase) => selectiveInsert(targetPV, parenPhraseData.idxs, phrase));
 
     // For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
     result.forEach((chunk, pos) => {
-        const parseAttempt = this.parseTargetPV(chunk);
-        if(parseAttempt.length > 1) {
-            result.splice(pos, 1) // pop partially parsed entry
-            result.push(...parseAttempt) // add new entires at the end of the list. 
-        }
+      const parseAttempt = this.parseTargetPV(chunk);
+      if (parseAttempt.length > 1) {
+        result.splice(pos, 1); // pop partially parsed entry
+        result.push(...parseAttempt); // add new entires at the end of the list.
+      }
     });
 
     return result;

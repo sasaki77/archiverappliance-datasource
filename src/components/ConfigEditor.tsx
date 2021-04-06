@@ -15,7 +15,7 @@ export class ConfigEditor extends PureComponent<Props> {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
       ...options.jsonData,
-      useBackend: !options.jsonData.useBackend
+      useBackend: !options.jsonData.useBackend,
     };
     onOptionsChange({ ...options, jsonData });
   };

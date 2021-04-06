@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export function locateOuterParen(data:string): {phrases: string[], idxs: number[][]} {
+export function locateOuterParen(data: string): { phrases: string[]; idxs: number[][] } {
   const phrases: string[] = [];
   const idxs: number[][] = [];
 
@@ -9,24 +9,24 @@ export function locateOuterParen(data:string): {phrases: string[], idxs: number[
   const chars = [...data];
 
   chars.forEach((char, pos) => {
-    if(char == '(') {
-        if(nestCounter == 0) {
-            stashInitPos = pos;
-        }
-        nestCounter++;
-    }else if(char == ')') {
-        if(nestCounter == 1) {
-            phrases.push(data.slice(stashInitPos, pos+1));
-            idxs.push([stashInitPos, pos+1]);
-        }
-        nestCounter--;
+    if (char == '(') {
+      if (nestCounter == 0) {
+        stashInitPos = pos;
+      }
+      nestCounter++;
+    } else if (char == ')') {
+      if (nestCounter == 1) {
+        phrases.push(data.slice(stashInitPos, pos + 1));
+        idxs.push([stashInitPos, pos + 1]);
+      }
+      nestCounter--;
     }
-  })
+  });
 
-  return {phrases, idxs};
+  return { phrases, idxs };
 }
 
-export function permuteQuery(input:string[][]): string[][]{
+export function permuteQuery(input: string[][]): string[][] {
   /*
       Generate all ordered permutations of the input strings to make the following operation occur: 
 
@@ -80,18 +80,18 @@ export function splitLowestLevelOnly(data: string): string[] {
   const chars = [...data];
 
   chars.forEach((char, pos) => {
-    if(char === '(') {
-        nestCounter++;
-    }else if(char === ')') {
-        nestCounter--;
+    if (char === '(') {
+      nestCounter++;
+    } else if (char === ')') {
+      nestCounter--;
     }
-    if(char === '|' && nestCounter === 0) {
-      output.push(data.slice(stashInitPos, pos))
-      stashInitPos = pos + 1
+    if (char === '|' && nestCounter === 0) {
+      output.push(data.slice(stashInitPos, pos));
+      stashInitPos = pos + 1;
     }
-  })
+  });
   output.push(data.slice(stashInitPos));
-  return output 
+  return output;
 }
 
 export function selectiveInsert(input: string, idxs: number[][], inserts: string[]): string {
@@ -106,11 +106,11 @@ export function selectiveInsert(input: string, idxs: number[][], inserts: string
     const startIdx = val[0];
     output = output.concat('', input.slice(prevIdx, startIdx));
     output = output.concat('', inserts[idx]);
-    prevIdx = val[1]
+    prevIdx = val[1];
   });
 
-  // Handle any trailing string 
-  if(prevIdx < input.length) {
+  // Handle any trailing string
+  if (prevIdx < input.length) {
     const lastIdx = input.length;
     output = output.concat('', input.slice(prevIdx, lastIdx));
   }
