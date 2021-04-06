@@ -23,10 +23,10 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "@grafana/data": "7.4.1",
-    "@grafana/runtime": "7.4.1",
-    "@grafana/toolkit": "7.4.1",
-    "@grafana/ui": "7.4.1",
+    "@grafana/data": "7.5.2",
+    "@grafana/runtime": "7.5.2",
+    "@grafana/toolkit": "7.5.2",
+    "@grafana/ui": "7.5.2",
     "@testing-library/jest-dom": "5.11.9",
     "@testing-library/react": "^11.2.5",
     "@types/enzyme": "3.10.8",
@@ -51,5 +51,6 @@
   "resolutions": {
     "rxjs": "6.6.3"
   },
-  "homepage": "https://github.com/sasaki77/archiverappliance-datasource#readme"
+  "homepage": "https://github.com/sasaki77/archiverappliance-datasource#readme",
+  "dependencies": {}
 }
