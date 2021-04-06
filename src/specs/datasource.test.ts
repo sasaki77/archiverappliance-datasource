@@ -227,7 +227,7 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return an valid multi urls when regex OR target', (done) => {
       const target = ({
-        target: 'PV(A|B|C):(1|2):test',
+        target: 'PV(A|B):(1|2(3|4)):test',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
@@ -240,19 +240,19 @@ describe('Archiverappliance Datasource', () => {
           'url_header:/data/getData.qw?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[1]).toBe(
-          'url_header:/data/getData.qw?pv=mean_9(PVA%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
-        );
-        expect(url[2]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PVB%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
+        expect(url[2]).toBe(
+          'url_header:/data/getData.qw?pv=mean_9(PVA%3A23%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+        );
         expect(url[3]).toBe(
-          'url_header:/data/getData.qw?pv=mean_9(PVB%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVA%3A24%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[4]).toBe(
-          'url_header:/data/getData.qw?pv=mean_9(PVC%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVB%3A23%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         expect(url[5]).toBe(
-          'url_header:/data/getData.qw?pv=mean_9(PVC%3A2%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
+          'url_header:/data/getData.qw?pv=mean_9(PVB%3A24%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
         done();
       });
