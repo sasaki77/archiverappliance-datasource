@@ -8,12 +8,19 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
-    "fmt"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
+
+func (pluginctx backend.PluginContext) IsBackendQuery() bool {
+    // Return true if this query was created by the backend as opposed to visualization query for the frontend
+    if pluginctx.User != nil {
+        return true
+    }
+    return false
+}
 
 type ArchiverQueryModel struct {
     // It's not apparent to me where these two originate from but they do appear to be necessary
@@ -480,7 +487,7 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
 }
 
 func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
-    fmt.Println(query)
-    fmt.Println(qm)
+    if qm.Operator
+
     return singleResponse
 }
