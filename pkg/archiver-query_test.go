@@ -547,7 +547,7 @@ func TestFrameBuilder(t *testing.T) {
         })
     }
 }
-
+/*
 func TestDataExtrapol(t *testing.T) {
     var tests = []struct{
         sDIn SingleData
@@ -590,7 +590,7 @@ func TestDataExtrapol(t *testing.T) {
                         Def: FuncDefQueryModel{
                             Category: "Options",
                             DefaultParams: InitRawMsg(`true`),
-                            Name: "binInterval",
+                            Name: "disableExtrapol",
                             Params:[]FuncDefParamQueryModel{
                                 {Name:"boolean", Type: "string"},
                             },
@@ -621,7 +621,7 @@ func TestDataExtrapol(t *testing.T) {
                         Def: FuncDefQueryModel{
                             Category: "Options",
                             DefaultParams: InitRawMsg(`true`),
-                            Name: "binInterval",
+                            Name: "disableExtrapol",
                             Params:[]FuncDefParamQueryModel{
                                 {Name:"boolean", Type: "string"},
                             },
@@ -664,3 +664,4 @@ func TestDataExtrapol(t *testing.T) {
         })
     }
 }
+*/

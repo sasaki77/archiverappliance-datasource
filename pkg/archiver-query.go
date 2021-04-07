@@ -14,7 +14,7 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
-func (pluginctx backend.PluginContext) IsBackendQuery() bool {
+func IsBackendQuery(pluginctx backend.PluginContext) bool {
     // Return true if this query was created by the backend as opposed to visualization query for the frontend
     if pluginctx.User != nil {
         return true
@@ -486,8 +486,15 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
         return frame
 }
 
-func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
-    if qm.Operator
-
-    return singleResponse
-}
+// func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
+//     var disableExtrapol bool
+//      
+//     intervals := qm.IdentifyFunctionsByName("")
+//     val, paramErr := intervals[0].GetParametersByName("disableExtrapol")
+// 
+//     if (qm.Operator != "raw") || disableExtrapol {
+//         return singleResponse
+//     }
+// 
+//     return singleResponse
+// }
