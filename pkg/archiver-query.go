@@ -8,6 +8,7 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
+    "fmt"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -476,4 +477,10 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
         )
 
         return frame
+}
+
+func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
+    fmt.Println(query)
+    fmt.Println(qm)
+    return singleResponse
 }

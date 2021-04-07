@@ -95,6 +95,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     if response.Error != nil {
         return response
     }
+    log.DefaultLogger.Debug("qm", "qm", qm)
 
     // make the query and compile the results into a SingleData instance
     targetPvList := make([]string,0)

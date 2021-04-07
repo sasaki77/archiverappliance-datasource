@@ -547,3 +547,120 @@ func TestFrameBuilder(t *testing.T) {
         })
     }
 }
+
+func TestDataExtrapol(t *testing.T) {
+    var tests = []struct{
+        sDIn SingleData
+        query backend.DataQuery
+        qm ArchiverQueryModel
+        sDOut SingleData
+    }{
+        {
+            sDIn: SingleData{
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
+            },
+            query: backend.DataQuery{
+                TimeRange: backend.TimeRange{
+                    From: TimeHelper(1),
+                    To: TimeHelper(5),
+                },
+            },
+            qm: ArchiverQueryModel{
+            },
+            sDOut: SingleData{
+                Times: []time.Time{TimeHelper(0), TimeHelper(5)},
+                Values: []float64{1,1},
+            },
+        },
+        {
+            sDIn: SingleData{
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
+            },
+            query: backend.DataQuery{
+                TimeRange: backend.TimeRange{
+                    From: TimeHelper(1),
+                    To: TimeHelper(5),
+                },
+            },
+            qm: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{
+                    {
+                        Def: FuncDefQueryModel{
+                            Category: "Options",
+                            DefaultParams: InitRawMsg(`true`),
+                            Name: "binInterval",
+                            Params:[]FuncDefParamQueryModel{
+                                {Name:"boolean", Type: "string"},
+                            },
+                        },
+                        Params: []string{"false",},
+                    },
+                },
+            },
+            sDOut: SingleData{
+                Times: []time.Time{TimeHelper(0), TimeHelper(5)},
+                Values: []float64{1,1},
+            },
+        },
+        {
+            sDIn: SingleData{
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
+            },
+            query: backend.DataQuery{
+                TimeRange: backend.TimeRange{
+                    From: TimeHelper(1),
+                    To: TimeHelper(5),
+                },
+            },
+            qm: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{
+                    {
+                        Def: FuncDefQueryModel{
+                            Category: "Options",
+                            DefaultParams: InitRawMsg(`true`),
+                            Name: "binInterval",
+                            Params:[]FuncDefParamQueryModel{
+                                {Name:"boolean", Type: "string"},
+                            },
+                        },
+                        Params: []string{"true",},
+                    },
+                },
+            },
+            sDOut: SingleData{
+                Times: []time.Time{TimeHelper(0), TimeHelper(5)},
+                Values: []float64{1,1},
+            },
+        },
+        {
+            sDIn: SingleData{
+                Times: []time.Time{TimeHelper(0), TimeHelper(3)},
+                Values: []float64{1,2},
+            },
+            query: backend.DataQuery{
+                TimeRange: backend.TimeRange{
+                    From: TimeHelper(1),
+                    To: TimeHelper(5),
+                },
+            },
+            sDOut: SingleData{
+                Times: []time.Time{TimeHelper(0), TimeHelper(3)},
+                Values: []float64{1,2},
+            },
+        },
+    }
+    for idx, testCase := range tests {
+        testName := fmt.Sprintf("%d:", idx)
+        t.Run(testName, func(t *testing.T) {
+            result := DataExtrapol(testCase.sDIn, testCase.qm, testCase.query)
+            SingleDataCompareHelper(
+                []SingleData{result},
+                []SingleData{testCase.sDOut},
+                t,
+            )
+        })
+    }
+}
