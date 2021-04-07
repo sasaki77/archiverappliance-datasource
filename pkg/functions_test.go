@@ -130,7 +130,7 @@ func TestFluctuation(t *testing.T) {
             },
             output: []SingleData{
                 {
-                    Times: TimeArrayHelper(1,6),
+                    Times: TimeArrayHelper(0,6),
                     Values: []float64{0,0,1,2,4,7},
                 },
             },
