@@ -547,7 +547,7 @@ func TestFrameBuilder(t *testing.T) {
         })
     }
 }
-/*
+
 func TestDataExtrapol(t *testing.T) {
     var tests = []struct{
         sDIn SingleData
@@ -567,10 +567,29 @@ func TestDataExtrapol(t *testing.T) {
                 },
             },
             qm: ArchiverQueryModel{
+                Operator: "raw",
             },
             sDOut: SingleData{
                 Times: []time.Time{TimeHelper(0), TimeHelper(5)},
                 Values: []float64{1,1},
+            },
+        },
+        {
+            sDIn: SingleData{
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
+            },
+            query: backend.DataQuery{
+                TimeRange: backend.TimeRange{
+                    From: TimeHelper(1),
+                    To: TimeHelper(5),
+                },
+            },
+            qm: ArchiverQueryModel{
+            },
+            sDOut: SingleData{
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
             },
         },
         {
@@ -598,10 +617,11 @@ func TestDataExtrapol(t *testing.T) {
                         Params: []string{"false",},
                     },
                 },
+                Operator: "raw",
             },
             sDOut: SingleData{
                 Times: []time.Time{TimeHelper(0), TimeHelper(5)},
-                Values: []float64{1,1},
+                Values: []float64{1, 1},
             },
         },
         {
@@ -629,10 +649,11 @@ func TestDataExtrapol(t *testing.T) {
                         Params: []string{"true",},
                     },
                 },
+                Operator: "raw",
             },
             sDOut: SingleData{
-                Times: []time.Time{TimeHelper(0), TimeHelper(5)},
-                Values: []float64{1,1},
+                Times: []time.Time{TimeHelper(0)},
+                Values: []float64{1},
             },
         },
         {
@@ -664,4 +685,3 @@ func TestDataExtrapol(t *testing.T) {
         })
     }
 }
-*/

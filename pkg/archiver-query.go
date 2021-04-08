@@ -486,15 +486,22 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
         return frame
 }
 
-// func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
-//     var disableExtrapol bool
-//      
-//     intervals := qm.IdentifyFunctionsByName("")
-//     val, paramErr := intervals[0].GetParametersByName("disableExtrapol")
-// 
-//     if (qm.Operator != "raw") || disableExtrapol {
-//         return singleResponse
-//     }
-// 
-//     return singleResponse
-// }
+func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
+    disableExtrapol, err := qm.DisableExtrapol()
+    if err != nil {
+        disableExtrapol = false
+    }
+
+    if (qm.Operator != "raw") || disableExtrapol {
+        return singleResponse
+    }
+
+    newResponse := singleResponse
+    newValue := singleResponse.Values[len(singleResponse.Values)-1]
+    newTime := query.TimeRange.To
+
+    newResponse.Values = append(newResponse.Values, newValue)
+    newResponse.Times = append(newResponse.Times, newTime)
+
+    return newResponse
+}
