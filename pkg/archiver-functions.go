@@ -18,6 +18,30 @@ func (qm ArchiverQueryModel) IdentifyFunctionsByName(targetName string) []Functi
     return response
 }
 
+func (qm ArchiverQueryModel) DisableExtrapol() (bool, error){
+    intervals := qm.IdentifyFunctionsByName("disableExtrapol")
+    if len(intervals) >= 1 {
+        if len(intervals) > 1 {
+            log.DefaultLogger.Warn(fmt.Sprintf("more than one disableExtrapol has been provided: %v", intervals))
+        }
+
+        val, paramErr := intervals[0].ExtractParamString("boolean")
+        if paramErr != nil {
+            log.DefaultLogger.Warn("Conversion of boolean argument has failed", "Error", paramErr)
+            return false, paramErr
+        }
+        if val == "true" {
+            return true, nil
+        } else if val == "false"{
+            return false, nil
+        } else {
+            return false, errors.New("String not recognized as boolean")
+        }
+    } else {
+        return false, nil
+    }
+}
+
 func (fdqm FunctionDescriptorQueryModel) GetParametersByName (target string) (string, error) {
     // Provide the argument value for the function given its name.
     //  If multiple are received, only return the first. This should never happen. 

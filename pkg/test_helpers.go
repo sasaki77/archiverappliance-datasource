@@ -61,11 +61,18 @@ func SingleDataCompareHelper(result []SingleData, wanted []SingleData, t *testin
         if result[udx].Name != wanted[udx].Name {
             t.Errorf("Input and output SingleData have different Pvs. Wanted %v, got %v", wanted[udx].Name, result[udx].Name)
         }
+        if len(wanted[udx].Times) != len(result[udx].Times ) {
+            t.Errorf("Input and output arrays' times differ in length. Wanted %v, got %v", len(wanted[udx].Times), len(result[udx].Times))
+            return
+        }
         if len(wanted[udx].Values) != len(result[udx].Values) {
-            t.Errorf("Input and output arrays differ in length. Wanted %v, got %v", len(wanted[udx].Values), len(result[udx].Values))
+            t.Errorf("Input and output arrays' values differ in length. Wanted %v, got %v", len(wanted[udx].Values), len(result[udx].Values))
             return
         }
         for idx, _ := range(wanted[udx].Values) {
+            if result[udx].Times[idx] != wanted[udx].Times[idx] {
+                t.Errorf("Times at index %v do not match, Wanted %v, got %v", idx, wanted[udx].Times[idx], result[udx].Times[idx])
+            }
             if result[udx].Values[idx] != wanted[udx].Values[idx] {
                 t.Errorf("Values at index %v do not match, Wanted %v, got %v", idx, wanted[udx].Values[idx], result[udx].Values[idx])
             }

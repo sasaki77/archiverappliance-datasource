@@ -61,6 +61,91 @@ func TestIdentifyFunctionsByName(t *testing.T) {
     }
 }
 
+func TestDisableExtrapol(t *testing.T) {
+    var tests = []struct{
+        input ArchiverQueryModel
+        disable bool
+        err bool
+    }{
+        {
+            input: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{
+                    {
+                        Def: FuncDefQueryModel{
+                            Category: "Options",
+                            DefaultParams: InitRawMsg(`true`),
+                            Name: "disableExtrapol",
+                            Params:[]FuncDefParamQueryModel{
+                                {Name:"boolean", Type: "string"},
+                            },
+                        },
+                        Params: []string{"true",},
+                    },
+                },
+            },
+            disable: true,
+            err: false,
+        },
+        {
+            input: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{
+                    {
+                        Def: FuncDefQueryModel{
+                            Category: "Options",
+                            DefaultParams: InitRawMsg(`true`),
+                            Name: "disableExtrapol",
+                            Params:[]FuncDefParamQueryModel{
+                                {Name:"boolean", Type: "string"},
+                            },
+                        },
+                        Params: []string{"false",},
+                    },
+                },
+            },
+            disable: false,
+            err: false,
+        },
+        {
+            input: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{
+                    {
+                        Def: FuncDefQueryModel{
+                            Category: "Options",
+                            DefaultParams: InitRawMsg(`true`),
+                            Name: "disableExtrapol",
+                            Params:[]FuncDefParamQueryModel{
+                                {Name:"boolean", Type: "string"},
+                            },
+                        },
+                        Params: []string{"bad",},
+                    },
+                },
+            },
+            disable: false,
+            err: true,
+        },
+        {
+            input: ArchiverQueryModel{
+                Functions: []FunctionDescriptorQueryModel{},
+            },
+            disable: false,
+            err: false,
+        },
+    }
+    for tdx, testCase := range tests {
+        testName := fmt.Sprintf("%d: %v", tdx, testCase.disable)
+        t.Run(testName, func(t *testing.T) {
+            result, err := testCase.input.DisableExtrapol()
+            if result != testCase.disable {
+                t.Errorf("got %v, want %v", result, testCase.disable)
+            }
+            if (err != nil && testCase.err == false) || (err == nil && testCase.err == true) {
+                t.Errorf("Incorrect error state: got %v, want %v", (err != nil), testCase.err)
+            }
+        })
+    }
+}
+
 func TestGetParametersByName(t *testing.T) {
     var tests = []struct{
         input FunctionDescriptorQueryModel

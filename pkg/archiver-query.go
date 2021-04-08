@@ -8,12 +8,19 @@ import (
     "strings"
     "strconv"
     "io/ioutil"
-    "sync"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
+
+func IsBackendQuery(pluginctx backend.PluginContext) bool {
+    // Return true if this query was created by the backend as opposed to visualization query for the frontend
+    if pluginctx.User != nil {
+        return true
+    }
+    return false
+}
 
 type ArchiverQueryModel struct {
     // It's not apparent to me where these two originate from but they do appear to be necessary
@@ -276,11 +283,6 @@ func ExecuteSingleQuery(target string, query backend.DataQuery, pluginctx backen
     return parsedResponse, nil
 }
 
-func SingleQueryRoutine(targetPv string, query backend.DataQuery, pluginctx backend.PluginContext, qm ArchiverQueryModel, responseData []SingleData, idx int, waitMgr *sync.WaitGroup) {
-        parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-        responseData[idx] = parsedResponse
-}
-
 func IsolateBasicQuery(unparsed string) []string {
     // Non-regex queries can request multiple PVs using this syntax: (PV:NAME:1|PV:NAME:2|...)
     // This function takes queries in this format and breaks them up into a list of individual PVs
@@ -482,4 +484,24 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
         )
 
         return frame
+}
+
+func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
+    disableExtrapol, err := qm.DisableExtrapol()
+    if err != nil {
+        disableExtrapol = false
+    }
+
+    if (qm.Operator != "raw") || disableExtrapol {
+        return singleResponse
+    }
+
+    newResponse := singleResponse
+    newValue := singleResponse.Values[len(singleResponse.Values)-1]
+    newTime := query.TimeRange.To
+
+    newResponse.Values = append(newResponse.Values, newValue)
+    newResponse.Times = append(newResponse.Times, newTime)
+
+    return newResponse
 }

@@ -145,6 +145,11 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
         log.DefaultLogger.Warn("Error applying functions")
     }
 
+    // Extrapolate data as necessary
+    for idx, data := range responseData {
+        responseData[idx] = DataExtrapol(data, qm, query)
+    }
+
     // for each query response, compile the data into response.Frames
     for _, singleResponse := range responseData {
 
