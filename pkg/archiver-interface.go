@@ -95,7 +95,6 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     if response.Error != nil {
         return response
     }
-    log.DefaultLogger.Debug("qm", "qm", qm)
 
     // make the query and compile the results into a SingleData instance
     targetPvList := make([]string,0)
@@ -144,6 +143,11 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
     responseData, funcErr = ApplyFunctions(responseData, qm)
     if funcErr != nil {
         log.DefaultLogger.Warn("Error applying functions")
+    }
+
+    // Extrapolate data as necessary
+    for idx, data := range responseData {
+        responseData[idx] = DataExtrapol(data, qm, query)
     }
 
     // for each query response, compile the data into response.Frames
