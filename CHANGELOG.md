@@ -1,4 +1,13 @@
 # Change Log
+## 1.3.2 (2021-04-09)
+
+### Enhancements
+- **Backend / Frontend**: Support PV name with recursive alternation
+- **Backend**: Support Extrapolation for visualization
+
+### Bug fixes
+- **Backend**: `Delta` function faulted on 1-length datasets
+
 ## 1.3.1 (2021-03-23)
 
 ### Features / Enhancements
