@@ -29,7 +29,7 @@ const renderSuggestion = (suggestion: any) => {
 export class QueryEditor extends PureComponent<Props, State> {
   state = { pvSuggestions: [], oprSuggestions: [] };
 
-  onPVChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
+  onPVChange = (event: React.FormEvent<HTMLElement>, { newValue }: any) => {
     const { onChange, query } = this.props;
     onChange({ ...query, target: newValue });
   };
@@ -40,7 +40,7 @@ export class QueryEditor extends PureComponent<Props, State> {
     onRunQuery();
   };
 
-  onOperatorChange = (event: ChangeEvent<HTMLInputElement>, { newValue }: any) => {
+  onOperatorChange = (event: React.FormEvent<HTMLElement>, { newValue }: any) => {
     const { onChange, query } = this.props;
     onChange({ ...query, operator: newValue });
   };
