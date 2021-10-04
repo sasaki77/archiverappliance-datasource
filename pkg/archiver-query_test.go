@@ -541,6 +541,9 @@ func TestFrameBuilder(t *testing.T) {
         testName := fmt.Sprintf("%d: %s", idx, testCase.name)
         t.Run(testName, func(t *testing.T) {
             result := FrameBuilder(testCase.sD)
+            if testCase.name != result.Name {
+                t.Errorf("got %v, want %v", result.Name, testCase.name)
+            }
             if testCase.name != result.Fields[1].Name {
                 t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
             }

@@ -471,7 +471,7 @@ func SelectiveInsert( input string, idxs [][]int, inserts []string) string {
 
 func FrameBuilder(singleResponse SingleData) *data.Frame {
         // create data frame response
-        frame := data.NewFrame("response")
+        frame := data.NewFrame(singleResponse.Name)
 
         //add the time dimension
         frame.Fields = append(frame.Fields,
