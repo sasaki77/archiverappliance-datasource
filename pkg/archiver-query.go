@@ -479,7 +479,10 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
         )
 
         // add values 
-        valueField := data.NewField(singleResponse.Name, nil, singleResponse.Values)
+        labels := make(data.Labels, 1)
+        labels["pvname"] = singleResponse.Name
+
+        valueField := data.NewField(singleResponse.Name, labels, singleResponse.Values)
         valueField.Config = &data.FieldConfig{DisplayName: singleResponse.Name}
         frame.Fields = append(frame.Fields, valueField)
 
