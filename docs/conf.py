@@ -91,6 +91,6 @@ def setup(app):
         'enable_eval_rst': True,
         }, True)
     app.add_transform(AutoStructify)
-    app.add_stylesheet('css/custom.css')
+    app.add_css_file('css/custom.css')
 
 autosectionlabel_prefix_document = True
