@@ -1,71 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Functions &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tips" href="tips.html" />
     <link rel="prev" title="Variables" href="variables.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -73,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -138,77 +91,34 @@
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Archiver Appliance Datasource</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Functions</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/functions.md" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="functions">
-<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="categories">
-<h2>Categories<a class="headerlink" href="#categories" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h1>
+<section id="categories">
+<h2>Categories<a class="headerlink" href="#categories" title="Permalink to this headline"></a></h2>
 <p>Functions are categorized into below groups.</p>
 <ul class="simple">
 <li><p><strong>Transform:</strong> converts the timeseries datapoints from its datapoint values.</p></li>
@@ -217,14 +127,14 @@
 <li><p><strong>Sort:</strong> sorts the list of timeseries.</p></li>
 <li><p><strong>Options:</strong> adds option parameters.</p></li>
 </ul>
-</div>
-<div class="section" id="transform-functions">
-<h2>Transform Functions<a class="headerlink" href="#transform-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="scale">
-<h3><em>scale</em><a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="transform-functions">
+<h2>Transform Functions<a class="headerlink" href="#transform-functions" title="Permalink to this headline"></a></h2>
+<section id="scale">
+<h3><em>scale</em><a class="headerlink" href="#scale" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="scale">
-<code class="sig-name descname"><span class="pre">scale</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scale" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#scale" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Multiplies datapoint by <em>factor</em> at each point.</p>
@@ -233,12 +143,12 @@
 <span class="nx">scale</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="offset">
-<h3><em>offset</em><a class="headerlink" href="#offset" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="offset">
+<h3><em>offset</em><a class="headerlink" href="#offset" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="offset">
-<code class="sig-name descname"><span class="pre">offset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#offset" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="offset">
+<span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#offset" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Adds <em>delta</em> to each datapoint.</p>
@@ -247,30 +157,30 @@
 <span class="nx">offset</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="delta">
-<h3><em>delta</em><a class="headerlink" href="#delta" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="delta">
+<h3><em>delta</em><a class="headerlink" href="#delta" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="delta">
-<code class="sig-name descname"><span class="pre">delta</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="delta">
+<span class="sig-name descname"><span class="pre">delta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Calculates difference between datapoint and its before point at each point.</p>
-</div>
-<div class="section" id="fluctuation">
-<h3><em>fluctuation</em><a class="headerlink" href="#fluctuation" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="fluctuation">
+<h3><em>fluctuation</em><a class="headerlink" href="#fluctuation" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="fluctuation">
-<code class="sig-name descname"><span class="pre">fluctuation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fluctuation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="fluctuation">
+<span class="sig-name descname"><span class="pre">fluctuation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fluctuation" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Subtracts first datapoint value from each datapoint.</p>
-</div>
-<div class="section" id="movingaverage">
-<h3><em>movingAverage</em><a class="headerlink" href="#movingaverage" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="movingaverage">
+<h3><em>movingAverage</em><a class="headerlink" href="#movingaverage" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="movingAverage">
-<code class="sig-name descname"><span class="pre">movingAverage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">windowSize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#movingAverage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="movingAverage">
+<span class="sig-name descname"><span class="pre">movingAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">windowSize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#movingAverage" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Calculates the moving average of datapoints over a fixed number of past points, specified by windowSize param.</p>
@@ -279,72 +189,72 @@
 <span class="nx">movingAverage</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="array-to-scalar-functions">
-<h2>Array to Scalar Functions<a class="headerlink" href="#array-to-scalar-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="toscalarbyavg">
-<h3><em>toScalarByAvg</em><a class="headerlink" href="#toscalarbyavg" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="array-to-scalar-functions">
+<h2>Array to Scalar Functions<a class="headerlink" href="#array-to-scalar-functions" title="Permalink to this headline"></a></h2>
+<section id="toscalarbyavg">
+<h3><em>toScalarByAvg</em><a class="headerlink" href="#toscalarbyavg" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarByAvg">
-<code class="sig-name descname"><span class="pre">toScalarByAvg</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByAvg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarByAvg">
+<span class="sig-name descname"><span class="pre">toScalarByAvg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByAvg" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the average value.</p>
-</div>
-<div class="section" id="toscalarbymax">
-<h3><em>toScalarByMax</em><a class="headerlink" href="#toscalarbymax" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="toscalarbymax">
+<h3><em>toScalarByMax</em><a class="headerlink" href="#toscalarbymax" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarByMax">
-<code class="sig-name descname"><span class="pre">toScalarByMax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarByMax">
+<span class="sig-name descname"><span class="pre">toScalarByMax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMax" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the maximum value.</p>
-</div>
-<div class="section" id="toscalarbymin">
-<h3><em>toScalarByMin</em><a class="headerlink" href="#toscalarbymin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="toscalarbymin">
+<h3><em>toScalarByMin</em><a class="headerlink" href="#toscalarbymin" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarByMin">
-<code class="sig-name descname"><span class="pre">toScalarByMin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarByMin">
+<span class="sig-name descname"><span class="pre">toScalarByMin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMin" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the minimum value.</p>
-</div>
-<div class="section" id="toscalarbysum">
-<h3><em>toScalarBySum</em><a class="headerlink" href="#toscalarbysum" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="toscalarbysum">
+<h3><em>toScalarBySum</em><a class="headerlink" href="#toscalarbysum" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarBySum">
-<code class="sig-name descname"><span class="pre">toScalarBySum</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarBySum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarBySum">
+<span class="sig-name descname"><span class="pre">toScalarBySum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarBySum" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the total value.</p>
-</div>
-<div class="section" id="toscalarbymed">
-<h3><em>toScalarByMed</em><a class="headerlink" href="#toscalarbymed" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="toscalarbymed">
+<h3><em>toScalarByMed</em><a class="headerlink" href="#toscalarbymed" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarByMed">
-<code class="sig-name descname"><span class="pre">toScalarByMed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMed" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarByMed">
+<span class="sig-name descname"><span class="pre">toScalarByMed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByMed" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the median value.</p>
-</div>
-<div class="section" id="toscalarbystd">
-<h3><em>toScalarByStd</em><a class="headerlink" href="#toscalarbystd" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="toscalarbystd">
+<h3><em>toScalarByStd</em><a class="headerlink" href="#toscalarbystd" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="toScalarByStd">
-<code class="sig-name descname"><span class="pre">toScalarByStd</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByStd" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="toScalarByStd">
+<span class="sig-name descname"><span class="pre">toScalarByStd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toScalarByStd" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Converts the array data to the scalar data with the standard deviation value.</p>
-</div>
-</div>
-<div class="section" id="filter-series-functions">
-<h2>Filter Series Functions<a class="headerlink" href="#filter-series-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="top">
-<h3><em>top</em><a class="headerlink" href="#top" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="filter-series-functions">
+<h2>Filter Series Functions<a class="headerlink" href="#filter-series-functions" title="Permalink to this headline"></a></h2>
+<section id="top">
+<h3><em>top</em><a class="headerlink" href="#top" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="top">
-<code class="sig-name descname"><span class="pre">top</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#top" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="top">
+<span class="sig-name descname"><span class="pre">top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#top" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Returns top N series sorted by <em>value</em>.
@@ -354,12 +264,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">top</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span> <span class="nx">avg</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="bottom">
-<h3><em>bottom</em><a class="headerlink" href="#bottom" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="bottom">
+<h3><em>bottom</em><a class="headerlink" href="#bottom" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="bottom">
-<code class="sig-name descname"><span class="pre">bottom</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bottom" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bottom">
+<span class="sig-name descname"><span class="pre">bottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bottom" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Returns bottom N series sorted by <em>value</em>.
@@ -369,12 +279,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">bottom</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span> <span class="nx">min</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="exclude">
-<h3><em>exclude</em><a class="headerlink" href="#exclude" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="exclude">
+<h3><em>exclude</em><a class="headerlink" href="#exclude" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="exclude">
-<code class="sig-name descname"><span class="pre">exclude</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#exclude" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="exclude">
+<span class="sig-name descname"><span class="pre">exclude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#exclude" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Exclude PV data that match the regular expression.</p>
@@ -382,15 +292,15 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">exclude</span><span class="p">(</span><span class="nx">PV</span><span class="p">[</span><span class="mf">0</span><span class="o">-</span><span class="mf">9</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="sort-functions">
-<h2>Sort Functions<a class="headerlink" href="#sort-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="sortbyavg">
-<h3><em>sortByAvg</em><a class="headerlink" href="#sortbyavg" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="sort-functions">
+<h2>Sort Functions<a class="headerlink" href="#sort-functions" title="Permalink to this headline"></a></h2>
+<section id="sortbyavg">
+<h3><em>sortByAvg</em><a class="headerlink" href="#sortbyavg" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortByAvg">
-<code class="sig-name descname"><span class="pre">sortByAvg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAvg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortByAvg">
+<span class="sig-name descname"><span class="pre">sortByAvg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAvg" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the average value across the time period specified.</p>
@@ -399,12 +309,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sortbymax">
-<h3><em>sortByMax</em><a class="headerlink" href="#sortbymax" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sortbymax">
+<h3><em>sortByMax</em><a class="headerlink" href="#sortbymax" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortByMax">
-<code class="sig-name descname"><span class="pre">sortByMax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortByMax">
+<span class="sig-name descname"><span class="pre">sortByMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMax" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the maximum value across the time period specified.</p>
@@ -413,12 +323,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortByMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sortbymin">
-<h3><em>sortByMin</em><a class="headerlink" href="#sortbymin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sortbymin">
+<h3><em>sortByMin</em><a class="headerlink" href="#sortbymin" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortByMin">
-<code class="sig-name descname"><span class="pre">sortByMin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortByMin">
+<span class="sig-name descname"><span class="pre">sortByMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByMin" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the minimum value across the time period specified.</p>
@@ -427,12 +337,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortByMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sortbysum">
-<h3><em>sortBySum</em><a class="headerlink" href="#sortbysum" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sortbysum">
+<h3><em>sortBySum</em><a class="headerlink" href="#sortbysum" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortBySum">
-<code class="sig-name descname"><span class="pre">sortBySum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortBySum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortBySum">
+<span class="sig-name descname"><span class="pre">sortBySum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortBySum" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the total value across the time period specified.</p>
@@ -441,12 +351,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortBySum</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sortbyabsmax">
-<h3><em>sortByAbsMax</em><a class="headerlink" href="#sortbyabsmax" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sortbyabsmax">
+<h3><em>sortByAbsMax</em><a class="headerlink" href="#sortbyabsmax" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortByAbsMax">
-<code class="sig-name descname"><span class="pre">sortByAbsMax</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortByAbsMax">
+<span class="sig-name descname"><span class="pre">sortByAbsMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMax" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the absolute maximum value across the time period specified.</p>
@@ -455,12 +365,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sortbyabsmin">
-<h3><em>sortByAbsMin</em><a class="headerlink" href="#sortbyabsmin" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="sortbyabsmin">
+<h3><em>sortByAbsMin</em><a class="headerlink" href="#sortbyabsmin" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="sortByAbsMin">
-<code class="sig-name descname"><span class="pre">sortByAbsMin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sortByAbsMin">
+<span class="sig-name descname"><span class="pre">sortByAbsMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sortByAbsMin" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Sort the list of timeseries by the absolute minimum value across the time period specified.</p>
@@ -469,15 +379,15 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="options-functions">
-<h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="maxnumpvs">
-<h3><em>maxNumPVs</em><a class="headerlink" href="#maxnumpvs" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="options-functions">
+<h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this headline"></a></h2>
+<section id="maxnumpvs">
+<h3><em>maxNumPVs</em><a class="headerlink" href="#maxnumpvs" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="maxNumPVs">
-<code class="sig-name descname"><span class="pre">maxNumPVs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maxNumPVs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="maxNumPVs">
+<span class="sig-name descname"><span class="pre">maxNumPVs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#maxNumPVs" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Set maximum number of PVs you can select for a target.</p>
@@ -485,12 +395,12 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">maxNumPVs</span><span class="p">(</span><span class="mf">500</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="bininterval">
-<h3><em>binInterval</em><a class="headerlink" href="#bininterval" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="bininterval">
+<h3><em>binInterval</em><a class="headerlink" href="#bininterval" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="binInterval">
-<code class="sig-name descname"><span class="pre">binInterval</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#binInterval" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="binInterval">
+<span class="sig-name descname"><span class="pre">binInterval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#binInterval" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Set binning interval for processing of data.
@@ -499,12 +409,12 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">binInterval</span><span class="p">(</span><span class="mf">100</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="disableautoraw">
-<h3><em>disableAutoRaw</em><a class="headerlink" href="#disableautoraw" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="disableautoraw">
+<h3><em>disableAutoRaw</em><a class="headerlink" href="#disableautoraw" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="disableAutoRaw">
-<code class="sig-name descname"><span class="pre">disableAutoRaw</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableAutoRaw" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="disableAutoRaw">
+<span class="sig-name descname"><span class="pre">disableAutoRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableAutoRaw" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Disable <a class="reference external" href="tips.html#auto-raw-operation">auto raw feature</a>.</p>
@@ -513,12 +423,12 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="disableextrapol">
-<h3><em>disableExtrapol</em><a class="headerlink" href="#disableextrapol" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="disableextrapol">
+<h3><em>disableExtrapol</em><a class="headerlink" href="#disableextrapol" title="Permalink to this headline"></a></h3>
 <dl class="py function">
-<dt id="disableExtrapol">
-<code class="sig-name descname"><span class="pre">disableExtrapol</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableExtrapol" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="disableExtrapol">
+<span class="sig-name descname"><span class="pre">disableExtrapol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableExtrapol" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <p>Disable <a class="reference external" href="tips.html#extrapolation-for-raw-operation">extrapolation for raw data</a>.</p>
@@ -527,56 +437,39 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tips.html" class="btn btn-neutral float-right" title="Tips" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="variables.html" class="btn btn-neutral float-left" title="Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tips.html" class="btn btn-neutral float-right" title="Tips" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2019-2020, Shinya Sasaki.
-
-    </p>
+    <p>&#169; Copyright 2019-2020, Shinya Sasaki.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
