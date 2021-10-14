@@ -2,7 +2,7 @@
   "name": "sasaki77-archiver-appliance",
   "alerting": true,
   "private": true,
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "ArchiverAppliance",
   "main": "index.js",
   "scripts": {

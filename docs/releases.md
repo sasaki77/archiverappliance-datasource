@@ -1,4 +1,16 @@
 # Release Notes
+## 1.3.3
+
+**2021-10-15**
+
+### Enhancements
+- **Backend**: Add pvname label to timeseries dataframe for multi-dimensional alerting
+
+### Bug fixes
+- **Backend**: Fix dataframe name from response to its PV name
+- **Backend**: Add display name to dataframe config to properly display legend
+- **Frontend**: Fix function adding button
+
 ## 1.3.2
 
 **2021-04-09**
