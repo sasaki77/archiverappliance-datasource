@@ -9,69 +9,23 @@ exports[`Render should render component 1`] = `
         "children": Array [
           Object {
             "label": "scale",
-            "value": Object {
-              "category": "Transform",
-              "defaultParams": Array [
-                "100",
-              ],
-              "name": "scale",
-              "params": Array [
-                Object {
-                  "name": "factor",
-                  "type": "float",
-                },
-              ],
-            },
+            "value": "scale",
           },
           Object {
             "label": "offset",
-            "value": Object {
-              "category": "Transform",
-              "defaultParams": Array [
-                "100",
-              ],
-              "name": "offset",
-              "params": Array [
-                Object {
-                  "name": "delta",
-                  "type": "float",
-                },
-              ],
-            },
+            "value": "offset",
           },
           Object {
             "label": "delta",
-            "value": Object {
-              "category": "Transform",
-              "defaultParams": Array [],
-              "name": "delta",
-              "params": Array [],
-            },
+            "value": "delta",
           },
           Object {
             "label": "fluctuation",
-            "value": Object {
-              "category": "Transform",
-              "defaultParams": Array [],
-              "name": "fluctuation",
-              "params": Array [],
-            },
+            "value": "fluctuation",
           },
           Object {
             "label": "movingAverage",
-            "value": Object {
-              "category": "Transform",
-              "defaultParams": Array [
-                "10",
-              ],
-              "name": "movingAverage",
-              "params": Array [
-                Object {
-                  "name": "windowSize",
-                  "type": "int",
-                },
-              ],
-            },
+            "value": "movingAverage",
           },
         ],
         "label": "Transform",
@@ -81,57 +35,27 @@ exports[`Render should render component 1`] = `
         "children": Array [
           Object {
             "label": "toScalarByAvg",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarByAvg",
-              "params": Array [],
-            },
+            "value": "toScalarByAvg",
           },
           Object {
             "label": "toScalarByMax",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarByMax",
-              "params": Array [],
-            },
+            "value": "toScalarByMax",
           },
           Object {
             "label": "toScalarByMin",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarByMin",
-              "params": Array [],
-            },
+            "value": "toScalarByMin",
           },
           Object {
             "label": "toScalarBySum",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarBySum",
-              "params": Array [],
-            },
+            "value": "toScalarBySum",
           },
           Object {
             "label": "toScalarByMed",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarByMed",
-              "params": Array [],
-            },
+            "value": "toScalarByMed",
           },
           Object {
             "label": "toScalarByStd",
-            "value": Object {
-              "category": "Array to Scalar",
-              "defaultParams": Array [],
-              "name": "toScalarByStd",
-              "params": Array [],
-            },
+            "value": "toScalarByStd",
           },
         ],
         "label": "Array to Scalar",
@@ -141,77 +65,15 @@ exports[`Render should render component 1`] = `
         "children": Array [
           Object {
             "label": "top",
-            "value": Object {
-              "category": "Filter Series",
-              "defaultParams": Array [
-                "5",
-                "avg",
-              ],
-              "name": "top",
-              "params": Array [
-                Object {
-                  "name": "number",
-                  "type": "int",
-                },
-                Object {
-                  "name": "value",
-                  "options": Array [
-                    "avg",
-                    "min",
-                    "max",
-                    "absoluteMin",
-                    "absoluteMax",
-                    "sum",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "top",
           },
           Object {
             "label": "bottom",
-            "value": Object {
-              "category": "Filter Series",
-              "defaultParams": Array [
-                "5",
-                "avg",
-              ],
-              "name": "bottom",
-              "params": Array [
-                Object {
-                  "name": "number",
-                  "type": "int",
-                },
-                Object {
-                  "name": "value",
-                  "options": Array [
-                    "avg",
-                    "min",
-                    "max",
-                    "absoluteMin",
-                    "absoluteMax",
-                    "sum",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "bottom",
           },
           Object {
             "label": "exclude",
-            "value": Object {
-              "category": "Filter Series",
-              "defaultParams": Array [
-                "",
-              ],
-              "name": "exclude",
-              "params": Array [
-                Object {
-                  "name": "pattern",
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "exclude",
           },
         ],
         "label": "Filter Series",
@@ -221,123 +83,27 @@ exports[`Render should render component 1`] = `
         "children": Array [
           Object {
             "label": "sortByAvg",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortByAvg",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortByAvg",
           },
           Object {
             "label": "sortByMax",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortByMax",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortByMax",
           },
           Object {
             "label": "sortByMin",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortByMin",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortByMin",
           },
           Object {
             "label": "sortBySum",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortBySum",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortBySum",
           },
           Object {
             "label": "sortByAbsMax",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortByAbsMax",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortByAbsMax",
           },
           Object {
             "label": "sortByAbsMin",
-            "value": Object {
-              "category": "Sort",
-              "defaultParams": Array [
-                "desc",
-              ],
-              "name": "sortByAbsMin",
-              "params": Array [
-                Object {
-                  "name": "order",
-                  "options": Array [
-                    "desc",
-                    "asc",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "sortByAbsMin",
           },
         ],
         "label": "Sort",
@@ -347,75 +113,19 @@ exports[`Render should render component 1`] = `
         "children": Array [
           Object {
             "label": "maxNumPVs",
-            "value": Object {
-              "category": "Options",
-              "defaultParams": Array [
-                "100",
-              ],
-              "name": "maxNumPVs",
-              "params": Array [
-                Object {
-                  "name": "number",
-                  "type": "int",
-                },
-              ],
-            },
+            "value": "maxNumPVs",
           },
           Object {
             "label": "binInterval",
-            "value": Object {
-              "category": "Options",
-              "defaultParams": Array [
-                "900",
-              ],
-              "name": "binInterval",
-              "params": Array [
-                Object {
-                  "name": "interval",
-                  "type": "int",
-                },
-              ],
-            },
+            "value": "binInterval",
           },
           Object {
             "label": "disableAutoRaw",
-            "value": Object {
-              "category": "Options",
-              "defaultParams": Array [
-                "true",
-              ],
-              "name": "disableAutoRaw",
-              "params": Array [
-                Object {
-                  "name": "boolean",
-                  "options": Array [
-                    "true",
-                    "false",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "disableAutoRaw",
           },
           Object {
             "label": "disableExtrapol",
-            "value": Object {
-              "category": "Options",
-              "defaultParams": Array [
-                "true",
-              ],
-              "name": "disableExtrapol",
-              "params": Array [
-                Object {
-                  "name": "boolean",
-                  "options": Array [
-                    "true",
-                    "false",
-                  ],
-                  "type": "string",
-                },
-              ],
-            },
+            "value": "disableExtrapol",
           },
         ],
         "label": "Options",
