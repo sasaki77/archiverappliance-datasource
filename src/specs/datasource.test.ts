@@ -17,13 +17,13 @@ const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse(
 
 jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
   () => {
-    return {datasourceRequest: datasourceRequestMock} as any as runtime.BackendSrv;
+    return { datasourceRequest: datasourceRequestMock } as any as runtime.BackendSrv;
   }
 );
 
 jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
   () => {
-      return {replace: jest.fn().mockImplementation((query) => query)} as any as runtime.TemplateSrv;
+    return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
   }
 );
 
@@ -80,7 +80,7 @@ describe('Archiverappliance Datasource', () => {
       datasourceRequestMock.mockImplementation((request) =>
         Promise.resolve({
           status: 404,
-          message: 'Bad gateway',
+          data: 'Bad gateway',
         })
       );
 
@@ -269,7 +269,7 @@ describe('Archiverappliance Datasource', () => {
       } as unknown) as TargetQuery;
 
       ds.buildUrls(target)
-        .then(() => {})
+        .then(() => { })
         .catch(() => {
           done();
         });
