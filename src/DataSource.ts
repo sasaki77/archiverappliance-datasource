@@ -517,7 +517,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
       return {
         status: 'error',
         title: 'Failed',
-        message: response.message,
+        message: response.data,
       };
     });
   }

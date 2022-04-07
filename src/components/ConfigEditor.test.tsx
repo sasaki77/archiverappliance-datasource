@@ -9,6 +9,7 @@ const setup = (propOverrides?: object) => {
     options: {
       id: 1,
       orgId: 1,
+      uid: '',
       typeLogoUrl: '',
       name: 'ArchiverAppliance',
       access: 'proxy',
