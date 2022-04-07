@@ -2,7 +2,7 @@ name: publish-release.yml
 on:
   push:
     tags:
-    - '*' # run this action exclusively on tags
+      - "*" # run this action exclusively on tags
 jobs:
   build-and-test-plugin:
     runs-on: ubuntu-latest
@@ -10,19 +10,19 @@ jobs:
       zip-name: archiverappliance-datasource
     strategy:
       matrix:
-        node: [12]
+        node: [14]
         continue-on-error: [false]
     continue-on-error: ${{ matrix.continue-on-error }}
     steps:
       - name: Checkout Github repository
         uses: actions/checkout@v2
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
       - name: Setup NodeJS environment
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - name: Setup Go environment 
+      - name: Setup Go environment
         uses: actions/setup-go@v2
       - name: Run Go tests using Mage
         uses: magefile/mage-action@v1
@@ -39,7 +39,7 @@ jobs:
           npm install -g yarn
           yarn install
       - name: List all Yarn packages
-        run: | 
+        run: |
           yarn list
       - name: Build frontend
         run: |
@@ -66,12 +66,12 @@ jobs:
           zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./${{ env.zip-name }}.zip
           asset_name: ${{ env.zip-name }}.zip
           asset_content_type: application/zip
