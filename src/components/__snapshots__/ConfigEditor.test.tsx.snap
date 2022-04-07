@@ -28,6 +28,7 @@ exports[`Render should render component 1`] = `
         "type": "ArchiverAppliance",
         "typeLogoUrl": "",
         "typeName": "ArchiverAppliance",
+        "uid": "",
         "url": "",
         "user": "",
         "withCredentials": false,
