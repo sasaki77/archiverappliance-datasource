@@ -2,6 +2,7 @@
 
 exports[`Render should render component 1`] = `
 <ButtonCascader
+  icon="plus"
   onChange={[Function]}
   options={
     Array [
@@ -133,6 +134,8 @@ exports[`Render should render component 1`] = `
       },
     ]
   }
+  value={Array []}
+  variant="primary"
 >
   Add
 </ButtonCascader>

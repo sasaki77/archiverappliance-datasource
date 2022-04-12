@@ -40,7 +40,7 @@ class FunctionAdd extends React.PureComponent<FunctionAddProps> {
     const categories = getCategories();
     const allFunctions = getAllFunctionNames(categories);
     return (
-      <ButtonCascader options={allFunctions} value={undefined} onChange={this.onChange}>
+      <ButtonCascader options={allFunctions} value={[]} onChange={this.onChange} variant="primary" icon="plus">
         Add
       </ButtonCascader>
     );
