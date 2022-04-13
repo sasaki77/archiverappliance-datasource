@@ -20,7 +20,7 @@ for other settings.
 
 ![Variable Settings](./img/aa-variables-settings.png)
 
-You can use regular expression pattern same as [Query Edit](query.html#select-multiple-pvs-by-regex).
+You can use regular expression pattern same as [Query Edit](query.md#select-multiple-pvs-by-regex).
 Only wildcard pattern and alternation pattern are available.
 
 You can also use another variable as a part of query.
@@ -33,7 +33,8 @@ Below is a query in this case.
 ${group}:.*
 ```
 
-``` Note:: Default maximum number of PV names you can use in variables is **100**.
+```{note}
+Default maximum number of PV names you can use in variables is **100**.
 ```
 
 Limit parameter is available to change maxmum number. Parameters must be follow `?` character.

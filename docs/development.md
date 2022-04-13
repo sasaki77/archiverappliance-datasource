@@ -10,26 +10,26 @@ Node version v12.x is recommended. If you're new to the Node.js ecosystem, [Node
 [grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
 
 1. Begin by installing Yarn ([https://yarnpkg.com/](https://yarnpkg.com/))
-    ```BASH
+    ```bash
     npm install -g yarn
     ```
 
 2. Install dependencies
-    ```BASH
+    ```bash
     yarn install
     ```
 
 3. Build plugin in development mode or run in watch mode
-    ```BASH
+    ```bash
     yarn dev
     ```
     or
-    ```BASH
+    ```bash
     yarn watch
     ```
 
 4. Build plugin in production mode
-    ```BASH
+    ```bash
     yarn build
     ```
 
@@ -44,12 +44,12 @@ If the Mage build tool is not already installed, you may install it using the in
     ```
 
 2. Build backend plugin binaries for Linux, Windows and Darwin:
-    ```BASH
+    ```bash
     mage -v
     ```
 
 3. List all available Mage targets for additional commands:
-    ```BASH
+    ```bash
     mage -l
     ```
 
@@ -62,12 +62,12 @@ docker-compose up
 
 The following containers are runinng after `docker-compse up`.
 
-| Name | Description |
-|---------------|-------------|
-| **grafana** | Runs a Grafana server. |
-| **archappl** | Runs a EPICS Archiver Appliance. |
-| **redis** | Runs a datastore for the persistance of the appliance configuration. |
-| **example** | Runs a example EPICS IOC to be archived. |
+| Name         | Description                                                          |
+| ------------ | -------------------------------------------------------------------- |
+| **grafana**  | Runs a Grafana server.                                               |
+| **archappl** | Runs a EPICS Archiver Appliance.                                     |
+| **redis**    | Runs a datastore for the persistance of the appliance configuration. |
+| **example**  | Runs a example EPICS IOC to be archived.                             |
 
 To set up the Archiver Appliance, open [http://localhost:17665/mgmt/ui/index.html](http://localhost:17665/mgmt/ui/index.html). You can add the PVs served by the example IOC on this page.
 Enter the following lines in the input field and then clicking the `Archive` button.
@@ -116,6 +116,6 @@ This documentation is build by Sphinx. Follow below steps to build documentation
 ```
 python -m venv env
 source env/bin/activate
-pip install sphinx commonmark recommonmark sphinx_rtd_theme sphinx-markdown-tables
+pip install sphinx myst-parser sphinx_rtd_theme
 make html
 ```

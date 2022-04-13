@@ -197,7 +197,7 @@ The following is a example query with this test environment.
 ```
 python -m venv env
 source env/bin/activate
-pip install sphinx commonmark recommonmark sphinx_rtd_theme sphinx-markdown-tables
+pip install sphinx myst-parser sphinx_rtd_theme
 make html
 ```
 

@@ -20,7 +20,8 @@
 
 Candidate PV names are shown during focussing on `PV` text input.
 
-``` Note:: Maximum number of candidate names is **100**.
+```{note}
+Maximum number of candidate names is **100**.
 ```
 
 ## Select Multiple PVs by Regex
@@ -30,8 +31,8 @@ To enable Regex mode, click `Regex` button next to `PV` text input.
 
 The plugin supports only **wildcard pattern** and **alternation pattern**.
 
-```eval_rst
-.. Note:: Maximum number of PVs you can select on Regex mode is **100** in default.  :ref:`functions:maxNumPVs` function is available to change maximum number.
+```{note}
+Maximum number of PVs you can select on Regex mode is **100** in default.  [maxNumPVs](functions.md#maxNumPVs) function is available to change maximum number.
 ```
 
 ### Wildcard Pattern
@@ -81,7 +82,8 @@ To see details of each function, refer [Functions](functions).
 
 ![Functions](./img/aa-query-functions.png)
 
-``` Note:: Functions are applied from left to right.
+```{note}
+Functions are applied from left to right.
 ```
 
 ## Alerts
@@ -92,5 +94,6 @@ See [Grafana Documentation](https://grafana.com/docs/grafana/latest/alerting/) f
 
 ![Alerts](./img/aa-alerts.png)
 
-``` Note:: Go backend included in the plugin reteives archived data from Archiver Appliance to calculate alert condition.
+```{note}
+Go backend included in the plugin reteives archived data from Archiver Appliance to calculate alert condition.
 ```
