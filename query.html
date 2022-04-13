@@ -90,52 +90,43 @@
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p><img alt="Query Overview" src="_images/aa-query-overview.png" /></p>
-<table border="1" class="docutils">
+<table class="colwidths-auto docutils align-default">
 <thead>
-<tr>
-<th>Configuration</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Configuration</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><strong>PV</strong></td>
-<td>Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. <code>(PV:1|PV:2)</code>).</td>
+<tr class="row-even"><td><p><strong>PV</strong></p></td>
+<td><p>Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1</p></td>
 </tr>
-<tr>
-<td><strong>Regex</strong></td>
-<td>Enable/Disable Regex mode. Refer <a href="#select-multiple-pvs-by-regex">Select Multiple PVs by Regex</a>.</td>
+<tr class="row-odd"><td><p><strong>Regex</strong></p></td>
+<td><p>Enable/Disable Regex mode. Refer <a class="reference internal" href="#select-multiple-pvs-by-regex"><span class="std std-doc">Select Multiple PVs by Regex</span></a>.</p></td>
 </tr>
-<tr>
-<td><strong>Operator</strong></td>
-<td>Controls processing of data during data retrieval (Default: <code>mean</code>). Refer <a href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> about processing of data. Special operator <code>raw</code> and <code>last</code> are also available. <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve the last data in the specified time range.</td>
+<tr class="row-even"><td><p><strong>Operator</strong></p></td>
+<td><p>Controls processing of data during data retrieval (Default: <code class="docutils literal notranslate"><span class="pre">mean</span></code>). Refer <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> about processing of data. Special operator <code class="docutils literal notranslate"><span class="pre">raw</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> are also available. <code class="docutils literal notranslate"><span class="pre">raw</span></code> allows to retrieve the data without processing. <code class="docutils literal notranslate"><span class="pre">last</span></code> allows to retrieve the last data in the specified time range.</p></td>
 </tr>
-<tr>
-<td><strong>Stream</strong></td>
-<td>Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.</td>
+<tr class="row-odd"><td><p><strong>Stream</strong></p></td>
+<td><p>Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.</p></td>
 </tr>
-<tr>
-<td><strong>Interval</strong></td>
-<td>Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>, <code>1m</code>, <code>1h</code>. The default is determined by a width of panel and time range.</td>
+<tr class="row-even"><td><p><strong>Interval</strong></p></td>
+<td><p>Streaming interval in milliseconds. You can also use a number with unit. e.g. <code class="docutils literal notranslate"><span class="pre">1s</span></code>, <code class="docutils literal notranslate"><span class="pre">1m</span></code>, <code class="docutils literal notranslate"><span class="pre">1h</span></code>. The default is determined by a width of panel and time range.</p></td>
 </tr>
-<tr>
-<td><strong>Capacity</strong></td>
-<td>The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size.</td>
+<tr class="row-odd"><td><p><strong>Capacity</strong></p></td>
+<td><p>The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size.</p></td>
 </tr>
-<tr>
-<td><strong>Alias</strong></td>
-<td>Set alias for legend.</td>
+<tr class="row-even"><td><p><strong>Alias</strong></p></td>
+<td><p>Set alias for legend.</p></td>
 </tr>
-<tr>
-<td><strong>Alias pattern</strong></td>
-<td>Set regular expressoin pattern to use PV name for legend alias. Refer <a href="#legend-alias-with-regex-pattern">Legend Alias with Regex Pattern</a></td>
+<tr class="row-odd"><td><p><strong>Alias pattern</strong></p></td>
+<td><p>Set regular expressoin pattern to use PV name for legend alias. Refer <a class="reference internal" href="#legend-alias-with-regex-pattern"><span class="std std-doc">Legend Alias with Regex Pattern</span></a></p></td>
 </tr>
-<tr>
-<td><strong>Function</strong></td>
-<td>Apply processing function for retrieved data. Refer <a href="#apply-processing-functions">Apply Processing Functions</a></td>
+<tr class="row-even"><td><p><strong>Function</strong></p></td>
+<td><p>Apply processing function for retrieved data. Refer <a class="reference internal" href="#apply-processing-functions"><span class="std std-doc">Apply Processing Functions</span></a></p></td>
 </tr>
 </tbody>
-</table></section>
+</table>
+</section>
 <section id="pv-name-completion">
 <h2>PV Name Completion<a class="headerlink" href="#pv-name-completion" title="Permalink to this headline"></a></h2>
 <p><img alt="Name completion" src="_images/aa-query-name-completion.png" /></p>
@@ -189,7 +180,7 @@ Functions are categorized into some groups.
 Select preffered functions from categoires.</p>
 <p><img alt="Functions" src="_images/aa-query-functions-add.png" /></p>
 <p>Some functions require parameters. You can edit parameters after adding the function.</p>
-<p>To see details of each function, refer <a class="reference internal" href="functions.html"><span class="doc">Functions</span></a>.</p>
+<p>To see details of each function, refer <a class="reference internal" href="functions.html"><span class="doc std std-doc">Functions</span></a>.</p>
 <p><img alt="Functions" src="_images/aa-query-functions.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -220,7 +211,7 @@ You can create alerts on <code class="docutils literal notranslate"><span class=
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2019-2020, Shinya Sasaki.</p>
+    <p>&#169; Copyright 2019-2022, Shinya Sasaki.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

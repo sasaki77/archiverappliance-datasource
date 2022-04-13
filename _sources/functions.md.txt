@@ -11,7 +11,8 @@ Functions are categorized into below groups.
 ## Transform Functions
 
 ### _scale_
-``` function:: scale(factor)
+```{eval-rst}
+.. function:: scale(factor)
 ```
 
 Multiplies datapoint by _factor_ at each point.
@@ -24,7 +25,8 @@ scale(-0.5)
 ```
 
 ### _offset_
-``` function:: offset(delta)
+```{eval-rst}
+.. function:: offset(delta)
 ```
 
 Adds _delta_ to each datapoint.
@@ -37,19 +39,22 @@ offset(-0.5)
 ```
 
 ### _delta_
-``` function:: delta()
+```{eval-rst}
+.. function:: delta()
 ```
 
 Calculates difference between datapoint and its before point at each point.
 
 ### _fluctuation_
-``` function:: fluctuation()
+```{eval-rst}
+.. function:: fluctuation()
 ```
 
 Subtracts first datapoint value from each datapoint.
 
 ### _movingAverage_
-``` function:: movingAverage(windowSize)
+```{eval-rst}
+.. function:: movingAverage(windowSize)
 ```
 
 Calculates the moving average of datapoints over a fixed number of past points, specified by windowSize param.
@@ -64,37 +69,43 @@ movingAverage(50)
 ## Array to Scalar Functions
 
 ### _toScalarByAvg_
-``` function:: toScalarByAvg()
+```{eval-rst}
+.. function:: toScalarByAvg()
 ```
 
 Converts the array data to the scalar data with the average value.
 
 ### _toScalarByMax_
-``` function:: toScalarByMax()
+```{eval-rst}
+.. function:: toScalarByMax()
 ```
 
 Converts the array data to the scalar data with the maximum value.
 
 ### _toScalarByMin_
-``` function:: toScalarByMin()
+```{eval-rst}
+.. function:: toScalarByMin()
 ```
 
 Converts the array data to the scalar data with the minimum value.
 
 ### _toScalarBySum_
-``` function:: toScalarBySum()
+```{eval-rst}
+.. function:: toScalarBySum()
 ```
 
 Converts the array data to the scalar data with the total value.
 
 ### _toScalarByMed_
-``` function:: toScalarByMed()
+```{eval-rst}
+.. function:: toScalarByMed()
 ```
 
 Converts the array data to the scalar data with the median value.
 
 ### _toScalarByStd_
-``` function:: toScalarByStd()
+```{eval-rst}
+.. function:: toScalarByStd()
 ```
 
 Converts the array data to the scalar data with the standard deviation value.
@@ -102,7 +113,8 @@ Converts the array data to the scalar data with the standard deviation value.
 ## Filter Series Functions
 
 ### _top_
-``` function:: top(number, value)
+```{eval-rst}
+.. function:: top(number, value)
 ```
 
 Returns top N series sorted by _value_.
@@ -116,7 +128,8 @@ top(10, avg)
 ```
 
 ### _bottom_
-``` function:: bottom(number, value)
+```{eval-rst}
+.. function:: bottom(number, value)
 ```
 
 Returns bottom N series sorted by _value_.
@@ -130,7 +143,8 @@ bottom(10, min)
 ```
 
 ### _exclude_
-``` function:: exclude(pattern)
+```{eval-rst}
+.. function:: exclude(pattern)
 ```
 
 Exclude PV data that match the regular expression.
@@ -143,7 +157,8 @@ exclude(PV[0-9])
 
 ## Sort Functions
 ### _sortByAvg_
-``` function:: sortByAvg(order)
+```{eval-rst}
+.. function:: sortByAvg(order)
 ```
 
 Sort the list of timeseries by the average value across the time period specified.
@@ -156,7 +171,8 @@ sortByAvg(asc)
 ```
 
 ### _sortByMax_
-``` function:: sortByMax(order)
+```{eval-rst}
+.. function:: sortByMax(order)
 ```
 
 Sort the list of timeseries by the maximum value across the time period specified.
@@ -169,7 +185,8 @@ sortByMax(asc)
 ```
 
 ### _sortByMin_
-``` function:: sortByMin(order)
+```{eval-rst}
+.. function:: sortByMin(order)
 ```
 
 Sort the list of timeseries by the minimum value across the time period specified.
@@ -182,7 +199,8 @@ sortByMin(asc)
 ```
 
 ### _sortBySum_
-``` function:: sortBySum(order)
+```{eval-rst}
+.. function:: sortBySum(order)
 ```
 
 Sort the list of timeseries by the total value across the time period specified.
@@ -195,7 +213,8 @@ sortBySum(asc)
 ```
 
 ### _sortByAbsMax_
-``` function:: sortByAbsMax(order)
+```{eval-rst}
+.. function:: sortByAbsMax(order)
 ```
 
 Sort the list of timeseries by the absolute maximum value across the time period specified.
@@ -208,7 +227,8 @@ sortByAbsMax(asc)
 ```
 
 ### _sortByAbsMin_
-``` function:: sortByAbsMin(order)
+```{eval-rst}
+.. function:: sortByAbsMin(order)
 ```
 
 Sort the list of timeseries by the absolute minimum value across the time period specified.
@@ -222,7 +242,8 @@ sortByAbsMin(asc)
 
 ## Options Functions
 ### _maxNumPVs_
-``` function:: maxNumPVs(number)
+```{eval-rst}
+.. function:: maxNumPVs(number)
 ```
 
 Set maximum number of PVs you can select for a target.
@@ -234,7 +255,8 @@ maxNumPVs(500)
 ```
 
 ### _binInterval_
-``` function:: binInterval(interval)
+```{eval-rst}
+.. function:: binInterval(interval)
 ```
 
 Set binning interval for processing of data.
@@ -247,10 +269,11 @@ binInterval(100)
 ```
 
 ### _disableAutoRaw_
-``` function:: disableAutoRaw(boolean)
+```{eval-rst}
+.. function:: disableAutoRaw(boolean)
 ```
 
-Disable [auto raw feature](tips.html#auto-raw-operation).
+Disable [auto raw feature](tips.md#auto-raw-operation).
 
 Examples:
 
@@ -260,10 +283,11 @@ disableAutoRaw(false)
 ```
 
 ### _disableExtrapol_
-``` function:: disableExtrapol(boolean)
+```{eval-rst}
+.. function:: disableExtrapol(boolean)
 ```
 
-Disable [extrapolation for raw data](tips.html#extrapolation-for-raw-operation).
+Disable [extrapolation for raw data](tips.md#extrapolation-for-raw-operation).
 
 Examples:
 
