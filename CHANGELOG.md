@@ -1,4 +1,15 @@
 # Change Log
+## 1.3.3 (2022-04-13)
+
+### Breaking changes
+- Grafana v7.X.X or earlier is not supported from this version
+
+### Enhancements
+- Build system for documentaion uses myst-parser instead of commonmark
+
+### Bug fixes
+- **Frontend**: Fix initial value of function add button
+
 ## 1.3.3 (2021-10-15)
 
 ### Enhancements
