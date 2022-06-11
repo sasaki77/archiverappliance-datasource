@@ -190,8 +190,8 @@ func ArchiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 	dataSize := len(data[0].Data)
 
 	// initialize the slices with their final size so append operations are not necessary
-	sD.Times = make([]time.Time, dataSize, dataSize)
-	sD.Values = make([]float64, dataSize, dataSize)
+	sD.Times = make([]time.Time, dataSize)
+	sD.Values = make([]float64, dataSize)
 
 	for idx, dataPt := range data[0].Data {
 
