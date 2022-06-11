@@ -98,7 +98,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 	}
 
 	// make the query and compile the results into a SingleData instance
-	targetPvList := make([]string, 0)
+	var targetPvList []string
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
 

@@ -16,10 +16,7 @@ import (
 
 func IsBackendQuery(pluginctx backend.PluginContext) bool {
 	// Return true if this query was created by the backend as opposed to visualization query for the frontend
-	if pluginctx.User != nil {
-		return true
-	}
-	return false
+	return pluginctx.User != nil
 }
 
 type ArchiverQueryModel struct {
@@ -67,13 +64,13 @@ type FuncDefQueryModel struct {
 	Version       *json.RawMessage         `json:"version,omitempty"`
 	Category      string                   `json:"category"`
 	Description   *string                  `json:"description,omitempty"`
-	Fake          *bool                    `"json:"fake,omitempty"`
+	Fake          *bool                    `json:"fake,omitempty"`
 	Name          string                   `json:"name"`
 	Params        []FuncDefParamQueryModel `json:"params"`
 }
 
 type FuncDefParamQueryModel struct {
-	Name    string    `json"name"`
+	Name    string    `json:"name"`
 	Options *[]string `json:"options"`
 	Type    string    `json:"type"`
 }
@@ -426,9 +423,7 @@ func permuteQueryRecurse(inputData [][]string, trace []string) [][]string {
 	output := make([][]string, 0, len(inputData[targetIdx]))
 	for _, value := range inputData[targetIdx] {
 		response := permuteQueryRecurse(inputData, append(trace, value))
-		for _, oneOutput := range response {
-			output = append(output, oneOutput)
-		}
+		output = append(output, response...)
 	}
 	return output
 }

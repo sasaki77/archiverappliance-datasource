@@ -290,7 +290,7 @@ func Exclude(allData []SingleData, pattern string) ([]SingleData, error) {
 			case error:
 				err = x
 			default:
-				err = errors.New("Unknown panic")
+				err = errors.New("unknown panic")
 			}
 
 		}

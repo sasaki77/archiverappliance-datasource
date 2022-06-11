@@ -36,7 +36,7 @@ func (qm ArchiverQueryModel) DisableExtrapol() (bool, error) {
 		} else if val == "false" {
 			return false, nil
 		} else {
-			return false, errors.New("String not recognized as boolean")
+			return false, errors.New("string not recognized as boolean")
 		}
 	} else {
 		return false, nil
@@ -305,5 +305,5 @@ func FunctionSelector(responseData []SingleData, fdqm FunctionDescriptorQueryMod
 	}
 
 	// this should never be reached
-	return responseData, nil
+	// return responseData, nil
 }
