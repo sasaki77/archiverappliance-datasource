@@ -296,7 +296,7 @@ func TestArchiverRegexQueryParser(t *testing.T) {
 			if len(result) != len(testCase.output) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
 			}
-			for idx, _ := range testCase.output {
+			for idx := range testCase.output {
 				if testCase.output[idx] != result[idx] {
 					t.Errorf("got %v, want %v", result, testCase.output)
 				}
@@ -330,7 +330,7 @@ func TestIsolateBasicQuery(t *testing.T) {
 			if len(result) != len(testCase.output) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
 			}
-			for idx, _ := range testCase.output {
+			for idx := range testCase.output {
 				if testCase.output[idx] != result[idx] {
 					t.Errorf("got %v, want %v", result, testCase.output)
 				}
@@ -372,7 +372,7 @@ func TestSplitLowestLevelOnly(t *testing.T) {
 			if len(result) != len(testCase.output) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
 			}
-			for idx, _ := range testCase.output {
+			for idx := range testCase.output {
 				if testCase.output[idx] != result[idx] {
 					t.Errorf("got %v, want %v", result, testCase.output)
 				}
@@ -421,7 +421,7 @@ func TestLocateOuterParen(t *testing.T) {
 			if len(result.Phrases) != len(testCase.outputPhrases) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.outputPhrases, result.Phrases)
 			}
-			for idx, _ := range testCase.outputPhrases {
+			for idx := range testCase.outputPhrases {
 				if testCase.outputPhrases[idx] != result.Phrases[idx] {
 					t.Errorf("got %v, want %v", result.Phrases, testCase.outputPhrases)
 				}
@@ -431,7 +431,7 @@ func TestLocateOuterParen(t *testing.T) {
 			if len(result.Idxs) != len(testCase.outputIdxs) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.outputIdxs, result.Idxs)
 			}
-			for idx, _ := range testCase.outputPhrases {
+			for idx := range testCase.outputPhrases {
 				for i := 0; i < 2; i++ {
 					if testCase.outputIdxs[idx][i] != result.Idxs[idx][i] {
 						t.Errorf("got %v, want %v", result.Idxs[idx], testCase.outputIdxs[idx])
@@ -462,11 +462,11 @@ func TestPermuteQuery(t *testing.T) {
 			if len(result) != len(testCase.output) {
 				t.Fatalf("Lengths differ (0th index) - Wanted: %v (%v) Got: %v (%v)", testCase.output, len(testCase.output), result, len(result))
 			}
-			for idx, _ := range testCase.output {
+			for idx := range testCase.output {
 				if len(result[idx]) != len(testCase.output[idx]) {
 					t.Fatalf("Lengths differ (1st index) - Wanted: %v (%v) Got: %v (%v)", testCase.output[idx], len(testCase.output[idx]), result[idx], len(result[idx]))
 				}
-				for jdx, _ := range testCase.output[idx] {
+				for jdx := range testCase.output[idx] {
 					if testCase.output[idx][jdx] != result[idx][jdx] {
 						t.Errorf("got %v, want %v at [%v][%v]", result, testCase.output, idx, jdx)
 					}

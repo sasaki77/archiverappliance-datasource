@@ -112,7 +112,7 @@ func SortCore(allData []SingleData, value string, order string) ([]SingleData, e
 		return allData, errors.New(errMsg)
 	}
 	ordered := make([]SingleDataOrder, len(allData))
-	for idx, _ := range allData {
+	for idx := range allData {
 		ordered[idx] = SingleDataOrder{
 			sD:   allData[idx],
 			rank: rank[idx],
@@ -132,7 +132,7 @@ func SortCore(allData []SingleData, value string, order string) ([]SingleData, e
 		return allData, errors.New(errMsg)
 	}
 
-	for idx, _ := range ordered {
+	for idx := range ordered {
 		newData = append(newData, ordered[idx].sD)
 	}
 
@@ -178,7 +178,7 @@ func Delta(allData []SingleData) []SingleData {
 	for ddx, oneData := range allData {
 		newValues := make([]float64, 0, len(oneData.Values))
 		newTimes := make([]time.Time, 0, len(oneData.Times))
-		for idx, _ := range oneData.Values {
+		for idx := range oneData.Values {
 			if idx == 0 {
 				continue
 			}
@@ -226,7 +226,7 @@ func MovingAverage(allData []SingleData, windowSize int) []SingleData {
 	for ddx, oneData := range allData {
 		newValues := make([]float64, len(oneData.Values))
 
-		for idx, _ := range oneData.Values {
+		for idx := range oneData.Values {
 			var total float64
 			total = 0
 			var size float64

@@ -302,7 +302,7 @@ func IsolateBasicQuery(unparsed string) []string {
 	// A list of all the possible phrases
 	phraseParts := make([][]string, 0, len(multiPhrases))
 
-	for idx, _ := range multiPhrases {
+	for idx := range multiPhrases {
 		// Strip leading and ending parenthesis
 		multiPhrases[idx] = multiPhrases[idx][1 : len(multiPhrases[idx])-1]
 		// Break parsed phrases on "|"
