@@ -13,6 +13,16 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
+type ArchiverDatasource struct {
+	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
+	im instancemgmt.InstanceManager
+}
+
+type QueryMgr struct {
+	Res    backend.DataResponse
+	QRefID string
+}
+
 func newArchiverDataSource() datasource.ServeOpts {
 	// Create a new instance manager
 	log.DefaultLogger.Debug("Starting newArchiverDataSource")
@@ -26,16 +36,6 @@ func newArchiverDataSource() datasource.ServeOpts {
 		QueryDataHandler:   ds,
 		CheckHealthHandler: ds,
 	}
-}
-
-type ArchiverDatasource struct {
-	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
-	im instancemgmt.InstanceManager
-}
-
-type QueryMgr struct {
-	Res    backend.DataResponse
-	QRefID string
 }
 
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
