@@ -11,7 +11,7 @@ func main() {
 	// Start listening to requests send from Grafana. This call is blocking so
 	// it wont finish until Grafana shutsdown the process or the plugin choose
 	// to exit close down by itself
-    // log.DefaultLogger.Info("****TESTING LOGMESSAGE*****")
+	// log.DefaultLogger.Info("****TESTING LOGMESSAGE*****")
 	err := datasource.Serve(newArchiverDataSource())
 
 	// Log any error if we could start the plugin.
