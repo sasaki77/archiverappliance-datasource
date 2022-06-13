@@ -43,12 +43,10 @@ type ArchiverQueryModel struct {
 	*/
 
 	// Parameters from DataQuery
-	RefId      string  `json:"refId"`
-	Hide       *bool   `json:"hide"`
-	Key        *string `json:"string"`
-	QueryType  *string `json:"queryType"`
-	DataTopic  *string `json:"dataTopic"`  //??
-	Datasource *string `json:"datasource"` // comes back empty -- investigate further
+	RefId     string  `json:"refId"`
+	Hide      *bool   `json:"hide"`
+	Key       *string `json:"string"`
+	QueryType *string `json:"queryType"`
 }
 
 type FunctionDescriptorQueryModel struct {
