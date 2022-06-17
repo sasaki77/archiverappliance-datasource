@@ -13,6 +13,16 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
+type ArchiverDatasource struct {
+	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
+	im instancemgmt.InstanceManager
+}
+
+type QueryMgr struct {
+	Res    backend.DataResponse
+	QRefID string
+}
+
 func newArchiverDataSource() datasource.ServeOpts {
 	// Create a new instance manager
 	log.DefaultLogger.Debug("Starting newArchiverDataSource")
@@ -26,16 +36,6 @@ func newArchiverDataSource() datasource.ServeOpts {
 		QueryDataHandler:   ds,
 		CheckHealthHandler: ds,
 	}
-}
-
-type ArchiverDatasource struct {
-	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
-	im instancemgmt.InstanceManager
-}
-
-type QueryMgr struct {
-	Res    backend.DataResponse
-	QRefID string
 }
 
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
@@ -101,11 +101,8 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 	var targetPvList []string
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
-
 		// assemble the list of PVs to be queried for
-		regexUrl := BuildRegexUrl(qm.Target, pluginctx)
-		regexQueryResponse, _ := ArchiverRegexQuery(regexUrl)
-		targetPvList, _ = ArchiverRegexQueryParser(regexQueryResponse)
+		targetPvList, _ = FetchRegexTargetPVs(qm.Target, pluginctx)
 	} else {
 		// If a regex is not being used, only check for listed PVs
 		targetPvList = IsolateBasicQuery(qm.Target)
