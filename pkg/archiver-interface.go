@@ -101,11 +101,8 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 	var targetPvList []string
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
-
 		// assemble the list of PVs to be queried for
-		regexUrl := BuildRegexUrl(qm.Target, pluginctx)
-		regexQueryResponse, _ := ArchiverRegexQuery(regexUrl)
-		targetPvList, _ = ArchiverRegexQueryParser(regexQueryResponse)
+		targetPvList, _ = FetchRegexTargetPVs(qm.Target, pluginctx)
 	} else {
 		// If a regex is not being used, only check for listed PVs
 		targetPvList = IsolateBasicQuery(qm.Target)

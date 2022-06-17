@@ -193,6 +193,14 @@ func ArchiverRegexQueryParser(jsonAsBytes []byte) ([]string, error) {
 	return pvList, nil
 }
 
+func FetchRegexTargetPVs(regex string, pluginctx backend.PluginContext) ([]string, error) {
+	regexUrl := BuildRegexUrl(regex, pluginctx)
+	regexQueryResponse, _ := ArchiverRegexQuery(regexUrl)
+	pvList, _ := ArchiverRegexQueryParser(regexQueryResponse)
+
+	return pvList, nil
+}
+
 func ExecuteSingleQuery(target string, query backend.DataQuery, pluginctx backend.PluginContext, qm ArchiverQueryModel) (SingleData, error) {
 	// wrap together the individual operations build a query, execute the query, and compile the data into a singleData structure
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
