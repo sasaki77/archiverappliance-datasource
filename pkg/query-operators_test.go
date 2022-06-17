@@ -28,8 +28,7 @@ func TestOperatorValidator(t *testing.T) {
 
 func TestCreateOperatorQuery(t *testing.T) {
 	var tests = []struct {
-		input ArchiverQueryModel
-
+		input  ArchiverQueryModel
 		output string
 	}{
 		{
