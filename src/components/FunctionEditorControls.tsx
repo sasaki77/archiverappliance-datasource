@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '@grafana/ui';
 import { FunctionDescriptor } from '../types';
 
 export interface FunctionEditorControlsProps {
@@ -17,8 +18,9 @@ const FunctionHelpButton = (props: {
   }
 
   return (
-    <span
-      className="pointer fa fa-question-circle"
+    <Icon
+      className="pointer"
+      name="question-circle"
       onClick={() => {
         window.open(`https://sasaki77.github.io/archiverappliance-datasource/functions.html#${props.name}`, '_blank');
       }}
@@ -42,14 +44,14 @@ export const FunctionEditorControls = (
         justifyContent: 'space-between',
       }}
     >
-      <span className="pointer fa fa-arrow-left" onClick={() => onMoveLeft(func, index)} />
+      <Icon name="arrow-left" onClick={() => onMoveLeft(func, index)} />
       <FunctionHelpButton
         name={func.def.name}
         description={func.def.description}
         onDescriptionShow={onDescriptionShow}
       />
-      <span className="pointer fa fa-remove" onClick={() => onRemove(func, index)} />
-      <span className="pointer fa fa-arrow-right" onClick={() => onMoveRight(func, index)} />
+      <Icon name="times" onClick={() => onRemove(func, index)} />
+      <Icon name="arrow-right" onClick={() => onMoveRight(func, index)} />
     </div>
   );
 };

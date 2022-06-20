@@ -1,5 +1,5 @@
 import React from 'react';
-import { PopoverController, Popover } from '@grafana/ui';
+import { Tooltip } from '@grafana/ui';
 import { FunctionEditorControls, FunctionEditorControlsProps } from './FunctionEditorControls';
 import { FunctionDescriptor } from '../types';
 
@@ -13,8 +13,6 @@ interface FunctionEditorState {
 }
 
 class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEditorState> {
-  private triggerRef = React.createRef<HTMLSpanElement>();
-
   constructor(props: FunctionEditorProps) {
     super(props);
 
@@ -64,42 +62,11 @@ class FunctionEditor extends React.PureComponent<FunctionEditorProps, FunctionEd
 
   render() {
     return (
-      <PopoverController content={this.renderContent} placement="top" hideAfter={300}>
-        {(showPopper, hidePopper, popperProps) => {
-          return (
-            <>
-              {this.triggerRef.current && (
-                <Popover
-                  {...popperProps}
-                  referenceElement={this.triggerRef.current}
-                  wrapperClassName="popper"
-                  className="popper__background"
-                  onMouseLeave={() => {
-                    this.setState({ showingDescription: false });
-                    hidePopper();
-                  }}
-                  onMouseEnter={showPopper}
-                  renderArrow={({ arrowProps, placement }) => (
-                    <div className="popper__arrow" data-placement={placement} {...arrowProps} />
-                  )}
-                />
-              )}
-
-              <span
-                ref={this.triggerRef}
-                onClick={popperProps.show ? hidePopper : showPopper}
-                onMouseLeave={() => {
-                  hidePopper();
-                  this.setState({ showingDescription: false });
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                {this.props.func.def.name}
-              </span>
-            </>
-          );
-        }}
-      </PopoverController>
+      <>
+        <Tooltip content={this.renderContent} placement="top" interactive>
+          <span style={{ cursor: 'pointer' }}>{this.props.func.def.name}</span>
+        </Tooltip>
+      </>
     );
   }
 }
