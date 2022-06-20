@@ -48,7 +48,7 @@ exports[`Render should render component 1`] = `
     <div
       className="gf-form"
     >
-      <Switch
+      <Switch$2
         checked={false}
         label="Use Backend"
         labelClass="width-13"
