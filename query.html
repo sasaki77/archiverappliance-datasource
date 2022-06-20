@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -86,9 +87,9 @@
            <div itemprop="articleBody">
              
   <section id="query-edit">
-<h1>Query Edit<a class="headerlink" href="#query-edit" title="Permalink to this headline"></a></h1>
+<h1>Query Edit<a class="headerlink" href="#query-edit" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p><img alt="Query Overview" src="_images/aa-query-overview.png" /></p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -128,7 +129,7 @@
 </table>
 </section>
 <section id="pv-name-completion">
-<h2>PV Name Completion<a class="headerlink" href="#pv-name-completion" title="Permalink to this headline"></a></h2>
+<h2>PV Name Completion<a class="headerlink" href="#pv-name-completion" title="Permalink to this heading"></a></h2>
 <p><img alt="Name completion" src="_images/aa-query-name-completion.png" /></p>
 <p>Candidate PV names are shown during focussing on <code class="docutils literal notranslate"><span class="pre">PV</span></code> text input.</p>
 <div class="admonition note">
@@ -137,7 +138,7 @@
 </div>
 </section>
 <section id="select-multiple-pvs-by-regex">
-<h2>Select Multiple PVs by Regex<a class="headerlink" href="#select-multiple-pvs-by-regex" title="Permalink to this headline"></a></h2>
+<h2>Select Multiple PVs by Regex<a class="headerlink" href="#select-multiple-pvs-by-regex" title="Permalink to this heading"></a></h2>
 <p>You can select multiple PVs using Regular Expressoins.
 To enable Regex mode, click <code class="docutils literal notranslate"><span class="pre">Regex</span></code> button next to <code class="docutils literal notranslate"><span class="pre">PV</span></code> text input.</p>
 <p>The plugin supports only <strong>wildcard pattern</strong> and <strong>alternation pattern</strong>.</p>
@@ -146,7 +147,7 @@ To enable Regex mode, click <code class="docutils literal notranslate"><span cla
 <p>Maximum number of PVs you can select on Regex mode is <strong>100</strong> in default.  <a class="reference internal" href="functions.html#maxnumpvs"><span class="std std-ref">maxNumPVs</span></a> function is available to change maximum number.</p>
 </div>
 <section id="wildcard-pattern">
-<h3>Wildcard Pattern<a class="headerlink" href="#wildcard-pattern" title="Permalink to this headline"></a></h3>
+<h3>Wildcard Pattern<a class="headerlink" href="#wildcard-pattern" title="Permalink to this heading"></a></h3>
 <p>Wildcard pattern (e.g. <code class="docutils literal notranslate"><span class="pre">.*</span></code>) is used to match any characters.
 For example, <code class="docutils literal notranslate"><span class="pre">PV:.*</span></code> matches <code class="docutils literal notranslate"><span class="pre">PV:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:2</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:2</span></code>. and <code class="docutils literal notranslate"><span class="pre">PV:EFG:1</span></code>.</p>
 <p><img alt="Regex wildcard input" src="_images/aa-query-regex-wildcard-input.png" /></p>
@@ -154,7 +155,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">PV:.*<
 <p><img alt="Regex wildcard" src="_images/aa-query-regex-wildcard.png" /></p>
 </section>
 <section id="alternation-pattern">
-<h3>Alternation Pattern<a class="headerlink" href="#alternation-pattern" title="Permalink to this headline"></a></h3>
+<h3>Alternation Pattern<a class="headerlink" href="#alternation-pattern" title="Permalink to this heading"></a></h3>
 <p>Alternation pattern (e.g. <code class="docutils literal notranslate"><span class="pre">(A|B|C)</span></code>) is used to OR matching.
 For example, <code class="docutils literal notranslate"><span class="pre">PV:(ABC|EFG):.*</span></code> matches <code class="docutils literal notranslate"><span class="pre">PV:ABC:1</span></code>, <code class="docutils literal notranslate"><span class="pre">PV:ABC:2</span></code>, and <code class="docutils literal notranslate"><span class="pre">PV:EFG:1</span></code>.</p>
 <p><img alt="Regex alternation input" src="_images/aa-query-regex-alternation-input.png" /></p>
@@ -163,7 +164,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">PV:(AB
 </section>
 </section>
 <section id="legend-alias-with-regex-pattern">
-<h2>Legend Alias with Regex Pattern<a class="headerlink" href="#legend-alias-with-regex-pattern" title="Permalink to this headline"></a></h2>
+<h2>Legend Alias with Regex Pattern<a class="headerlink" href="#legend-alias-with-regex-pattern" title="Permalink to this heading"></a></h2>
 <p>You can set legend alias using target PV name with <code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">pattern</span></code>.
 <code class="docutils literal notranslate"><span class="pre">Alias</span> <span class="pre">pattern</span></code> is used to match PV name. Matched characters within parentheses can be used in
 <code class="docutils literal notranslate"><span class="pre">Alias</span></code> text input like <code class="docutils literal notranslate"><span class="pre">$1</span></code>, <code class="docutils literal notranslate"><span class="pre">$2</span></code>, …, <code class="docutils literal notranslate"><span class="pre">$n</span></code>.
@@ -173,7 +174,7 @@ To escape characters, two backslashes is required before the characters (e.g. <c
 <p><img alt="Alias pattern" src="_images/aa-query-alias-pattern.png" /></p>
 </section>
 <section id="apply-processing-functions">
-<h2>Apply Processing Functions<a class="headerlink" href="#apply-processing-functions" title="Permalink to this headline"></a></h2>
+<h2>Apply Processing Functions<a class="headerlink" href="#apply-processing-functions" title="Permalink to this heading"></a></h2>
 <p>Functions are used to apply post processing to the data.
 You can add, move and remove functions from <code class="docutils literal notranslate"><span class="pre">Functions</span></code> row.
 Functions are categorized into some groups.
@@ -188,7 +189,7 @@ Select preffered functions from categoires.</p>
 </div>
 </section>
 <section id="alerts">
-<h2>Alerts<a class="headerlink" href="#alerts" title="Permalink to this headline"></a></h2>
+<h2>Alerts<a class="headerlink" href="#alerts" title="Permalink to this heading"></a></h2>
 <p>The plugin supports alerts. Alerts allow you to notify and identify problems.
 You can create alerts on <code class="docutils literal notranslate"><span class="pre">Alert</span></code> tab.</p>
 <p>See <a class="reference external" href="https://grafana.com/docs/grafana/latest/alerting/">Grafana Documentation</a> for more information about alerts.</p>

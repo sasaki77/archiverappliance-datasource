@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -80,26 +81,26 @@
            <div itemprop="articleBody">
              
   <section id="tips">
-<h1>Tips<a class="headerlink" href="#tips" title="Permalink to this headline"></a></h1>
+<h1>Tips<a class="headerlink" href="#tips" title="Permalink to this heading"></a></h1>
 <section id="binning-interval">
-<h2>Binning interval<a class="headerlink" href="#binning-interval" title="Permalink to this headline"></a></h2>
+<h2>Binning interval<a class="headerlink" href="#binning-interval" title="Permalink to this heading"></a></h2>
 <p>Binning interval is used for processing of data except for raw operator.
 Basically, the interval is determined by width of panel and time range.</p>
 <p>For example if width of panel is 300 px and time range is 1 hour (= 3600 seconds) then interval is 12 seconds.</p>
 </section>
 <section id="auto-raw-operation">
-<h2>Auto raw operation<a class="headerlink" href="#auto-raw-operation" title="Permalink to this headline"></a></h2>
+<h2>Auto raw operation<a class="headerlink" href="#auto-raw-operation" title="Permalink to this heading"></a></h2>
 <p>When a binning interval is less than 1 second, raw data is retrieved even if other operator is set.
 To disable auto raw operation, <a class="reference internal" href="functions.html#disableautoraw"><span class="std std-ref">disableAutoRaw</span></a> function is available.</p>
 </section>
 <section id="extrapolation-for-raw-operation">
-<h2>Extrapolation for raw operation<a class="headerlink" href="#extrapolation-for-raw-operation" title="Permalink to this headline"></a></h2>
+<h2>Extrapolation for raw operation<a class="headerlink" href="#extrapolation-for-raw-operation" title="Permalink to this heading"></a></h2>
 <p>In raw operator mode, the retrieved data is extrapolated by last data value.
 This feature prevents a graph from cutting of or not being desplayed.
 To disable the extrapolation, <a class="reference internal" href="functions.html#disableextrapol"><span class="std std-ref">disableExtrapol</span></a> function is available.</p>
 </section>
 <section id="array-data-support">
-<h2>Array data support<a class="headerlink" href="#array-data-support" title="Permalink to this headline"></a></h2>
+<h2>Array data support<a class="headerlink" href="#array-data-support" title="Permalink to this heading"></a></h2>
 <p>The plugin supports array data from version 1.2.0.</p>
 <p>Array data is managed like a table in the plugin. Following is a example of array data that has 3 elements:</p>
 <table class="colwidths-auto docutils align-default">
