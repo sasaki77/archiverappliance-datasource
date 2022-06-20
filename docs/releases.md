@@ -1,4 +1,14 @@
 # Release Notes
+## 1.3.5
+
+**2022-06-20**
+
+### Enhancements
+- Use tooltip UI for function control popup
+
+### Bug fixes
+- **Backend**: Fix "json: cannot unmarshal" error
+
 ## 1.3.4
 
 **2022-04-13**

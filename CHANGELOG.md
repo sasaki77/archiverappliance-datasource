@@ -1,5 +1,13 @@
 # Change Log
-## 1.3.3 (2022-04-13)
+## 1.3.5 (2022-06-20)
+
+### Enhancements
+- Use tooltip UI for function control popup
+
+### Bug fixes
+- **Backend**: Fix "json: cannot unmarshal" error
+
+## 1.3.4 (2022-04-13)
 
 ### Breaking changes
 - Grafana v7.X.X or earlier is not supported from this version
