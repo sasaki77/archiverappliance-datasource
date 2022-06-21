@@ -48,10 +48,11 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
 
   // Called from Grafana panels to get data
   query(options: DataQueryRequest<AAQuery>): Observable<DataQueryResponse> {
-    const rawTargets = this.buildQueryParameters(options);
-
     // Remove hidden target from query
-    const targets = _.filter(rawTargets, (t) => !t.hide);
+    const query = { ...options };
+    query.targets = _.filter(query.targets, (t) => !t.hide);
+
+    const targets = this.buildQueryParameters(query);
 
     // There're no target query
     if (targets.length <= 0) {
@@ -65,7 +66,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     // No stream query
     if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== 'now') {
       if (this.useBackend) {
-        return super.query(options);
+        return super.query(query);
       }
       return from(this.doQuery(targets));
     }
