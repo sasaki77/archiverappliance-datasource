@@ -149,6 +149,7 @@ func Scale(allData []SingleData, factor float64) []SingleData {
 			newValues[idx] = val * factor
 		}
 		newSd := SingleData{
+			Name:   oneData.Name,
 			Times:  oneData.Times,
 			Values: newValues,
 		}
@@ -165,6 +166,7 @@ func Offset(allData []SingleData, delta float64) []SingleData {
 			newValues[idx] = val + delta
 		}
 		newSd := SingleData{
+			Name:   oneData.Name,
 			Times:  oneData.Times,
 			Values: newValues,
 		}
