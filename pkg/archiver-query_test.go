@@ -15,6 +15,7 @@ func TestBuildQueryUrl(t *testing.T) {
 	//            "2021-01-27T14:25:41.678-08:00"
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
+		name      string
 		target    string
 		query     backend.DataQuery
 		pluginctx backend.PluginContext
@@ -22,6 +23,7 @@ func TestBuildQueryUrl(t *testing.T) {
 		output    string
 	}{
 		{
+			name:   "URL for auto raw data with empty operator (interval is less than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			query: backend.DataQuery{
 				Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
@@ -34,8 +36,8 @@ func TestBuildQueryUrl(t *testing.T) {
                     "operator": null,
                     "refId":"A" ,
                     "regex":true ,
-                    "target":"MR1K[1,3]:BEND:PIP:1:PMON"}`),
-				MaxDataPoints: 0,
+                    "target":"MR1K1:BEND:PIP:1:PMON"}`),
+				MaxDataPoints: 1000,
 				QueryType:     "",
 				RefID:         "A",
 				TimeRange: backend.TimeRange{
@@ -47,6 +49,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval"},
 			},
 			qm: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(300),
 				// alias: ,
 				// aliasPattern: ,
 				// constant: 6.5,
@@ -61,11 +64,12 @@ func TestBuildQueryUrl(t *testing.T) {
 				RefId:     "A",
 				Regex:     true,
 				// String: nil,
-				Target: "MR1K[1,3]:BEND:PIP:1:PMON",
+				Target: "MR1K1:BEND:PIP:1:PMON",
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 		{
+			name:   "URL for empty operator (interval is higher than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			query: backend.DataQuery{
 				Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
@@ -78,8 +82,46 @@ func TestBuildQueryUrl(t *testing.T) {
                     "operator": null,
                     "refId":"A" ,
                     "regex":true ,
-                    "target":"MR1K[1,3]:BEND:PIP:1:PMON"}`),
-				MaxDataPoints: 0,
+                    "target":"MR1K1:BEND:PIP:1:PMON"}`),
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+				},
+			},
+			pluginctx: backend.PluginContext{
+				DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval"},
+			},
+			qm: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(7200),
+				Functions:  []FunctionDescriptorQueryModel{},
+				Operator:   "",
+				QueryText:  "",
+				QueryType:  nil,
+				RefId:      "A",
+				Regex:      true,
+				Target:     "MR1K1:BEND:PIP:1:PMON",
+			},
+			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+		},
+		{
+			name:   "URL for max operator (interval is less than 1 second)",
+			target: "MR1K1:BEND:PIP:1:PMON",
+			query: backend.DataQuery{
+				Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
+                    "alias": null,
+                    "aliasPattern": null,
+                    "constant":6.5, 
+                    "functions":[], 
+                    "hide":false ,
+                    "operator": null,
+                    "refId":"A" ,
+                    "regex":true ,
+                    "target":"MR1K1:BEND:PIP:1:PMON"}`),
+				MaxDataPoints: 1000,
 				QueryType:     "",
 				RefID:         "A",
 				TimeRange: backend.TimeRange{
@@ -91,18 +133,57 @@ func TestBuildQueryUrl(t *testing.T) {
 				DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval"},
 			},
 			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(2000),
+				IntervalMs: InitIntPointer(300),
 				Functions:  []FunctionDescriptorQueryModel{},
-				Operator:   "",
+				Operator:   "max",
 				QueryText:  "",
 				QueryType:  nil,
 				RefId:      "A",
 				Regex:      true,
-				Target:     "MR1K[1,3]:BEND:PIP:1:PMON",
+				Target:     "MR1K1:BEND:PIP:1:PMON",
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_2%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T14%3A30%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 		{
+			name:   "URL for max operator (interval is higher than 1 second)",
+			target: "MR1K1:BEND:PIP:1:PMON",
+			query: backend.DataQuery{
+				Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
+                    "alias": null,
+                    "aliasPattern": null,
+                    "constant":6.5, 
+                    "functions":[], 
+                    "hide":false ,
+                    "operator": null,
+                    "refId":"A" ,
+                    "regex":true ,
+                    "target":"MR1K1:BEND:PIP:1:PMON"}`),
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+				},
+			},
+			pluginctx: backend.PluginContext{
+				DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval"},
+			},
+			qm: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(7200),
+				Functions:  []FunctionDescriptorQueryModel{},
+				Operator:   "max",
+				QueryText:  "",
+				QueryType:  nil,
+				RefId:      "A",
+				Regex:      true,
+				Target:     "MR1K1:BEND:PIP:1:PMON",
+			},
+			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=max_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+		},
+		{
+			name:   "URL for median operator and fixed interval",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			query: backend.DataQuery{
 				Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
@@ -139,8 +220,8 @@ func TestBuildQueryUrl(t *testing.T) {
                     "operator": "median",
                     "refId":"A" ,
                     "regex":true ,
-                    "target":"MR1K[1,3]:BEND:PIP:1:PMON"}`),
-				MaxDataPoints: 0,
+                    "target":"MR1K1:BEND:PIP:1:PMON"}`),
+				MaxDataPoints: 1000,
 				QueryType:     "",
 				RefID:         "A",
 				TimeRange: backend.TimeRange{
@@ -152,6 +233,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				DataSourceInstanceSettings: &backend.DataSourceInstanceSettings{URL: "http://localhost:3396/retrieval"},
 			},
 			qm: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(300),
 				// alias: ,
 				// aliasPattern: ,
 				// constant: 6.5,
@@ -189,15 +271,14 @@ func TestBuildQueryUrl(t *testing.T) {
 				RefId:     "A",
 				Regex:     true,
 				// String: nil,
-				Target: "MR1K[1,3]:BEND:PIP:1:PMON",
+				Target: "MR1K1:BEND:PIP:1:PMON",
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=median_900%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 	}
 	// fmt.Println(tests)
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("%d: %v", idx, testCase.output)
-		t.Run(testName, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			result := BuildQueryUrl(testCase.target, testCase.query, testCase.pluginctx, testCase.qm)
 			if testCase.output != result {
 				t.Errorf("got %v, want %v", result, testCase.output)
