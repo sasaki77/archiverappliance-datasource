@@ -105,7 +105,15 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "",
 		},
 		{
-			name: "max operator with 0.1 second interval",
+			name: "max operator with 1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(1000),
+				Operator:   "max",
+			},
+			output: "max_1",
+		},
+		{
+			name: "max operator without IntervalMs",
 			input: ArchiverQueryModel{
 				Operator: "max",
 			},
