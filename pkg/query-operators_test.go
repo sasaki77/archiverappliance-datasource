@@ -28,10 +28,12 @@ func TestOperatorValidator(t *testing.T) {
 
 func TestCreateOperatorQuery(t *testing.T) {
 	var tests = []struct {
+		name   string
 		input  ArchiverQueryModel
 		output string
 	}{
 		{
+			name: "mean with binInterval function",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -51,6 +53,7 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "mean_16",
 		},
 		{
+			name: "raw with binInterval function",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -70,16 +73,55 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "",
 		},
 		{
+			name: "empty operator with 10.1 second interval",
 			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(10000),
+				IntervalMs: InitIntPointer(10100),
 				Operator:   "",
 			},
 			output: "mean_10",
 		},
+		{
+			name: "empty operator with 0.1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(100),
+				Operator:   "",
+			},
+			output: "",
+		},
+		{
+			name: "max operator with 10 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(10100),
+				Operator:   "max",
+			},
+			output: "max_10",
+		},
+		{
+			name: "max operator with 0.1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(100),
+				Operator:   "max",
+			},
+			output: "",
+		},
+		{
+			name: "max operator with 1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(1000),
+				Operator:   "max",
+			},
+			output: "max_1",
+		},
+		{
+			name: "max operator without IntervalMs",
+			input: ArchiverQueryModel{
+				Operator: "max",
+			},
+			output: "",
+		},
 	}
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("%d: %v, %v", idx, testCase.input, testCase.output)
-		t.Run(testName, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			result, err := CreateOperatorQuery(testCase.input)
 			if err != nil {
 				t.Errorf("Error received %v", err)
