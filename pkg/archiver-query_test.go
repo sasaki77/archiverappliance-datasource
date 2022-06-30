@@ -606,6 +606,77 @@ func TestSelectiveInsert(t *testing.T) {
 	}
 }
 
+func TestApplyAlias(t *testing.T) {
+	var tests = []struct {
+		name    string
+		inputSd []SingleData
+		qm      ArchiverQueryModel
+		output  []SingleData
+	}{
+		{
+			name: "normal alias",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias: "alias",
+			},
+			output: []SingleData{
+				{
+					Name:   "alias",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+		{
+			name: "empty alias",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias: "",
+			},
+			output: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+		{
+			name: "alias pattern",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias:        "$2:$1",
+				AliasPattern: "(.*):(.*)",
+			},
+			output: []SingleData{
+				{
+					Name:   "NAME:PV",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, _ := ApplyAlias(testCase.inputSd, testCase.qm)
+			SingleDataCompareHelper(result, testCase.output, t)
+		})
+	}
+}
+
 func TestFrameBuilder(t *testing.T) {
 	var tests = []struct {
 		sD   SingleData

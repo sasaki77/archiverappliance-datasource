@@ -77,6 +77,7 @@ type ArchiverResponseModel struct {
 
 type SingleData struct {
 	Name   string
+	PVname string
 	Times  []time.Time
 	Values []float64
 }

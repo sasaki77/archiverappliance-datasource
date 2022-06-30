@@ -137,6 +137,13 @@ responseCollector:
 		}
 	}
 
+	// Apply Alias to the data
+	var aliasErr error
+	responseData, aliasErr = ApplyAlias(responseData, qm)
+	if aliasErr != nil {
+		log.DefaultLogger.Warn("Error applying alias")
+	}
+
 	// Apply Functions to the data
 	var funcErr error
 	responseData, funcErr = ApplyFunctions(responseData, qm)
