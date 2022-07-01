@@ -679,14 +679,17 @@ func TestApplyAlias(t *testing.T) {
 
 func TestFrameBuilder(t *testing.T) {
 	var tests = []struct {
-		sD   SingleData
-		name string
+		sD     SingleData
+		name   string
+		pvname string
 	}{
 		{
 			sD: SingleData{
-				Name: "testing_name",
+				Name:   "testing_name",
+				PVname: "pvname",
 			},
-			name: "testing_name",
+			name:   "testing_name",
+			pvname: "pvname",
 		},
 	}
 	for idx, testCase := range tests {
@@ -698,6 +701,12 @@ func TestFrameBuilder(t *testing.T) {
 			}
 			if testCase.name != result.Fields[1].Name {
 				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
+			}
+			if testCase.name != result.Fields[1].Config.DisplayName {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			}
+			if testCase.pvname != result.Fields[1].Labels["pvname"] {
+				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
 			}
 		})
 	}
