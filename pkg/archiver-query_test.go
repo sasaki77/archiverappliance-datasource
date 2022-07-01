@@ -606,16 +606,90 @@ func TestSelectiveInsert(t *testing.T) {
 	}
 }
 
+func TestApplyAlias(t *testing.T) {
+	var tests = []struct {
+		name    string
+		inputSd []SingleData
+		qm      ArchiverQueryModel
+		output  []SingleData
+	}{
+		{
+			name: "normal alias",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias: "alias",
+			},
+			output: []SingleData{
+				{
+					Name:   "alias",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+		{
+			name: "empty alias",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias: "",
+			},
+			output: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+		{
+			name: "alias pattern",
+			inputSd: []SingleData{
+				{
+					Name:   "PV:NAME",
+					PVname: "PV:NAME",
+				},
+			},
+			qm: ArchiverQueryModel{
+				Alias:        "$2:$1",
+				AliasPattern: "(.*):(.*)",
+			},
+			output: []SingleData{
+				{
+					Name:   "NAME:PV",
+					PVname: "PV:NAME",
+				},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, _ := ApplyAlias(testCase.inputSd, testCase.qm)
+			SingleDataCompareHelper(result, testCase.output, t)
+		})
+	}
+}
+
 func TestFrameBuilder(t *testing.T) {
 	var tests = []struct {
-		sD   SingleData
-		name string
+		sD     SingleData
+		name   string
+		pvname string
 	}{
 		{
 			sD: SingleData{
-				Name: "testing_name",
+				Name:   "testing_name",
+				PVname: "pvname",
 			},
-			name: "testing_name",
+			name:   "testing_name",
+			pvname: "pvname",
 		},
 	}
 	for idx, testCase := range tests {
@@ -627,6 +701,12 @@ func TestFrameBuilder(t *testing.T) {
 			}
 			if testCase.name != result.Fields[1].Name {
 				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
+			}
+			if testCase.name != result.Fields[1].Config.DisplayName {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			}
+			if testCase.pvname != result.Fields[1].Labels["pvname"] {
+				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
 			}
 		})
 	}

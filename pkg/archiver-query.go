@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -107,6 +108,7 @@ func ArchiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 
 	// Obtain PV name
 	sD.Name = data[0].Meta.Name
+	sD.PVname = data[0].Meta.Name
 
 	// Build output data block
 	dataSize := len(data[0].Data)
@@ -394,6 +396,29 @@ func SelectiveInsert(input string, idxs [][]int, inserts []string) string {
 	return builder.String()
 }
 
+func ApplyAlias(sD []SingleData, qm ArchiverQueryModel) ([]SingleData, error) {
+	// Alias is not set. Return data as is is.
+	if qm.Alias == "" {
+		return sD, nil
+	}
+
+	rep, err := regexp.Compile(qm.AliasPattern)
+	if err != nil {
+		return sD, err
+	}
+	newData := sD
+
+	for i, d := range newData {
+		alias := qm.Alias
+		if qm.AliasPattern != "" {
+			alias = rep.ReplaceAllString(d.Name, qm.Alias)
+		}
+		newData[i].Name = alias
+	}
+
+	return newData, nil
+}
+
 func FrameBuilder(singleResponse SingleData) *data.Frame {
 	// create data frame response
 	frame := data.NewFrame(singleResponse.Name)
@@ -405,7 +430,7 @@ func FrameBuilder(singleResponse SingleData) *data.Frame {
 
 	// add values
 	labels := make(data.Labels, 1)
-	labels["pvname"] = singleResponse.Name
+	labels["pvname"] = singleResponse.PVname
 
 	valueField := data.NewField(singleResponse.Name, labels, singleResponse.Values)
 	valueField.Config = &data.FieldConfig{DisplayName: singleResponse.Name}
