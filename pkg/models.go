@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type ArchiverQueryModel struct {
@@ -73,11 +72,4 @@ type ArchiverResponseModel struct {
 		Secs   *json.Number `json:"secs,omitempty"`
 		Val    json.Number  `json:"val"`
 	} `json:"data"`
-}
-
-type SingleData struct {
-	Name   string
-	PVname string
-	Times  []time.Time
-	Values []float64
 }
