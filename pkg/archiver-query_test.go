@@ -609,13 +609,13 @@ func TestSelectiveInsert(t *testing.T) {
 func TestApplyAlias(t *testing.T) {
 	var tests = []struct {
 		name    string
-		inputSd []SingleData
+		inputSd []*SingleData
 		qm      ArchiverQueryModel
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
 			name: "normal alias",
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
@@ -624,7 +624,7 @@ func TestApplyAlias(t *testing.T) {
 			qm: ArchiverQueryModel{
 				Alias: "alias",
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "alias",
 					PVname: "PV:NAME",
@@ -633,7 +633,7 @@ func TestApplyAlias(t *testing.T) {
 		},
 		{
 			name: "empty alias",
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
@@ -642,7 +642,7 @@ func TestApplyAlias(t *testing.T) {
 			qm: ArchiverQueryModel{
 				Alias: "",
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
@@ -651,7 +651,7 @@ func TestApplyAlias(t *testing.T) {
 		},
 		{
 			name: "alias pattern",
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
@@ -661,7 +661,7 @@ func TestApplyAlias(t *testing.T) {
 				Alias:        "$2:$1",
 				AliasPattern: "(.*):(.*)",
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "NAME:PV",
 					PVname: "PV:NAME",
@@ -673,41 +673,6 @@ func TestApplyAlias(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			result, _ := ApplyAlias(testCase.inputSd, testCase.qm)
 			SingleDataCompareHelper(result, testCase.output, t)
-		})
-	}
-}
-
-func TestFrameBuilder(t *testing.T) {
-	var tests = []struct {
-		sD     SingleData
-		name   string
-		pvname string
-	}{
-		{
-			sD: SingleData{
-				Name:   "testing_name",
-				PVname: "pvname",
-			},
-			name:   "testing_name",
-			pvname: "pvname",
-		},
-	}
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("%d: %s", idx, testCase.name)
-		t.Run(testName, func(t *testing.T) {
-			result := FrameBuilder(testCase.sD)
-			if testCase.name != result.Name {
-				t.Errorf("got %v, want %v", result.Name, testCase.name)
-			}
-			if testCase.name != result.Fields[1].Name {
-				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
-			}
-			if testCase.name != result.Fields[1].Config.DisplayName {
-				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
-			}
-			if testCase.pvname != result.Fields[1].Labels["pvname"] {
-				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
-			}
 		})
 	}
 }
@@ -839,10 +804,10 @@ func TestDataExtrapol(t *testing.T) {
 	for idx, testCase := range tests {
 		testName := fmt.Sprintf("%d:", idx)
 		t.Run(testName, func(t *testing.T) {
-			result := DataExtrapol(testCase.sDIn, testCase.qm, testCase.query)
+			result := DataExtrapol(&testCase.sDIn, testCase.qm, testCase.query)
 			SingleDataCompareHelper(
-				[]SingleData{result},
-				[]SingleData{testCase.sDOut},
+				[]*SingleData{result},
+				[]*SingleData{&testCase.sDOut},
 				t,
 			)
 		})

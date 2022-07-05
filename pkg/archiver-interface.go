@@ -109,7 +109,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 	}
 
 	// execute the individual queries
-	responseData := make([]SingleData, 0, len(targetPvList))
+	responseData := make([]*SingleData, 0, len(targetPvList))
 	responsePipe := make(chan SingleData)
 
 	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
@@ -130,7 +130,7 @@ responseCollector:
 	for range targetPvList {
 		select {
 		case response := <-responsePipe:
-			responseData = append(responseData, response)
+			responseData = append(responseData, &response)
 		case <-timeoutPipe:
 			log.DefaultLogger.Warn("Timeout limit for query has been reached")
 			break responseCollector
@@ -159,7 +159,7 @@ responseCollector:
 	// for each query response, compile the data into response.Frames
 	for _, singleResponse := range responseData {
 
-		frame := FrameBuilder(singleResponse)
+		frame := singleResponse.ToFrame()
 
 		// add the frames to the response
 		response.Frames = append(response.Frames, frame)

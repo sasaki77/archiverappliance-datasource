@@ -12,7 +12,6 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
-	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
 func IsBackendQuery(pluginctx backend.PluginContext) bool {
@@ -396,50 +395,29 @@ func SelectiveInsert(input string, idxs [][]int, inserts []string) string {
 	return builder.String()
 }
 
-func ApplyAlias(sD []SingleData, qm ArchiverQueryModel) ([]SingleData, error) {
+func ApplyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
 	// Alias is not set. Return data as is is.
 	if qm.Alias == "" {
 		return sD, nil
 	}
 
-	rep, err := regexp.Compile(qm.AliasPattern)
-	if err != nil {
-		return sD, err
-	}
-	newData := sD
-
-	for i, d := range newData {
-		alias := qm.Alias
-		if qm.AliasPattern != "" {
-			alias = rep.ReplaceAllString(d.Name, qm.Alias)
+	var rep *regexp.Regexp
+	if qm.AliasPattern != "" {
+		var err error
+		rep, err = regexp.Compile(qm.AliasPattern)
+		if err != nil {
+			return sD, err
 		}
-		newData[i].Name = alias
 	}
 
-	return newData, nil
+	for _, d := range sD {
+		d.ApplyAlias(qm.Alias, rep)
+	}
+
+	return sD, nil
 }
 
-func FrameBuilder(singleResponse SingleData) *data.Frame {
-	// create data frame response
-	frame := data.NewFrame(singleResponse.Name)
-
-	//add the time dimension
-	frame.Fields = append(frame.Fields,
-		data.NewField("time", nil, singleResponse.Times),
-	)
-
-	// add values
-	labels := make(data.Labels, 1)
-	labels["pvname"] = singleResponse.PVname
-
-	valueField := data.NewField(singleResponse.Name, labels, singleResponse.Values)
-	valueField.Config = &data.FieldConfig{DisplayName: singleResponse.Name}
-	frame.Fields = append(frame.Fields, valueField)
-
-	return frame
-}
-
-func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backend.DataQuery) SingleData {
+func DataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel, query backend.DataQuery) *SingleData {
 	disableExtrapol, err := qm.DisableExtrapol()
 	if err != nil {
 		disableExtrapol = false
@@ -449,12 +427,7 @@ func DataExtrapol(singleResponse SingleData, qm ArchiverQueryModel, query backen
 		return singleResponse
 	}
 
-	newResponse := singleResponse
-	newValue := singleResponse.Values[len(singleResponse.Values)-1]
-	newTime := query.TimeRange.To
-
-	newResponse.Values = append(newResponse.Values, newValue)
-	newResponse.Times = append(newResponse.Times, newTime)
+	newResponse := singleResponse.Extrapolation(query.TimeRange.To)
 
 	return newResponse
 }

@@ -501,12 +501,12 @@ func TestExtractParamString(t *testing.T) {
 
 func TestApplyFunctions(t *testing.T) {
 	var tests = []struct {
-		inputSd  []SingleData
+		inputSd  []*SingleData
 		inputAqm ArchiverQueryModel
-		output   []SingleData
+		output   []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -529,7 +529,7 @@ func TestApplyFunctions(t *testing.T) {
 					},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{3, 3, 4, 5, 7, 10},
@@ -537,7 +537,7 @@ func TestApplyFunctions(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -573,7 +573,7 @@ func TestApplyFunctions(t *testing.T) {
 					},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{9, 9, 12, 15, 21, 30},
@@ -581,7 +581,7 @@ func TestApplyFunctions(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -642,7 +642,7 @@ func TestApplyFunctions(t *testing.T) {
 					},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{9, 9, 12, 15, 21, 30},
@@ -665,12 +665,12 @@ func TestApplyFunctions(t *testing.T) {
 
 func TestFunctionSelector(t *testing.T) {
 	var tests = []struct {
-		inputSd   []SingleData
+		inputSd   []*SingleData
 		inputFdqm FunctionDescriptorQueryModel
-		output    []SingleData
+		output    []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -689,7 +689,7 @@ func TestFunctionSelector(t *testing.T) {
 				},
 				Params: []string{"2"},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{3, 3, 4, 5, 7, 10},

@@ -152,7 +152,7 @@ func (fdqm FunctionDescriptorQueryModel) ExtractParamString(target string) (stri
 	return response, nil
 }
 
-func ApplyFunctions(responseData []SingleData, qm ArchiverQueryModel) ([]SingleData, error) {
+func ApplyFunctions(responseData []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
 	// iterate through the list of functions
 	// This should be applied to the entirety of the single query as some functions need knowldege off the data series in order to work
 	newData := responseData
@@ -167,7 +167,7 @@ func ApplyFunctions(responseData []SingleData, qm ArchiverQueryModel) ([]SingleD
 	return newData, nil
 }
 
-func FunctionSelector(responseData []SingleData, fdqm FunctionDescriptorQueryModel) ([]SingleData, error) {
+func FunctionSelector(responseData []*SingleData, fdqm FunctionDescriptorQueryModel) ([]*SingleData, error) {
 	// Based on the name (as a string) of the function, select the actual function to be used
 	// If the function fails to apply, the data will be returned unaltered
 	name := fdqm.Def.Name
