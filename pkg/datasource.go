@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
@@ -50,44 +48,8 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 		return nil, err
 	}
 
-	// create response struct
-	response := backend.NewQueryDataResponse()
-	responsePipe := make(chan QueryMgr)
+	response := Query(ctx, client, req)
 
-	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, client *AAclient, responsePipe chan QueryMgr) {
-			res := backend.DataResponse{}
-			qm, err := ReadQueryModel(q)
-
-			if err != nil {
-				res.Error = err
-			} else {
-				res = Query(ctx, qm, client)
-			}
-
-			responsePipe <- QueryMgr{
-				Res:    res,
-				QRefID: q.RefID,
-			}
-		}(ctx, q, client, responsePipe)
-	}
-
-	timeoutDurationSeconds := 30 // units are seconds
-	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
-	timeoutPipe := time.After(timeoutDuration)
-
-queryCollector:
-	for range req.Queries {
-		// save the response in a hashmap
-		// based on with RefID as identifier
-		select {
-		case rtn := <-responsePipe:
-			response.Responses[rtn.QRefID] = rtn.Res
-		case <-timeoutPipe:
-			log.DefaultLogger.Warn("Timeout limit for QueryData has been reached")
-			break queryCollector
-		}
-	}
 	return response, nil
 }
 

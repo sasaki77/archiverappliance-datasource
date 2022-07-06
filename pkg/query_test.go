@@ -81,7 +81,7 @@ func TestApplyAlias(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result, _ := ApplyAlias(testCase.inputSd, testCase.qm)
+			result, _ := applyAlias(testCase.inputSd, testCase.qm)
 			SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
@@ -206,7 +206,7 @@ func TestDataExtrapol(t *testing.T) {
 	for idx, testCase := range tests {
 		testName := fmt.Sprintf("%d:", idx)
 		t.Run(testName, func(t *testing.T) {
-			result := DataExtrapol(&testCase.sDIn, testCase.qm)
+			result := dataExtrapol(&testCase.sDIn, testCase.qm)
 			SingleDataCompareHelper(
 				[]*SingleData{result},
 				[]*SingleData{&testCase.sDOut},

@@ -18,8 +18,8 @@ type AAclient struct {
 }
 
 type client interface {
-	FetchRegexTargetPVs(regex string, config DatasourceSettings) ([]string, error)
-	ExecuteSingleQuery(target string, config DatasourceSettings, qm ArchiverQueryModel) (SingleData, error)
+	FetchRegexTargetPVs(regex string) ([]string, error)
+	ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error)
 }
 
 func NewAAClient(ctx context.Context, config DatasourceSettings) (*AAclient, error) {

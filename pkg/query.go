@@ -15,7 +15,50 @@ func IsBackendQuery(pluginctx backend.PluginContext) bool {
 	return pluginctx.User != nil
 }
 
-func Query(ctx context.Context, qm ArchiverQueryModel, client *AAclient) backend.DataResponse {
+func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backend.QueryDataResponse {
+	// create response struct
+	response := backend.NewQueryDataResponse()
+	responsePipe := make(chan QueryMgr)
+
+	for _, q := range req.Queries {
+		go func(ctx context.Context, q backend.DataQuery, client client, responsePipe chan QueryMgr) {
+			res := backend.DataResponse{}
+			qm, err := ReadQueryModel(q)
+
+			if err != nil {
+				res.Error = err
+			} else {
+				res = singleQuery(ctx, qm, c)
+			}
+
+			responsePipe <- QueryMgr{
+				Res:    res,
+				QRefID: q.RefID,
+			}
+		}(ctx, q, c, responsePipe)
+	}
+
+	timeoutDurationSeconds := 30 // units are seconds
+	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
+	timeoutPipe := time.After(timeoutDuration)
+
+queryCollector:
+	for range req.Queries {
+		// save the response in a hashmap
+		// based on with RefID as identifier
+		select {
+		case rtn := <-responsePipe:
+			response.Responses[rtn.QRefID] = rtn.Res
+		case <-timeoutPipe:
+			log.DefaultLogger.Warn("Timeout limit for QueryData has been reached")
+			break queryCollector
+		}
+	}
+
+	return response
+}
+
+func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) backend.DataResponse {
 	response := backend.DataResponse{}
 
 	// make the query and compile the results into a SingleData instance
@@ -60,7 +103,7 @@ responseCollector:
 
 	// Apply Alias to the data
 	var aliasErr error
-	responseData, aliasErr = ApplyAlias(responseData, qm)
+	responseData, aliasErr = applyAlias(responseData, qm)
 	if aliasErr != nil {
 		log.DefaultLogger.Warn("Error applying alias")
 	}
@@ -74,7 +117,7 @@ responseCollector:
 
 	// Extrapolate data as necessary
 	for idx, data := range responseData {
-		responseData[idx] = DataExtrapol(data, qm)
+		responseData[idx] = dataExtrapol(data, qm)
 	}
 
 	// for each query response, compile the data into response.Frames
@@ -89,7 +132,7 @@ responseCollector:
 	return response
 }
 
-func ApplyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
+func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
 	// Alias is not set. Return data as is is.
 	if qm.Alias == "" {
 		return sD, nil
@@ -111,7 +154,7 @@ func ApplyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) 
 	return sD, nil
 }
 
-func DataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
+func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
 	disableExtrapol, err := qm.DisableExtrapol()
 	if err != nil {
 		disableExtrapol = false
