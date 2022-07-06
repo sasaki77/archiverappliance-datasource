@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -41,19 +40,31 @@ func newArchiverDataSource() datasource.ServeOpts {
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	// Structure defined by grafana-plugin-sdk-go. QueryData should unpack the req argument into individual queries.
 
+	config, err := LoadSettings(req.PluginContext)
+	if err != nil {
+		return nil, err
+	}
+
 	// create response struct
 	response := backend.NewQueryDataResponse()
-
 	responsePipe := make(chan QueryMgr)
 
 	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, req *backend.QueryDataRequest, responsePipe chan QueryMgr) {
-			res := td.query(ctx, q, req.PluginContext)
+		go func(ctx context.Context, q backend.DataQuery, config DatasourceSettings, responsePipe chan QueryMgr) {
+			res := backend.DataResponse{}
+			qm, err := ReadQueryModel(q)
+
+			if err != nil {
+				res.Error = err
+			} else {
+				res = Query(ctx, qm, config)
+			}
+
 			responsePipe <- QueryMgr{
 				Res:    res,
 				QRefID: q.RefID,
 			}
-		}(ctx, q, req, responsePipe)
+		}(ctx, q, config, responsePipe)
 	}
 
 	timeoutDurationSeconds := 30 // units are seconds
@@ -84,88 +95,6 @@ func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.Chec
 		Status:  status,
 		Message: message,
 	}, nil
-}
-
-func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery, pluginctx backend.PluginContext) backend.DataResponse {
-	// Unmarshal the json into our queryModel
-	var qm ArchiverQueryModel
-
-	response := backend.DataResponse{}
-
-	response.Error = json.Unmarshal(query.JSON, &qm)
-	if response.Error != nil {
-		return response
-	}
-
-	// make the query and compile the results into a SingleData instance
-	var targetPvList []string
-	if qm.Regex {
-		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
-		// assemble the list of PVs to be queried for
-		targetPvList, _ = FetchRegexTargetPVs(qm.Target, pluginctx)
-	} else {
-		// If a regex is not being used, only check for listed PVs
-		targetPvList = IsolateBasicQuery(qm.Target)
-	}
-
-	// execute the individual queries
-	responseData := make([]*SingleData, 0, len(targetPvList))
-	responsePipe := make(chan SingleData)
-
-	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
-	timeoutDurationSeconds := 30 // units are seconds
-	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
-	timeoutPipe := time.After(timeoutDuration)
-
-	// create goroutines for individual requests
-	for _, targetPv := range targetPvList {
-		go func(targetPv string, pipe chan SingleData) {
-			parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
-			pipe <- parsedResponse
-		}(targetPv, responsePipe)
-	}
-
-	// Collect responses from the request goroutines
-responseCollector:
-	for range targetPvList {
-		select {
-		case response := <-responsePipe:
-			responseData = append(responseData, &response)
-		case <-timeoutPipe:
-			log.DefaultLogger.Warn("Timeout limit for query has been reached")
-			break responseCollector
-		}
-	}
-
-	// Apply Alias to the data
-	var aliasErr error
-	responseData, aliasErr = ApplyAlias(responseData, qm)
-	if aliasErr != nil {
-		log.DefaultLogger.Warn("Error applying alias")
-	}
-
-	// Apply Functions to the data
-	var funcErr error
-	responseData, funcErr = ApplyFunctions(responseData, qm)
-	if funcErr != nil {
-		log.DefaultLogger.Warn("Error applying functions")
-	}
-
-	// Extrapolate data as necessary
-	for idx, data := range responseData {
-		responseData[idx] = DataExtrapol(data, qm, query)
-	}
-
-	// for each query response, compile the data into response.Frames
-	for _, singleResponse := range responseData {
-
-		frame := singleResponse.ToFrame()
-
-		// add the frames to the response
-		response.Frames = append(response.Frames, frame)
-	}
-
-	return response
 }
 
 type archiverInstanceSettings struct {

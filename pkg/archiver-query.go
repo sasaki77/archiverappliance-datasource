@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -19,7 +20,7 @@ func IsBackendQuery(pluginctx backend.PluginContext) bool {
 	return pluginctx.User != nil
 }
 
-func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.PluginContext, qm ArchiverQueryModel) string {
+func BuildQueryUrl(target string, config DatasourceSettings, qm ArchiverQueryModel) string {
 	// Build the URL to query the archiver built from Grafana's configuration
 	// Set some constants
 
@@ -27,7 +28,7 @@ func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.Plu
 	const JSON_DATA_URL = "data/getData.qw"
 
 	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
-	u, err := url.Parse(pluginctx.DataSourceInstanceSettings.URL)
+	u, err := url.Parse(config.URL)
 	if err != nil {
 		log.DefaultLogger.Warn("err", "err", err)
 	}
@@ -64,8 +65,8 @@ func BuildQueryUrl(target string, query backend.DataQuery, pluginctx backend.Plu
 	// assemble the query of the URL and attach it to u
 	query_vals := make(url.Values)
 	query_vals["pv"] = []string{targetPv}
-	query_vals["from"] = []string{query.TimeRange.From.Format(TIME_FORMAT)}
-	query_vals["to"] = []string{query.TimeRange.To.Format(TIME_FORMAT)}
+	query_vals["from"] = []string{qm.TimeRange.From.Format(TIME_FORMAT)}
+	query_vals["to"] = []string{qm.TimeRange.To.Format(TIME_FORMAT)}
 	query_vals["donotchunk"] = []string{""}
 	u.RawQuery = query_vals.Encode()
 
@@ -133,13 +134,13 @@ func ArchiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 	return sD, nil
 }
 
-func BuildRegexUrl(regex string, pluginctx backend.PluginContext) string {
+func BuildRegexUrl(regex string, config DatasourceSettings) string {
 	// Construct the request URL for the regex search of PVs and return it as a string
 	const REGEX_URL = "bpl/getMatchingPVs"
 	const REGEX_MAXIMUM_MATCHES = 1000
 
 	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
-	u, err := url.Parse(pluginctx.DataSourceInstanceSettings.URL)
+	u, err := url.Parse(config.URL)
 	if err != nil {
 		log.DefaultLogger.Warn("err", "err", err)
 	}
@@ -194,18 +195,18 @@ func ArchiverRegexQueryParser(jsonAsBytes []byte) ([]string, error) {
 	return pvList, nil
 }
 
-func FetchRegexTargetPVs(regex string, pluginctx backend.PluginContext) ([]string, error) {
-	regexUrl := BuildRegexUrl(regex, pluginctx)
+func FetchRegexTargetPVs(regex string, config DatasourceSettings) ([]string, error) {
+	regexUrl := BuildRegexUrl(regex, config)
 	regexQueryResponse, _ := ArchiverRegexQuery(regexUrl)
 	pvList, _ := ArchiverRegexQueryParser(regexQueryResponse)
 
 	return pvList, nil
 }
 
-func ExecuteSingleQuery(target string, query backend.DataQuery, pluginctx backend.PluginContext, qm ArchiverQueryModel) (SingleData, error) {
+func ExecuteSingleQuery(target string, config DatasourceSettings, qm ArchiverQueryModel) (SingleData, error) {
 	// wrap together the individual operations build a query, execute the query, and compile the data into a singleData structure
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
-	queryUrl := BuildQueryUrl(target, query, pluginctx, qm)
+	queryUrl := BuildQueryUrl(target, config, qm)
 	queryResponse, _ := ArchiverSingleQuery(queryUrl)
 	parsedResponse, _ := ArchiverSingleQueryParser(queryResponse)
 	return parsedResponse, nil
@@ -417,7 +418,7 @@ func ApplyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) 
 	return sD, nil
 }
 
-func DataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel, query backend.DataQuery) *SingleData {
+func DataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
 	disableExtrapol, err := qm.DisableExtrapol()
 	if err != nil {
 		disableExtrapol = false
@@ -427,7 +428,81 @@ func DataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel, query backe
 		return singleResponse
 	}
 
-	newResponse := singleResponse.Extrapolation(query.TimeRange.To)
+	newResponse := singleResponse.Extrapolation(qm.TimeRange.To)
 
 	return newResponse
+}
+
+func Query(ctx context.Context, qm ArchiverQueryModel, config DatasourceSettings) backend.DataResponse {
+	response := backend.DataResponse{}
+
+	// make the query and compile the results into a SingleData instance
+	var targetPvList []string
+	if qm.Regex {
+		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
+		// assemble the list of PVs to be queried for
+		targetPvList, _ = FetchRegexTargetPVs(qm.Target, config)
+	} else {
+		// If a regex is not being used, only check for listed PVs
+		targetPvList = IsolateBasicQuery(qm.Target)
+	}
+
+	// execute the individual queries
+	responseData := make([]*SingleData, 0, len(targetPvList))
+	responsePipe := make(chan SingleData)
+
+	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
+	timeoutDurationSeconds := 30 // units are seconds
+	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
+	timeoutPipe := time.After(timeoutDuration)
+
+	// create goroutines for individual requests
+	for _, targetPv := range targetPvList {
+		go func(targetPv string, pipe chan SingleData) {
+			parsedResponse, _ := ExecuteSingleQuery(targetPv, config, qm)
+			pipe <- parsedResponse
+		}(targetPv, responsePipe)
+	}
+
+	// Collect responses from the request goroutines
+responseCollector:
+	for range targetPvList {
+		select {
+		case response := <-responsePipe:
+			responseData = append(responseData, &response)
+		case <-timeoutPipe:
+			log.DefaultLogger.Warn("Timeout limit for query has been reached")
+			break responseCollector
+		}
+	}
+
+	// Apply Alias to the data
+	var aliasErr error
+	responseData, aliasErr = ApplyAlias(responseData, qm)
+	if aliasErr != nil {
+		log.DefaultLogger.Warn("Error applying alias")
+	}
+
+	// Apply Functions to the data
+	var funcErr error
+	responseData, funcErr = ApplyFunctions(responseData, qm)
+	if funcErr != nil {
+		log.DefaultLogger.Warn("Error applying functions")
+	}
+
+	// Extrapolate data as necessary
+	for idx, data := range responseData {
+		responseData[idx] = DataExtrapol(data, qm)
+	}
+
+	// for each query response, compile the data into response.Frames
+	for _, singleResponse := range responseData {
+
+		frame := singleResponse.ToFrame()
+
+		// add the frames to the response
+		response.Frames = append(response.Frames, frame)
+	}
+
+	return response
 }

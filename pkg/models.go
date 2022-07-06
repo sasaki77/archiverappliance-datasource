@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+
+	"github.com/grafana/grafana-plugin-sdk-go/backend"
 )
 
 type ArchiverQueryModel struct {
@@ -32,6 +35,9 @@ type ArchiverQueryModel struct {
 	Hide      *bool   `json:"hide"`
 	Key       *string `json:"string"`
 	QueryType *string `json:"queryType"`
+
+	// Not from JSON
+	TimeRange backend.TimeRange `json:"-"`
 }
 
 type FunctionDescriptorQueryModel struct {
@@ -72,4 +78,29 @@ type ArchiverResponseModel struct {
 		Secs   *json.Number `json:"secs,omitempty"`
 		Val    json.Number  `json:"val"`
 	} `json:"data"`
+}
+
+type DatasourceSettings struct {
+	URL string `json:"-"`
+}
+
+func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
+	model := ArchiverQueryModel{}
+
+	err := json.Unmarshal(query.JSON, &model)
+	if err != nil {
+		return model, fmt.Errorf("error reading query: %s", err.Error())
+	}
+
+	// Copy directly from the well typed query
+	model.TimeRange = query.TimeRange
+	return model, nil
+}
+
+func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
+	model := DatasourceSettings{}
+
+	model.URL = ctx.DataSourceInstanceSettings.URL
+
+	return model, nil
 }
