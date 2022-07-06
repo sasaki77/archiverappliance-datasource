@@ -173,7 +173,7 @@ func TestBuildQueryUrl(t *testing.T) {
 	// fmt.Println(tests)
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := BuildQueryUrl(testCase.target, testCase.config, testCase.qm)
+			result := buildQueryUrl(testCase.target, testCase.config, testCase.qm)
 			if testCase.output != result {
 				t.Errorf("got %v, want %v", result, testCase.output)
 			}
@@ -222,7 +222,7 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 		testName := fmt.Sprintf("Case: %d", idx)
 		t.Run(testName, func(t *testing.T) {
 			// result := testCase.output
-			result, err := ArchiverSingleQueryParser(testCase.input)
+			result, err := archiverSingleQueryParser(testCase.input)
 			if err != nil {
 				t.Fatalf("An unexpected error has occurred")
 			}
@@ -264,7 +264,7 @@ func TestArchiverRegexQueryParser(t *testing.T) {
 		testName := fmt.Sprintf("%d: %s, %s", idx, testCase.input, testCase.output)
 		t.Run(testName, func(t *testing.T) {
 			// result := testCase.output
-			result, err := ArchiverRegexQueryParser(testCase.input)
+			result, err := archiverRegexQueryParser(testCase.input)
 			if err != nil {
 				t.Fatalf("An unexpected error has occurred")
 			}
