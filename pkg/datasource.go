@@ -45,26 +45,31 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 		return nil, err
 	}
 
+	client, err := NewAAClient(ctx, config)
+	if err != nil {
+		return nil, err
+	}
+
 	// create response struct
 	response := backend.NewQueryDataResponse()
 	responsePipe := make(chan QueryMgr)
 
 	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, config DatasourceSettings, responsePipe chan QueryMgr) {
+		go func(ctx context.Context, q backend.DataQuery, client *AAclient, responsePipe chan QueryMgr) {
 			res := backend.DataResponse{}
 			qm, err := ReadQueryModel(q)
 
 			if err != nil {
 				res.Error = err
 			} else {
-				res = Query(ctx, qm, config)
+				res = Query(ctx, qm, client)
 			}
 
 			responsePipe <- QueryMgr{
 				Res:    res,
 				QRefID: q.RefID,
 			}
-		}(ctx, q, config, responsePipe)
+		}(ctx, q, client, responsePipe)
 	}
 
 	timeoutDurationSeconds := 30 // units are seconds
