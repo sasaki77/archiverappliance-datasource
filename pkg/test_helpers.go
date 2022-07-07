@@ -51,7 +51,7 @@ func TimeArrayHelper(start int, end int) []time.Time {
 	return response
 }
 
-func SingleDataCompareHelper(result []SingleData, wanted []SingleData, t *testing.T) {
+func SingleDataCompareHelper(result []*SingleData, wanted []*SingleData, t *testing.T) {
 	// Raise no errors if two []SingleData are identical, raise errors if they are not
 	if len(result) != len(wanted) {
 		t.Errorf("Input and output SingleData differ in length. Wanted %v, got %v", len(wanted), len(result))

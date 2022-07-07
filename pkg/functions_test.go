@@ -11,12 +11,12 @@ import (
 
 func TestScale(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		delta   float64
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -24,7 +24,7 @@ func TestScale(t *testing.T) {
 				},
 			},
 			delta: 2,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -44,12 +44,12 @@ func TestScale(t *testing.T) {
 
 func TestOffset(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		delta   float64
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -57,7 +57,7 @@ func TestOffset(t *testing.T) {
 				},
 			},
 			delta: 2,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -77,18 +77,18 @@ func TestOffset(t *testing.T) {
 
 func TestDelta(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
-		output  []SingleData
+		inputSd []*SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(1, 6),
@@ -97,14 +97,14 @@ func TestDelta(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 1),
 					Values: []float64{2},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 1),
@@ -124,18 +124,18 @@ func TestDelta(t *testing.T) {
 
 func TestFluctuation(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
-		output  []SingleData
+		inputSd []*SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -144,14 +144,14 @@ func TestFluctuation(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 1),
 					Values: []float64{1},
 				},
 			},
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 1),
@@ -171,12 +171,12 @@ func TestFluctuation(t *testing.T) {
 
 func TestMovingAverage(t *testing.T) {
 	var tests = []struct {
-		inputSd    []SingleData
+		inputSd    []*SingleData
 		windowSize int
-		output     []SingleData
+		output     []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -184,7 +184,7 @@ func TestMovingAverage(t *testing.T) {
 				},
 			},
 			windowSize: 3,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME",
 					Times:  TimeArrayHelper(0, 6),
@@ -232,13 +232,13 @@ func TestToScalarByStd(t *testing.T) {
 
 func TestTop(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		number  int
 		value   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -252,7 +252,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "avg",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME2",
 					Times:  TimeArrayHelper(0, 6),
@@ -261,7 +261,7 @@ func TestTop(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -275,7 +275,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "min",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME2",
 					Times:  TimeArrayHelper(0, 6),
@@ -284,7 +284,7 @@ func TestTop(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -298,7 +298,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "max",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -307,7 +307,7 @@ func TestTop(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -321,7 +321,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "absoluteMin",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -330,7 +330,7 @@ func TestTop(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -344,7 +344,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "absoluteMax",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME2",
 					Times:  TimeArrayHelper(0, 6),
@@ -353,7 +353,7 @@ func TestTop(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -367,7 +367,7 @@ func TestTop(t *testing.T) {
 			},
 			number: 1,
 			value:  "sum",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -390,13 +390,13 @@ func TestTop(t *testing.T) {
 
 func TestBottom(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		number  int
 		value   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -410,7 +410,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "avg",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -419,7 +419,7 @@ func TestBottom(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -433,7 +433,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "min",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -442,7 +442,7 @@ func TestBottom(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -456,7 +456,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "max",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -465,7 +465,7 @@ func TestBottom(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -479,7 +479,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "absoluteMin",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME2",
 					Times:  TimeArrayHelper(0, 6),
@@ -488,7 +488,7 @@ func TestBottom(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -502,7 +502,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "absoluteMax",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -511,7 +511,7 @@ func TestBottom(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME1",
 					Times:  TimeArrayHelper(0, 6),
@@ -525,7 +525,7 @@ func TestBottom(t *testing.T) {
 			},
 			number: 1,
 			value:  "sum",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name:   "TEST:PV:NAME2",
 					Times:  TimeArrayHelper(0, 6),
@@ -548,13 +548,13 @@ func TestBottom(t *testing.T) {
 
 func TestExclude(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		pattern string
 		err     bool
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name: "Hello there",
 				},
@@ -564,14 +564,14 @@ func TestExclude(t *testing.T) {
 			},
 			pattern: "Hello",
 			err:     false,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name: "General Kenobi!",
 				},
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name: "this is a phrase",
 				},
@@ -581,14 +581,14 @@ func TestExclude(t *testing.T) {
 			},
 			pattern: "^this",
 			err:     false,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name: "a phrase containing this",
 				},
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name: "abcdef12ghi",
 				},
@@ -598,14 +598,14 @@ func TestExclude(t *testing.T) {
 			},
 			pattern: "f[1-9]*",
 			err:     false,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name: "nonumbers",
 				},
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Name: "abcdef12ghi",
 				},
@@ -615,7 +615,7 @@ func TestExclude(t *testing.T) {
 			},
 			pattern: "***Hello",
 			err:     true,
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Name: "abcdef12ghi",
 				},
@@ -647,12 +647,12 @@ func TestExclude(t *testing.T) {
 
 func TestSortByAvg(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -663,7 +663,7 @@ func TestSortByAvg(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -675,7 +675,7 @@ func TestSortByAvg(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -686,7 +686,7 @@ func TestSortByAvg(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -712,12 +712,12 @@ func TestSortByAvg(t *testing.T) {
 
 func TestSortByMax(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -728,7 +728,7 @@ func TestSortByMax(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 81},
@@ -740,7 +740,7 @@ func TestSortByMax(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 81},
@@ -751,7 +751,7 @@ func TestSortByMax(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -777,12 +777,12 @@ func TestSortByMax(t *testing.T) {
 
 func TestSortByMin(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -793,7 +793,7 @@ func TestSortByMin(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-100, 1, 2, 3, 5, 8},
@@ -805,7 +805,7 @@ func TestSortByMin(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-100, 1, 2, 3, 5, 8},
@@ -816,7 +816,7 @@ func TestSortByMin(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -842,12 +842,12 @@ func TestSortByMin(t *testing.T) {
 
 func TestSortBySum(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -858,7 +858,7 @@ func TestSortBySum(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8000},
@@ -870,7 +870,7 @@ func TestSortBySum(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8000},
@@ -881,7 +881,7 @@ func TestSortBySum(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{10, 10, 20, 30, 50, 80},
@@ -907,12 +907,12 @@ func TestSortBySum(t *testing.T) {
 
 func TestSortByAbsMax(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-10, -10, -20, -30, -50, -80},
@@ -923,7 +923,7 @@ func TestSortByAbsMax(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -935,7 +935,7 @@ func TestSortByAbsMax(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -946,7 +946,7 @@ func TestSortByAbsMax(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-10, -10, -20, -30, -50, -80},
@@ -972,12 +972,12 @@ func TestSortByAbsMax(t *testing.T) {
 
 func TestSorByAbsMin(t *testing.T) {
 	var tests = []struct {
-		inputSd []SingleData
+		inputSd []*SingleData
 		order   string
-		output  []SingleData
+		output  []*SingleData
 	}{
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-10, 10, 20, 30, 50, 80},
@@ -988,7 +988,7 @@ func TestSorByAbsMin(t *testing.T) {
 				},
 			},
 			order: "asc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -1000,7 +1000,7 @@ func TestSorByAbsMin(t *testing.T) {
 			},
 		},
 		{
-			inputSd: []SingleData{
+			inputSd: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{1, 1, 2, 3, 5, 8},
@@ -1011,7 +1011,7 @@ func TestSorByAbsMin(t *testing.T) {
 				},
 			},
 			order: "desc",
-			output: []SingleData{
+			output: []*SingleData{
 				{
 					Times:  TimeArrayHelper(0, 6),
 					Values: []float64{-10, 10, 20, 30, 50, 80},

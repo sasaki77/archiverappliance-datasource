@@ -2,58 +2,40 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
-type ArchiverDatasource struct {
-	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
-	im instancemgmt.InstanceManager
+func IsBackendQuery(pluginctx backend.PluginContext) bool {
+	// Return true if this query was created by the backend as opposed to visualization query for the frontend
+	return pluginctx.User != nil
 }
 
-type QueryMgr struct {
-	Res    backend.DataResponse
-	QRefID string
-}
-
-func newArchiverDataSource() datasource.ServeOpts {
-	// Create a new instance manager
-	log.DefaultLogger.Debug("Starting newArchiverDataSource")
-
-	im := datasource.NewInstanceManager(newArchiverDataSourceInstance)
-	ds := &ArchiverDatasource{
-		im: im,
-	}
-
-	return datasource.ServeOpts{
-		QueryDataHandler:   ds,
-		CheckHealthHandler: ds,
-	}
-}
-
-func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
-	// Structure defined by grafana-plugin-sdk-go. QueryData should unpack the req argument into individual queries.
-
+func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backend.QueryDataResponse {
 	// create response struct
 	response := backend.NewQueryDataResponse()
-
 	responsePipe := make(chan QueryMgr)
 
 	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, req *backend.QueryDataRequest, responsePipe chan QueryMgr) {
-			res := td.query(ctx, q, req.PluginContext)
+		go func(ctx context.Context, q backend.DataQuery, client client, responsePipe chan QueryMgr) {
+			res := backend.DataResponse{}
+			qm, err := ReadQueryModel(q)
+
+			if err != nil {
+				res.Error = err
+			} else {
+				res = singleQuery(ctx, qm, c)
+			}
+
 			responsePipe <- QueryMgr{
 				Res:    res,
 				QRefID: q.RefID,
 			}
-		}(ctx, q, req, responsePipe)
+		}(ctx, q, c, responsePipe)
 	}
 
 	timeoutDurationSeconds := 30 // units are seconds
@@ -72,44 +54,26 @@ queryCollector:
 			break queryCollector
 		}
 	}
-	return response, nil
+
+	return response
 }
 
-func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
-	// the frontend health check is still used at this time
-	var status = backend.HealthStatusOk
-	var message = "This is a fake success message"
-
-	return &backend.CheckHealthResult{
-		Status:  status,
-		Message: message,
-	}, nil
-}
-
-func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery, pluginctx backend.PluginContext) backend.DataResponse {
-	// Unmarshal the json into our queryModel
-	var qm ArchiverQueryModel
-
+func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) backend.DataResponse {
 	response := backend.DataResponse{}
-
-	response.Error = json.Unmarshal(query.JSON, &qm)
-	if response.Error != nil {
-		return response
-	}
 
 	// make the query and compile the results into a SingleData instance
 	var targetPvList []string
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
 		// assemble the list of PVs to be queried for
-		targetPvList, _ = FetchRegexTargetPVs(qm.Target, pluginctx)
+		targetPvList, _ = client.FetchRegexTargetPVs(qm.Target)
 	} else {
 		// If a regex is not being used, only check for listed PVs
 		targetPvList = IsolateBasicQuery(qm.Target)
 	}
 
 	// execute the individual queries
-	responseData := make([]SingleData, 0, len(targetPvList))
+	responseData := make([]*SingleData, 0, len(targetPvList))
 	responsePipe := make(chan SingleData)
 
 	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
@@ -120,7 +84,7 @@ func (td *ArchiverDatasource) query(ctx context.Context, query backend.DataQuery
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
 		go func(targetPv string, pipe chan SingleData) {
-			parsedResponse, _ := ExecuteSingleQuery(targetPv, query, pluginctx, qm)
+			parsedResponse, _ := client.ExecuteSingleQuery(targetPv, qm)
 			pipe <- parsedResponse
 		}(targetPv, responsePipe)
 	}
@@ -130,7 +94,7 @@ responseCollector:
 	for range targetPvList {
 		select {
 		case response := <-responsePipe:
-			responseData = append(responseData, response)
+			responseData = append(responseData, &response)
 		case <-timeoutPipe:
 			log.DefaultLogger.Warn("Timeout limit for query has been reached")
 			break responseCollector
@@ -139,7 +103,7 @@ responseCollector:
 
 	// Apply Alias to the data
 	var aliasErr error
-	responseData, aliasErr = ApplyAlias(responseData, qm)
+	responseData, aliasErr = applyAlias(responseData, qm)
 	if aliasErr != nil {
 		log.DefaultLogger.Warn("Error applying alias")
 	}
@@ -153,13 +117,13 @@ responseCollector:
 
 	// Extrapolate data as necessary
 	for idx, data := range responseData {
-		responseData[idx] = DataExtrapol(data, qm, query)
+		responseData[idx] = dataExtrapol(data, qm)
 	}
 
 	// for each query response, compile the data into response.Frames
 	for _, singleResponse := range responseData {
 
-		frame := FrameBuilder(singleResponse)
+		frame := singleResponse.ToFrame()
 
 		// add the frames to the response
 		response.Frames = append(response.Frames, frame)
@@ -168,13 +132,39 @@ responseCollector:
 	return response
 }
 
-type archiverInstanceSettings struct {
-	httpClient *http.Client
+func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
+	// Alias is not set. Return data as is is.
+	if qm.Alias == "" {
+		return sD, nil
+	}
+
+	var rep *regexp.Regexp
+	if qm.AliasPattern != "" {
+		var err error
+		rep, err = regexp.Compile(qm.AliasPattern)
+		if err != nil {
+			return sD, err
+		}
+	}
+
+	for _, d := range sD {
+		d.ApplyAlias(qm.Alias, rep)
+	}
+
+	return sD, nil
 }
 
-func newArchiverDataSourceInstance(setting backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	// Adheres to structure defined by grafana-plugin-sdk-go
-	return &archiverInstanceSettings{
-		httpClient: &http.Client{},
-	}, nil
+func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
+	disableExtrapol, err := qm.DisableExtrapol()
+	if err != nil {
+		disableExtrapol = false
+	}
+
+	if (qm.Operator != "raw") || disableExtrapol {
+		return singleResponse
+	}
+
+	newResponse := singleResponse.Extrapolation(qm.TimeRange.To)
+
+	return newResponse
 }
