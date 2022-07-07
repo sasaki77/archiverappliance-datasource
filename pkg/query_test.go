@@ -1,12 +1,187 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
+
+type fakeClient struct {
+}
+
+func (f fakeClient) FetchRegexTargetPVs(regex string) ([]string, error) {
+	pvs := []string{"PV:NAME1", "PV:NAME2"}
+	return pvs, nil
+}
+
+func (f fakeClient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error) {
+	var v []float64
+	if target == "PV:NAME1" {
+		v = []float64{0, 1, 2}
+	} else {
+		v = []float64{3, 4, 5}
+	}
+
+	sd := SingleData{
+		Name:   target,
+		PVname: target,
+		Times:  TimeArrayHelper(0, 3),
+		Values: v,
+	}
+	return sd, nil
+}
+
+func TestQuery(t *testing.T) {
+	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
+	var tests = []struct {
+		name string
+		ctx  context.Context
+		req  *backend.QueryDataRequest
+		out  *backend.QueryDataResponse
+	}{
+		{
+			name: "test",
+			req: &backend.QueryDataRequest{
+				Queries: []backend.DataQuery{
+					{
+						Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						JSON: json.RawMessage(`{
+                    		"alias": "$2:$1",
+                    		"aliasPattern": "(.*):(.*)",
+                    		"constant":6.5, 
+                    		"functions":[], 
+                    		"hide":false ,
+                    		"operator": "max",
+                    		"refId":"A" ,
+                    		"regex":true ,
+                    		"target":"PV:NAME.*" ,
+							"functions":[
+								{
+									"params": [
+										"desc"
+									],
+									"def": {
+										"defaultParams": "",
+										"shortName": "",
+										"version": "",
+										"category": "Sort",
+										"description": "",
+										"fake": false,
+										"name": "sortByMax",
+										"params": [
+											{
+												"name": "order",
+												"options": ["desc", "asc"],
+												"type": "string"
+											}
+										]
+									}
+								}
+							]
+						}`),
+						MaxDataPoints: 1000,
+						QueryType:     "",
+						RefID:         "A",
+						TimeRange: backend.TimeRange{
+							From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+						},
+					},
+				},
+			},
+			out: &backend.QueryDataResponse{
+				Responses: map[string]backend.DataResponse{
+					"A": {
+						Frames: data.Frames{
+							&data.Frame{
+								Name:  "NAME2:PV",
+								RefID: "",
+								Fields: []*data.Field{
+									{
+										Name: "Time",
+									},
+									{
+										Name: "NAME2:PV",
+										Labels: data.Labels{
+											"pvname": "PV:NAME2",
+										},
+										Config: &data.FieldConfig{
+											DisplayName: "NAME2:PV",
+										},
+									},
+								},
+								Meta: &data.FrameMeta{},
+							},
+							&data.Frame{
+								Name:  "NAME1:PV",
+								RefID: "",
+								Fields: []*data.Field{
+									{
+										Name: "Time",
+									},
+									{
+										Name: "NAME1:PV",
+										Labels: data.Labels{
+											"pvname": "PV:NAME1",
+										},
+										Config: &data.FieldConfig{
+											DisplayName: "NAME1:PV",
+										},
+									},
+								},
+								Meta: &data.FrameMeta{},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	f := fakeClient{}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := Query(testCase.ctx, f, testCase.req)
+			for i, frame := range result.Responses["A"].Frames {
+				out := testCase.out.Responses["A"].Frames[i]
+
+				if frame.Name != out.Name {
+					t.Errorf("got %v, want %v", frame.Name, out.Name)
+				}
+				if frame.RefID != out.RefID {
+					t.Errorf("got %v, want %v", frame.RefID, out.RefID)
+				}
+
+				tf := frame.Fields[0]
+				if tf.Name != "time" {
+					t.Errorf("got %v, want %v", tf.Name, "time")
+				}
+				if tf.Len() != 3 {
+					t.Errorf("got %v, want %v", tf.Len(), 3)
+				}
+
+				vf := frame.Fields[1]
+				outvf := out.Fields[1]
+				if vf.Name != outvf.Name {
+					t.Errorf("got %v, want %v", vf.Name, outvf.Name)
+				}
+				if vf.Labels["pvname"] != outvf.Labels["pvname"] {
+					t.Errorf("got %v, want %v", vf.Labels["pvname"], outvf.Labels["pvname"])
+				}
+				if vf.Config.DisplayName != outvf.Config.DisplayName {
+					t.Errorf("got %v, want %v", vf.Config.DisplayName, outvf.Config.DisplayName)
+				}
+				if vf.Len() != 3 {
+					t.Errorf("got %v, want %v", vf.Len(), 3)
+				}
+			}
+		})
+	}
+}
 
 func TestArchiverSingleQuery(t *testing.T) {
 	t.Skipf("Test not implemented")
