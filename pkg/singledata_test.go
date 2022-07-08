@@ -59,6 +59,7 @@ func TestToFrame(t *testing.T) {
 			sD: SingleData{
 				Name:   "testing_name",
 				PVname: "pvname",
+				Values: &Scalars{},
 			},
 			name:   "testing_name",
 			pvname: "pvname",
@@ -93,14 +94,18 @@ func TestExtrapolation(t *testing.T) {
 	}{
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 			name: "extrapolation",
 			t:    TimeHelper(5),
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
-				Values: []float64{1, 1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+					Values: []float64{1, 1},
+				},
 			},
 		},
 	}

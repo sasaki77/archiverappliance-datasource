@@ -18,17 +18,21 @@ func TestScale(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			delta: 2,
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{2, 2, 4, 6, 10, 16},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{2, 2, 4, 6, 10, 16},
+					},
 				},
 			},
 		},
@@ -51,17 +55,21 @@ func TestOffset(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			delta: 2,
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{3, 3, 4, 5, 7, 10},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{3, 3, 4, 5, 7, 10},
+					},
 				},
 			},
 		},
@@ -83,32 +91,40 @@ func TestDelta(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(1, 6),
-					Values: []float64{0, 1, 1, 2, 3},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(1, 6),
+						Values: []float64{0, 1, 1, 2, 3},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 1),
-					Values: []float64{2},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 1),
+						Values: []float64{2},
+					},
 				},
 			},
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 1),
-					Values: []float64{0},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 1),
+						Values: []float64{0},
+					},
 				},
 			},
 		},
@@ -130,32 +146,40 @@ func TestFluctuation(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{0, 0, 1, 2, 4, 7},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{0, 0, 1, 2, 4, 7},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 1),
-					Values: []float64{1},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 1),
+						Values: []float64{1},
+					},
 				},
 			},
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 1),
-					Values: []float64{0},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 1),
+						Values: []float64{0},
+					},
 				},
 			},
 		},
@@ -178,17 +202,21 @@ func TestMovingAverage(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{3, 9, 6, 3, 3, 6},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{3, 9, 6, 3, 3, 6},
+					},
 				},
 			},
 			windowSize: 3,
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{3, 6, 6, 6, 4, 4},
+					Name: "TEST:PV:NAME",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{3, 6, 6, 6, 4, 4},
+					},
 				},
 			},
 		},
@@ -240,138 +268,174 @@ func TestTop(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "avg",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "min",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "max",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{0, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{0, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMin",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMax",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10},
+					},
 				},
 			},
 			number: 1,
 			value:  "sum",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
@@ -398,138 +462,174 @@ func TestBottom(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "avg",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "min",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "max",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{0, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{0, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMin",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{0, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{0, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMax",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME1",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Name: "TEST:PV:NAME1",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10},
+					},
 				},
 			},
 			number: 1,
 			value:  "sum",
 			output: []*SingleData{
 				{
-					Name:   "TEST:PV:NAME2",
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10},
+					Name: "TEST:PV:NAME2",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10},
+					},
 				},
 			},
 		},
@@ -556,71 +656,84 @@ func TestExclude(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Name: "Hello there",
+					Name:   "Hello there",
+					Values: &Scalars{},
 				},
 				{
-					Name: "General Kenobi!",
+					Name:   "General Kenobi!",
+					Values: &Scalars{},
 				},
 			},
 			pattern: "Hello",
 			err:     false,
 			output: []*SingleData{
 				{
-					Name: "General Kenobi!",
+					Name:   "General Kenobi!",
+					Values: &Scalars{},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name: "this is a phrase",
+					Name:   "this is a phrase",
+					Values: &Scalars{},
 				},
 				{
-					Name: "a phrase containing this",
+					Name:   "a phrase containing this",
+					Values: &Scalars{},
 				},
 			},
 			pattern: "^this",
 			err:     false,
 			output: []*SingleData{
 				{
-					Name: "a phrase containing this",
+					Name:   "a phrase containing this",
+					Values: &Scalars{},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name: "abcdef12ghi",
+					Name:   "abcdef12ghi",
+					Values: &Scalars{},
 				},
 				{
-					Name: "nonumbers",
+					Name:   "nonumbers",
+					Values: &Scalars{},
 				},
 			},
 			pattern: "f[1-9]*",
 			err:     false,
 			output: []*SingleData{
 				{
-					Name: "nonumbers",
+					Name:   "nonumbers",
+					Values: &Scalars{},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Name: "abcdef12ghi",
+					Name:   "abcdef12ghi",
+					Values: &Scalars{},
 				},
 				{
-					Name: "nonumbers",
+					Name:   "nonumbers",
+					Values: &Scalars{},
 				},
 			},
 			pattern: "***Hello",
 			err:     true,
 			output: []*SingleData{
 				{
-					Name: "abcdef12ghi",
+					Name:   "abcdef12ghi",
+					Values: &Scalars{},
 				},
 				{
-					Name: "nonumbers",
+					Name:   "nonumbers",
+					Values: &Scalars{},
 				},
 			},
 		},
@@ -654,46 +767,62 @@ func TestSortByAvg(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
@@ -719,46 +848,62 @@ func TestSortByMax(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 81},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 81},
+					},
 				},
 			},
 		},
@@ -784,46 +929,62 @@ func TestSortByMin(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-100, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-100, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-100, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-100, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-100, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-100, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-100, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-100, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
@@ -849,46 +1010,62 @@ func TestSortBySum(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8000},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8000},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8000},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8000},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8000},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8000},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8000},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8000},
+					},
 				},
 			},
 		},
@@ -914,46 +1091,62 @@ func TestSortByAbsMax(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, -10, -20, -30, -50, -80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, -10, -20, -30, -50, -80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, -10, -20, -30, -50, -80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, -10, -20, -30, -50, -80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, -10, -20, -30, -50, -80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, -10, -20, -30, -50, -80},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, -10, -20, -30, -50, -80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, -10, -20, -30, -50, -80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},
@@ -979,46 +1172,62 @@ func TestSorByAbsMin(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			order: "asc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, 10, 20, 30, 50, 80},
+					},
 				},
 			},
 			order: "desc",
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{-10, 10, 20, 30, 50, 80},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{-10, 10, 20, 30, 50, 80},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 		},

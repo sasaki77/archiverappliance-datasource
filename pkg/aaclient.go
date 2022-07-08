@@ -139,8 +139,8 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 	dataSize := len(data[0].Data)
 
 	// initialize the slices with their final size so append operations are not necessary
-	sD.Times = make([]time.Time, dataSize)
-	sD.Values = make([]float64, dataSize)
+	times := make([]time.Time, dataSize)
+	values := make([]float64, dataSize)
 
 	for idx, dataPt := range data[0].Data {
 
@@ -149,13 +149,14 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 			log.DefaultLogger.Warn("Conversion of millis to int64 has failed", "Error", millisErr)
 		}
 		// use convert to nanoseconds
-		sD.Times[idx] = time.Unix(0, 1e6*millisCache)
+		times[idx] = time.Unix(0, 1e6*millisCache)
 		valCache, valErr := dataPt.Val.Float64()
 		if valErr != nil {
 			log.DefaultLogger.Warn("Conversion of val to float64 has failed", "Error", valErr)
 		}
-		sD.Values[idx] = valCache
+		values[idx] = valCache
 	}
+	sD.Values = &Scalars{Times: times, Values: values}
 	return sD, nil
 }
 

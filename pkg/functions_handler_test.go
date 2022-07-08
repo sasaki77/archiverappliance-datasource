@@ -508,8 +508,10 @@ func TestApplyFunctions(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			inputAqm: ArchiverQueryModel{
@@ -531,16 +533,20 @@ func TestApplyFunctions(t *testing.T) {
 			},
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{3, 3, 4, 5, 7, 10},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{3, 3, 4, 5, 7, 10},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			inputAqm: ArchiverQueryModel{
@@ -575,20 +581,26 @@ func TestApplyFunctions(t *testing.T) {
 			},
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{9, 9, 12, 15, 21, 30},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{9, 9, 12, 15, 21, 30},
+					},
 				},
 			},
 		},
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{100, 100, 100, 100, 100, 100},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{100, 100, 100, 100, 100, 100},
+					},
 				},
 			},
 			inputAqm: ArchiverQueryModel{
@@ -644,8 +656,10 @@ func TestApplyFunctions(t *testing.T) {
 			},
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{9, 9, 12, 15, 21, 30},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{9, 9, 12, 15, 21, 30},
+					},
 				},
 			},
 		},
@@ -672,8 +686,10 @@ func TestFunctionSelector(t *testing.T) {
 		{
 			inputSd: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{1, 1, 2, 3, 5, 8},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{1, 1, 2, 3, 5, 8},
+					},
 				},
 			},
 			inputFdqm: FunctionDescriptorQueryModel{
@@ -691,8 +707,10 @@ func TestFunctionSelector(t *testing.T) {
 			},
 			output: []*SingleData{
 				{
-					Times:  TimeArrayHelper(0, 6),
-					Values: []float64{3, 3, 4, 5, 7, 10},
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 6),
+						Values: []float64{3, 3, 4, 5, 7, 10},
+					},
 				},
 			},
 		},

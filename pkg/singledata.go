@@ -7,11 +7,17 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
+type Arrays [][]float64
+
+type Values interface {
+	Extrapolation(t time.Time)
+	ToFields(pvname string, name string) []*data.Field
+}
+
 type SingleData struct {
 	Name   string
 	PVname string
-	Times  []time.Time
-	Values []float64
+	Values Values
 }
 
 func (sd *SingleData) ToFrame() *data.Frame {
@@ -19,17 +25,8 @@ func (sd *SingleData) ToFrame() *data.Frame {
 	frame := data.NewFrame(sd.Name)
 
 	//add the time dimension
-	frame.Fields = append(frame.Fields,
-		data.NewField("time", nil, sd.Times),
-	)
-
-	// add values
-	labels := make(data.Labels, 1)
-	labels["pvname"] = sd.PVname
-
-	valueField := data.NewField(sd.Name, labels, sd.Values)
-	valueField.Config = &data.FieldConfig{DisplayName: sd.Name}
-	frame.Fields = append(frame.Fields, valueField)
+	v := sd.Values.ToFields(sd.PVname, sd.Name)
+	frame.Fields = append(frame.Fields, v[0], v[1])
 
 	return frame
 }
@@ -43,10 +40,10 @@ func (sd *SingleData) ApplyAlias(alias string, rep *regexp.Regexp) {
 }
 
 func (sd *SingleData) Extrapolation(t time.Time) *SingleData {
-	newValue := sd.Values[len(sd.Values)-1]
+	//newValue := sd.Values[len(sd.Values)-1]
 
-	sd.Values = append(sd.Values, newValue)
-	sd.Times = append(sd.Times, t)
+	//sd.Values = append(sd.Values, newValue)
+	sd.Values.Extrapolation(t)
 
 	return sd
 }

@@ -212,21 +212,22 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 			if err != nil {
 				t.Fatalf("An unexpected error has occurred")
 			}
-			if len(result.Times) != len(result.Values) {
-				t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(result.Times), len(result.Values))
+			scalars := result.Values.(*Scalars)
+			if len(scalars.Times) != len(scalars.Values) {
+				t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(scalars.Times), len(scalars.Values))
 			}
-			resultLength := len(result.Times)
+			resultLength := len(scalars.Times)
 			if resultLength != testCase.output.length {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
 			}
 			if result.Name != testCase.output.name {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.output.name, result.Name)
 			}
-			if math.Abs(result.Values[0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, result.Values[0])
+			if math.Abs(scalars.Values[0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, scalars.Values[0])
 			}
-			if math.Abs(result.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, result.Values[resultLength-1])
+			if math.Abs(scalars.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, scalars.Values[resultLength-1])
 			}
 		})
 	}

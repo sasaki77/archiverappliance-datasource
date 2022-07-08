@@ -20,17 +20,18 @@ func (f fakeClient) FetchRegexTargetPVs(regex string) ([]string, error) {
 }
 
 func (f fakeClient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error) {
-	var v []float64
+	var values []float64
 	if target == "PV:NAME1" {
-		v = []float64{0, 1, 2}
+		values = []float64{0, 1, 2}
 	} else {
-		v = []float64{3, 4, 5}
+		values = []float64{3, 4, 5}
 	}
+
+	v := &Scalars{Times: TimeArrayHelper(0, 3), Values: values}
 
 	sd := SingleData{
 		Name:   target,
 		PVname: target,
-		Times:  TimeArrayHelper(0, 3),
 		Values: v,
 	}
 	return sd, nil
@@ -204,6 +205,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 			qm: ArchiverQueryModel{
@@ -213,6 +215,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "alias",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 		},
@@ -222,6 +225,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 			qm: ArchiverQueryModel{
@@ -231,6 +235,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 		},
@@ -240,6 +245,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 			qm: ArchiverQueryModel{
@@ -250,6 +256,7 @@ func TestApplyAlias(t *testing.T) {
 				{
 					Name:   "NAME:PV",
 					PVname: "PV:NAME",
+					Values: &Scalars{},
 				},
 			},
 		},
@@ -270,8 +277,10 @@ func TestDataExtrapol(t *testing.T) {
 	}{
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 			qm: ArchiverQueryModel{
 				Operator: "raw",
@@ -281,14 +290,18 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
-				Values: []float64{1, 1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+					Values: []float64{1, 1},
+				},
 			},
 		},
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 			qm: ArchiverQueryModel{
 				TimeRange: backend.TimeRange{
@@ -297,14 +310,18 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 		},
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 			qm: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
@@ -327,14 +344,18 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
-				Values: []float64{1, 1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+					Values: []float64{1, 1},
+				},
 			},
 		},
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 			qm: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
@@ -357,14 +378,18 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0)},
-				Values: []float64{1},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0)},
+					Values: []float64{1},
+				},
 			},
 		},
 		{
 			sDIn: SingleData{
-				Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
-				Values: []float64{1, 2},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
+					Values: []float64{1, 2},
+				},
 			},
 			qm: ArchiverQueryModel{
 				TimeRange: backend.TimeRange{
@@ -373,8 +398,10 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			sDOut: SingleData{
-				Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
-				Values: []float64{1, 2},
+				Values: &Scalars{
+					Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
+					Values: []float64{1, 2},
+				},
 			},
 		},
 	}
