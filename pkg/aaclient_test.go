@@ -188,6 +188,10 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 			fileName: "test_data/good_query_response_01.JSON",
 			output:   responseParams{length: 612, name: "EM2K0:XGMD:GPI:10:PRESS_RBV", firstVal: 0.005249832756817341, lastVal: 0.005262143909931183},
 		},
+		{
+			fileName: "test_data/good_query_response_waveform_01.JSON",
+			output:   responseParams{length: 61, name: "PLC:LFE:MOTION:FFO:02:FF:011:Info:InfoString_RBV", firstVal: 112, lastVal: 88},
+		},
 	}
 
 	type testData struct {
@@ -212,22 +216,42 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 			if err != nil {
 				t.Fatalf("An unexpected error has occurred")
 			}
-			scalars := result.Values.(*Scalars)
-			if len(scalars.Times) != len(scalars.Values) {
-				t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(scalars.Times), len(scalars.Values))
-			}
-			resultLength := len(scalars.Times)
-			if resultLength != testCase.output.length {
-				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
-			}
 			if result.Name != testCase.output.name {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.output.name, result.Name)
 			}
-			if math.Abs(scalars.Values[0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, scalars.Values[0])
-			}
-			if math.Abs(scalars.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, scalars.Values[resultLength-1])
+
+			switch v := result.Values.(type) {
+			case *Scalars:
+				if len(v.Times) != len(v.Values) {
+					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
+				}
+				resultLength := len(v.Times)
+				if resultLength != testCase.output.length {
+					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
+				}
+				if math.Abs(v.Values[0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
+					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
+				}
+				if math.Abs(v.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
+					t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
+				}
+			case *Arrays:
+				if len(v.Times) != len(v.Values) {
+					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
+				}
+				resultLength := len(v.Times)
+				if resultLength != testCase.output.length {
+					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
+				}
+				if math.Abs(v.Values[0][0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
+					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
+				}
+				vlen := len(v.Values[resultLength-1])
+				if math.Abs(v.Values[resultLength-1][vlen-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
+					t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
+				}
+			default:
+				t.Fatalf("Response Values are invalid")
 			}
 		})
 	}

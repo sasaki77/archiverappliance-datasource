@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
@@ -124,39 +123,38 @@ func archiverSingleQuery(queryUrl string) ([]byte, error) {
 func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 	// Convert received data to JSON
 	var sD SingleData
-	var data []ArchiverResponseModel
-	jsonErr := json.Unmarshal(jsonAsBytes, &data)
+	var response []ArchiverResponseModel
+
+	jsonErr := json.Unmarshal(jsonAsBytes, &response)
 	if jsonErr != nil {
 		log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
 		return sD, jsonErr
 	}
 
-	// Obtain PV name
-	sD.Name = data[0].Meta.Name
-	sD.PVname = data[0].Meta.Name
-
-	// Build output data block
-	dataSize := len(data[0].Data)
-
-	// initialize the slices with their final size so append operations are not necessary
-	times := make([]time.Time, dataSize)
-	values := make([]float64, dataSize)
-
-	for idx, dataPt := range data[0].Data {
-
-		millisCache, millisErr := dataPt.Millis.Int64()
-		if millisErr != nil {
-			log.DefaultLogger.Warn("Conversion of millis to int64 has failed", "Error", millisErr)
+	var d dataResponse
+	if response[0].Meta.Waveform {
+		var data ArrayResponseModel
+		jsonErr = json.Unmarshal(response[0].Data, &data)
+		if jsonErr != nil {
+			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
+			return sD, jsonErr
 		}
-		// use convert to nanoseconds
-		times[idx] = time.Unix(0, 1e6*millisCache)
-		valCache, valErr := dataPt.Val.Float64()
-		if valErr != nil {
-			log.DefaultLogger.Warn("Conversion of val to float64 has failed", "Error", valErr)
+		d = data
+	} else {
+		var data ScalarResponseModel
+		jsonErr = json.Unmarshal(response[0].Data, &data)
+		if jsonErr != nil {
+			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
+			return sD, jsonErr
 		}
-		values[idx] = valCache
+		d = data
 	}
-	sD.Values = &Scalars{Times: times, Values: values}
+
+	// Obtain PV name
+	sD.Name = response[0].Meta.Name
+	sD.PVname = response[0].Meta.Name
+	sD.Values, _ = d.ToSingleDataValues()
+
 	return sD, nil
 }
 
