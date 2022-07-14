@@ -3,10 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math"
 	"regexp"
 	"sort"
-	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
@@ -22,78 +20,37 @@ func FilterIndexer(allData []*SingleData, value string) ([]float64, error) {
 	// determine a single value for each SingleData. Useful for sorting or ranking SingleData
 	rank := make([]float64, len(allData))
 	for idx, sData := range allData {
-		data := sData.Values
+
+		values, ok := sData.Values.(*Scalars)
+		if !ok {
+			continue
+		}
+
+		var v float64
+		var err error
+
 		switch value {
 		case "avg":
-			var total float64
-			for _, val := range data {
-				total += val
-			}
-			rank[idx] = total / float64(len(data))
+			v, err = values.Rank(Avg)
 		case "min":
-			var low_cache float64
-			first_run := true
-			for _, val := range data {
-				if first_run {
-					low_cache = val
-					first_run = false
-				}
-				if low_cache > val {
-					low_cache = val
-				}
-			}
-			rank[idx] = low_cache
+			v, err = values.Rank(Min)
 		case "max":
-			var high_cache float64
-			first_run := true
-			for _, val := range data {
-				if first_run {
-					high_cache = val
-					first_run = false
-				}
-				if high_cache < val {
-					high_cache = val
-				}
-			}
-			rank[idx] = high_cache
+			v, err = values.Rank(Max)
 		case "absoluteMin":
-			var low_cache float64
-			first_run := true
-			for _, originalVal := range data {
-				val := math.Abs(originalVal)
-				if first_run {
-					low_cache = val
-					first_run = false
-				}
-				if low_cache > val {
-					low_cache = val
-				}
-			}
-			rank[idx] = low_cache
+			v, err = values.Rank(AbsoluteMin)
 		case "absoluteMax":
-			var high_cache float64
-			first_run := true
-			for _, originalVal := range data {
-				val := math.Abs(originalVal)
-				if first_run {
-					high_cache = val
-					first_run = false
-				}
-				if high_cache < val {
-					high_cache = val
-				}
-			}
-			rank[idx] = high_cache
+			v, err = values.Rank(AbsoluteMax)
 		case "sum":
-			var total float64
-			for _, val := range data {
-				total += val
-			}
-			rank[idx] = total
+			v, err = values.Rank(Sum)
 		default:
 			errMsg := fmt.Sprintf("Value %v not recognized", value)
 			return rank, errors.New(errMsg)
 		}
+
+		if err != nil {
+			continue
+		}
+		rank[idx] = v
 	}
 	return rank, nil
 }
@@ -143,77 +100,55 @@ func SortCore(allData []*SingleData, value string, order string) ([]*SingleData,
 
 func Scale(allData []*SingleData, factor float64) []*SingleData {
 	for _, oneData := range allData {
-		for idx, val := range oneData.Values {
-			oneData.Values[idx] = val * factor
+		values, ok := oneData.Values.(*Scalars)
+		if !ok {
+			continue
 		}
+		values.Scale(factor)
 	}
 	return allData
 }
 
 func Offset(allData []*SingleData, delta float64) []*SingleData {
 	for _, oneData := range allData {
-		for idx, val := range oneData.Values {
-			oneData.Values[idx] = val + delta
+		values, ok := oneData.Values.(*Scalars)
+		if !ok {
+			continue
 		}
+		values.Offset(delta)
 	}
 	return allData
 }
 
 func Delta(allData []*SingleData) []*SingleData {
 	for _, oneData := range allData {
-		newValues := make([]float64, 0, len(oneData.Values))
-		newTimes := make([]time.Time, 0, len(oneData.Times))
-		for idx := range oneData.Values {
-			if idx == 0 {
-				continue
-			}
-			newValues = append(newValues, oneData.Values[idx]-oneData.Values[idx-1])
-			newTimes = append(newTimes, oneData.Times[idx])
+		values, ok := oneData.Values.(*Scalars)
+		if !ok {
+			continue
 		}
-		if len(newValues) == 0 {
-			// handle 1-length data
-			newValues = append(newValues, 0)
-			newTimes = append(newTimes, oneData.Times[0])
-		}
-		oneData.Times = newTimes
-		oneData.Values = newValues
+		values.Delta()
 	}
 	return allData
 }
 
 func Fluctuation(allData []*SingleData) []*SingleData {
 	for _, oneData := range allData {
-		var startingValue float64
-		for idx, val := range oneData.Values {
-			if idx == 0 {
-				startingValue = val
-			}
-			oneData.Values[idx] = val - startingValue
+		values, ok := oneData.Values.(*Scalars)
+		if !ok {
+			continue
 		}
+		values.Fluctuation()
 	}
 	return allData
 }
 
 func MovingAverage(allData []*SingleData, windowSize int) []*SingleData {
 	for _, oneData := range allData {
-		newValues := make([]float64, len(oneData.Values))
-
-		for idx := range oneData.Values {
-			var total float64
-			total = 0
-			var size float64
-			size = 0
-			for i := 0; i < windowSize; i++ {
-				if (idx - i) < 0 {
-					break
-				}
-				size = size + 1
-				total = total + oneData.Values[idx-i]
-			}
-			newValues[idx] = total / size
+		values, ok := oneData.Values.(*Scalars)
+		if !ok {
+			continue
 		}
-
-		oneData.Values = newValues
+		values.MovingAverage(windowSize)
 	}
 	return allData
 }
