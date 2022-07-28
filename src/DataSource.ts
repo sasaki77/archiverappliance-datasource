@@ -377,9 +377,99 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
   }
 
   parseArrayResponse(targetRes: AADataQueryData, target: TargetQuery) {
+    let fields;
+    if (target.options.arrayFormat == "dt-space") {
+      fields = this.makeDtSpaceArrayFields(targetRes);
+    } else if (target.options.arrayFormat == "index") {
+      fields = this.makeIndexArrayFields(targetRes);
+    } else {
+      fields = this.makeTimeseriesArrayFields(targetRes);
+    }
+
+    if (fields.length == 0) {
+      return new MutableDataFrame();
+    }
+
+    const frame = new MutableDataFrame({
+      refId: target.refId,
+      name: targetRes.meta.name,
+      fields,
+    });
+
+    return frame;
+  }
+
+  makeDtSpaceArrayFields(targetRes: AADataQueryData) {
     // Type check for columnValues
     if (!isNumberArray(targetRes)) {
-      return new MutableDataFrame();
+      return [];
+    }
+
+    const targetData = targetRes.data
+
+    const field_val = _.reduce(
+      targetData,
+      (fields, data, i) => {
+        fields["vals"] = fields["vals"].concat(data.val);
+
+        const len = data.val.length;
+        for (let i = 0; i < len; i++) {
+          const date = data.millis + i;
+          fields["times"].push(date)
+        }
+
+        return fields;
+      },
+      { times: [], vals: [] } as { times: number[]; vals: number[] }
+    );
+
+    const fields = [
+      { name: 'time', type: FieldType.time, values: field_val["times"] },
+      { name: targetRes.meta.name, type: FieldType.number, values: field_val["vals"] }
+    ];
+
+    return fields;
+  }
+
+  makeIndexArrayFields(targetRes: AADataQueryData) {
+    // Type check for columnValues
+    if (!isNumberArray(targetRes)) {
+      return [];
+    }
+
+    const targetData = targetRes.data
+
+    const len = targetData[0].val.length;
+    let numbers = []
+    for (let i = 0; i < len; i++) {
+      numbers.push(i)
+    }
+
+    const fields = [{ name: 'index', type: FieldType.number, values: numbers }];
+
+    _.reduce(
+      targetData,
+      (fields, data, i) => {
+        const date = new Date(data.millis);
+        const val = data.val.length >= len ? data.val.slice(0, len) : data.val;
+        const field = {
+          name: date.toISOString(),
+          type: FieldType.number,
+          values: val,
+        };
+        fields.push(field);
+        return fields;
+      },
+      fields
+    );
+
+    return fields;
+  }
+
+  makeTimeseriesArrayFields(targetRes: AADataQueryData) {
+    // Type check for columnValues
+    if (!isNumberArray(targetRes)) {
+      return [];
     }
 
     const columnValues = _.map(targetRes.data, (datapoint) => datapoint.val);
@@ -403,13 +493,8 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
       fields
     );
 
-    const frame = new MutableDataFrame({
-      refId: target.refId,
-      name: targetRes.meta.name,
-      fields,
-    });
+    return fields;
 
-    return frame;
   }
 
   parseArrayResponseToScalar(
@@ -469,7 +554,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     }
 
     const newDataFrames = _.map(dataFrames, (dataFrame) => {
-      const valfields = _.filter(dataFrame.fields, (field) => field.name !== 'time');
+      const valfields = _.filter(dataFrame.fields, (field) => (field.name !== 'time' && field.name !== 'index'));
 
       const newValfields = _.map(valfields, (valfield) => {
         const displayName = getFieldDisplayName(valfield, dataFrame);

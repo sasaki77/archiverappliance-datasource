@@ -253,6 +253,13 @@ addFuncDef({
   defaultParams: ['true'],
 });
 
+addFuncDef({
+  name: 'arrayFormat',
+  category: 'Options',
+  params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
+  defaultParams: ['timeseries'],
+});
+
 export function getFuncDef(name: string) {
   return funcIndex[name];
 }

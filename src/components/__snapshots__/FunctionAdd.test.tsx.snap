@@ -128,6 +128,10 @@ exports[`Render should render component 1`] = `
             "label": "disableExtrapol",
             "value": "disableExtrapol",
           },
+          Object {
+            "label": "arrayFormat",
+            "value": "arrayFormat",
+          },
         ],
         "label": "Options",
         "value": "Options",
