@@ -360,6 +360,21 @@ describe('Archiverappliance Datasource', () => {
       expect(targets).toHaveLength(1);
       done();
     });
+
+    it('should return 1 second range when from == to in seconds', (done) => {
+      const options = ({
+        targets: [{ target: 'PV1', refId: 'A' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:00.100Z') },
+        maxDataPoints: 1800,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const targets = ds.buildQueryParameters(options);
+
+      expect(targets).toHaveLength(1);
+      expect(targets[0].from.getTime()).toBe(new Date('2010-01-01T00:00:00.000Z').getTime());
+      expect(targets[0].to.getTime()).toBe(new Date('2010-01-01T00:00:01.000Z').getTime());
+      done();
+    });
   });
 
   describe('Query tests', () => {

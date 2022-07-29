@@ -680,8 +680,12 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     }
 
     const from = new Date(String(query.range.from));
-    const to = new Date(String(query.range.to));
-    const rangeMsec = to.getTime() - from.getTime();
+    const to_ = new Date(String(query.range.to));
+    const rangeMsec = to_.getTime() - from.getTime();
+
+    // If "from" == "to" in seconds then "to" should be "to + 1 second"
+    const to = rangeMsec >= 1 ? to_ : new Date(to_.getTime() + 1000);
+
     const maxDataPoints = query.maxDataPoints || 2000;
     const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));
 
