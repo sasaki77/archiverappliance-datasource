@@ -15,8 +15,13 @@ type fakeClient struct {
 }
 
 func (f fakeClient) FetchRegexTargetPVs(regex string) ([]string, error) {
-	pvs := []string{"PV:NAME1", "PV:NAME2"}
-	return pvs, nil
+	if regex == ".*1" {
+		return []string{"PV:NAME1"}, nil
+	} else if regex == ".*2" {
+		return []string{"PV:NAME2"}, nil
+	} else {
+		return []string{}, nil
+	}
 }
 
 func (f fakeClient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error) {
@@ -60,7 +65,7 @@ func TestQuery(t *testing.T) {
                     		"operator": "max",
                     		"refId":"A" ,
                     		"regex":true ,
-                    		"target":"PV:NAME.*" ,
+                    		"target":".*(1|2)" ,
 							"functions":[
 								{
 									"params": [

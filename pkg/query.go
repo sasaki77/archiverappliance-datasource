@@ -63,13 +63,22 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 
 	// make the query and compile the results into a SingleData instance
 	var targetPvList []string
+
+	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
+	// That's because AA sever doesn't support full regular expression.
+	isolatedPvList := IsolateBasicQuery(qm.Target)
+
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
 		// assemble the list of PVs to be queried for
-		targetPvList, _ = client.FetchRegexTargetPVs(qm.Target)
+		var regexPvList []string
+		for _, v := range isolatedPvList {
+			pvs, _ := client.FetchRegexTargetPVs(v)
+			regexPvList = append(regexPvList, pvs...)
+		}
+		targetPvList = regexPvList
 	} else {
-		// If a regex is not being used, only check for listed PVs
-		targetPvList = IsolateBasicQuery(qm.Target)
+		targetPvList = isolatedPvList
 	}
 
 	// execute the individual queries
