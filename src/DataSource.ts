@@ -52,7 +52,8 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const query = { ...options };
     query.targets = _.filter(query.targets, (t) => !t.hide);
 
-    const targets = this.buildQueryParameters(query);
+    const query_replaced = this.replaceVariables(query);
+    const targets = this.buildQueryParameters(query_replaced);
 
     // There're no target query
     if (targets.length <= 0) {
@@ -66,7 +67,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     // No stream query
     if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== 'now') {
       if (this.useBackend) {
-        return super.query(query);
+        return super.query(query_replaced);
       }
       return from(this.doQuery(targets));
     }
@@ -583,8 +584,31 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     return result;
   }
 
-  buildQueryParameters(options: DataQueryRequest<AAQuery>) {
+  replaceVariables(options: DataQueryRequest<AAQuery>) {
     const templateSrv = getTemplateSrv();
+    const query = { ...options };
+
+    query.targets = _.map(query.targets, (target) => {
+      const t = { ...target };
+
+      t.functions = _.map(target.functions, (func) => {
+        const newFunc = func;
+        newFunc.params = _.map(newFunc.params, (param) => templateSrv.replace(param, query.scopedVars, 'regex'));
+        return newFunc;
+      });
+      t.target = templateSrv.replace(target.target, query.scopedVars, 'regex');
+      t.alias = templateSrv.replace(target.alias, query.scopedVars, 'regex');
+      t.operator = templateSrv.replace(target.operator, query.scopedVars, 'regex');
+      t.strmInt = templateSrv.replace(target.strmInt, query.scopedVars, 'regex');
+      t.strmCap = templateSrv.replace(target.strmCap, query.scopedVars, 'regex');
+
+      return t;
+    });
+
+    return query;
+  }
+
+  buildQueryParameters(options: DataQueryRequest<AAQuery>) {
     const query = { ...options };
 
     // remove placeholder targets and undefined targets
@@ -601,26 +625,20 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));
 
     const targets: TargetQuery[] = _.map(query.targets, (target) => {
-      // Replace parameters with variables for each functions
-      const functions = _.map(target.functions, (func) => {
-        const newFunc = func;
-        newFunc.params = _.map(newFunc.params, (param) => templateSrv.replace(param, query.scopedVars, 'regex'));
-        return newFunc;
-      });
-
       const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
 
       return {
-        target: templateSrv.replace(target.target, query.scopedVars, 'regex'),
+        //target: templateSrv.replace(target.target, query.scopedVars, 'regex'),
+        target: target.target,
         refId: target.refId,
         hide: target.hide,
-        alias: templateSrv.replace(target.alias, query.scopedVars, 'regex'),
-        operator: templateSrv.replace(target.operator, query.scopedVars, 'regex'),
+        alias: target.alias,
+        operator: target.operator,
         stream: target.stream,
-        strmInt: templateSrv.replace(target.strmInt, query.scopedVars, 'regex'),
-        strmCap: templateSrv.replace(target.strmCap, query.scopedVars, 'regex'),
-        functions,
+        strmInt: target.strmInt,
+        strmCap: target.strmCap,
+        functions: target.functions,
         regex: target.regex,
         aliasPattern: target.aliasPattern,
         options,
