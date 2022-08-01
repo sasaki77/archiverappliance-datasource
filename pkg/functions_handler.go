@@ -6,7 +6,30 @@ import (
 	"strconv"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/montanaflynn/stats"
 )
+
+type Category string
+
+const (
+	Transform = Category("Transform")
+	ToScalar  = Category("Array to Scalar")
+	Filter    = Category("Filter Series")
+	Sort      = Category("Sort")
+	Options   = Category("Options")
+)
+
+func (qm ArchiverQueryModel) PickFuncsByCategories(categories []Category) []FunctionDescriptorQueryModel {
+	response := make([]FunctionDescriptorQueryModel, 0)
+	for _, entry := range qm.Functions {
+		for _, category := range categories {
+			if entry.Def.Category == category {
+				response = append(response, entry)
+			}
+		}
+	}
+	return response
+}
 
 func (qm ArchiverQueryModel) IdentifyFunctionsByName(targetName string) []FunctionDescriptorQueryModel {
 	// create a slice of the the FunctionDescrporQueryModels that have the type of name targetName in order
@@ -155,8 +178,40 @@ func (fdqm FunctionDescriptorQueryModel) ExtractParamString(target string) (stri
 func ApplyFunctions(responseData []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
 	// iterate through the list of functions
 	// This should be applied to the entirety of the single query as some functions need knowldege off the data series in order to work
+
+	// Apply "Array to Scalar" functions first
 	newData := responseData
-	for _, fdqm := range qm.Functions {
+	newData = applyArrayFunctions(newData, qm)
+
+	// Apply normal functions: Transform, Filter, Sort
+	newData = applyScalarFunctions(newData, qm)
+
+	return newData, nil
+}
+
+func applyArrayFunctions(responseData []*SingleData, qm ArchiverQueryModel) []*SingleData {
+	functions := qm.PickFuncsByCategories([]Category{ToScalar})
+
+	if len(functions) == 0 {
+		return responseData
+	}
+
+	var newData []*SingleData
+	for _, fdqm := range functions {
+		d, err := arrayFunctionSelector(responseData, fdqm)
+		if err != nil {
+			continue
+		}
+		newData = append(newData, d...)
+	}
+	return newData
+}
+
+func applyScalarFunctions(responseData []*SingleData, qm ArchiverQueryModel) []*SingleData {
+	functions := qm.PickFuncsByCategories([]Category{Transform, Filter, Sort})
+	newData := responseData
+
+	for _, fdqm := range functions {
 		var err error
 		newData, err = FunctionSelector(newData, fdqm)
 		if err != nil {
@@ -164,6 +219,62 @@ func ApplyFunctions(responseData []*SingleData, qm ArchiverQueryModel) ([]*Singl
 			log.DefaultLogger.Warn(errMsg)
 		}
 	}
+
+	return newData
+}
+
+func arrayFunctionSelector(responseData []*SingleData, fdqm FunctionDescriptorQueryModel) ([]*SingleData, error) {
+	name := fdqm.Def.Name
+	var f func(values stats.Float64Data) (float64, error)
+	var fname string
+
+	switch name {
+	case "toScalarByAvg":
+		f = stats.Mean
+		fname = "avg"
+	case "toScalarByMax":
+		f = stats.Max
+		fname = "max"
+	case "toScalarByMin":
+		f = stats.Min
+		fname = "min"
+	case "toScalarBySum":
+		f = stats.Sum
+		fname = "sum"
+	case "toScalarByMed":
+		f = stats.Median
+		fname = "median"
+	case "toScalarByStd":
+		f = stats.StandardDeviation
+		fname = "std"
+	default:
+		errMsg := fmt.Sprintf("Function %v is not a recognized array function", name)
+		log.DefaultLogger.Warn(errMsg)
+		return []*SingleData{}, errors.New(errMsg)
+	}
+
+	var newData []*SingleData
+	for _, oneData := range responseData {
+		values, ok := oneData.Values.(*Arrays)
+		if !ok {
+			continue
+		}
+
+		var vs []float64
+		for _, val := range values.Values {
+			v, _ := f(val)
+			vs = append(vs, v)
+		}
+
+		newValues := &Scalars{Times: values.Times, Values: vs}
+
+		var d SingleData
+		d.PVname = oneData.PVname
+		d.Values = newValues
+		d.Name = fmt.Sprintf("%s(%s)", oneData.Name, fname)
+		newData = append(newData, &d)
+	}
+
 	return newData, nil
 }
 

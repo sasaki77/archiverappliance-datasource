@@ -3,10 +3,68 @@ package main
 import (
 	"fmt"
 	"testing"
-	//"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
 // Tests
+func TestPickFunsByCategories(t *testing.T) {
+	var tests = []struct {
+		name     string
+		input    ArchiverQueryModel
+		category []Category
+		output   []FunctionDescriptorQueryModel
+	}{
+		{
+			name: "Pick Transform and Options",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category: "Transform",
+							Name:     "scale",
+						},
+					},
+					{
+						Def: FuncDefQueryModel{
+							Category: "Transform",
+							Name:     "offset",
+						},
+					},
+					{
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "binInterval",
+						},
+					},
+					{
+						Def: FuncDefQueryModel{
+							Category: "Filter",
+							Name:     "Top",
+						},
+					},
+				},
+			},
+			category: []Category{Transform, Options},
+			output: []FunctionDescriptorQueryModel{
+				{Def: FuncDefQueryModel{Name: "scale"}},
+				{Def: FuncDefQueryModel{Name: "offset"}},
+				{Def: FuncDefQueryModel{Name: "binInterval"}},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := testCase.input.PickFuncsByCategories(testCase.category)
+			if len(result) != len(testCase.output) {
+				t.Errorf("lengths differ: got %v, want %v", len(result), len(testCase.output))
+			}
+			for idx, out := range result {
+				if out.Def.Name != testCase.output[idx].Def.Name {
+					t.Errorf("got %v, want %v", out, result[idx])
+				}
+			}
+		})
+	}
+}
 
 func TestIdentifyFunctionsByName(t *testing.T) {
 	var tests = []struct {
@@ -501,11 +559,13 @@ func TestExtractParamString(t *testing.T) {
 
 func TestApplyFunctions(t *testing.T) {
 	var tests = []struct {
+		name     string
 		inputSd  []*SingleData
 		inputAqm ArchiverQueryModel
 		output   []*SingleData
 	}{
 		{
+			name: "Offset test",
 			inputSd: []*SingleData{
 				{
 					Values: &Scalars{
@@ -541,6 +601,7 @@ func TestApplyFunctions(t *testing.T) {
 			},
 		},
 		{
+			name: "Offset and Scale test",
 			inputSd: []*SingleData{
 				{
 					Values: &Scalars{
@@ -589,6 +650,7 @@ func TestApplyFunctions(t *testing.T) {
 			},
 		},
 		{
+			name: "Offset, Scale, and Filter test",
 			inputSd: []*SingleData{
 				{
 					Values: &Scalars{
@@ -663,12 +725,244 @@ func TestApplyFunctions(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Array to Scalar and Offset test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputAqm: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category: Category("Array to Scalar"),
+							Name:     "toScalarByAvg",
+						},
+					},
+					{
+						Def: FuncDefQueryModel{
+							Category: Category("Array to Scalar"),
+							Name:     "toScalarByMax",
+						},
+					},
+					{
+						Def: FuncDefQueryModel{
+							Category: "Transform",
+							Name:     "scale",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name: "factor",
+									Type: "float",
+								},
+							},
+						},
+						Params: []string{"2"},
+					},
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(avg)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{4, 10, 17},
+					},
+				},
+				{
+					Name: "(max)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{6, 12, 20},
+					},
+				},
+			},
+		},
 	}
 
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.output)
 		t.Run(testName, func(t *testing.T) {
 			result, err := ApplyFunctions(tests[tdx].inputSd, testCase.inputAqm)
+			if err != nil {
+				t.Errorf("An error has been generated")
+			}
+			SingleDataCompareHelper(result, testCase.output, t)
+		})
+	}
+}
+
+func TestArrayFunctionSelector(t *testing.T) {
+	var tests = []struct {
+		name      string
+		inputSd   []*SingleData
+		inputFdqm FunctionDescriptorQueryModel
+		output    []*SingleData
+	}{
+		{
+			name: "toScalarByAvg test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarByAvg",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(avg)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{2, 5, 8.5},
+					},
+				},
+			},
+		},
+		{
+			name: "toScalarByMax test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarByMax",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(max)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{3, 6, 10},
+					},
+				},
+			},
+		},
+		{
+			name: "toScalarByMin test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarByMin",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(min)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{1, 4, 7},
+					},
+				},
+			},
+		},
+		{
+			name: "toScalarBySum test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarBySum",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(sum)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{6, 15, 34},
+					},
+				},
+			},
+		},
+		{
+			name: "toScalarByMed test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{1, 2, 6}, {4, 5, 10}, {7, 8, 9, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarByMed",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(median)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{2, 5, 8.5},
+					},
+				},
+			},
+		},
+		{
+			name: "toScalarByStd test",
+			inputSd: []*SingleData{
+				{
+					Values: &Arrays{
+						Times:  TimeArrayHelper(0, 3),
+						Values: [][]float64{{10, 10, 20, 20}, {5, 5, 10, 10}},
+					},
+				},
+			},
+			inputFdqm: FunctionDescriptorQueryModel{
+				Def: FuncDefQueryModel{
+					Category: Category("Array to Scalar"),
+					Name:     "toScalarByStd",
+				},
+			},
+			output: []*SingleData{
+				{
+					Name: "(std)",
+					Values: &Scalars{
+						Times:  TimeArrayHelper(0, 3),
+						Values: []float64{5, 2.5},
+					},
+				},
+			},
+		},
+	}
+
+	for tdx, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, err := arrayFunctionSelector(tests[tdx].inputSd, testCase.inputFdqm)
 			if err != nil {
 				t.Errorf("An error has been generated")
 			}
