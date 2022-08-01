@@ -110,18 +110,18 @@ responseCollector:
 		}
 	}
 
-	// Apply Alias to the data
-	var aliasErr error
-	responseData, aliasErr = applyAlias(responseData, qm)
-	if aliasErr != nil {
-		log.DefaultLogger.Warn("Error applying alias")
-	}
-
 	// Apply Functions to the data
 	var funcErr error
 	responseData, funcErr = ApplyFunctions(responseData, qm)
 	if funcErr != nil {
 		log.DefaultLogger.Warn("Error applying functions")
+	}
+
+	// Apply Alias to the data
+	var aliasErr error
+	responseData, aliasErr = applyAlias(responseData, qm)
+	if aliasErr != nil {
+		log.DefaultLogger.Warn("Error applying alias")
 	}
 
 	// Extrapolate data as necessary

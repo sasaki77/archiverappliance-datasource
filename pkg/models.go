@@ -53,7 +53,7 @@ type FuncDefQueryModel struct {
 	DefaultParams *json.RawMessage         `json:"defaultParams,omitempty"`
 	ShortName     *json.RawMessage         `json:"shortName,omitempty"`
 	Version       *json.RawMessage         `json:"version,omitempty"`
-	Category      string                   `json:"category"`
+	Category      Category                 `json:"category"`
 	Description   *string                  `json:"description,omitempty"`
 	Fake          *bool                    `json:"fake,omitempty"`
 	Name          string                   `json:"name"`
