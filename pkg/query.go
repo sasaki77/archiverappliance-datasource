@@ -164,12 +164,7 @@ func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) 
 }
 
 func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
-	disableExtrapol, err := qm.DisableExtrapol()
-	if err != nil {
-		disableExtrapol = false
-	}
-
-	if qm.Interval >= 1 || qm.Operator == "last" || disableExtrapol || qm.BackendQuery {
+	if qm.Interval >= 1 || qm.Operator == "last" || qm.DisableExtrapol || qm.BackendQuery {
 		return singleResponse
 	}
 

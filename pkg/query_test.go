@@ -386,7 +386,8 @@ func TestDataExtrapol(t *testing.T) {
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
-				Interval: 0,
+				Interval:        0,
+				DisableExtrapol: true,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{

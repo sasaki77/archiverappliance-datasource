@@ -19,6 +19,12 @@ const (
 	Options   = Category("Options")
 )
 
+type OptionName string
+
+const (
+	DisableExtrapol = Category("disableExtrapol")
+)
+
 func (qm ArchiverQueryModel) PickFuncsByCategories(categories []Category) []FunctionDescriptorQueryModel {
 	response := make([]FunctionDescriptorQueryModel, 0)
 	for _, entry := range qm.Functions {
@@ -42,27 +48,21 @@ func (qm ArchiverQueryModel) IdentifyFunctionsByName(targetName string) []Functi
 	return response
 }
 
-func (qm ArchiverQueryModel) DisableExtrapol() (bool, error) {
-	intervals := qm.IdentifyFunctionsByName("disableExtrapol")
-	if len(intervals) >= 1 {
-		if len(intervals) > 1 {
-			log.DefaultLogger.Warn(fmt.Sprintf("more than one disableExtrapol has been provided: %v", intervals))
+func (qm ArchiverQueryModel) LoadBooleanOption(name OptionName, defaultv bool) (bool, error) {
+	functions := qm.IdentifyFunctionsByName(string(name))
+	if len(functions) >= 1 {
+		if len(functions) > 1 {
+			log.DefaultLogger.Warn(fmt.Sprintf("more than one %s has been provided: %v", name, functions))
 		}
 
-		val, paramErr := intervals[0].ExtractParamString("boolean")
+		val, paramErr := functions[0].ExtractParamBoolean(functions[0].Def.Params[0].Name)
 		if paramErr != nil {
 			log.DefaultLogger.Warn("Conversion of boolean argument has failed", "Error", paramErr)
 			return false, paramErr
 		}
-		if val == "true" {
-			return true, nil
-		} else if val == "false" {
-			return false, nil
-		} else {
-			return false, errors.New("string not recognized as boolean")
-		}
+		return val, nil
 	} else {
-		return false, nil
+		return defaultv, nil
 	}
 }
 
@@ -173,6 +173,24 @@ func (fdqm FunctionDescriptorQueryModel) ExtractParamString(target string) (stri
 	}
 
 	return response, nil
+}
+
+func (fdqm FunctionDescriptorQueryModel) ExtractParamBoolean(target string) (bool, error) {
+	var result bool
+
+	// get string for argument's value and check type
+	response, extractErr := fdqm.ExtractorBase(target, "string")
+	if extractErr != nil {
+		return result, extractErr
+	}
+
+	if response == "true" {
+		return true, nil
+	} else if response == "false" {
+		return false, nil
+	}
+
+	return false, errors.New("string not recognized as boolean")
 }
 
 func ApplyFunctions(responseData []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {

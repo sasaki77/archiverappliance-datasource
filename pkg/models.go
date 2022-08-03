@@ -41,9 +41,10 @@ type ArchiverQueryModel struct {
 	QueryType *string `json:"queryType"`
 
 	// Not from JSON
-	TimeRange    backend.TimeRange `json:"-"`
-	Interval     int               `json:"-"`
-	BackendQuery bool              `json:"-"`
+	TimeRange       backend.TimeRange `json:"-"`
+	Interval        int               `json:"-"`
+	BackendQuery    bool              `json:"-"`
+	DisableExtrapol bool              `json:"-"`
 }
 
 type FunctionDescriptorQueryModel struct {
@@ -175,6 +176,7 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 	if model.IntervalMs == nil {
 		model.BackendQuery = true
 	}
+	model.DisableExtrapol, _ = model.LoadBooleanOption(OptionName(DisableExtrapol), false)
 	return model, nil
 }
 

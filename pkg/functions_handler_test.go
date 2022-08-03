@@ -119,13 +119,17 @@ func TestIdentifyFunctionsByName(t *testing.T) {
 	}
 }
 
-func TestDisableExtrapol(t *testing.T) {
+func TestLoadBooleanOption(t *testing.T) {
 	var tests = []struct {
-		input   ArchiverQueryModel
-		disable bool
-		err     bool
+		name     string
+		input    ArchiverQueryModel
+		option   OptionName
+		defaultv bool
+		disable  bool
+		err      bool
 	}{
 		{
+			name: "Test disableExtrapol: true",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -141,10 +145,12 @@ func TestDisableExtrapol(t *testing.T) {
 					},
 				},
 			},
+			option:  OptionName(DisableExtrapol),
 			disable: true,
 			err:     false,
 		},
 		{
+			name: "Test disableExtrapol: false",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -160,10 +166,12 @@ func TestDisableExtrapol(t *testing.T) {
 					},
 				},
 			},
+			option:  OptionName(DisableExtrapol),
 			disable: false,
 			err:     false,
 		},
 		{
+			name: "Test disableExtrapol: bad parameter",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -179,21 +187,32 @@ func TestDisableExtrapol(t *testing.T) {
 					},
 				},
 			},
+			option:  OptionName(DisableExtrapol),
 			disable: false,
 			err:     true,
 		},
 		{
+			name: "Test no option function: default false",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{},
 			},
 			disable: false,
 			err:     false,
 		},
+		{
+			name: "Test no option function: default true",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{},
+			},
+			option:   OptionName(DisableExtrapol),
+			defaultv: true,
+			disable:  true,
+			err:      false,
+		},
 	}
-	for tdx, testCase := range tests {
-		testName := fmt.Sprintf("%d: %v", tdx, testCase.disable)
-		t.Run(testName, func(t *testing.T) {
-			result, err := testCase.input.DisableExtrapol()
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, err := testCase.input.LoadBooleanOption(testCase.option, testCase.defaultv)
 			if result != testCase.disable {
 				t.Errorf("got %v, want %v", result, testCase.disable)
 			}
