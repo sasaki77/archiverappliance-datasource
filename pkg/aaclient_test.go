@@ -45,6 +45,7 @@ func TestBuildQueryUrl(t *testing.T) {
 					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
 					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
+				Interval: 0,
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
@@ -65,6 +66,7 @@ func TestBuildQueryUrl(t *testing.T) {
 					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
 					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
 				},
+				Interval: 7,
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
 		},
@@ -85,6 +87,7 @@ func TestBuildQueryUrl(t *testing.T) {
 					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
 					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
+				Interval: 0,
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
@@ -105,59 +108,9 @@ func TestBuildQueryUrl(t *testing.T) {
 					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
 					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
 				},
+				Interval: 7,
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=max_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
-		},
-		{
-			name:   "URL for median operator and fixed interval",
-			target: "MR1K1:BEND:PIP:1:PMON",
-			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(300),
-				// alias: ,
-				// aliasPattern: ,
-				// constant: 6.5,
-				// dataTopic: nil,
-				// datasource: nil,
-				// format: ,
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							// Fake:<nil>
-							Category:      "Options",
-							DefaultParams: InitRawMsg(`[900]`),
-							Name:          "binInterval",
-							Params: []FuncDefParamQueryModel{
-								{Name: "interval", Type: "int"},
-							},
-						},
-						Params: []string{"900"},
-					},
-					{
-						Def: FuncDefQueryModel{
-							// Fake:<nil>
-							Category:      "Transform",
-							DefaultParams: InitRawMsg(`[]`),
-							Name:          "delta",
-							Params:        []FuncDefParamQueryModel{},
-						},
-						Params: []string{},
-					},
-				},
-				// Hide: false,
-				Operator:  "median",
-				QueryText: "",
-				QueryType: nil,
-				RefId:     "A",
-				Regex:     true,
-				// String: nil,
-				Target: "MR1K1:BEND:PIP:1:PMON",
-				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-				},
-			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=median_900%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 	}
 	// fmt.Println(tests)

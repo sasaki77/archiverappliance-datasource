@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 
@@ -276,11 +275,13 @@ func TestApplyAlias(t *testing.T) {
 
 func TestDataExtrapol(t *testing.T) {
 	var tests = []struct {
+		name  string
 		sDIn  SingleData
 		qm    ArchiverQueryModel
 		sDOut SingleData
 	}{
 		{
+			name: "Interval is 0: raw mode",
 			sDIn: SingleData{
 				Values: &Scalars{
 					Times:  []time.Time{TimeHelper(0)},
@@ -288,11 +289,11 @@ func TestDataExtrapol(t *testing.T) {
 				},
 			},
 			qm: ArchiverQueryModel{
-				Operator: "raw",
 				TimeRange: backend.TimeRange{
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
+				Interval: 0,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -302,6 +303,7 @@ func TestDataExtrapol(t *testing.T) {
 			},
 		},
 		{
+			name: "Interval is 1: normal mode",
 			sDIn: SingleData{
 				Values: &Scalars{
 					Times:  []time.Time{TimeHelper(0)},
@@ -313,6 +315,7 @@ func TestDataExtrapol(t *testing.T) {
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
+				Interval: 1,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -322,6 +325,7 @@ func TestDataExtrapol(t *testing.T) {
 			},
 		},
 		{
+			name: "Disable Extrapolation flag is false",
 			sDIn: SingleData{
 				Values: &Scalars{
 					Times:  []time.Time{TimeHelper(0)},
@@ -342,11 +346,11 @@ func TestDataExtrapol(t *testing.T) {
 						Params: []string{"false"},
 					},
 				},
-				Operator: "raw",
 				TimeRange: backend.TimeRange{
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
+				Interval: 0,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -356,6 +360,7 @@ func TestDataExtrapol(t *testing.T) {
 			},
 		},
 		{
+			name: "Disable Extrapolation flag is true",
 			sDIn: SingleData{
 				Values: &Scalars{
 					Times:  []time.Time{TimeHelper(0)},
@@ -381,6 +386,7 @@ func TestDataExtrapol(t *testing.T) {
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
+				Interval: 0,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -390,6 +396,7 @@ func TestDataExtrapol(t *testing.T) {
 			},
 		},
 		{
+			name: "last operator",
 			sDIn: SingleData{
 				Values: &Scalars{
 					Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
@@ -401,6 +408,8 @@ func TestDataExtrapol(t *testing.T) {
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
+				Operator: "last",
+				Interval: 0,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -410,9 +419,8 @@ func TestDataExtrapol(t *testing.T) {
 			},
 		},
 	}
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("%d:", idx)
-		t.Run(testName, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			result := dataExtrapol(&testCase.sDIn, testCase.qm)
 			SingleDataCompareHelper(
 				[]*SingleData{result},

@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+	"strconv"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -39,7 +41,9 @@ type ArchiverQueryModel struct {
 	QueryType *string `json:"queryType"`
 
 	// Not from JSON
-	TimeRange backend.TimeRange `json:"-"`
+	TimeRange    backend.TimeRange `json:"-"`
+	Interval     int               `json:"-"`
+	BackendQuery bool              `json:"-"`
 }
 
 type FunctionDescriptorQueryModel struct {
@@ -162,8 +166,15 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 		return model, fmt.Errorf("error reading query: %s", err.Error())
 	}
 
-	// Copy directly from the well typed query
+	// Parameters Not from JSON
 	model.TimeRange = query.TimeRange
+	model.Interval, err = loadInterval(model)
+	if err != nil {
+		model.Interval = 0
+	}
+	if model.IntervalMs == nil {
+		model.BackendQuery = true
+	}
 	return model, nil
 }
 
@@ -173,4 +184,40 @@ func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
 	model.URL = ctx.DataSourceInstanceSettings.URL
 
 	return model, nil
+}
+
+func loadInterval(qm ArchiverQueryModel) (int, error) {
+	// No operators are necessary in this case
+	if qm.Operator == "raw" || qm.Operator == "last" {
+		return 0, nil
+	}
+
+	var interval int
+	intervals := qm.IdentifyFunctionsByName("binInterval")
+
+	// Determine the bin interval size given by the user and detect issues
+	if len(intervals) >= 1 {
+		if len(intervals) > 1 {
+			log.DefaultLogger.Warn(fmt.Sprintf("more than one binInterval has been provided: %v", intervals))
+		}
+
+		val, paramErr := intervals[0].GetParametersByName("interval")
+		if paramErr != nil {
+			log.DefaultLogger.Warn("Conversion of binInterval argument has failed", "Error", paramErr)
+			return 0, paramErr
+		}
+
+		var atoiErr error
+		interval, atoiErr = strconv.Atoi(val)
+		if atoiErr != nil {
+			log.DefaultLogger.Warn("Failed to convert parameter string to integer", "Error", atoiErr)
+			return 0, atoiErr
+		}
+	} else if len(intervals) == 0 && qm.IntervalMs != nil {
+		// interval is not given by user, so interval is determined by IntervalMs
+		intervalMs := float64(*qm.IntervalMs)
+		interval = int(math.Floor(intervalMs / 1000)) // convert to seconds
+	}
+
+	return interval, nil
 }
