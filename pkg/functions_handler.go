@@ -23,6 +23,7 @@ type OptionName string
 
 const (
 	DisableExtrapol = Category("disableExtrapol")
+	BinInterval     = Category("binInterval")
 )
 
 func (qm ArchiverQueryModel) PickFuncsByCategories(categories []Category) []FunctionDescriptorQueryModel {
@@ -46,6 +47,24 @@ func (qm ArchiverQueryModel) IdentifyFunctionsByName(targetName string) []Functi
 		}
 	}
 	return response
+}
+
+func (qm ArchiverQueryModel) LoadIntOption(name OptionName, defaultv int) (int, error) {
+	functions := qm.IdentifyFunctionsByName(string(name))
+	if len(functions) >= 1 {
+		if len(functions) > 1 {
+			log.DefaultLogger.Warn(fmt.Sprintf("more than one %s has been provided: %v", name, functions))
+		}
+
+		val, paramErr := functions[0].ExtractParamInt(functions[0].Def.Params[0].Name)
+		if paramErr != nil {
+			log.DefaultLogger.Warn("Conversion of int argument has failed", "Error", paramErr)
+			return 0, paramErr
+		}
+		return val, nil
+	} else {
+		return defaultv, nil
+	}
 }
 
 func (qm ArchiverQueryModel) LoadBooleanOption(name OptionName, defaultv bool) (bool, error) {
