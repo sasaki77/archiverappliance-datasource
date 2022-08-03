@@ -33,6 +33,87 @@ func TestCreateOperatorQuery(t *testing.T) {
 		output string
 	}{
 		{
+			name: "mean with 10 second Interval",
+			input: ArchiverQueryModel{
+				Operator: "mean",
+				Interval: 10,
+			},
+			output: "mean_10",
+		},
+		{
+			name: "raw with binInterval function",
+			input: ArchiverQueryModel{
+				Operator: "raw",
+				Interval: 16,
+			},
+			output: "",
+		},
+		{
+			name: "empty operator with 0 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(100),
+				Operator:   "",
+				Interval:   0,
+			},
+			output: "",
+		},
+		{
+			name: "max operator with 10 second interval",
+			input: ArchiverQueryModel{
+				Operator: "max",
+				Interval: 10,
+			},
+			output: "max_10",
+		},
+		{
+			name: "max operator with 0.1 second interval",
+			input: ArchiverQueryModel{
+				Operator: "max",
+				Interval: 0,
+			},
+			output: "",
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, err := CreateOperatorQuery(testCase.input)
+			if err != nil {
+				t.Errorf("Error received %v", err)
+			}
+			if testCase.output != result {
+				t.Errorf("got %v, want %v", result, testCase.output)
+			}
+		})
+	}
+}
+
+func TestLoadInterval(t *testing.T) {
+	var tests = []struct {
+		name   string
+		input  ArchiverQueryModel
+		output int
+	}{
+		{
+			name: "Empty Operator with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "",
+			},
+			output: 16,
+		},
+		{
 			name: "mean with binInterval function",
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{
@@ -50,7 +131,7 @@ func TestCreateOperatorQuery(t *testing.T) {
 				},
 				Operator: "mean",
 			},
-			output: "mean_16",
+			output: 16,
 		},
 		{
 			name: "raw with binInterval function",
@@ -70,7 +151,27 @@ func TestCreateOperatorQuery(t *testing.T) {
 				},
 				Operator: "raw",
 			},
-			output: "",
+			output: 0,
+		},
+		{
+			name: "last with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "last",
+			},
+			output: 0,
 		},
 		{
 			name: "empty operator with 10.1 second interval",
@@ -78,7 +179,7 @@ func TestCreateOperatorQuery(t *testing.T) {
 				IntervalMs: InitIntPointer(10100),
 				Operator:   "",
 			},
-			output: "mean_10",
+			output: 10,
 		},
 		{
 			name: "empty operator with 0.1 second interval",
@@ -86,7 +187,7 @@ func TestCreateOperatorQuery(t *testing.T) {
 				IntervalMs: InitIntPointer(100),
 				Operator:   "",
 			},
-			output: "",
+			output: 0,
 		},
 		{
 			name: "max operator with 10 second interval",
@@ -94,35 +195,35 @@ func TestCreateOperatorQuery(t *testing.T) {
 				IntervalMs: InitIntPointer(10100),
 				Operator:   "max",
 			},
-			output: "max_10",
+			output: 10,
 		},
 		{
-			name: "max operator with 0.1 second interval",
+			name: "raw operator with 10 second interval",
 			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(100),
-				Operator:   "max",
+				IntervalMs: InitIntPointer(10100),
+				Operator:   "raw",
 			},
-			output: "",
+			output: 0,
 		},
 		{
-			name: "max operator with 1 second interval",
+			name: "last operator with 10 second interval",
 			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(1000),
-				Operator:   "max",
+				IntervalMs: InitIntPointer(10100),
+				Operator:   "raw",
 			},
-			output: "max_1",
+			output: 0,
 		},
 		{
 			name: "max operator without IntervalMs",
 			input: ArchiverQueryModel{
 				Operator: "max",
 			},
-			output: "",
+			output: 0,
 		},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result, err := CreateOperatorQuery(testCase.input)
+			result, err := loadInterval(testCase.input)
 			if err != nil {
 				t.Errorf("Error received %v", err)
 			}
