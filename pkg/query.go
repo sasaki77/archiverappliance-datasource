@@ -169,7 +169,7 @@ func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData
 		disableExtrapol = false
 	}
 
-	if (qm.Operator != "raw") || disableExtrapol {
+	if qm.Interval >= 1 || qm.Operator == "last" || disableExtrapol || qm.BackendQuery {
 		return singleResponse
 	}
 
