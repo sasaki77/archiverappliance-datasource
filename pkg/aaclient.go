@@ -86,10 +86,18 @@ func buildQueryUrl(target string, baseURL string, qm ArchiverQueryModel) string 
 	pathBuilder.WriteString(JSON_DATA_URL)
 	u.Path = pathBuilder.String()
 
+	// from should be same as to in last operator mode
+	var from string
+	if qm.Operator == "last" {
+		from = qm.TimeRange.To.Format(TIME_FORMAT)
+	} else {
+		from = qm.TimeRange.From.Format(TIME_FORMAT)
+	}
+
 	// assemble the query of the URL and attach it to u
 	query_vals := make(url.Values)
 	query_vals["pv"] = []string{targetPv}
-	query_vals["from"] = []string{qm.TimeRange.From.Format(TIME_FORMAT)}
+	query_vals["from"] = []string{from}
 	query_vals["to"] = []string{qm.TimeRange.To.Format(TIME_FORMAT)}
 	query_vals["donotchunk"] = []string{""}
 	u.RawQuery = query_vals.Encode()
