@@ -112,6 +112,27 @@ func TestBuildQueryUrl(t *testing.T) {
 			},
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=max_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
 		},
+		{
+			name:   "URL for last operator (interval is less than 1 second)",
+			target: "MR1K1:BEND:PIP:1:PMON",
+			url:    "http://localhost:3396/retrieval",
+			qm: ArchiverQueryModel{
+				IntervalMs: InitIntPointer(100),
+				Functions:  []FunctionDescriptorQueryModel{},
+				Operator:   "last",
+				QueryText:  "",
+				QueryType:  nil,
+				RefId:      "A",
+				Regex:      true,
+				Target:     "MR1K1:BEND:PIP:1:PMON",
+				TimeRange: backend.TimeRange{
+					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+				},
+				Interval: 0,
+			},
+			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T16%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+		},
 	}
 	// fmt.Println(tests)
 	for _, testCase := range tests {
