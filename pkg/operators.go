@@ -65,7 +65,12 @@ func CreateOperatorQuery(qm ArchiverQueryModel) (string, error) {
 
 	// interval is less than 1 second or interval is not updated from "zero value"
 	if binInterval < 1 {
-		return "", nil
+		if !qm.DisableAutoRaw {
+			return "", nil
+		}
+
+		// if DisableAutoRaw is enabled, binInterval should be 1 second
+		binInterval = 1
 	}
 
 	opr := qm.Operator

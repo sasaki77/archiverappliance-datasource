@@ -22,6 +22,7 @@ const (
 type OptionName string
 
 const (
+	DisableAutoRaw  = Category("disableAutoRaw")
 	DisableExtrapol = Category("disableExtrapol")
 	BinInterval     = Category("binInterval")
 )

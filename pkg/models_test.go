@@ -84,6 +84,22 @@ func TestReadQueryModel(t *testing.T) {
 											}
 										]
 									}
+								},
+								{
+									"params": [
+										"true"
+									],
+									"def": {
+										"category": "Options",
+										"name": "disableAutoRaw",
+										"params": [
+											{
+												"name": "boolean",
+												"options": ["true", "false"],
+												"type": "string"
+											}
+										]
+									}
 								}
 							]
 						}`),
@@ -116,6 +132,20 @@ func TestReadQueryModel(t *testing.T) {
 							},
 						},
 					},
+					{
+						Params: []string{"true"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "disableAutoRaw",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name:    "boolean",
+									Options: &[]string{"true", "false"},
+									Type:    "string",
+								},
+							},
+						},
+					},
 				},
 				IntervalMs: nil,
 				RefId:      "A",
@@ -125,6 +155,7 @@ func TestReadQueryModel(t *testing.T) {
 				},
 				Interval:        0,
 				BackendQuery:    true,
+				DisableAutoRaw:  true,
 				DisableExtrapol: true,
 			},
 		},

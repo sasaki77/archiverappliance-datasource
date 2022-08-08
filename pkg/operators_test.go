@@ -58,6 +58,16 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "",
 		},
 		{
+			name: "empty operator with 0 second interval and DisableAutoRaw true",
+			input: ArchiverQueryModel{
+				IntervalMs:     InitIntPointer(100),
+				Operator:       "",
+				Interval:       0,
+				DisableAutoRaw: true,
+			},
+			output: "mean_1",
+		},
+		{
 			name: "max operator with 10 second interval",
 			input: ArchiverQueryModel{
 				Operator: "max",

@@ -43,6 +43,7 @@ type ArchiverQueryModel struct {
 	TimeRange       backend.TimeRange `json:"-"`
 	Interval        int               `json:"-"`
 	BackendQuery    bool              `json:"-"`
+	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
 }
 
@@ -175,6 +176,7 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 	if model.IntervalMs == nil {
 		model.BackendQuery = true
 	}
+	model.DisableAutoRaw, _ = model.LoadBooleanOption(OptionName(DisableAutoRaw), false)
 	model.DisableExtrapol, _ = model.LoadBooleanOption(OptionName(DisableExtrapol), false)
 	return model, nil
 }
