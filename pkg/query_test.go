@@ -13,7 +13,7 @@ import (
 type fakeClient struct {
 }
 
-func (f fakeClient) FetchRegexTargetPVs(regex string) ([]string, error) {
+func (f fakeClient) FetchRegexTargetPVs(regex string, limit int) ([]string, error) {
 	if regex == ".*1" {
 		return []string{"PV:NAME1"}, nil
 	} else if regex == ".*2" {
@@ -189,10 +189,6 @@ func TestQuery(t *testing.T) {
 }
 
 func TestArchiverSingleQuery(t *testing.T) {
-	t.Skipf("Test not implemented")
-}
-
-func TestBuildRegexUrl(t *testing.T) {
 	t.Skipf("Test not implemented")
 }
 
@@ -386,7 +382,8 @@ func TestDataExtrapol(t *testing.T) {
 					From: TimeHelper(1),
 					To:   TimeHelper(5),
 				},
-				Interval: 0,
+				Interval:        0,
+				DisableExtrapol: true,
 			},
 			sDOut: SingleData{
 				Values: &Scalars{

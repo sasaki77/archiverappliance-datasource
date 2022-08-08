@@ -17,7 +17,7 @@ type AAclient struct {
 }
 
 type client interface {
-	FetchRegexTargetPVs(regex string) ([]string, error)
+	FetchRegexTargetPVs(regex string, limit int) ([]string, error)
 	ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error)
 }
 
@@ -27,8 +27,8 @@ func NewAAClient(ctx context.Context, config DatasourceSettings) (*AAclient, err
 	}, nil
 }
 
-func (client AAclient) FetchRegexTargetPVs(regex string) ([]string, error) {
-	regexUrl := buildRegexUrl(regex, client.baseURL)
+func (client AAclient) FetchRegexTargetPVs(regex string, limit int) ([]string, error) {
+	regexUrl := buildRegexUrl(regex, client.baseURL, limit)
 	regexQueryResponse, _ := archiverRegexQuery(regexUrl)
 	pvList, _ := archiverRegexQueryParser(regexQueryResponse)
 
@@ -166,10 +166,9 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 	return sD, nil
 }
 
-func buildRegexUrl(regex string, baseURL string) string {
+func buildRegexUrl(regex string, baseURL string, limit int) string {
 	// Construct the request URL for the regex search of PVs and return it as a string
 	const REGEX_URL = "bpl/getMatchingPVs"
-	const REGEX_MAXIMUM_MATCHES = 1000
 
 	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
 	u, err := url.Parse(baseURL)
@@ -187,7 +186,7 @@ func buildRegexUrl(regex string, baseURL string) string {
 	// assemble the query of the URL and attach it to u
 	query_vals := make(url.Values)
 	query_vals["regex"] = []string{regex}
-	query_vals["limit"] = []string{strconv.Itoa(REGEX_MAXIMUM_MATCHES)}
+	query_vals["limit"] = []string{strconv.Itoa(limit)}
 	u.RawQuery = query_vals.Encode()
 
 	// log.DefaultLogger.Debug("u.String", "value", u.String())

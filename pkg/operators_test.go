@@ -58,6 +58,16 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "",
 		},
 		{
+			name: "empty operator with 0 second interval and DisableAutoRaw true",
+			input: ArchiverQueryModel{
+				IntervalMs:     InitIntPointer(100),
+				Operator:       "",
+				Interval:       0,
+				DisableAutoRaw: true,
+			},
+			output: "mean_1",
+		},
+		{
 			name: "max operator with 10 second interval",
 			input: ArchiverQueryModel{
 				Operator: "max",
@@ -77,153 +87,6 @@ func TestCreateOperatorQuery(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			result, err := CreateOperatorQuery(testCase.input)
-			if err != nil {
-				t.Errorf("Error received %v", err)
-			}
-			if testCase.output != result {
-				t.Errorf("got %v, want %v", result, testCase.output)
-			}
-		})
-	}
-}
-
-func TestLoadInterval(t *testing.T) {
-	var tests = []struct {
-		name   string
-		input  ArchiverQueryModel
-		output int
-	}{
-		{
-			name: "Empty Operator with binInterval function",
-			input: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category:      "Options",
-							DefaultParams: InitRawMsg(`[16]`),
-							Name:          "binInterval",
-							Params: []FuncDefParamQueryModel{
-								{Name: "interval", Type: "int"},
-							},
-						},
-						Params: []string{"16"},
-					},
-				},
-				Operator: "",
-			},
-			output: 16,
-		},
-		{
-			name: "mean with binInterval function",
-			input: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category:      "Options",
-							DefaultParams: InitRawMsg(`[16]`),
-							Name:          "binInterval",
-							Params: []FuncDefParamQueryModel{
-								{Name: "interval", Type: "int"},
-							},
-						},
-						Params: []string{"16"},
-					},
-				},
-				Operator: "mean",
-			},
-			output: 16,
-		},
-		{
-			name: "raw with binInterval function",
-			input: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category:      "Options",
-							DefaultParams: InitRawMsg(`[16]`),
-							Name:          "binInterval",
-							Params: []FuncDefParamQueryModel{
-								{Name: "interval", Type: "int"},
-							},
-						},
-						Params: []string{"16"},
-					},
-				},
-				Operator: "raw",
-			},
-			output: 0,
-		},
-		{
-			name: "last with binInterval function",
-			input: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category:      "Options",
-							DefaultParams: InitRawMsg(`[16]`),
-							Name:          "binInterval",
-							Params: []FuncDefParamQueryModel{
-								{Name: "interval", Type: "int"},
-							},
-						},
-						Params: []string{"16"},
-					},
-				},
-				Operator: "last",
-			},
-			output: 0,
-		},
-		{
-			name: "empty operator with 10.1 second interval",
-			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(10100),
-				Operator:   "",
-			},
-			output: 10,
-		},
-		{
-			name: "empty operator with 0.1 second interval",
-			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(100),
-				Operator:   "",
-			},
-			output: 0,
-		},
-		{
-			name: "max operator with 10 second interval",
-			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(10100),
-				Operator:   "max",
-			},
-			output: 10,
-		},
-		{
-			name: "raw operator with 10 second interval",
-			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(10100),
-				Operator:   "raw",
-			},
-			output: 0,
-		},
-		{
-			name: "last operator with 10 second interval",
-			input: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(10100),
-				Operator:   "raw",
-			},
-			output: 0,
-		},
-		{
-			name: "max operator without IntervalMs",
-			input: ArchiverQueryModel{
-				Operator: "max",
-			},
-			output: 0,
-		},
-	}
-	for _, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			result, err := loadInterval(testCase.input)
 			if err != nil {
 				t.Errorf("Error received %v", err)
 			}

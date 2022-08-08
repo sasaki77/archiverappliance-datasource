@@ -145,6 +145,38 @@ func TestBuildQueryUrl(t *testing.T) {
 	}
 }
 
+func TestBuildRegexUrl(t *testing.T) {
+	base_url := string("http://localhost:3396/retrieval")
+	var tests = []struct {
+		name   string
+		regex  string
+		limit  int
+		output string
+	}{
+		{
+			name:   "Maximum number of PVs is 1000",
+			regex:  ".*",
+			limit:  1000,
+			output: "http://localhost:3396/retrieval/bpl/getMatchingPVs?limit=1000&regex=.%2A",
+		},
+		{
+			name:   "Maximum number of PVs is 100",
+			regex:  ".*",
+			limit:  100,
+			output: "http://localhost:3396/retrieval/bpl/getMatchingPVs?limit=100&regex=.%2A",
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := buildRegexUrl(testCase.regex, base_url, testCase.limit)
+			if testCase.output != result {
+				t.Errorf("got %v, want %v", result, testCase.output)
+			}
+		})
+	}
+}
+
 func TestArchiverSingleQueryParser(t *testing.T) {
 	ARCHIVER_FLOAT_PRECISION := 1e-18
 	type responseParams struct {

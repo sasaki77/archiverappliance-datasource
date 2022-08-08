@@ -73,7 +73,7 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 		// assemble the list of PVs to be queried for
 		var regexPvList []string
 		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(v)
+			pvs, _ := client.FetchRegexTargetPVs(v, qm.MaxNumPVs)
 			regexPvList = append(regexPvList, pvs...)
 		}
 		targetPvList = regexPvList
@@ -164,12 +164,7 @@ func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) 
 }
 
 func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
-	disableExtrapol, err := qm.DisableExtrapol()
-	if err != nil {
-		disableExtrapol = false
-	}
-
-	if qm.Interval >= 1 || qm.Operator == "last" || disableExtrapol || qm.BackendQuery {
+	if qm.Interval >= 1 || qm.Operator == "last" || qm.DisableExtrapol || qm.BackendQuery {
 		return singleResponse
 	}
 
