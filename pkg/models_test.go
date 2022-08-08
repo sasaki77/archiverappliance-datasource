@@ -53,6 +53,7 @@ func TestReadQueryModel(t *testing.T) {
 					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 				Interval:        5,
+				MaxNumPVs:       1000,
 				BackendQuery:    false,
 				DisableExtrapol: false,
 			},
@@ -97,6 +98,21 @@ func TestReadQueryModel(t *testing.T) {
 												"name": "boolean",
 												"options": ["true", "false"],
 												"type": "string"
+											}
+										]
+									}
+								},
+								{
+									"params": [
+										"100"
+									],
+									"def": {
+										"category": "Options",
+										"name": "maxNumPVs",
+										"params": [
+											{
+												"name": "number",
+												"type": "int"
 											}
 										]
 									}
@@ -146,6 +162,19 @@ func TestReadQueryModel(t *testing.T) {
 							},
 						},
 					},
+					{
+						Params: []string{"100"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "maxNumPVs",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name: "number",
+									Type: "int",
+								},
+							},
+						},
+					},
 				},
 				IntervalMs: nil,
 				RefId:      "A",
@@ -155,6 +184,7 @@ func TestReadQueryModel(t *testing.T) {
 				},
 				Interval:        0,
 				BackendQuery:    true,
+				MaxNumPVs:       100,
 				DisableAutoRaw:  true,
 				DisableExtrapol: true,
 			},

@@ -43,6 +43,7 @@ type ArchiverQueryModel struct {
 	TimeRange       backend.TimeRange `json:"-"`
 	Interval        int               `json:"-"`
 	BackendQuery    bool              `json:"-"`
+	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
 }
@@ -160,6 +161,7 @@ type DatasourceSettings struct {
 }
 
 func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
+	const REGEX_MAXIMUM_MATCHES = 1000
 	model := ArchiverQueryModel{}
 
 	err := json.Unmarshal(query.JSON, &model)
@@ -176,6 +178,7 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 	if model.IntervalMs == nil {
 		model.BackendQuery = true
 	}
+	model.MaxNumPVs, _ = model.LoadIntOption(OptionName(MaxNumPVs), REGEX_MAXIMUM_MATCHES)
 	model.DisableAutoRaw, _ = model.LoadBooleanOption(OptionName(DisableAutoRaw), false)
 	model.DisableExtrapol, _ = model.LoadBooleanOption(OptionName(DisableExtrapol), false)
 	return model, nil

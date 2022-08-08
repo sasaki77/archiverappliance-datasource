@@ -73,7 +73,7 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 		// assemble the list of PVs to be queried for
 		var regexPvList []string
 		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(v)
+			pvs, _ := client.FetchRegexTargetPVs(v, qm.MaxNumPVs)
 			regexPvList = append(regexPvList, pvs...)
 		}
 		targetPvList = regexPvList
