@@ -2,17 +2,14 @@ package main
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
 type ArchiverDatasource struct {
 	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
-	im instancemgmt.InstanceManager
+	//im instancemgmt.InstanceManager
 }
 
 type QueryMgr struct {
@@ -20,19 +17,8 @@ type QueryMgr struct {
 	QRefID string
 }
 
-func newArchiverDataSource() datasource.ServeOpts {
-	// Create a new instance manager
-	log.DefaultLogger.Debug("Starting newArchiverDataSource")
-
-	im := datasource.NewInstanceManager(newArchiverDataSourceInstance)
-	ds := &ArchiverDatasource{
-		im: im,
-	}
-
-	return datasource.ServeOpts{
-		QueryDataHandler:   ds,
-		CheckHealthHandler: ds,
-	}
+func newArchiverDataSource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
+	return &ArchiverDatasource{}, nil
 }
 
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
@@ -61,16 +47,5 @@ func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.Chec
 	return &backend.CheckHealthResult{
 		Status:  status,
 		Message: message,
-	}, nil
-}
-
-type archiverInstanceSettings struct {
-	httpClient *http.Client
-}
-
-func newArchiverDataSourceInstance(setting backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	// Adheres to structure defined by grafana-plugin-sdk-go
-	return &archiverInstanceSettings{
-		httpClient: &http.Client{},
 	}, nil
 }
