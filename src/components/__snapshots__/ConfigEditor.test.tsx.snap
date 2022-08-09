@@ -7,7 +7,6 @@ exports[`Render should render component 1`] = `
       Object {
         "access": "proxy",
         "basicAuth": false,
-        "basicAuthPassword": "",
         "basicAuthUser": "",
         "database": "",
         "id": 1,
@@ -15,7 +14,6 @@ exports[`Render should render component 1`] = `
         "jsonData": Object {},
         "name": "ArchiverAppliance",
         "orgId": 1,
-        "password": "",
         "readOnly": false,
         "secureJsonData": Object {
           "accessKey": "",
