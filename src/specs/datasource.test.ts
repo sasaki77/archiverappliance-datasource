@@ -855,7 +855,6 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data with strmInt while without strmCap', (done) => {
-      jest.setTimeout(10000);
       datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
@@ -905,10 +904,9 @@ describe('Archiverappliance Datasource', () => {
 
         done();
       });
-    });
+    }, 10000);
 
     it('should return stream data with unit strmInt while without strmCap', (done) => {
-      jest.setTimeout(10000);
       datasourceRequestMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
@@ -958,7 +956,7 @@ describe('Archiverappliance Datasource', () => {
 
         done();
       });
-    });
+    }, 10000);
 
     it('should ignore out of range data on stream', (done) => {
       datasourceRequestMock.mockImplementation((request) => {
