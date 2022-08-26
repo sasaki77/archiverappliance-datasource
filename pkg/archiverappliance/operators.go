@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"errors"
@@ -7,9 +7,10 @@ import (
 	"strings"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
-func OperatorValidator(input string) bool {
+func operatorValidator(input string) bool {
 	// return true if the operator given by the user is a valid, recognized operator
 
 	// copied from the types.ts specification
@@ -45,12 +46,12 @@ func OperatorValidator(input string) bool {
 	return false
 }
 
-func CreateOperatorQuery(qm ArchiverQueryModel) (string, error) {
+func createOperatorQuery(qm models.ArchiverQueryModel) (string, error) {
 	// Create the Prefix in the query to specify the operator seeking the binInterval option if necessary
 	// See Datasource.ts buildURL for the matching .ts implementation
 
 	// Skip any unrecognized operators
-	if !OperatorValidator(qm.Operator) {
+	if !operatorValidator(qm.Operator) {
 		errMsg := fmt.Sprintf("%v is not a recognized operator", qm.Operator)
 		log.DefaultLogger.Debug("Error parsing query", "message", errMsg)
 		return "", errors.New(errMsg)

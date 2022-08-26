@@ -1,4 +1,4 @@
-package main
+package functions
 
 import (
 	"errors"
@@ -7,21 +7,22 @@ import (
 	"sort"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
 // Utilities
 
-type SingleDataOrder struct {
-	sD   *SingleData
+type singleDataOrder struct {
+	sD   *models.SingleData
 	rank float64
 }
 
-func FilterIndexer(allData []*SingleData, value string) ([]float64, error) {
+func filterIndexer(allData []*models.SingleData, value string) ([]float64, error) {
 	// determine a single value for each SingleData. Useful for sorting or ranking SingleData
 	rank := make([]float64, len(allData))
 	for idx, sData := range allData {
 
-		values, ok := sData.Values.(*Scalars)
+		values, ok := sData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -31,17 +32,17 @@ func FilterIndexer(allData []*SingleData, value string) ([]float64, error) {
 
 		switch value {
 		case "avg":
-			v, err = values.Rank(Avg)
+			v, err = values.Rank(models.RANKTYPE_AVG)
 		case "min":
-			v, err = values.Rank(Min)
+			v, err = values.Rank(models.RANKTYPE_MIN)
 		case "max":
-			v, err = values.Rank(Max)
+			v, err = values.Rank(models.RANKTYPE_MAX)
 		case "absoluteMin":
-			v, err = values.Rank(AbsoluteMin)
+			v, err = values.Rank(models.RANKTYPE_ABSOLUTEMIN)
 		case "absoluteMax":
-			v, err = values.Rank(AbsoluteMax)
+			v, err = values.Rank(models.RANKTYPE_ABSOLUTEMAX)
 		case "sum":
-			v, err = values.Rank(Sum)
+			v, err = values.Rank(models.RANKTYPE_SUM)
 		default:
 			errMsg := fmt.Sprintf("Value %v not recognized", value)
 			return rank, errors.New(errMsg)
@@ -55,12 +56,12 @@ func FilterIndexer(allData []*SingleData, value string) ([]float64, error) {
 	return rank, nil
 }
 
-func SortCore(allData []*SingleData, value string, order string) ([]*SingleData, error) {
+func sortCore(allData []*models.SingleData, value string, order string) ([]*models.SingleData, error) {
 	// Sort allData
 	// The order parameter chooses whether the order of the sort is ascending or descending
 	// The value parameter determines how the rank of each SingleData entry is measured
-	newData := make([]*SingleData, 0, len(allData))
-	rank, idxErr := FilterIndexer(allData, value)
+	newData := make([]*models.SingleData, 0, len(allData))
+	rank, idxErr := filterIndexer(allData, value)
 	if idxErr != nil {
 		return allData, idxErr
 	}
@@ -68,9 +69,9 @@ func SortCore(allData []*SingleData, value string, order string) ([]*SingleData,
 		errMsg := fmt.Sprintf("Length of data (%v) and indexes (%v)differ", len(allData), len(rank))
 		return allData, errors.New(errMsg)
 	}
-	ordered := make([]SingleDataOrder, len(allData))
+	ordered := make([]singleDataOrder, len(allData))
 	for idx := range allData {
-		ordered[idx] = SingleDataOrder{
+		ordered[idx] = singleDataOrder{
 			sD:   allData[idx],
 			rank: rank[idx],
 		}
@@ -98,9 +99,9 @@ func SortCore(allData []*SingleData, value string, order string) ([]*SingleData,
 
 // Transform functions
 
-func Scale(allData []*SingleData, factor float64) []*SingleData {
+func scale(allData []*models.SingleData, factor float64) []*models.SingleData {
 	for _, oneData := range allData {
-		values, ok := oneData.Values.(*Scalars)
+		values, ok := oneData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -109,9 +110,9 @@ func Scale(allData []*SingleData, factor float64) []*SingleData {
 	return allData
 }
 
-func Offset(allData []*SingleData, delta float64) []*SingleData {
+func offset(allData []*models.SingleData, delta float64) []*models.SingleData {
 	for _, oneData := range allData {
-		values, ok := oneData.Values.(*Scalars)
+		values, ok := oneData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -120,9 +121,9 @@ func Offset(allData []*SingleData, delta float64) []*SingleData {
 	return allData
 }
 
-func Delta(allData []*SingleData) []*SingleData {
+func delta(allData []*models.SingleData) []*models.SingleData {
 	for _, oneData := range allData {
-		values, ok := oneData.Values.(*Scalars)
+		values, ok := oneData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -131,9 +132,9 @@ func Delta(allData []*SingleData) []*SingleData {
 	return allData
 }
 
-func Fluctuation(allData []*SingleData) []*SingleData {
+func fluctuation(allData []*models.SingleData) []*models.SingleData {
 	for _, oneData := range allData {
-		values, ok := oneData.Values.(*Scalars)
+		values, ok := oneData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -142,9 +143,9 @@ func Fluctuation(allData []*SingleData) []*SingleData {
 	return allData
 }
 
-func MovingAverage(allData []*SingleData, windowSize int) []*SingleData {
+func movingAverage(allData []*models.SingleData, windowSize int) []*models.SingleData {
 	for _, oneData := range allData {
-		values, ok := oneData.Values.(*Scalars)
+		values, ok := oneData.Values.(*models.Scalars)
 		if !ok {
 			continue
 		}
@@ -157,8 +158,8 @@ func MovingAverage(allData []*SingleData, windowSize int) []*SingleData {
 
 // Filter Series Functions
 
-func Top(allData []*SingleData, number int, value string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, value, "desc")
+func top(allData []*models.SingleData, number int, value string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, value, "desc")
 	if sortErr != nil {
 		return allData, sortErr
 	}
@@ -168,8 +169,8 @@ func Top(allData []*SingleData, number int, value string) ([]*SingleData, error)
 	return result, nil
 }
 
-func Bottom(allData []*SingleData, number int, value string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, value, "asc")
+func bottom(allData []*models.SingleData, number int, value string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, value, "asc")
 	if sortErr != nil {
 		return allData, sortErr
 	}
@@ -179,8 +180,8 @@ func Bottom(allData []*SingleData, number int, value string) ([]*SingleData, err
 	return result, nil
 }
 
-func Exclude(allData []*SingleData, pattern string) ([]*SingleData, error) {
-	var newData []*SingleData
+func exclude(allData []*models.SingleData, pattern string) ([]*models.SingleData, error) {
+	var newData []*models.SingleData
 	var err error
 
 	// in preparation for regexp.Compile in case it panics
@@ -216,48 +217,48 @@ func Exclude(allData []*SingleData, pattern string) ([]*SingleData, error) {
 
 // Sort Functions
 
-func SortByAvg(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "avg", order)
+func sortByAvg(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "avg", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}
 	return result, nil
 }
 
-func SortByMax(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "max", order)
+func sortByMax(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "max", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}
 	return result, nil
 }
 
-func SortByMin(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "min", order)
+func sortByMin(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "min", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}
 	return result, nil
 }
 
-func SortBySum(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "sum", order)
+func sortBySum(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "sum", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}
 	return result, nil
 }
 
-func SortByAbsMax(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "absoluteMax", order)
+func sortByAbsMax(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "absoluteMax", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}
 	return result, nil
 }
 
-func SortByAbsMin(allData []*SingleData, order string) ([]*SingleData, error) {
-	result, sortErr := SortCore(allData, "absoluteMin", order)
+func sortByAbsMin(allData []*models.SingleData, order string) ([]*models.SingleData, error) {
+	result, sortErr := sortCore(allData, "absoluteMin", order)
 	if sortErr != nil {
 		return allData, sortErr
 	}

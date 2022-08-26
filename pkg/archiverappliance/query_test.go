@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
 
 type fakeClient struct {
@@ -23,7 +25,7 @@ func (f fakeClient) FetchRegexTargetPVs(regex string, limit int) ([]string, erro
 	}
 }
 
-func (f fakeClient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error) {
+func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
 	var values []float64
 	if target == "PV:NAME1" {
 		values = []float64{0, 1, 2}
@@ -31,9 +33,9 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (Si
 		values = []float64{3, 4, 5}
 	}
 
-	v := &Scalars{Times: TimeArrayHelper(0, 3), Values: values}
+	v := &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
 
-	sd := SingleData{
+	sd := models.SingleData{
 		Name:   target,
 		PVname: target,
 		Values: v,
@@ -54,7 +56,7 @@ func TestQuery(t *testing.T) {
 			req: &backend.QueryDataRequest{
 				Queries: []backend.DataQuery{
 					{
-						Interval: MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
 						JSON: json.RawMessage(`{
                     		"alias": "$2:$1",
                     		"aliasPattern": "(.*):(.*)",
@@ -93,8 +95,8 @@ func TestQuery(t *testing.T) {
 						QueryType:     "",
 						RefID:         "A",
 						TimeRange: backend.TimeRange{
-							From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 						},
 					},
 				},
@@ -195,68 +197,68 @@ func TestArchiverSingleQuery(t *testing.T) {
 func TestApplyAlias(t *testing.T) {
 	var tests = []struct {
 		name    string
-		inputSd []*SingleData
-		qm      ArchiverQueryModel
-		output  []*SingleData
+		inputSd []*models.SingleData
+		qm      models.ArchiverQueryModel
+		output  []*models.SingleData
 	}{
 		{
 			name: "normal alias",
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				Alias: "alias",
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "alias",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
 		{
 			name: "empty alias",
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				Alias: "",
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
 		{
 			name: "alias pattern",
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "PV:NAME",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				Alias:        "$2:$1",
 				AliasPattern: "(.*):(.*)",
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "NAME:PV",
 					PVname: "PV:NAME",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
@@ -264,7 +266,7 @@ func TestApplyAlias(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			result, _ := applyAlias(testCase.inputSd, testCase.qm)
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
@@ -272,70 +274,70 @@ func TestApplyAlias(t *testing.T) {
 func TestDataExtrapol(t *testing.T) {
 	var tests = []struct {
 		name  string
-		sDIn  SingleData
-		qm    ArchiverQueryModel
-		sDOut SingleData
+		sDIn  models.SingleData
+		qm    models.ArchiverQueryModel
+		sDOut models.SingleData
 	}{
 		{
 			name: "Interval is 0: raw mode",
-			sDIn: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDIn: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				TimeRange: backend.TimeRange{
-					From: TimeHelper(1),
-					To:   TimeHelper(5),
+					From: testhelper.TimeHelper(1),
+					To:   testhelper.TimeHelper(5),
 				},
 				Interval: 0,
 			},
-			sDOut: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+			sDOut: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
 					Values: []float64{1, 1},
 				},
 			},
 		},
 		{
 			name: "Interval is 1: normal mode",
-			sDIn: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDIn: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				TimeRange: backend.TimeRange{
-					From: TimeHelper(1),
-					To:   TimeHelper(5),
+					From: testhelper.TimeHelper(1),
+					To:   testhelper.TimeHelper(5),
 				},
 				Interval: 1,
 			},
-			sDOut: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDOut: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
 		},
 		{
 			name: "Disable Extrapolation flag is false",
-			sDIn: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDIn: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
-			qm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
+			qm: models.ArchiverQueryModel{
+				Functions: []models.FunctionDescriptorQueryModel{
 					{
-						Def: FuncDefQueryModel{
+						Def: models.FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`true`),
+							DefaultParams: testhelper.InitRawMsg(`true`),
 							Name:          "disableExtrapol",
-							Params: []FuncDefParamQueryModel{
+							Params: []models.FuncDefParamQueryModel{
 								{Name: "boolean", Type: "string"},
 							},
 						},
@@ -343,34 +345,34 @@ func TestDataExtrapol(t *testing.T) {
 					},
 				},
 				TimeRange: backend.TimeRange{
-					From: TimeHelper(1),
-					To:   TimeHelper(5),
+					From: testhelper.TimeHelper(1),
+					To:   testhelper.TimeHelper(5),
 				},
 				Interval: 0,
 			},
-			sDOut: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+			sDOut: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
 					Values: []float64{1, 1},
 				},
 			},
 		},
 		{
 			name: "Disable Extrapolation flag is true",
-			sDIn: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDIn: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
-			qm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
+			qm: models.ArchiverQueryModel{
+				Functions: []models.FunctionDescriptorQueryModel{
 					{
-						Def: FuncDefQueryModel{
+						Def: models.FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`true`),
+							DefaultParams: testhelper.InitRawMsg(`true`),
 							Name:          "disableExtrapol",
-							Params: []FuncDefParamQueryModel{
+							Params: []models.FuncDefParamQueryModel{
 								{Name: "boolean", Type: "string"},
 							},
 						},
@@ -379,38 +381,38 @@ func TestDataExtrapol(t *testing.T) {
 				},
 				Operator: "raw",
 				TimeRange: backend.TimeRange{
-					From: TimeHelper(1),
-					To:   TimeHelper(5),
+					From: testhelper.TimeHelper(1),
+					To:   testhelper.TimeHelper(5),
 				},
 				Interval:        0,
 				DisableExtrapol: true,
 			},
-			sDOut: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+			sDOut: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
 		},
 		{
 			name: "last operator",
-			sDIn: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
+			sDIn: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(3)},
 					Values: []float64{1, 2},
 				},
 			},
-			qm: ArchiverQueryModel{
+			qm: models.ArchiverQueryModel{
 				TimeRange: backend.TimeRange{
-					From: TimeHelper(1),
-					To:   TimeHelper(5),
+					From: testhelper.TimeHelper(1),
+					To:   testhelper.TimeHelper(5),
 				},
 				Operator: "last",
 				Interval: 0,
 			},
-			sDOut: SingleData{
-				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(3)},
+			sDOut: models.SingleData{
+				Values: &models.Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(3)},
 					Values: []float64{1, 2},
 				},
 			},
@@ -419,9 +421,9 @@ func TestDataExtrapol(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := dataExtrapol(&testCase.sDIn, testCase.qm)
-			SingleDataCompareHelper(
-				[]*SingleData{result},
-				[]*SingleData{&testCase.sDOut},
+			models.SingleDataCompareHelper(
+				[]*models.SingleData{result},
+				[]*models.SingleData{&testCase.sDOut},
 				t,
 			)
 		})

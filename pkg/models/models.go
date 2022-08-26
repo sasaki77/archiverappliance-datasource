@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"encoding/json"
@@ -9,6 +9,11 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
+
+type QueryMgr struct {
+	Res    backend.DataResponse
+	QRefID string
+}
 
 type ArchiverQueryModel struct {
 	// It's not apparent to me where these two originate from but they do appear to be necessary
@@ -59,7 +64,7 @@ type FuncDefQueryModel struct {
 	DefaultParams *json.RawMessage         `json:"defaultParams,omitempty"`
 	ShortName     *json.RawMessage         `json:"shortName,omitempty"`
 	Version       *json.RawMessage         `json:"version,omitempty"`
-	Category      Category                 `json:"category"`
+	Category      FunctionCategory         `json:"category"`
 	Description   *string                  `json:"description,omitempty"`
 	Fake          *bool                    `json:"fake,omitempty"`
 	Name          string                   `json:"name"`
@@ -100,7 +105,7 @@ type SingleScalarResponseModel struct {
 type ScalarResponseModel []SingleScalarResponseModel
 type ArrayResponseModel []SingleArrayResponseModel
 
-type dataResponse interface {
+type DataResponse interface {
 	ToSingleDataValues() (Values, error)
 }
 
@@ -178,9 +183,9 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 	if model.IntervalMs == nil {
 		model.BackendQuery = true
 	}
-	model.MaxNumPVs, _ = model.LoadIntOption(OptionName(MaxNumPVs), REGEX_MAXIMUM_MATCHES)
-	model.DisableAutoRaw, _ = model.LoadBooleanOption(OptionName(DisableAutoRaw), false)
-	model.DisableExtrapol, _ = model.LoadBooleanOption(OptionName(DisableExtrapol), false)
+	model.MaxNumPVs, _ = model.LoadIntOption(FunctionOption(FUNC_OPTION_MAXNUMPVS), REGEX_MAXIMUM_MATCHES)
+	model.DisableAutoRaw, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEAUTORAW), false)
+	model.DisableExtrapol, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL), false)
 	return model, nil
 }
 
@@ -204,7 +209,7 @@ func loadInterval(qm ArchiverQueryModel) (int, error) {
 		intervalMs := float64(*qm.IntervalMs)
 		defaultv = int(math.Floor(intervalMs / 1000)) // convert to seconds
 	}
-	interval, err := qm.LoadIntOption(OptionName(BinInterval), defaultv)
+	interval, err := qm.LoadIntOption(FunctionOption(FUNC_OPTION_BININTERVAL), defaultv)
 
 	return interval, err
 }

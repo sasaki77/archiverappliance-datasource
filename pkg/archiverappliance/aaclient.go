@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"context"
@@ -10,18 +10,19 @@ import (
 	"strings"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
+
+type client interface {
+	FetchRegexTargetPVs(regex string, limit int) ([]string, error)
+	ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error)
+}
 
 type AAclient struct {
 	baseURL string
 }
 
-type client interface {
-	FetchRegexTargetPVs(regex string, limit int) ([]string, error)
-	ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error)
-}
-
-func NewAAClient(ctx context.Context, config DatasourceSettings) (*AAclient, error) {
+func NewAAClient(ctx context.Context, config models.DatasourceSettings) (*AAclient, error) {
 	return &AAclient{
 		baseURL: config.URL,
 	}, nil
@@ -35,7 +36,7 @@ func (client AAclient) FetchRegexTargetPVs(regex string, limit int) ([]string, e
 	return pvList, nil
 }
 
-func (client AAclient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) (SingleData, error) {
+func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
 	// wrap together the individual operations build a query, execute the query, and compile the data into a singleData structure
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
@@ -44,7 +45,7 @@ func (client AAclient) ExecuteSingleQuery(target string, qm ArchiverQueryModel) 
 	return parsedResponse, nil
 }
 
-func buildQueryUrl(target string, baseURL string, qm ArchiverQueryModel) string {
+func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) string {
 	// Build the URL to query the archiver built from Grafana's configuration
 	// Set some constants
 
@@ -58,7 +59,7 @@ func buildQueryUrl(target string, baseURL string, qm ArchiverQueryModel) string 
 	}
 
 	// apply an operator to the PV string if one (not "raw" or "last") is provided
-	opQuery, opErr := CreateOperatorQuery(qm)
+	opQuery, opErr := createOperatorQuery(qm)
 	if opErr != nil {
 		log.DefaultLogger.Warn("Operator has not been properly created")
 	}
@@ -128,10 +129,10 @@ func archiverSingleQuery(queryUrl string) ([]byte, error) {
 	return jsonAsBytes, nil
 }
 
-func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
+func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 	// Convert received data to JSON
-	var sD SingleData
-	var response []ArchiverResponseModel
+	var sD models.SingleData
+	var response []models.ArchiverResponseModel
 
 	jsonErr := json.Unmarshal(jsonAsBytes, &response)
 	if jsonErr != nil {
@@ -139,9 +140,9 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 		return sD, jsonErr
 	}
 
-	var d dataResponse
+	var d models.DataResponse
 	if response[0].Meta.Waveform {
-		var data ArrayResponseModel
+		var data models.ArrayResponseModel
 		jsonErr = json.Unmarshal(response[0].Data, &data)
 		if jsonErr != nil {
 			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
@@ -149,7 +150,7 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (SingleData, error) {
 		}
 		d = data
 	} else {
-		var data ScalarResponseModel
+		var data models.ScalarResponseModel
 		jsonErr = json.Unmarshal(response[0].Data, &data)
 		if jsonErr != nil {
 			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)

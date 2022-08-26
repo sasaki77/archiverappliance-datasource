@@ -5,16 +5,13 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/archiverappliance"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
 type ArchiverDatasource struct {
 	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
 	//im instancemgmt.InstanceManager
-}
-
-type QueryMgr struct {
-	Res    backend.DataResponse
-	QRefID string
 }
 
 func newArchiverDataSource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
@@ -24,17 +21,17 @@ func newArchiverDataSource(_ backend.DataSourceInstanceSettings) (instancemgmt.I
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	// Structure defined by grafana-plugin-sdk-go. QueryData should unpack the req argument into individual queries.
 
-	config, err := LoadSettings(req.PluginContext)
+	config, err := models.LoadSettings(req.PluginContext)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := NewAAClient(ctx, config)
+	client, err := archiverappliance.NewAAClient(ctx, config)
 	if err != nil {
 		return nil, err
 	}
 
-	response := Query(ctx, client, req)
+	response := archiverappliance.Query(ctx, client, req)
 
 	return response, nil
 }

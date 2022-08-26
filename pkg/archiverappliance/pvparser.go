@@ -1,8 +1,8 @@
-package main
+package archiverappliance
 
 import "strings"
 
-func IsolateBasicQuery(unparsed string) []string {
+func isolateBasicQuery(unparsed string) []string {
 	// Non-regex queries can request multiple PVs using this syntax: (PV:NAME:1|PV:NAME:2|...)
 	// This function takes queries in this format and breaks them up into a list of individual PVs
 	unparsed_clean := strings.TrimSpace(unparsed)
@@ -41,7 +41,7 @@ func IsolateBasicQuery(unparsed string) []string {
 
 	// For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
 	for pos, chunk := range result {
-		parseAttempt := IsolateBasicQuery(chunk)
+		parseAttempt := isolateBasicQuery(chunk)
 		if len(parseAttempt) > 1 {
 			result = append(result[:pos], result[pos+1:]...) // pop partially parsed entry
 			result = append(result, parseAttempt...)         // add new entires at the end of the list.

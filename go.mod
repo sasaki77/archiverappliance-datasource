@@ -1,4 +1,4 @@
-module github.com/sasaki77/archiver-datasource-backend
+module github.com/sasaki77/archiverappliance-datasource
 
 go 1.14
 

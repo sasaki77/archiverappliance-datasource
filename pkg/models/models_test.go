@@ -1,16 +1,361 @@
-package main
+package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
+
+	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/grafana/grafana-plugin-sdk-go/backend"
 )
 
-// Tests
+func TestReadQueryModel(t *testing.T) {
+	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
+	var tests = []struct {
+		name   string
+		input  backend.DataQuery
+		output ArchiverQueryModel
+	}{
+		{
+			name: "Frontend query test",
+			input: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
+                    		"alias": "test alias",
+                    		"aliasPattern": "(.*):(.*)",
+                    		"operator": "max",
+                    		"refId":"A" ,
+                    		"regex":true ,
+                    		"target":".*(1|2)" ,
+                    		"IntervalMs":5000 ,
+							"functions":[
+							]
+						}`),
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+				},
+			},
+			output: ArchiverQueryModel{
+				Target:       ".*(1|2)",
+				Alias:        "test alias",
+				AliasPattern: "(.*):(.*)",
+				Operator:     "max",
+				Regex:        true,
+				Functions:    []FunctionDescriptorQueryModel{},
+				IntervalMs:   testhelper.InitIntPointer(5000),
+				RefId:        "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+				},
+				Interval:        5,
+				MaxNumPVs:       1000,
+				BackendQuery:    false,
+				DisableExtrapol: false,
+			},
+		},
+		{
+			name: "Backend query test",
+			input: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
+                    		"alias": "",
+                    		"aliasPattern": "",
+                    		"operator": "",
+                    		"refId":"A" ,
+                    		"regex":false ,
+                    		"target":"PV:TEST" ,
+							"functions":[
+								{
+									"params": [
+										"true"
+									],
+									"def": {
+										"category": "Options",
+										"name": "disableExtrapol",
+										"params": [
+											{
+												"name": "boolean",
+												"options": ["true", "false"],
+												"type": "string"
+											}
+										]
+									}
+								},
+								{
+									"params": [
+										"true"
+									],
+									"def": {
+										"category": "Options",
+										"name": "disableAutoRaw",
+										"params": [
+											{
+												"name": "boolean",
+												"options": ["true", "false"],
+												"type": "string"
+											}
+										]
+									}
+								},
+								{
+									"params": [
+										"100"
+									],
+									"def": {
+										"category": "Options",
+										"name": "maxNumPVs",
+										"params": [
+											{
+												"name": "number",
+												"type": "int"
+											}
+										]
+									}
+								}
+							]
+						}`),
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+				},
+			},
+			output: ArchiverQueryModel{
+				Target:       "PV:TEST",
+				Alias:        "",
+				AliasPattern: "",
+				Operator:     "",
+				Regex:        false,
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Params: []string{"true"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "disableExtrapol",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name:    "boolean",
+									Options: &[]string{"true", "false"},
+									Type:    "string",
+								},
+							},
+						},
+					},
+					{
+						Params: []string{"true"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "disableAutoRaw",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name:    "boolean",
+									Options: &[]string{"true", "false"},
+									Type:    "string",
+								},
+							},
+						},
+					},
+					{
+						Params: []string{"100"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "maxNumPVs",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name: "number",
+									Type: "int",
+								},
+							},
+						},
+					},
+				},
+				IntervalMs: nil,
+				RefId:      "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+				},
+				Interval:        0,
+				BackendQuery:    true,
+				MaxNumPVs:       100,
+				DisableAutoRaw:  true,
+				DisableExtrapol: true,
+			},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, _ := ReadQueryModel(testCase.input)
+			if diff := cmp.Diff(testCase.output, result); diff != "" {
+				t.Errorf("Compare value is mismatch (-v1 +v2):%s\n", diff)
+			}
+		})
+	}
+}
+
+func TestLoadInterval(t *testing.T) {
+	var tests = []struct {
+		name   string
+		input  ArchiverQueryModel
+		output int
+	}{
+		{
+			name: "Empty Operator with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: testhelper.InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "",
+			},
+			output: 16,
+		},
+		{
+			name: "mean with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: testhelper.InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "mean",
+			},
+			output: 16,
+		},
+		{
+			name: "raw with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: testhelper.InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "raw",
+			},
+			output: 0,
+		},
+		{
+			name: "last with binInterval function",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: testhelper.InitRawMsg(`[16]`),
+							Name:          "binInterval",
+							Params: []FuncDefParamQueryModel{
+								{Name: "interval", Type: "int"},
+							},
+						},
+						Params: []string{"16"},
+					},
+				},
+				Operator: "last",
+			},
+			output: 0,
+		},
+		{
+			name: "empty operator with 10.1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(10100),
+				Operator:   "",
+			},
+			output: 10,
+		},
+		{
+			name: "empty operator with 0.1 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(100),
+				Operator:   "",
+			},
+			output: 0,
+		},
+		{
+			name: "max operator with 10 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(10100),
+				Operator:   "max",
+			},
+			output: 10,
+		},
+		{
+			name: "raw operator with 10 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(10100),
+				Operator:   "raw",
+			},
+			output: 0,
+		},
+		{
+			name: "last operator with 10 second interval",
+			input: ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(10100),
+				Operator:   "raw",
+			},
+			output: 0,
+		},
+		{
+			name: "max operator without IntervalMs",
+			input: ArchiverQueryModel{
+				Operator: "max",
+			},
+			output: 0,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, err := loadInterval(testCase.input)
+			if err != nil {
+				t.Errorf("Error received %v", err)
+			}
+			if testCase.output != result {
+				t.Errorf("got %v, want %v", result, testCase.output)
+			}
+		})
+	}
+}
+
 func TestPickFunsByCategories(t *testing.T) {
 	var tests = []struct {
 		name     string
 		input    ArchiverQueryModel
-		category []Category
+		category []FunctionCategory
 		output   []FunctionDescriptorQueryModel
 	}{
 		{
@@ -43,7 +388,7 @@ func TestPickFunsByCategories(t *testing.T) {
 					},
 				},
 			},
-			category: []Category{Transform, Options},
+			category: []FunctionCategory{FUNC_CATEGORY_TRANSFORM, FUNC_CATEGORY_OPTIONS},
 			output: []FunctionDescriptorQueryModel{
 				{Def: FuncDefQueryModel{Name: "scale"}},
 				{Def: FuncDefQueryModel{Name: "offset"}},
@@ -88,7 +433,7 @@ func TestIdentifyFunctionsByName(t *testing.T) {
 					{
 						Def: FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`[16]`),
+							DefaultParams: testhelper.InitRawMsg(`[16]`),
 							Name:          "binInterval",
 							Params: []FuncDefParamQueryModel{
 								{Name: "interval", Type: "int"},
@@ -123,7 +468,7 @@ func TestLoadBooleanOption(t *testing.T) {
 	var tests = []struct {
 		name     string
 		input    ArchiverQueryModel
-		option   OptionName
+		option   FunctionOption
 		defaultv bool
 		disable  bool
 		err      bool
@@ -135,7 +480,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					{
 						Def: FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`true`),
+							DefaultParams: testhelper.InitRawMsg(`true`),
 							Name:          "disableExtrapol",
 							Params: []FuncDefParamQueryModel{
 								{Name: "boolean", Type: "string"},
@@ -145,7 +490,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					},
 				},
 			},
-			option:  OptionName(DisableExtrapol),
+			option:  FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL),
 			disable: true,
 			err:     false,
 		},
@@ -156,7 +501,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					{
 						Def: FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`true`),
+							DefaultParams: testhelper.InitRawMsg(`true`),
 							Name:          "disableExtrapol",
 							Params: []FuncDefParamQueryModel{
 								{Name: "boolean", Type: "string"},
@@ -166,7 +511,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					},
 				},
 			},
-			option:  OptionName(DisableExtrapol),
+			option:  FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL),
 			disable: false,
 			err:     false,
 		},
@@ -177,7 +522,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					{
 						Def: FuncDefQueryModel{
 							Category:      "Options",
-							DefaultParams: InitRawMsg(`true`),
+							DefaultParams: testhelper.InitRawMsg(`true`),
 							Name:          "disableExtrapol",
 							Params: []FuncDefParamQueryModel{
 								{Name: "boolean", Type: "string"},
@@ -187,7 +532,7 @@ func TestLoadBooleanOption(t *testing.T) {
 					},
 				},
 			},
-			option:  OptionName(DisableExtrapol),
+			option:  FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL),
 			disable: false,
 			err:     true,
 		},
@@ -204,7 +549,7 @@ func TestLoadBooleanOption(t *testing.T) {
 			input: ArchiverQueryModel{
 				Functions: []FunctionDescriptorQueryModel{},
 			},
-			option:   OptionName(DisableExtrapol),
+			option:   FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL),
 			defaultv: true,
 			disable:  true,
 			err:      false,
@@ -234,7 +579,7 @@ func TestGetParametersByName(t *testing.T) {
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Options",
-					DefaultParams: InitRawMsg(`[900]`),
+					DefaultParams: testhelper.InitRawMsg(`[900]`),
 					Name:          "binInterval",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -247,14 +592,14 @@ func TestGetParametersByName(t *testing.T) {
 				Params: []string{"900"},
 			},
 			targetArg: "interval",
-			output:    InitString("900"),
+			output:    testhelper.InitString("900"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Filter Series",
-					DefaultParams: InitRawMsg(`[5 avg]`),
+					DefaultParams: testhelper.InitRawMsg(`[5 avg]`),
 					Name:          "bottom",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -272,14 +617,14 @@ func TestGetParametersByName(t *testing.T) {
 				Params: []string{"5", "avg"},
 			},
 			targetArg: "value",
-			output:    InitString("avg"),
+			output:    testhelper.InitString("avg"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Transform",
-					DefaultParams: InitRawMsg(`[100]`),
+					DefaultParams: testhelper.InitRawMsg(`[100]`),
 					Name:          "offset",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -292,14 +637,14 @@ func TestGetParametersByName(t *testing.T) {
 				Params: []string{"100"},
 			},
 			targetArg: "delta",
-			output:    InitString("100"),
+			output:    testhelper.InitString("100"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Transform",
-					DefaultParams: InitRawMsg(`[]`),
+					DefaultParams: testhelper.InitRawMsg(`[]`),
 					Name:          "delta",
 					Params:        []FuncDefParamQueryModel{},
 				},
@@ -344,7 +689,7 @@ func TestGetParamTypeByName(t *testing.T) {
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Options",
-					DefaultParams: InitRawMsg(`[900]`),
+					DefaultParams: testhelper.InitRawMsg(`[900]`),
 					Name:          "binInterval",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -357,14 +702,14 @@ func TestGetParamTypeByName(t *testing.T) {
 				Params: []string{"900"},
 			},
 			targetArg: "interval",
-			output:    InitString("int"),
+			output:    testhelper.InitString("int"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Filter Series",
-					DefaultParams: InitRawMsg(`[5 avg]`),
+					DefaultParams: testhelper.InitRawMsg(`[5 avg]`),
 					Name:          "bottom",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -382,14 +727,14 @@ func TestGetParamTypeByName(t *testing.T) {
 				Params: []string{"5", "avg"},
 			},
 			targetArg: "value",
-			output:    InitString("string"),
+			output:    testhelper.InitString("string"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Transform",
-					DefaultParams: InitRawMsg(`[100]`),
+					DefaultParams: testhelper.InitRawMsg(`[100]`),
 					Name:          "offset",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -402,14 +747,14 @@ func TestGetParamTypeByName(t *testing.T) {
 				Params: []string{"100"},
 			},
 			targetArg: "delta",
-			output:    InitString("float"),
+			output:    testhelper.InitString("float"),
 		},
 		{
 			input: FunctionDescriptorQueryModel{
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Transform",
-					DefaultParams: InitRawMsg(`[]`),
+					DefaultParams: testhelper.InitRawMsg(`[]`),
 					Name:          "delta",
 					Params:        []FuncDefParamQueryModel{},
 				},
@@ -454,7 +799,7 @@ func TestExtractParamInt(t *testing.T) {
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Filter Series",
-					DefaultParams: InitRawMsg(`[5 avg]`),
+					DefaultParams: testhelper.InitRawMsg(`[5 avg]`),
 					Name:          "bottom",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -500,7 +845,7 @@ func TestExtractParamFloat64(t *testing.T) {
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Transform",
-					DefaultParams: InitRawMsg(`[100]`),
+					DefaultParams: testhelper.InitRawMsg(`[100]`),
 					Name:          "offset",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -541,7 +886,7 @@ func TestExtractParamString(t *testing.T) {
 				Def: FuncDefQueryModel{
 					Fake:          nil,
 					Category:      "Filter Series",
-					DefaultParams: InitRawMsg(`[5 avg]`),
+					DefaultParams: testhelper.InitRawMsg(`[5 avg]`),
 					Name:          "bottom",
 					Params: []FuncDefParamQueryModel{
 						{
@@ -572,471 +917,6 @@ func TestExtractParamString(t *testing.T) {
 			if result != testCase.output {
 				t.Errorf(fmt.Sprintf("Got %v, wanted %v", result, testCase.output))
 			}
-		})
-	}
-}
-
-func TestApplyFunctions(t *testing.T) {
-	var tests = []struct {
-		name     string
-		inputSd  []*SingleData
-		inputAqm ArchiverQueryModel
-		output   []*SingleData
-	}{
-		{
-			name: "Offset test",
-			inputSd: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
-					},
-				},
-			},
-			inputAqm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "offset",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "delta",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"2"},
-					},
-				},
-			},
-			output: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{3, 3, 4, 5, 7, 10},
-					},
-				},
-			},
-		},
-		{
-			name: "Offset and Scale test",
-			inputSd: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
-					},
-				},
-			},
-			inputAqm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "offset",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "delta",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"2"},
-					},
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "scale",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "factor",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"3"},
-					},
-				},
-			},
-			output: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{9, 9, 12, 15, 21, 30},
-					},
-				},
-			},
-		},
-		{
-			name: "Offset, Scale, and Filter test",
-			inputSd: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
-					},
-				},
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{100, 100, 100, 100, 100, 100},
-					},
-				},
-			},
-			inputAqm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "offset",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "delta",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"2"},
-					},
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "scale",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "factor",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"3"},
-					},
-					{
-						Def: FuncDefQueryModel{
-							Fake:          nil,
-							Category:      "Filter Series",
-							DefaultParams: InitRawMsg(`[1 avg]`),
-							Name:          "bottom",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name:    "number",
-									Options: nil,
-									Type:    "int",
-								},
-								{
-									Name:    "value",
-									Options: &[]string{"avg", "min", "max", "absoluteMin", "absoluteMax", "sum"},
-									Type:    "string",
-								},
-							},
-						},
-						Params: []string{"1", "avg"},
-					},
-				},
-			},
-			output: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{9, 9, 12, 15, 21, 30},
-					},
-				},
-			},
-		},
-		{
-			name: "Array to Scalar and Offset test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputAqm: ArchiverQueryModel{
-				Functions: []FunctionDescriptorQueryModel{
-					{
-						Def: FuncDefQueryModel{
-							Category: Category("Array to Scalar"),
-							Name:     "toScalarByAvg",
-						},
-					},
-					{
-						Def: FuncDefQueryModel{
-							Category: Category("Array to Scalar"),
-							Name:     "toScalarByMax",
-						},
-					},
-					{
-						Def: FuncDefQueryModel{
-							Category: "Transform",
-							Name:     "scale",
-							Params: []FuncDefParamQueryModel{
-								{
-									Name: "factor",
-									Type: "float",
-								},
-							},
-						},
-						Params: []string{"2"},
-					},
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(avg)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{4, 10, 17},
-					},
-				},
-				{
-					Name: "(max)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{6, 12, 20},
-					},
-				},
-			},
-		},
-	}
-
-	for tdx, testCase := range tests {
-		testName := fmt.Sprintf("case %d: %v", tdx, testCase.output)
-		t.Run(testName, func(t *testing.T) {
-			result, err := ApplyFunctions(tests[tdx].inputSd, testCase.inputAqm)
-			if err != nil {
-				t.Errorf("An error has been generated")
-			}
-			SingleDataCompareHelper(result, testCase.output, t)
-		})
-	}
-}
-
-func TestArrayFunctionSelector(t *testing.T) {
-	var tests = []struct {
-		name      string
-		inputSd   []*SingleData
-		inputFdqm FunctionDescriptorQueryModel
-		output    []*SingleData
-	}{
-		{
-			name: "toScalarByAvg test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarByAvg",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(avg)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{2, 5, 8.5},
-					},
-				},
-			},
-		},
-		{
-			name: "toScalarByMax test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarByMax",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(max)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{3, 6, 10},
-					},
-				},
-			},
-		},
-		{
-			name: "toScalarByMin test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarByMin",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(min)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{1, 4, 7},
-					},
-				},
-			},
-		},
-		{
-			name: "toScalarBySum test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarBySum",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(sum)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{6, 15, 34},
-					},
-				},
-			},
-		},
-		{
-			name: "toScalarByMed test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{1, 2, 6}, {4, 5, 10}, {7, 8, 9, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarByMed",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(median)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{2, 5, 8.5},
-					},
-				},
-			},
-		},
-		{
-			name: "toScalarByStd test",
-			inputSd: []*SingleData{
-				{
-					Values: &Arrays{
-						Times:  TimeArrayHelper(0, 3),
-						Values: [][]float64{{10, 10, 20, 20}, {5, 5, 10, 10}},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: Category("Array to Scalar"),
-					Name:     "toScalarByStd",
-				},
-			},
-			output: []*SingleData{
-				{
-					Name: "(std)",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 3),
-						Values: []float64{5, 2.5},
-					},
-				},
-			},
-		},
-	}
-
-	for tdx, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			result, err := arrayFunctionSelector(tests[tdx].inputSd, testCase.inputFdqm)
-			if err != nil {
-				t.Errorf("An error has been generated")
-			}
-			SingleDataCompareHelper(result, testCase.output, t)
-		})
-	}
-}
-
-func TestFunctionSelector(t *testing.T) {
-	var tests = []struct {
-		inputSd   []*SingleData
-		inputFdqm FunctionDescriptorQueryModel
-		output    []*SingleData
-	}{
-		{
-			inputSd: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
-					},
-				},
-			},
-			inputFdqm: FunctionDescriptorQueryModel{
-				Def: FuncDefQueryModel{
-					Category: "Transform",
-					Name:     "offset",
-					Params: []FuncDefParamQueryModel{
-						{
-							Name: "delta",
-							Type: "float",
-						},
-					},
-				},
-				Params: []string{"2"},
-			},
-			output: []*SingleData{
-				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
-						Values: []float64{3, 3, 4, 5, 7, 10},
-					},
-				},
-			},
-		},
-	}
-
-	for tdx, testCase := range tests {
-		testName := fmt.Sprintf("case %d: %v", tdx, testCase.output)
-		t.Run(testName, func(t *testing.T) {
-			result, err := FunctionSelector(tests[tdx].inputSd, testCase.inputFdqm)
-			if err != nil {
-				t.Errorf("An error has been generated")
-			}
-			SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
