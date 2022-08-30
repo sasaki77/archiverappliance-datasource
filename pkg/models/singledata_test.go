@@ -1,10 +1,12 @@
-package main
+package models
 
 import (
 	"fmt"
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
 
 func TestApplyAliasSd(t *testing.T) {
@@ -62,7 +64,7 @@ func TestToFrameScalar(t *testing.T) {
 				Name:   "testing_name",
 				PVname: "pvname",
 				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(1), TimeHelper(2)},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
 					Values: []float64{1, 2, 3},
 				},
 			},
@@ -118,7 +120,7 @@ func TestToFrameArray(t *testing.T) {
 				Name:   "testing_name",
 				PVname: "pvname",
 				Values: &Arrays{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(1), TimeHelper(2)},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
 					Values: [][]float64{{1, 2}, {3, 4}, {5, 6}},
 				},
 			},
@@ -180,15 +182,15 @@ func TestExtrapolation(t *testing.T) {
 		{
 			sDIn: SingleData{
 				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0)},
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: []float64{1},
 				},
 			},
 			name: "extrapolation",
-			t:    TimeHelper(5),
+			t:    testhelper.TimeHelper(5),
 			sDOut: SingleData{
 				Values: &Scalars{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
 					Values: []float64{1, 1},
 				},
 			},
@@ -196,15 +198,15 @@ func TestExtrapolation(t *testing.T) {
 		{
 			sDIn: SingleData{
 				Values: &Arrays{
-					Times:  []time.Time{TimeHelper(0)},
+					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: [][]float64{{1, 1}},
 				},
 			},
 			name: "extrapolation",
-			t:    TimeHelper(5),
+			t:    testhelper.TimeHelper(5),
 			sDOut: SingleData{
 				Values: &Arrays{
-					Times:  []time.Time{TimeHelper(0), TimeHelper(5)},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
 					Values: [][]float64{{1, 1}, {1, 1}},
 				},
 			},

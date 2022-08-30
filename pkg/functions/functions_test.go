@@ -1,8 +1,11 @@
-package main
+package functions
 
 import (
 	"fmt"
 	"testing"
+
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
 
 // Utilites
@@ -11,26 +14,26 @@ import (
 
 func TestScale(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		delta   float64
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			delta: 2,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{2, 2, 4, 6, 10, 16},
 					},
 				},
@@ -40,34 +43,34 @@ func TestScale(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.output)
 		t.Run(testName, func(t *testing.T) {
-			result := Scale(testCase.inputSd, testCase.delta)
-			SingleDataCompareHelper(result, testCase.output, t)
+			result := scale(testCase.inputSd, testCase.delta)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestOffset(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		delta   float64
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			delta: 2,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{3, 3, 4, 5, 7, 10},
 					},
 				},
@@ -77,52 +80,52 @@ func TestOffset(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.output)
 		t.Run(testName, func(t *testing.T) {
-			result := Offset(testCase.inputSd, testCase.delta)
-			SingleDataCompareHelper(result, testCase.output, t)
+			result := offset(testCase.inputSd, testCase.delta)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestDelta(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
-		output  []*SingleData
+		inputSd []*models.SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(1, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(1, 6),
 						Values: []float64{0, 1, 1, 2, 3},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 1),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 1),
 						Values: []float64{2},
 					},
 				},
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 1),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 1),
 						Values: []float64{0},
 					},
 				},
@@ -132,52 +135,52 @@ func TestDelta(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case: %d", tdx)
 		t.Run(testName, func(t *testing.T) {
-			result := Delta(testCase.inputSd)
-			SingleDataCompareHelper(result, testCase.output, t)
+			result := delta(testCase.inputSd)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestFluctuation(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
-		output  []*SingleData
+		inputSd []*models.SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{0, 0, 1, 2, 4, 7},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 1),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 1),
 						Values: []float64{1},
 					},
 				},
 			},
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 1),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 1),
 						Values: []float64{0},
 					},
 				},
@@ -187,34 +190,34 @@ func TestFluctuation(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case: %d", tdx)
 		t.Run(testName, func(t *testing.T) {
-			result := Fluctuation(testCase.inputSd)
-			SingleDataCompareHelper(result, testCase.output, t)
+			result := fluctuation(testCase.inputSd)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestMovingAverage(t *testing.T) {
 	var tests = []struct {
-		inputSd    []*SingleData
+		inputSd    []*models.SingleData
 		windowSize int
-		output     []*SingleData
+		output     []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{3, 9, 6, 3, 3, 6},
 					},
 				},
 			},
 			windowSize: 3,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{3, 6, 6, 6, 4, 4},
 					},
 				},
@@ -224,8 +227,8 @@ func TestMovingAverage(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case: %d", tdx)
 		t.Run(testName, func(t *testing.T) {
-			result := MovingAverage(testCase.inputSd, testCase.windowSize)
-			SingleDataCompareHelper(result, testCase.output, t)
+			result := movingAverage(testCase.inputSd, testCase.windowSize)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
@@ -260,180 +263,180 @@ func TestToScalarByStd(t *testing.T) {
 
 func TestTop(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		number  int
 		value   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "avg",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "min",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "max",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{0, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMin",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMax",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10},
 					},
 				},
 			},
 			number: 1,
 			value:  "sum",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
@@ -443,191 +446,191 @@ func TestTop(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.value)
 		t.Run(testName, func(t *testing.T) {
-			result, err := Top(testCase.inputSd, testCase.number, testCase.value)
+			result, err := top(testCase.inputSd, testCase.number, testCase.value)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestBottom(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		number  int
 		value   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "avg",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "min",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "max",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{0, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMin",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{0, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			number: 1,
 			value:  "absoluteMax",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME1",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10},
 					},
 				},
 			},
 			number: 1,
 			value:  "sum",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name: "TEST:PV:NAME2",
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10},
 					},
 				},
@@ -637,103 +640,103 @@ func TestBottom(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.value)
 		t.Run(testName, func(t *testing.T) {
-			result, err := Bottom(testCase.inputSd, testCase.number, testCase.value)
+			result, err := bottom(testCase.inputSd, testCase.number, testCase.value)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestExclude(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		pattern string
 		err     bool
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "Hello there",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 				{
 					Name:   "General Kenobi!",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 			pattern: "Hello",
 			err:     false,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "General Kenobi!",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "this is a phrase",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 				{
 					Name:   "a phrase containing this",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 			pattern: "^this",
 			err:     false,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "a phrase containing this",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "abcdef12ghi",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 				{
 					Name:   "nonumbers",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 			pattern: "f[1-9]*",
 			err:     false,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "nonumbers",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
 					Name:   "abcdef12ghi",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 				{
 					Name:   "nonumbers",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 			pattern: "***Hello",
 			err:     true,
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
 					Name:   "abcdef12ghi",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 				{
 					Name:   "nonumbers",
-					Values: &Scalars{},
+					Values: &models.Scalars{},
 				},
 			},
 		},
@@ -741,7 +744,7 @@ func TestExclude(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.pattern)
 		t.Run(testName, func(t *testing.T) {
-			result, err := Exclude(testCase.inputSd, testCase.pattern)
+			result, err := exclude(testCase.inputSd, testCase.pattern)
 			if testCase.err {
 				if err == nil {
 					t.Errorf("Error expected but not received %v", err)
@@ -751,7 +754,7 @@ func TestExclude(t *testing.T) {
 					t.Errorf("Error not expected %v", err)
 				}
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
@@ -760,67 +763,67 @@ func TestExclude(t *testing.T) {
 
 func TestSortByAvg(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
@@ -830,78 +833,78 @@ func TestSortByAvg(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortByAvg(testCase.inputSd, testCase.order)
+			result, err := sortByAvg(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestSortByMax(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 81},
 					},
 				},
@@ -911,78 +914,78 @@ func TestSortByMax(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortByMax(testCase.inputSd, testCase.order)
+			result, err := sortByMax(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestSortByMin(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-100, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-100, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-100, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-100, 1, 2, 3, 5, 8},
 					},
 				},
@@ -992,78 +995,78 @@ func TestSortByMin(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortByMin(testCase.inputSd, testCase.order)
+			result, err := sortByMin(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestSortBySum(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8000},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8000},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8000},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8000},
 					},
 				},
@@ -1073,78 +1076,78 @@ func TestSortBySum(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortBySum(testCase.inputSd, testCase.order)
+			result, err := sortBySum(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestSortByAbsMax(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, -10, -20, -30, -50, -80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, -10, -20, -30, -50, -80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, -10, -20, -30, -50, -80},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, -10, -20, -30, -50, -80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
@@ -1154,78 +1157,78 @@ func TestSortByAbsMax(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortByAbsMax(testCase.inputSd, testCase.order)
+			result, err := sortByAbsMax(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }
 
 func TestSorByAbsMin(t *testing.T) {
 	var tests = []struct {
-		inputSd []*SingleData
+		inputSd []*models.SingleData
 		order   string
-		output  []*SingleData
+		output  []*models.SingleData
 	}{
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 			},
 			order: "asc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 		},
 		{
-			inputSd: []*SingleData{
+			inputSd: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, 10, 20, 30, 50, 80},
 					},
 				},
 			},
 			order: "desc",
-			output: []*SingleData{
+			output: []*models.SingleData{
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{-10, 10, 20, 30, 50, 80},
 					},
 				},
 				{
-					Values: &Scalars{
-						Times:  TimeArrayHelper(0, 6),
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
 						Values: []float64{1, 1, 2, 3, 5, 8},
 					},
 				},
@@ -1235,11 +1238,11 @@ func TestSorByAbsMin(t *testing.T) {
 	for tdx, testCase := range tests {
 		testName := fmt.Sprintf("case %d: %v", tdx, testCase.order)
 		t.Run(testName, func(t *testing.T) {
-			result, err := SortByAbsMin(testCase.inputSd, testCase.order)
+			result, err := sortByAbsMin(testCase.inputSd, testCase.order)
 			if err != nil {
 				t.Errorf("Error not expected %v", err)
 			}
-			SingleDataCompareHelper(result, testCase.output, t)
+			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
 	}
 }

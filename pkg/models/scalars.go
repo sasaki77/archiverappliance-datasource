@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"errors"
@@ -100,24 +100,24 @@ func (v *Scalars) MovingAverage(windowSize int) {
 type RankType string
 
 const (
-	Avg         = RankType("Avg")
-	Min         = RankType("Min")
-	Max         = RankType("Max")
-	AbsoluteMin = RankType("AbsoluteMin")
-	AbsoluteMax = RankType("AbsoluteMax")
-	Sum         = RankType("Sum")
+	RANKTYPE_AVG         = RankType("Avg")
+	RANKTYPE_MIN         = RankType("Min")
+	RANKTYPE_MAX         = RankType("Max")
+	RANKTYPE_ABSOLUTEMIN = RankType("AbsoluteMin")
+	RANKTYPE_ABSOLUTEMAX = RankType("AbsoluteMax")
+	RANKTYPE_SUM         = RankType("Sum")
 )
 
 func (v *Scalars) Rank(rankType RankType) (float64, error) {
 	data := v.Values
 	switch rankType {
-	case Avg:
+	case RANKTYPE_AVG:
 		var total float64
 		for _, val := range data {
 			total += val
 		}
 		return total / float64(len(data)), nil
-	case Min:
+	case RANKTYPE_MIN:
 		var low_cache float64
 		first_run := true
 		for _, val := range data {
@@ -130,7 +130,7 @@ func (v *Scalars) Rank(rankType RankType) (float64, error) {
 			}
 		}
 		return low_cache, nil
-	case Max:
+	case RANKTYPE_MAX:
 		var high_cache float64
 		first_run := true
 		for _, val := range data {
@@ -143,7 +143,7 @@ func (v *Scalars) Rank(rankType RankType) (float64, error) {
 			}
 		}
 		return high_cache, nil
-	case AbsoluteMin:
+	case RANKTYPE_ABSOLUTEMIN:
 		var low_cache float64
 		first_run := true
 		for _, originalVal := range data {
@@ -157,7 +157,7 @@ func (v *Scalars) Rank(rankType RankType) (float64, error) {
 			}
 		}
 		return low_cache, nil
-	case AbsoluteMax:
+	case RANKTYPE_ABSOLUTEMAX:
 		var high_cache float64
 		first_run := true
 		for _, originalVal := range data {
@@ -171,7 +171,7 @@ func (v *Scalars) Rank(rankType RankType) (float64, error) {
 			}
 		}
 		return high_cache, nil
-	case Sum:
+	case RANKTYPE_SUM:
 		var total float64
 		for _, val := range data {
 			total += val

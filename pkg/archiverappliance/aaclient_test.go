@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
 
 func TestBuildQueryUrl(t *testing.T) {
@@ -17,22 +19,22 @@ func TestBuildQueryUrl(t *testing.T) {
 		name   string
 		target string
 		url    string
-		qm     ArchiverQueryModel
+		qm     models.ArchiverQueryModel
 		output string
 	}{
 		{
 			name:   "URL for auto raw data with empty operator (interval is less than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(300),
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(300),
 				// alias: ,
 				// aliasPattern: ,
 				// constant: 6.5,
 				// dataTopic: nil,
 				// datasource: nil,
 				// format: ,
-				Functions: []FunctionDescriptorQueryModel{},
+				Functions: []models.FunctionDescriptorQueryModel{},
 				// Hide: false,
 				Operator:  "",
 				QueryText: "",
@@ -42,8 +44,8 @@ func TestBuildQueryUrl(t *testing.T) {
 				// String: nil,
 				Target: "MR1K1:BEND:PIP:1:PMON",
 				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
 				Interval: 0,
 			},
@@ -53,9 +55,9 @@ func TestBuildQueryUrl(t *testing.T) {
 			name:   "URL for empty operator (interval is higher than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(7200),
-				Functions:  []FunctionDescriptorQueryModel{},
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(7200),
+				Functions:  []models.FunctionDescriptorQueryModel{},
 				Operator:   "",
 				QueryText:  "",
 				QueryType:  nil,
@@ -63,8 +65,8 @@ func TestBuildQueryUrl(t *testing.T) {
 				Regex:      true,
 				Target:     "MR1K1:BEND:PIP:1:PMON",
 				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
 				},
 				Interval: 7,
 			},
@@ -74,9 +76,9 @@ func TestBuildQueryUrl(t *testing.T) {
 			name:   "URL for max operator (interval is less than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(300),
-				Functions:  []FunctionDescriptorQueryModel{},
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(300),
+				Functions:  []models.FunctionDescriptorQueryModel{},
 				Operator:   "max",
 				QueryText:  "",
 				QueryType:  nil,
@@ -84,8 +86,8 @@ func TestBuildQueryUrl(t *testing.T) {
 				Regex:      true,
 				Target:     "MR1K1:BEND:PIP:1:PMON",
 				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
 				Interval: 0,
 			},
@@ -95,9 +97,9 @@ func TestBuildQueryUrl(t *testing.T) {
 			name:   "URL for max operator (interval is higher than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(7200),
-				Functions:  []FunctionDescriptorQueryModel{},
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(7200),
+				Functions:  []models.FunctionDescriptorQueryModel{},
 				Operator:   "max",
 				QueryText:  "",
 				QueryType:  nil,
@@ -105,8 +107,8 @@ func TestBuildQueryUrl(t *testing.T) {
 				Regex:      true,
 				Target:     "MR1K1:BEND:PIP:1:PMON",
 				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
 				},
 				Interval: 7,
 			},
@@ -116,9 +118,9 @@ func TestBuildQueryUrl(t *testing.T) {
 			name:   "URL for last operator (interval is less than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
-			qm: ArchiverQueryModel{
-				IntervalMs: InitIntPointer(100),
-				Functions:  []FunctionDescriptorQueryModel{},
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(100),
+				Functions:  []models.FunctionDescriptorQueryModel{},
 				Operator:   "last",
 				QueryText:  "",
 				QueryType:  nil,
@@ -126,8 +128,8 @@ func TestBuildQueryUrl(t *testing.T) {
 				Regex:      true,
 				Target:     "MR1K1:BEND:PIP:1:PMON",
 				TimeRange: backend.TimeRange{
-					From: MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
-					To:   MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T16:25:41.678-08:00")),
 				},
 				Interval: 0,
 			},
@@ -191,11 +193,11 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 		output   responseParams
 	}{
 		{
-			fileName: "test_data/good_query_response_01.JSON",
+			fileName: "../test_data/good_query_response_01.JSON",
 			output:   responseParams{length: 612, name: "EM2K0:XGMD:GPI:10:PRESS_RBV", firstVal: 0.005249832756817341, lastVal: 0.005262143909931183},
 		},
 		{
-			fileName: "test_data/good_query_response_waveform_01.JSON",
+			fileName: "../test_data/good_query_response_waveform_01.JSON",
 			output:   responseParams{length: 61, name: "PLC:LFE:MOTION:FFO:02:FF:011:Info:InfoString_RBV", firstVal: 112, lastVal: 88},
 		},
 	}
@@ -227,7 +229,7 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 			}
 
 			switch v := result.Values.(type) {
-			case *Scalars:
+			case *models.Scalars:
 				if len(v.Times) != len(v.Values) {
 					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
 				}
@@ -241,7 +243,7 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 				if math.Abs(v.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
 					t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
 				}
-			case *Arrays:
+			case *models.Arrays:
 				if len(v.Times) != len(v.Values) {
 					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
 				}

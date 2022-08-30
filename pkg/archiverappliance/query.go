@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"context"
@@ -8,22 +8,19 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/functions"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
-
-func IsBackendQuery(pluginctx backend.PluginContext) bool {
-	// Return true if this query was created by the backend as opposed to visualization query for the frontend
-	return pluginctx.User != nil
-}
 
 func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backend.QueryDataResponse {
 	// create response struct
 	response := backend.NewQueryDataResponse()
-	responsePipe := make(chan QueryMgr)
+	responsePipe := make(chan models.QueryMgr)
 
 	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, client client, responsePipe chan QueryMgr) {
+		go func(ctx context.Context, q backend.DataQuery, client client, responsePipe chan models.QueryMgr) {
 			res := backend.DataResponse{}
-			qm, err := ReadQueryModel(q)
+			qm, err := models.ReadQueryModel(q)
 
 			if err != nil {
 				res.Error = err
@@ -31,7 +28,7 @@ func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backen
 				res = singleQuery(ctx, qm, c)
 			}
 
-			responsePipe <- QueryMgr{
+			responsePipe <- models.QueryMgr{
 				Res:    res,
 				QRefID: q.RefID,
 			}
@@ -58,7 +55,7 @@ queryCollector:
 	return response
 }
 
-func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) backend.DataResponse {
+func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client) backend.DataResponse {
 	response := backend.DataResponse{}
 
 	// make the query and compile the results into a SingleData instance
@@ -66,7 +63,7 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 
 	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
 	// That's because AA sever doesn't support full regular expression.
-	isolatedPvList := IsolateBasicQuery(qm.Target)
+	isolatedPvList := isolateBasicQuery(qm.Target)
 
 	if qm.Regex {
 		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
@@ -82,8 +79,8 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 	}
 
 	// execute the individual queries
-	responseData := make([]*SingleData, 0, len(targetPvList))
-	responsePipe := make(chan SingleData)
+	responseData := make([]*models.SingleData, 0, len(targetPvList))
+	responsePipe := make(chan models.SingleData)
 
 	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
 	timeoutDurationSeconds := 30 // units are seconds
@@ -92,7 +89,7 @@ func singleQuery(ctx context.Context, qm ArchiverQueryModel, client client) back
 
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
-		go func(targetPv string, pipe chan SingleData) {
+		go func(targetPv string, pipe chan models.SingleData) {
 			parsedResponse, _ := client.ExecuteSingleQuery(targetPv, qm)
 			pipe <- parsedResponse
 		}(targetPv, responsePipe)
@@ -112,7 +109,7 @@ responseCollector:
 
 	// Apply Functions to the data
 	var funcErr error
-	responseData, funcErr = ApplyFunctions(responseData, qm)
+	responseData, funcErr = functions.ApplyFunctions(responseData, qm)
 	if funcErr != nil {
 		log.DefaultLogger.Warn("Error applying functions")
 	}
@@ -141,7 +138,7 @@ responseCollector:
 	return response
 }
 
-func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) {
+func applyAlias(sD []*models.SingleData, qm models.ArchiverQueryModel) ([]*models.SingleData, error) {
 	// Alias is not set. Return data as is is.
 	if qm.Alias == "" {
 		return sD, nil
@@ -163,7 +160,7 @@ func applyAlias(sD []*SingleData, qm ArchiverQueryModel) ([]*SingleData, error) 
 	return sD, nil
 }
 
-func dataExtrapol(singleResponse *SingleData, qm ArchiverQueryModel) *SingleData {
+func dataExtrapol(singleResponse *models.SingleData, qm models.ArchiverQueryModel) *models.SingleData {
 	if qm.Interval >= 1 || qm.Operator == "last" || qm.DisableExtrapol || qm.BackendQuery {
 		return singleResponse
 	}

@@ -1,4 +1,4 @@
-package main
+package archiverappliance
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ func TestIsolateBasicQuery(t *testing.T) {
 		testName := fmt.Sprintf("%d: %s, %s", idx, testCase.inputUnparsed, testCase.output)
 		t.Run(testName, func(t *testing.T) {
 			// result := testCase.output
-			result := IsolateBasicQuery(testCase.inputUnparsed)
+			result := isolateBasicQuery(testCase.inputUnparsed)
 			if len(result) != len(testCase.output) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
 			}
