@@ -51,6 +51,7 @@ type ArchiverQueryModel struct {
 	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
+	FormatOption    FormatOption      `json:"-"`
 }
 
 type FunctionDescriptorQueryModel struct {
@@ -176,6 +177,10 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 
 	// Parameters Not from JSON
 	model.TimeRange = query.TimeRange
+	// If "from" == "to" in seconds then "to" should be "to + 1 second"
+	if model.TimeRange.To.Sub(model.TimeRange.From) < time.Second {
+		model.TimeRange.To = model.TimeRange.To.Add(time.Second)
+	}
 	model.Interval, err = loadInterval(model)
 	if err != nil {
 		model.Interval = 0
@@ -186,6 +191,10 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 	model.MaxNumPVs, _ = model.LoadIntOption(FunctionOption(FUNC_OPTION_MAXNUMPVS), REGEX_MAXIMUM_MATCHES)
 	model.DisableAutoRaw, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEAUTORAW), false)
 	model.DisableExtrapol, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL), false)
+
+	f, _ := model.LoadStrOption(FUNC_OPTION_ARRAY_FORMAT, string(FORMAT_TIMESERIES))
+	model.FormatOption = FormatOption(f)
+
 	return model, nil
 }
 

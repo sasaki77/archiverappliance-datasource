@@ -25,6 +25,7 @@ const (
 	FUNC_OPTION_DISABLEAUTORAW  = FunctionOption("disableAutoRaw")
 	FUNC_OPTION_DISABLEEXTRAPOL = FunctionOption("disableExtrapol")
 	FUNC_OPTION_BININTERVAL     = FunctionOption("binInterval")
+	FUNC_OPTION_ARRAY_FORMAT    = FunctionOption("arrayFormat")
 )
 
 func (qm ArchiverQueryModel) PickFuncsByCategories(categories []FunctionCategory) []FunctionDescriptorQueryModel {
@@ -79,6 +80,24 @@ func (qm ArchiverQueryModel) LoadBooleanOption(name FunctionOption, defaultv boo
 		if paramErr != nil {
 			log.DefaultLogger.Warn("Conversion of boolean argument has failed", "Error", paramErr)
 			return false, paramErr
+		}
+		return val, nil
+	} else {
+		return defaultv, nil
+	}
+}
+
+func (qm ArchiverQueryModel) LoadStrOption(name FunctionOption, defaultv string) (string, error) {
+	functions := qm.IdentifyFunctionsByName(string(name))
+	if len(functions) >= 1 {
+		if len(functions) > 1 {
+			log.DefaultLogger.Warn(fmt.Sprintf("more than one %s has been provided: %v", name, functions))
+		}
+
+		val, paramErr := functions[0].ExtractParamString(functions[0].Def.Params[0].Name)
+		if paramErr != nil {
+			log.DefaultLogger.Warn("Conversion of int argument has failed", "Error", paramErr)
+			return "", paramErr
 		}
 		return val, nil
 	} else {

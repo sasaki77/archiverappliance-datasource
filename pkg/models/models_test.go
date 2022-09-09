@@ -59,10 +59,11 @@ func TestReadQueryModel(t *testing.T) {
 				MaxNumPVs:       1000,
 				BackendQuery:    false,
 				DisableExtrapol: false,
+				FormatOption:    "timeseries",
 			},
 		},
 		{
-			name: "Backend query test",
+			name: "Backend query test with 0 second timerange",
 			input: backend.DataQuery{
 				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
 				JSON: json.RawMessage(`{
@@ -127,7 +128,7 @@ func TestReadQueryModel(t *testing.T) {
 				RefID:         "A",
 				TimeRange: backend.TimeRange{
 					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
 			},
 			output: ArchiverQueryModel{
@@ -183,13 +184,14 @@ func TestReadQueryModel(t *testing.T) {
 				RefId:      "A",
 				TimeRange: backend.TimeRange{
 					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:42.678-08:00")),
 				},
 				Interval:        0,
 				BackendQuery:    true,
 				MaxNumPVs:       100,
 				DisableAutoRaw:  true,
 				DisableExtrapol: true,
+				FormatOption:    "timeseries",
 			},
 		},
 	}
@@ -560,6 +562,68 @@ func TestLoadBooleanOption(t *testing.T) {
 			result, err := testCase.input.LoadBooleanOption(testCase.option, testCase.defaultv)
 			if result != testCase.disable {
 				t.Errorf("got %v, want %v", result, testCase.disable)
+			}
+			if (err != nil && testCase.err == false) || (err == nil && testCase.err == true) {
+				t.Errorf("Incorrect error state: got %v, want %v", (err != nil), testCase.err)
+			}
+		})
+	}
+}
+
+func TestLoadStrOption(t *testing.T) {
+	var tests = []struct {
+		name     string
+		input    ArchiverQueryModel
+		option   FunctionOption
+		defaultv string
+		out      string
+		err      bool
+	}{
+		{
+			name: "Test Load String",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{
+					{
+						Def: FuncDefQueryModel{
+							Category:      "Options",
+							DefaultParams: testhelper.InitRawMsg(`timeseries`),
+							Name:          "arrayFormat",
+							Params: []FuncDefParamQueryModel{
+								{Name: "format", Type: "string"},
+							},
+						},
+						Params: []string{"test"},
+					},
+				},
+			},
+			option: FunctionOption(FUNC_OPTION_ARRAY_FORMAT),
+			out:    "test",
+			err:    false,
+		},
+		{
+			name: "Test no option function: default false",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{},
+			},
+			out: "",
+			err: false,
+		},
+		{
+			name: "Test no option function: default true",
+			input: ArchiverQueryModel{
+				Functions: []FunctionDescriptorQueryModel{},
+			},
+			option:   FunctionOption(FUNC_OPTION_ARRAY_FORMAT),
+			defaultv: "default",
+			out:      "default",
+			err:      false,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result, err := testCase.input.LoadStrOption(testCase.option, testCase.defaultv)
+			if result != testCase.out {
+				t.Errorf("got %s, want %s", result, testCase.out)
 			}
 			if (err != nil && testCase.err == false) || (err == nil && testCase.err == true) {
 				t.Errorf("Incorrect error state: got %v, want %v", (err != nil), testCase.err)
