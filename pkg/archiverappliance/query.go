@@ -128,8 +128,7 @@ responseCollector:
 
 	// for each query response, compile the data into response.Frames
 	for _, singleResponse := range responseData {
-
-		frame := singleResponse.ToFrame()
+		frame := singleResponse.ToFrame(qm.FormatOption)
 
 		// add the frames to the response
 		response.Frames = append(response.Frames, frame)

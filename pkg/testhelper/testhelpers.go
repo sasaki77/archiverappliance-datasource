@@ -33,6 +33,11 @@ func TimeHelper(minutes int) time.Time {
 	return time.Date(2021, time.January, 10, 1, minutes, 0, 0, time.UTC)
 }
 
+func TimeHelperMilli(milli int) time.Time {
+	// Shortcut for generating consistent timestamps using only a single int
+	return time.Date(2021, time.January, 10, 1, 0, 0, milli*1000000, time.UTC)
+}
+
 func TimeArrayHelper(start int, end int) []time.Time {
 	// Shortcut for generating a slice of consistent timestamps using the [beginning, ending) ints
 	counter := start

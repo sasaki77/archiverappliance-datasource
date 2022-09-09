@@ -14,8 +14,11 @@ type Scalars struct {
 	Values []float64
 }
 
-func (v *Scalars) ToFields(pvname string, name string) []*data.Field {
+func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*data.Field {
+	// ToFields doesn't use FormatOption in Scalars for now
+
 	var fields []*data.Field
+
 	//add the time dimension
 	fields = append(fields, data.NewField("time", nil, v.Times))
 

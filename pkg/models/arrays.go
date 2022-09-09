@@ -12,7 +12,80 @@ type Arrays struct {
 	Values [][]float64
 }
 
-func (v *Arrays) ToFields(pvname string, name string) []*data.Field {
+func (v *Arrays) ToFields(pvname string, name string, format FormatOption) []*data.Field {
+	if format == FormatOption(FORMAT_DTSPACE) {
+		fields := v.makeDtSpaceFields(pvname, name)
+		return fields
+	}
+
+	if format == FormatOption(FORMAT_INDEX) {
+		fields := v.makeIndexFields(pvname, name)
+		return fields
+	}
+
+	// Default: Timeseries
+	fields := v.makeTimeseriesFields(pvname, name)
+	return fields
+}
+
+func (v *Arrays) Extrapolation(t time.Time) {
+	v.Values = append(v.Values, v.Values[len(v.Values)-1])
+	v.Times = append(v.Times, t)
+}
+
+func (v *Arrays) makeDtSpaceFields(pvname string, name string) []*data.Field {
+	var times []time.Time
+	var vals []float64
+
+	for i, row := range v.Values {
+		for j, column := range row {
+			vals = append(vals, column)
+			times = append(times, v.Times[i].Add(time.Duration(j)*time.Millisecond))
+		}
+	}
+
+	var fields []*data.Field
+
+	//add the time dimension
+	fields = append(fields, data.NewField("time", nil, times))
+
+	// add values
+	labels := make(data.Labels, 1)
+	labels["pvname"] = pvname
+
+	valueField := data.NewField(name, labels, vals)
+	valueField.Config = &data.FieldConfig{DisplayName: name}
+	fields = append(fields, valueField)
+
+	return fields
+}
+
+func (v *Arrays) makeIndexFields(pvname string, name string) []*data.Field {
+	var fields []*data.Field
+
+	//add the index field
+	dataLen := len(v.Values[0])
+	numbers := make([]int64, dataLen)
+	for i := 0; i < dataLen; i++ {
+		numbers[i] = int64(i)
+	}
+	fields = append(fields, data.NewField("index", nil, numbers))
+
+	// add values
+	for idx, datapoint := range v.Values {
+		labels := make(data.Labels, 1)
+		labels["pvname"] = pvname
+
+		n := v.Times[idx].Format(time.RFC3339)
+		valueField := data.NewField(n, labels, datapoint[0:dataLen])
+		valueField.Config = &data.FieldConfig{DisplayName: n}
+		fields = append(fields, valueField)
+	}
+
+	return fields
+}
+
+func (v *Arrays) makeTimeseriesFields(pvname string, name string) []*data.Field {
 	var fields []*data.Field
 
 	//add the time dimension
@@ -31,11 +104,6 @@ func (v *Arrays) ToFields(pvname string, name string) []*data.Field {
 	}
 
 	return fields
-}
-
-func (v *Arrays) Extrapolation(t time.Time) {
-	v.Values = append(v.Values, v.Values[len(v.Values)-1])
-	v.Times = append(v.Times, t)
 }
 
 func transpose(slice [][]float64) [][]float64 {

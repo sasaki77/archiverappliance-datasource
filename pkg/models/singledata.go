@@ -9,7 +9,7 @@ import (
 
 type Values interface {
 	Extrapolation(t time.Time)
-	ToFields(pvname string, name string) []*data.Field
+	ToFields(pvname string, name string, format FormatOption) []*data.Field
 }
 
 type SingleData struct {
@@ -18,11 +18,19 @@ type SingleData struct {
 	Values Values
 }
 
-func (sd *SingleData) ToFrame() *data.Frame {
+type FormatOption string
+
+const (
+	FORMAT_TIMESERIES = FunctionCategory("timeseries")
+	FORMAT_INDEX      = FunctionCategory("index")
+	FORMAT_DTSPACE    = FunctionCategory("dt-space")
+)
+
+func (sd *SingleData) ToFrame(format FormatOption) *data.Frame {
 	// create data frame response
 	frame := data.NewFrame(sd.Name)
 
-	v := sd.Values.ToFields(sd.PVname, sd.Name)
+	v := sd.Values.ToFields(sd.PVname, sd.Name, format)
 	frame.Fields = append(frame.Fields, v...)
 
 	return frame
