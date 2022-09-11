@@ -1,4 +1,23 @@
 # Change Log
+## 1.4.0 (2022-09-12)
+
+### Enhancements
+- **Backend**: Add alias feature
+- **Backend**: Add array feature
+- **Frontend**: Add array format option function
+- **Backend**: Support template variables in Backend
+- **Backend**: Add Array to Scalar functions in Backend
+- **Backend**: Support last operator in backend
+- **Backend**: Add disableAutoRaw and maxNumPVs function support in Backend
+- **Backend**: Add array format option function for Backend
+
+### Bug fixes
+- **Backend**: Fix Scale and Offset functions to return data with PV name
+- **Backend**: Don't show hidden target in Backend
+- **Backend**: Enable auto binning interval for specified operator
+- **Backend**: Fix backend regex mode to support alternation
+- **Backend**: Enable extrapolation even if operator is not raw
+
 ## 1.3.5 (2022-06-20)
 
 ### Enhancements
