@@ -51,6 +51,17 @@ func TestApplyAliasSd(t *testing.T) {
 	}
 }
 
+func TestToFrameNil(t *testing.T) {
+	var sD SingleData
+	result := sD.ToFrame(FormatOption(FORMAT_TIMESERIES))
+	if result.Name != "" {
+		t.Errorf("Name should be empty: got %v", result.Name)
+	}
+	if len(result.Fields) > 1 {
+		t.Errorf("Fields should be empty: got %d", len(result.Fields))
+	}
+}
+
 func TestToFrameScalar(t *testing.T) {
 	var tests = []struct {
 		sD       SingleData

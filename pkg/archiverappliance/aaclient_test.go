@@ -265,6 +265,27 @@ func TestArchiverSingleQueryParser(t *testing.T) {
 	}
 }
 
+func TestArchiverSingleQueryParserEmpty(t *testing.T) {
+	input := []byte("[]")
+	result, err := archiverSingleQueryParser(input)
+
+	if err == nil {
+		t.Fatalf("An unexpected error has occurred")
+	}
+
+	if result.Name != "" {
+		t.Fatalf("Names differ - Wanted: '' Got: %v", result.Name)
+	}
+
+	if result.PVname != "" {
+		t.Fatalf("Names differ - Wanted: '' Got: %v", result.PVname)
+	}
+
+	if result.Values != nil {
+		t.Fatalf("Values should be nil: '' Got: %v", result.Values)
+	}
+}
+
 func TestArchiverRegexQueryParser(t *testing.T) {
 	var tests = []struct {
 		input  []byte

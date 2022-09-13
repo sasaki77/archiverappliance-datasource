@@ -30,6 +30,10 @@ func (sd *SingleData) ToFrame(format FormatOption) *data.Frame {
 	// create data frame response
 	frame := data.NewFrame(sd.Name)
 
+	if sd.Values == nil {
+		return frame
+	}
+
 	v := sd.Values.ToFields(sd.PVname, sd.Name, format)
 	frame.Fields = append(frame.Fields, v...)
 
