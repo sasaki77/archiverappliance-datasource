@@ -20,6 +20,7 @@ func TestIsolateBasicQuery(t *testing.T) {
 		{inputUnparsed: "()", output: []string{""}},
 		{inputUnparsed: "((this|that):is:1|this:is:2)", output: []string{"this:is:2", "this:is:1", "that:is:1"}},
 		{inputUnparsed: "prefix:((this|that):is:1|this:is:2)", output: []string{"prefix:this:is:2", "prefix:this:is:1", "prefix:that:is:1"}},
+		{inputUnparsed: "(prefix):(this):(is):(1|2)", output: []string{"prefix:this:is:1", "prefix:this:is:2"}},
 	}
 
 	for idx, testCase := range tests {
@@ -152,6 +153,8 @@ func TestPermuteQuery(t *testing.T) {
 		{input: [][]string{{"a"}, {"b"}}, output: [][]string{{"a", "b"}}},
 		{input: [][]string{{"a"}}, output: [][]string{{"a"}}},
 		{input: [][]string{{"a", "b"}}, output: [][]string{{"a"}, {"b"}}},
+		{input: [][]string{{"a"}, {"b"}, {"c", "d"}}, output: [][]string{{"a", "b", "c"}, {"a", "b", "d"}}},
+		{input: [][]string{{"a"}, {"b"}, {"c"}, {"d", "e"}}, output: [][]string{{"a", "b", "c", "d"}, {"a", "b", "c", "e"}}},
 		{input: [][]string{{}}, output: [][]string{}},
 		{input: [][]string{}, output: [][]string{{}}},
 	}
