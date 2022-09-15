@@ -58,25 +58,7 @@ queryCollector:
 func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client) backend.DataResponse {
 	response := backend.DataResponse{}
 
-	// make the query and compile the results into a SingleData instance
-	var targetPvList []string
-
-	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
-	// That's because AA sever doesn't support full regular expression.
-	isolatedPvList := isolateBasicQuery(qm.Target)
-
-	if qm.Regex {
-		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
-		// assemble the list of PVs to be queried for
-		var regexPvList []string
-		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(v, qm.MaxNumPVs)
-			regexPvList = append(regexPvList, pvs...)
-		}
-		targetPvList = regexPvList
-	} else {
-		targetPvList = isolatedPvList
-	}
+	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
 	// execute the individual queries
 	responseData := make([]*models.SingleData, 0, len(targetPvList))
@@ -167,4 +149,37 @@ func dataExtrapol(singleResponse *models.SingleData, qm models.ArchiverQueryMode
 	newResponse := singleResponse.Extrapolation(qm.TimeRange.To)
 
 	return newResponse
+}
+
+func makeTargetPVList(client client, target string, regex bool, maxNum int) []string {
+	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
+	// That's because AA sever doesn't support full regular expression.
+	isolatedPvList := isolateBasicQuery(target)
+
+	var targetPvList []string
+	if regex {
+		// If the user is using a regex to specify the PVs, parse and resolve the regex expression first
+		// assemble the list of PVs to be queried for
+		var regexPvList []string
+		for _, v := range isolatedPvList {
+			pvs, _ := client.FetchRegexTargetPVs(v, maxNum)
+			regexPvList = append(regexPvList, pvs...)
+		}
+		targetPvList = regexPvList
+	} else {
+		targetPvList = isolatedPvList
+	}
+
+	// Each name in list should be unique
+	var uniqPVList []string
+	m := map[string]bool{}
+	for _, pvname := range targetPvList {
+		if !m[pvname] {
+			m[pvname] = true
+			uniqPVList = append(uniqPVList, pvname)
+		}
+
+	}
+
+	return uniqPVList
 }
