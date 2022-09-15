@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
@@ -426,6 +427,37 @@ func TestDataExtrapol(t *testing.T) {
 				[]*models.SingleData{&testCase.sDOut},
 				t,
 			)
+		})
+	}
+}
+
+func TestMakeTargetPVList(t *testing.T) {
+	var tests = []struct {
+		name   string
+		input  string
+		regex  bool
+		output []string
+	}{
+		{
+			name:   "without regex",
+			input:  "PV:NAME(1|1)",
+			regex:  false,
+			output: []string{"PV:NAME1"},
+		},
+		{
+			name:   "with regex",
+			input:  ".*(1|1)",
+			regex:  true,
+			output: []string{"PV:NAME1"},
+		},
+	}
+	f := fakeClient{}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := makeTargetPVList(f, testCase.input, testCase.regex, 100)
+			if diff := cmp.Diff(testCase.output, result); diff != "" {
+				t.Errorf("Compare value is mismatch (-v1 +v2):%s\n", diff)
+			}
 		})
 	}
 }
