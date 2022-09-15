@@ -1,6 +1,8 @@
 package archiverappliance
 
-import "strings"
+import (
+	"strings"
+)
 
 func isolateBasicQuery(unparsed string) []string {
 	// Non-regex queries can request multiple PVs using this syntax: (PV:NAME:1|PV:NAME:2|...)
@@ -132,8 +134,10 @@ func permuteQueryRecurse(inputData [][]string, trace []string) [][]string {
 
 	// If you've assigned a value for each phrase, just return the full sequence of phrases
 	if len(trace) == len(inputData) {
+		c := make([]string, len(trace))
+		copy(c, trace)
 		output := make([][]string, 0, 1)
-		output = append(output, trace)
+		output = append(output, c)
 		return output
 	}
 
@@ -145,6 +149,7 @@ func permuteQueryRecurse(inputData [][]string, trace []string) [][]string {
 	output := make([][]string, 0, len(inputData[targetIdx]))
 	for _, value := range inputData[targetIdx] {
 		response := permuteQueryRecurse(inputData, append(trace, value))
+
 		output = append(output, response...)
 	}
 	return output
