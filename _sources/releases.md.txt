@@ -1,4 +1,13 @@
 # Release Notes
+## 1.4.1
+
+**2022-09-16**
+
+### Bug fixes
+- **Backend**: Go Backed is crashed when Archiver Appliance returns empty array response
+- **Backend**: Backend may return duplicated pv data
+- **Backend**: Alternative pattern doesn't work correctly
+
 ## 1.4.0
 
 **2022-09-12**
