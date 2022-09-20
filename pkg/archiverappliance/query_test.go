@@ -149,6 +149,80 @@ func TestQuery(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "test without sour function",
+			req: &backend.QueryDataRequest{
+				Queries: []backend.DataQuery{
+					{
+						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						JSON: json.RawMessage(`{
+                    		"alias": "$2:$1",
+                    		"aliasPattern": "(.*):(.*)",
+                    		"constant":6.5, 
+                    		"functions":[], 
+                    		"hide":false ,
+                    		"operator": "max",
+                    		"refId":"A" ,
+                    		"regex":true ,
+                    		"target":".*(1|2)"
+						}`),
+						MaxDataPoints: 1000,
+						QueryType:     "",
+						RefID:         "A",
+						TimeRange: backend.TimeRange{
+							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+						},
+					},
+				},
+			},
+			out: &backend.QueryDataResponse{
+				Responses: map[string]backend.DataResponse{
+					"A": {
+						Frames: data.Frames{
+							&data.Frame{
+								Name:  "NAME1:PV",
+								RefID: "",
+								Fields: []*data.Field{
+									{
+										Name: "Time",
+									},
+									{
+										Name: "NAME1:PV",
+										Labels: data.Labels{
+											"pvname": "PV:NAME1",
+										},
+										Config: &data.FieldConfig{
+											DisplayName: "NAME1:PV",
+										},
+									},
+								},
+								Meta: &data.FrameMeta{},
+							},
+							&data.Frame{
+								Name:  "NAME2:PV",
+								RefID: "",
+								Fields: []*data.Field{
+									{
+										Name: "Time",
+									},
+									{
+										Name: "NAME2:PV",
+										Labels: data.Labels{
+											"pvname": "PV:NAME2",
+										},
+										Config: &data.FieldConfig{
+											DisplayName: "NAME2:PV",
+										},
+									},
+								},
+								Meta: &data.FrameMeta{},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	f := fakeClient{}
 	for _, testCase := range tests {
