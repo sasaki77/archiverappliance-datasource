@@ -1,4 +1,12 @@
 # Release Notes
+
+## 1.4.2
+
+**2022-09-20**
+
+### Bug fixes
+- **Backend**: Dataframes are not sorted by name
+
 ## 1.4.1
 
 **2022-09-16**
