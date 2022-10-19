@@ -17,6 +17,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -47,42 +48,114 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#categories">Categories</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#transform-functions">Transform Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#scale"><em>scale</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#offset"><em>offset</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#delta"><em>delta</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fluctuation"><em>fluctuation</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#movingaverage"><em>movingAverage</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scale"><em>scale</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scale"><code class="docutils literal notranslate"><span class="pre">scale()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#offset"><em>offset</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#offset"><code class="docutils literal notranslate"><span class="pre">offset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#delta"><em>delta</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#delta"><code class="docutils literal notranslate"><span class="pre">delta()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fluctuation"><em>fluctuation</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fluctuation"><code class="docutils literal notranslate"><span class="pre">fluctuation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#movingaverage"><em>movingAverage</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#movingAverage"><code class="docutils literal notranslate"><span class="pre">movingAverage()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#array-to-scalar-functions">Array to Scalar Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbyavg"><em>toScalarByAvg</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbymax"><em>toScalarByMax</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbymin"><em>toScalarByMin</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbysum"><em>toScalarBySum</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbymed"><em>toScalarByMed</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toscalarbystd"><em>toScalarByStd</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbyavg"><em>toScalarByAvg</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarByAvg"><code class="docutils literal notranslate"><span class="pre">toScalarByAvg()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymax"><em>toScalarByMax</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarByMax"><code class="docutils literal notranslate"><span class="pre">toScalarByMax()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymin"><em>toScalarByMin</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarByMin"><code class="docutils literal notranslate"><span class="pre">toScalarByMin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbysum"><em>toScalarBySum</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarBySum"><code class="docutils literal notranslate"><span class="pre">toScalarBySum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbymed"><em>toScalarByMed</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarByMed"><code class="docutils literal notranslate"><span class="pre">toScalarByMed()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#toscalarbystd"><em>toScalarByStd</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toScalarByStd"><code class="docutils literal notranslate"><span class="pre">toScalarByStd()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#filter-series-functions">Filter Series Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#top"><em>top</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#bottom"><em>bottom</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#exclude"><em>exclude</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#top"><em>top</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#top"><code class="docutils literal notranslate"><span class="pre">top()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bottom"><em>bottom</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bottom"><code class="docutils literal notranslate"><span class="pre">bottom()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#exclude"><em>exclude</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#exclude"><code class="docutils literal notranslate"><span class="pre">exclude()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sort-functions">Sort Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#sortbyavg"><em>sortByAvg</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sortbymax"><em>sortByMax</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sortbymin"><em>sortByMin</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sortbysum"><em>sortBySum</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmax"><em>sortByAbsMax</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmin"><em>sortByAbsMin</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyavg"><em>sortByAvg</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortByAvg"><code class="docutils literal notranslate"><span class="pre">sortByAvg()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbymax"><em>sortByMax</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortByMax"><code class="docutils literal notranslate"><span class="pre">sortByMax()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbymin"><em>sortByMin</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortByMin"><code class="docutils literal notranslate"><span class="pre">sortByMin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbysum"><em>sortBySum</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortBySum"><code class="docutils literal notranslate"><span class="pre">sortBySum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmax"><em>sortByAbsMax</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortByAbsMax"><code class="docutils literal notranslate"><span class="pre">sortByAbsMax()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sortbyabsmin"><em>sortByAbsMin</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sortByAbsMin"><code class="docutils literal notranslate"><span class="pre">sortByAbsMin()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#options-functions">Options Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#maxnumpvs"><em>maxNumPVs</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#bininterval"><em>binInterval</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#disableautoraw"><em>disableAutoRaw</em></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#disableextrapol"><em>disableExtrapol</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maxnumpvs"><em>maxNumPVs</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#maxNumPVs"><code class="docutils literal notranslate"><span class="pre">maxNumPVs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bininterval"><em>binInterval</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#binInterval"><code class="docutils literal notranslate"><span class="pre">binInterval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#disableautoraw"><em>disableAutoRaw</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#disableAutoRaw"><code class="docutils literal notranslate"><span class="pre">disableAutoRaw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#disableextrapol"><em>disableExtrapol</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#disableExtrapol"><code class="docutils literal notranslate"><span class="pre">disableExtrapol()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
