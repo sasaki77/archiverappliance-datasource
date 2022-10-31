@@ -39,3 +39,38 @@ Above array data becomes as following with [toScalarByMin](functions.md#toscalar
 
 You can use as many `Array to Scalar` functions as you need for same array data.
 The other functions except `Options` are not supported for array data.
+
+### Array format
+From version 1.4.0, the plugin supports [arrayFormat](functions.md#arrayformat) function to change the table format for array data.
+There are 3 types of format: `timeseries`, `index`, and `dt-space`. `timeseries` format is default format described above.
+
+
+`index` format has a index column and columns for array data at each sampling time.
+Column name for each sampling time is a RFC3339-style time format.
+
+| index | 2020-01-01T00:00:10.000Z | 2020-01-01T00:01:50.000Z |
+| ----- | ------------------------ | ------------------------ |
+| 0     | val1_1                   | val2_1                   |
+| 1     | val1_2                   | val2_2                   |
+| ...   | ...                      | ...                      |
+| 360   | val1_361                 | val2_361                 |
+
+`Time series` panel can't show a plot with this format, but `XY chart` panel can show the data with the x-axis as index:
+
+![index format of array](./img/array-format-index.png)
+
+`dt-space` format transforms multiple datapoints into a single timeseries data.
+It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (`sampling time` + `N milliseconds`).
+
+| time          | PV:NAME  |
+| ------------- | -------- |
+| 1577804410000 | val1_1   |
+| 1577804410001 | val1_2   |
+| ...           | ...      |
+| 1577804410360 | val1_361 |
+| 1577804510000 | val2_1   |
+| 1577804510001 | val2_2   |
+| ...           | ...      |
+| 1577804510360 | val2_361 |
+
+See [Waveform visualization · Issue #83 · sasaki77/archiverappliance-datasource](https://github.com/sasaki77/archiverappliance-datasource/issues/83) for details and hitory.

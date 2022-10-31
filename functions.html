@@ -156,6 +156,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#disableExtrapol"><code class="docutils literal notranslate"><span class="pre">disableExtrapol()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#arrayformat"><em>arrayFormat</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arrayFormat"><code class="docutils literal notranslate"><span class="pre">arrayFormat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeseries">timeseries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#index">index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dt-space">dt-space</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -511,6 +518,123 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
+</section>
+<section id="arrayformat">
+<h3><em>arrayFormat</em><a class="headerlink" href="#arrayformat" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arrayFormat">
+<span class="sig-name descname"><span class="pre">arrayFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arrayFormat" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>This function changes a format of array.
+There are 3 types of format: <code class="docutils literal notranslate"><span class="pre">timeseries</span></code>, <code class="docutils literal notranslate"><span class="pre">index</span></code>, and <code class="docutils literal notranslate"><span class="pre">dt-space</span></code>.</p>
+<p>See <a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource/issues/83">Waveform visualization · Issue #83 · sasaki77/archiverappliance-datasource</a> for details and hitory.</p>
+<section id="timeseries">
+<h4>timeseries<a class="headerlink" href="#timeseries" title="Permalink to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">timeseries</span></code> format, the default format of array, has a time column and columns for each element of the array.
+Following is an example of array data for a PV that has 361 elements.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>PV:NAME[0]</p></th>
+<th class="head"><p>PV:NAME[1]</p></th>
+<th class="head"><p>…</p></th>
+<th class="head"><p>PV:NAME[360]</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1577804410000</p></td>
+<td><p>val1_1</p></td>
+<td><p>val1_2</p></td>
+<td><p>…</p></td>
+<td><p>val1_361</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804510000</p></td>
+<td><p>val2_1</p></td>
+<td><p>val2_2</p></td>
+<td><p>…</p></td>
+<td><p>val2_361</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="index">
+<h4>index<a class="headerlink" href="#index" title="Permalink to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">index</span></code> format has a index column and columns for array data at each sampling time.
+Column name for each sampling time is a RFC3339-style time format.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>index</p></th>
+<th class="head"><p>2020-01-01T00:00:10.000Z</p></th>
+<th class="head"><p>2020-01-01T00:01:50.000Z</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>val1_1</p></td>
+<td><p>val2_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>val1_2</p></td>
+<td><p>val2_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>360</p></td>
+<td><p>val1_361</p></td>
+<td><p>val2_361</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">series</span></code> panel can’t show a plot with this format, but <code class="docutils literal notranslate"><span class="pre">XY</span> <span class="pre">chart</span></code> panel can show the data with the x-axis as index.</p>
+<p><img alt="index format of array" src="_images/array-format-index.png" /></p>
+</section>
+<section id="dt-space">
+<h4>dt-space<a class="headerlink" href="#dt-space" title="Permalink to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">dt-space</span></code> format transforms multiple datapoints into a single timeseries data.
+It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (<code class="docutils literal notranslate"><span class="pre">sampling</span> <span class="pre">time</span></code> + <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">milliseconds</span></code>).</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>PV:NAME</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1577804410000</p></td>
+<td><p>val1_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804410001</p></td>
+<td><p>val1_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804410360</p></td>
+<td><p>val1_361</p></td>
+</tr>
+<tr class="row-even"><td><p>1577804510000</p></td>
+<td><p>val2_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804510001</p></td>
+<td><p>val2_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804510360</p></td>
+<td><p>val2_361</p></td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">timeseries</span><span class="p">)</span><span class="w"></span>
+<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span><span class="w"></span>
+<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">dt</span><span class="o">-</span><span class="nx">space</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>

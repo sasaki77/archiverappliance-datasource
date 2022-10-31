@@ -50,7 +50,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#binning-interval">Binning interval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#auto-raw-operation">Auto raw operation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extrapolation-for-raw-operation">Extrapolation for raw operation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#array-data-support">Array data support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#array-data-support">Array data support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#array-format">Array format</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
@@ -154,6 +157,77 @@ Above array data becomes as following with <a class="reference internal" href="f
 </table>
 <p>You can use as many <code class="docutils literal notranslate"><span class="pre">Array</span> <span class="pre">to</span> <span class="pre">Scalar</span></code> functions as you need for same array data.
 The other functions except <code class="docutils literal notranslate"><span class="pre">Options</span></code> are not supported for array data.</p>
+<section id="array-format">
+<h3>Array format<a class="headerlink" href="#array-format" title="Permalink to this heading"></a></h3>
+<p>From version 1.4.0, the plugin supports <a class="reference internal" href="functions.html#arrayformat"><span class="std std-doc">arrayFormat</span></a> function to change the table format for array data.
+There are 3 types of format: <code class="docutils literal notranslate"><span class="pre">timeseries</span></code>, <code class="docutils literal notranslate"><span class="pre">index</span></code>, and <code class="docutils literal notranslate"><span class="pre">dt-space</span></code>. <code class="docutils literal notranslate"><span class="pre">timeseries</span></code> format is default format described above.</p>
+<p><code class="docutils literal notranslate"><span class="pre">index</span></code> format has a index column and columns for array data at each sampling time.
+Column name for each sampling time is a RFC3339-style time format.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>index</p></th>
+<th class="head"><p>2020-01-01T00:00:10.000Z</p></th>
+<th class="head"><p>2020-01-01T00:01:50.000Z</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>val1_1</p></td>
+<td><p>val2_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>val1_2</p></td>
+<td><p>val2_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>360</p></td>
+<td><p>val1_361</p></td>
+<td><p>val2_361</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">series</span></code> panel can’t show a plot with this format, but <code class="docutils literal notranslate"><span class="pre">XY</span> <span class="pre">chart</span></code> panel can show the data with the x-axis as index:</p>
+<p><img alt="index format of array" src="_images/array-format-index.png" /></p>
+<p><code class="docutils literal notranslate"><span class="pre">dt-space</span></code> format transforms multiple datapoints into a single timeseries data.
+It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (<code class="docutils literal notranslate"><span class="pre">sampling</span> <span class="pre">time</span></code> + <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">milliseconds</span></code>).</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>time</p></th>
+<th class="head"><p>PV:NAME</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1577804410000</p></td>
+<td><p>val1_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804410001</p></td>
+<td><p>val1_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804410360</p></td>
+<td><p>val1_361</p></td>
+</tr>
+<tr class="row-even"><td><p>1577804510000</p></td>
+<td><p>val2_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804510001</p></td>
+<td><p>val2_2</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>1577804510360</p></td>
+<td><p>val2_361</p></td>
+</tr>
+</tbody>
+</table>
+<p>See <a class="reference external" href="https://github.com/sasaki77/archiverappliance-datasource/issues/83">Waveform visualization · Issue #83 · sasaki77/archiverappliance-datasource</a> for details and hitory.</p>
+</section>
 </section>
 </section>
 
