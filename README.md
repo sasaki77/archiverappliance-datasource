@@ -18,13 +18,18 @@ See [Archiver Appliance site](https://slacmshankar.github.io/epicsarchiver_docs/
 
 ## Installing the plugin
 
-### Install using releases
+### Install with Grafana CLI
+1. Install the plugin with Grafana CLI. Execute Grafana CLI as following:
+```bash
+# Install latest version. You can also use this command to update the plugin to the latest version.
+grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/latest/download/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
 
-1. Download a pre-built release from the releases page.
+# Install particular version. This example will install v1.4.2.
+grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/1.4.2/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+```
+2. This plugin is unsigned. It must be specially listed by name in the Grafana `grafana.ini` file to allow Grafana to use it. Add `sasaki77-archiverappliance-datasource` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section. See [Configure Grafana | Grafana documentation](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/) for more detail on `grafana.ini`.
 
-2. Unzip the contents in the Grafana plugins folder.
-
-3. This plugin is unsigned. It must be specially listed by name in the Grafana `grafana.ini` file to allow Grafana to use it. Add `sasaki77-archiverappliance-datasource` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section.
+To update the plugin, execute Grafana CLI again.
 
 ### Install using Git
 
@@ -33,8 +38,6 @@ Clone this plugin into grafana plugins directory; the default is /var/lib/grafan
 ### Configuring the plugin
 
 Please consult [https://sasaki77.github.io/archiverappliance-datasource/configuration.html] for instructions to configure the plugin following installation.
-
-###
 
 ## Documentaion
 Documentation is available at [https://sasaki77.github.io/archiverappliance-datasource](https://sasaki77.github.io/archiverappliance-datasource).
@@ -45,17 +48,17 @@ This section lists the available configuration options for the Archiver Applianc
 
 ### Query editor
 
-| Configuration | Description |
-|---------------|-------------|
-| **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`). |
-| **Regex** | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](https://sasaki77.github.io/archiverappliance-datasource/query.html#select-multiple-pvs-by-regex). |
-| **Operator** | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
-| **Stream** | Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.|
-| **Interval** | Streaming interval in milliseconds. You can also use a number with unit. e.g. `1s`, `1m`, `1h`. The default is determined by a width of panel and time range. |
-| **Capacity** | The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size. | 
-| **Alias** | Set alias for legend. |
-| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern) |
-| **Function** | Apply processing function for retrieved data. Refer [Apply Processing Functions](https://sasaki77.github.io/archiverappliance-datasource/query.html#apply-processing-functions) |
+| Configuration     | Description                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PV**            | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`).                                                                                                                                                                                                                                                 |
+| **Regex**         | Enable/disable Regex mode. Refer [Select Multiple PVs by Regex](https://sasaki77.github.io/archiverappliance-datasource/query.html#select-multiple-pvs-by-regex).                                                                                                                                                                                                                       |
+| **Operator**      | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
+| **Stream**        | Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.                                                                                                                                                                                                         |
+| **Interval**      | Streaming interval in milliseconds. You can also use a number with unit. e.g. `1s`, `1m`, `1h`. The default is determined by a width of panel and time range.                                                                                                                                                                                                                           |
+| **Capacity**      | The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size.                                                                                                                                                                                                                                                   |
+| **Alias**         | Set alias for legend.                                                                                                                                                                                                                                                                                                                                                                   |
+| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern)                                                                                                                                                                             |
+| **Function**      | Apply processing function for retrieved data. Refer [Apply Processing Functions](https://sasaki77.github.io/archiverappliance-datasource/query.html#apply-processing-functions)                                                                                                                                                                                                         |
 
 ### Variables
 
@@ -144,12 +147,12 @@ docker-compose up
 
 The following containers are runinng after `docker-compse up`.
 
-| Name | Description |
-|---------------|-------------|
-| **grafana** | Runs a Grafana server. |
-| **archappl** | Runs a EPICS Archiver Appliance. |
-| **redis** | Runs a datastore for the persistance of the appliance configuration. |
-| **example** | Runs a example EPICS IOC to be archived. |
+| Name         | Description                                                          |
+| ------------ | -------------------------------------------------------------------- |
+| **grafana**  | Runs a Grafana server.                                               |
+| **archappl** | Runs a EPICS Archiver Appliance.                                     |
+| **redis**    | Runs a datastore for the persistance of the appliance configuration. |
+| **example**  | Runs a example EPICS IOC to be archived.                             |
 
 To set up the Archiver Appliance, open http://localhost:17665/mgmt/ui/index.html. You can add the PVs served by the example IOC on this page.
 Enter the following lines in the input field and then clicking the `Archive` button.
@@ -203,9 +206,9 @@ make html
 
 ## Build Status
 
-| Build: | Status: | 
-| :---: | :---: | 
-| Latest release | ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/publish-release.yml/badge.svg) |
-| Master Branch | ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/build-and-test.yml/badge.svg?branch=master)
-| Local Master Branch | ![awaiting build](../../workflows/build-and-test.yml/badge.svg?branch=master)
-| Local Latest Branch | ![awaiting build](../../workflows/build-and-test.yml/badge.svg?)
+|       Build:        |                                                             Status:                                                              |
+| :-----------------: | :------------------------------------------------------------------------------------------------------------------------------: |
+|   Latest release    |       ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/publish-release.yml/badge.svg)        |
+|    Master Branch    | ![awaiting build](https://github.com/sasaki77/archiverappliance-datasource/workflows/build-and-test.yml/badge.svg?branch=master) |
+| Local Master Branch |                          ![awaiting build](../../workflows/build-and-test.yml/badge.svg?branch=master)                           |
+| Local Latest Branch |                                 ![awaiting build](../../workflows/build-and-test.yml/badge.svg?)                                 |
