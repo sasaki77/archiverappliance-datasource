@@ -295,3 +295,63 @@ Examples:
 disableExtrapol(true)
 disableExtrapol(false)
 ```
+
+### _arrayFormat_
+```{eval-rst}
+.. function:: arrayFormat(format)
+```
+
+This function changes a format of array.
+There are 3 types of format: `timeseries`, `index`, and `dt-space`.
+
+See [Waveform visualization · Issue #83 · sasaki77/archiverappliance-datasource](https://github.com/sasaki77/archiverappliance-datasource/issues/83) for details and hitory.
+
+#### timeseries
+
+`timeseries` format, the default format of array, has a time column and columns for each element of the array.
+Following is an example of array data for a PV that has 361 elements.
+
+| time          | PV:NAME[0] | PV:NAME[1] | ... | PV:NAME[360] |
+| ------------- | ---------- | ---------- | --- | ------------ |
+| 1577804410000 | val1_1     | val1_2     | ... | val1_361     |
+| 1577804510000 | val2_1     | val2_2     | ... | val2_361     |
+
+#### index
+
+`index` format has a index column and columns for array data at each sampling time.
+Column name for each sampling time is a RFC3339-style time format.
+
+| index | 2020-01-01T00:00:10.000Z | 2020-01-01T00:01:50.000Z |
+| ----- | ------------------------ | ------------------------ |
+| 0     | val1_1                   | val2_1                   |
+| 1     | val1_2                   | val2_2                   |
+| ...   | ...                      | ...                      |
+| 360   | val1_361                 | val2_361                 |
+
+`Time series` panel can't show a plot with this format, but `XY chart` panel can show the data with the x-axis as index.
+
+![index format of array](./img/array-format-index.png)
+
+#### dt-space
+
+`dt-space` format transforms multiple datapoints into a single timeseries data.
+It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (`sampling time` + `N milliseconds`).
+
+| time          | PV:NAME  |
+| ------------- | -------- |
+| 1577804410000 | val1_1   |
+| 1577804410001 | val1_2   |
+| ...           | ...      |
+| 1577804410360 | val1_361 |
+| 1577804510000 | val2_1   |
+| 1577804510001 | val2_2   |
+| ...           | ...      |
+| 1577804510360 | val2_361 |
+
+Examples:
+
+```js
+arrayFormat(timeseries)
+arrayFormat(index)
+arrayFormat(dt-space)
+```
