@@ -76,7 +76,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Regex"
       labelClass="width-7  query-keyword"
@@ -180,7 +180,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Stream"
       labelClass="width-7  query-keyword"
@@ -404,7 +404,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={true}
       label="Regex"
       labelClass="width-7  query-keyword"
@@ -508,7 +508,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Stream"
       labelClass="width-7  query-keyword"
@@ -730,7 +730,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Regex"
       labelClass="width-7  query-keyword"
@@ -834,7 +834,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Stream"
       labelClass="width-7  query-keyword"
@@ -1060,7 +1060,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Regex"
       labelClass="width-7  query-keyword"
@@ -1164,7 +1164,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={true}
       label="Stream"
       labelClass="width-7  query-keyword"
@@ -1386,7 +1386,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Regex"
       labelClass="width-7  query-keyword"
@@ -1490,7 +1490,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         }
       />
     </div>
-    <Switch$2
+    <Switch$1
       checked={false}
       label="Stream"
       labelClass="width-7  query-keyword"
