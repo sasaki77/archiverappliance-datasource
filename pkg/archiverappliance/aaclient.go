@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -42,8 +43,8 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
 	queryResponse, _ := archiverSingleQuery(queryUrl)
-	parsedResponse, _ := archiverSingleQueryParser(queryResponse)
-	return parsedResponse, nil
+	parsedResponse, err := archiverSingleQueryParser(queryResponse)
+	return parsedResponse, err
 }
 
 func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) string {
@@ -138,7 +139,8 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 	jsonErr := json.Unmarshal(jsonAsBytes, &response)
 	if jsonErr != nil {
 		log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
-		return sD, jsonErr
+		err := fmt.Errorf("response parse error. the response might have invalid data, e.g. infinity or null: %w", jsonErr)
+		return sD, err
 	}
 
 	if len(response) < 1 {

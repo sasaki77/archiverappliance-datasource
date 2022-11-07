@@ -1,0 +1,28 @@
+[
+    {
+        "meta": {
+            "name": "PFRVA:NEG:2NDSYS:PLASM:RESIS",
+            "waveform": false,
+            "EGU": "ohm",
+            "PREC": "0"
+        },
+        "data": [
+            {
+                "millis": 1667786399401,
+                "val": -Infinity
+            },
+            {
+                "millis": 1667786401400,
+                "val": null
+            },
+            {
+                "millis": 1667786408400,
+                "val": -Infinity
+            },
+            {
+                "millis": 1667786409400,
+                "val": null
+            }
+        ]
+    }
+]

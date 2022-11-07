@@ -286,6 +286,41 @@ func TestArchiverSingleQueryParserEmpty(t *testing.T) {
 	}
 }
 
+func TestArchiverSingleQueryParserInvalidData(t *testing.T) {
+	var dataNames = []struct {
+		name     string
+		fileName string
+	}{
+		{
+			name:     "infinity data",
+			fileName: "../test_data/invalid_value_response.JSON",
+		},
+	}
+
+	type testData struct {
+		input []byte
+		name  string
+	}
+
+	var tests []testData
+	for _, entry := range dataNames {
+		fileData, err := ioutil.ReadFile(entry.fileName)
+		if err != nil {
+			t.Fatalf("Failed to load test data: %v", err)
+		}
+		tests = append(tests, testData{input: fileData, name: entry.name})
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			_, err := archiverSingleQueryParser(testCase.input)
+			if err == nil {
+				t.Fatalf("An unexpected error has occurred")
+			}
+		})
+	}
+}
+
 func TestArchiverRegexQueryParser(t *testing.T) {
 	var tests = []struct {
 		input  []byte

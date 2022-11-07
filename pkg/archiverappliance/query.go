@@ -56,6 +56,11 @@ queryCollector:
 	return response
 }
 
+type queryResponse struct {
+	response models.SingleData
+	err      error
+}
+
 func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client) backend.DataResponse {
 	response := backend.DataResponse{}
 
@@ -63,7 +68,7 @@ func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client clien
 
 	// execute the individual queries
 	responseData := make([]*models.SingleData, 0, len(targetPvList))
-	responsePipe := make(chan models.SingleData)
+	responsePipe := make(chan queryResponse)
 
 	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
 	timeoutDurationSeconds := 30 // units are seconds
@@ -72,9 +77,9 @@ func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client clien
 
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
-		go func(targetPv string, pipe chan models.SingleData) {
-			parsedResponse, _ := client.ExecuteSingleQuery(targetPv, qm)
-			pipe <- parsedResponse
+		go func(targetPv string, pipe chan queryResponse) {
+			parsedResponse, err := client.ExecuteSingleQuery(targetPv, qm)
+			pipe <- queryResponse{response: parsedResponse, err: err}
 		}(targetPv, responsePipe)
 	}
 
@@ -83,7 +88,10 @@ responseCollector:
 	for range targetPvList {
 		select {
 		case response := <-responsePipe:
-			responseData = append(responseData, &response)
+			if response.err != nil {
+				return backend.DataResponse{Error: response.err}
+			}
+			responseData = append(responseData, &response.response)
 		case <-timeoutPipe:
 			log.DefaultLogger.Warn("Timeout limit for query has been reached")
 			break responseCollector
