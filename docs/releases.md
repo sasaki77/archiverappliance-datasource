@@ -1,4 +1,10 @@
 # Release Notes
+## 1.4.3
+
+**2022-11-08**
+
+### Bug fixes
+- **Backend**: Return an error response when the plugin received an invalid response from AA server
 
 ## 1.4.2
 
