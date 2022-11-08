@@ -32,14 +32,19 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryMod
 		return models.SingleData{}, errors.New("test error")
 	}
 
-	var values []float64
-	if target == "PV:NAME1" {
-		values = []float64{0, 1, 2}
-	} else {
-		values = []float64{3, 4, 5}
-	}
+	var v models.Values
 
-	v := &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
+	switch target {
+	case "string":
+		s := []string{"test1", "test2", "test3"}
+		v = &models.Strings{Times: testhelper.TimeArrayHelper(0, 3), Values: s}
+	case "PV:NAME1":
+		values := []float64{0, 1, 2}
+		v = &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
+	default:
+		values := []float64{3, 4, 5}
+		v = &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
+	}
 
 	sd := models.SingleData{
 		Name:   target,
@@ -218,6 +223,61 @@ func TestQuery(t *testing.T) {
 										},
 										Config: &data.FieldConfig{
 											DisplayName: "NAME2:PV",
+										},
+									},
+								},
+								Meta: &data.FrameMeta{},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "test string response",
+			req: &backend.QueryDataRequest{
+				Queries: []backend.DataQuery{
+					{
+						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						JSON: json.RawMessage(`{
+                    		"alias": "",
+                    		"aliasPattern": "",
+                    		"constant":6.5, 
+                    		"functions":[], 
+                    		"hide":false ,
+                    		"operator": "",
+                    		"refId":"A" ,
+                    		"regex":false ,
+                    		"target":"string"
+						}`),
+						MaxDataPoints: 1000,
+						QueryType:     "",
+						RefID:         "A",
+						TimeRange: backend.TimeRange{
+							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+						},
+					},
+				},
+			},
+			out: &backend.QueryDataResponse{
+				Responses: map[string]backend.DataResponse{
+					"A": {
+						Frames: data.Frames{
+							&data.Frame{
+								Name:  "string",
+								RefID: "",
+								Fields: []*data.Field{
+									{
+										Name: "Time",
+									},
+									{
+										Name: "string",
+										Labels: data.Labels{
+											"pvname": "string",
+										},
+										Config: &data.FieldConfig{
+											DisplayName: "string",
 										},
 									},
 								},

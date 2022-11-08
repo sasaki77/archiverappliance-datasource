@@ -286,6 +286,68 @@ func TestArchiverSingleQueryParserEmpty(t *testing.T) {
 	}
 }
 
+func TestArchiverSingleQueryParserString(t *testing.T) {
+	type responseParams struct {
+		length   int
+		name     string
+		firstVal string
+		lastVal  string
+	}
+
+	var dataNames = []struct {
+		fileName string
+		output   responseParams
+	}{
+		{
+			fileName: "../test_data/string_value_response.JSON",
+			output:   responseParams{length: 4, name: "PFROP:RING:STATUS_STR", firstVal: "Injection", lastVal: "Top-up"},
+		},
+	}
+
+	type testData struct {
+		input  []byte
+		output responseParams
+	}
+
+	var tests []testData
+	for _, entry := range dataNames {
+		fileData, err := ioutil.ReadFile(entry.fileName)
+		if err != nil {
+			t.Fatalf("Failed to load test data: %v", err)
+		}
+		tests = append(tests, testData{input: fileData, output: entry.output})
+	}
+
+	for idx, testCase := range tests {
+		testName := fmt.Sprintf("Case: %d", idx)
+		t.Run(testName, func(t *testing.T) {
+			// result := testCase.output
+			result, err := archiverSingleQueryParser(testCase.input)
+			if err != nil {
+				t.Fatalf("An unexpected error has occurred")
+			}
+			if result.Name != testCase.output.name {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.output.name, result.Name)
+			}
+
+			v := result.Values.(*models.Strings)
+			if len(v.Times) != len(v.Values) {
+				t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
+			}
+			resultLength := len(v.Times)
+			if resultLength != testCase.output.length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
+			}
+			if v.Values[0] != testCase.output.firstVal {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
+			}
+			if v.Values[resultLength-1] != testCase.output.lastVal {
+				t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
+			}
+		})
+	}
+}
+
 func TestArchiverSingleQueryParserInvalidData(t *testing.T) {
 	var dataNames = []struct {
 		name     string

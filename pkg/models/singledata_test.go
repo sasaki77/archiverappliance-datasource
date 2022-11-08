@@ -116,6 +116,60 @@ func TestToFrameScalar(t *testing.T) {
 	}
 }
 
+func TestToFrameString(t *testing.T) {
+	var tests = []struct {
+		sD       SingleData
+		name     string
+		pvname   string
+		values   []string
+		dataSize int
+	}{
+		{
+			sD: SingleData{
+				Name:   "testing_name",
+				PVname: "pvname",
+				Values: &Strings{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
+					Values: []string{"1", "2", "3"},
+				},
+			},
+			name:     "testing_name",
+			pvname:   "pvname",
+			values:   []string{"1", "2", "3"},
+			dataSize: 3,
+		},
+	}
+	for idx, testCase := range tests {
+		testName := fmt.Sprintf("%d: %s", idx, testCase.name)
+		t.Run(testName, func(t *testing.T) {
+			result := testCase.sD.ToFrame(FormatOption(FORMAT_TIMESERIES))
+			if testCase.name != result.Name {
+				t.Errorf("got %v, want %v", result.Name, testCase.name)
+			}
+			if result.Fields[0].Name != "time" {
+				t.Errorf("got %v, want time", result.Fields[0].Name)
+			}
+			if result.Fields[0].Len() != testCase.dataSize {
+				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
+			}
+			if testCase.name != result.Fields[1].Config.DisplayName {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			}
+			if testCase.pvname != result.Fields[1].Labels["pvname"] {
+				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
+			}
+			if testCase.name != result.Fields[1].Name {
+				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
+			}
+			for i := 0; i < result.Fields[1].Len(); i++ {
+				if testCase.values[i] != result.Fields[1].CopyAt(i) {
+					t.Errorf("got %v, want %v", result.Fields[1].CopyAt(i), testCase.values[i])
+				}
+			}
+		})
+	}
+}
+
 func TestToFrameArray(t *testing.T) {
 	var tests = []struct {
 		sD         SingleData
@@ -333,7 +387,7 @@ func TestExtrapolation(t *testing.T) {
 					Values: []float64{1},
 				},
 			},
-			name: "extrapolation",
+			name: "scalars extrapolation",
 			t:    testhelper.TimeHelper(5),
 			sDOut: SingleData{
 				Values: &Scalars{
@@ -344,12 +398,28 @@ func TestExtrapolation(t *testing.T) {
 		},
 		{
 			sDIn: SingleData{
+				Values: &Strings{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
+					Values: []string{"1"},
+				},
+			},
+			name: "strings extrapolation",
+			t:    testhelper.TimeHelper(5),
+			sDOut: SingleData{
+				Values: &Strings{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
+					Values: []string{"1"},
+				},
+			},
+		},
+		{
+			sDIn: SingleData{
 				Values: &Arrays{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
 					Values: [][]float64{{1, 1}},
 				},
 			},
-			name: "extrapolation",
+			name: "arrays extrapolation",
 			t:    testhelper.TimeHelper(5),
 			sDOut: SingleData{
 				Values: &Arrays{

@@ -103,7 +103,15 @@ type SingleScalarResponseModel struct {
 	Val    json.Number  `json:"val"`
 }
 
+type SingleStringResponseModel struct {
+	Millis *json.Number `json:"millis,omitempty"`
+	Nanos  *json.Number `json:"nanos,omitempty"`
+	Secs   *json.Number `json:"secs,omitempty"`
+	Val    string       `json:"val"`
+}
+
 type ScalarResponseModel []SingleScalarResponseModel
+type StringResponseModel []SingleStringResponseModel
 type ArrayResponseModel []SingleArrayResponseModel
 
 type DataResponse interface {
@@ -129,6 +137,22 @@ func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
 	}
 
 	return &Scalars{Times: times, Values: values}, nil
+}
+
+func (response StringResponseModel) ToSingleDataValues() (Values, error) {
+	// Build output data block
+	dataSize := len(response)
+
+	// initialize the slices with their final size so append operations are not necessary
+	times := make([]time.Time, dataSize)
+	values := make([]string, dataSize)
+
+	for idx, dataPt := range response {
+		times[idx] = convertNanosec(dataPt.Millis)
+		values[idx] = dataPt.Val
+	}
+
+	return &Strings{Times: times, Values: values}, nil
 }
 
 func (response ArrayResponseModel) ToSingleDataValues() (Values, error) {
