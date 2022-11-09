@@ -1,4 +1,9 @@
 # Change Log
+## 1.4.4 (2022-11-09)
+
+### Bug fixes
+- **Backend**: Support a string value response
+
 ## 1.4.3 (2022-11-08)
 
 ### Bug fixes
