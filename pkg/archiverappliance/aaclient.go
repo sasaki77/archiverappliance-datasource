@@ -150,21 +150,23 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 
 	var d models.DataResponse
 	if response[0].Meta.Waveform {
-		var data models.ArrayResponseModel
-		jsonErr = json.Unmarshal(response[0].Data, &data)
-		if jsonErr != nil {
-			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
-			return sD, jsonErr
-		}
-		d = data
+		d = &models.ArrayResponseModel{}
 	} else {
-		var data models.ScalarResponseModel
-		jsonErr = json.Unmarshal(response[0].Data, &data)
-		if jsonErr != nil {
-			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
-			return sD, jsonErr
+		d = &models.ScalarResponseModel{}
+	}
+
+	jsonErr = json.Unmarshal(response[0].Data, d)
+
+	// If unmarshal is failed, response data might be string data
+	if jsonErr != nil {
+		d = &models.StringResponseModel{}
+		err := json.Unmarshal(response[0].Data, d)
+
+		// If unmarshal is failed again, response data is not supported data type
+		if err != nil {
+			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", err)
+			return sD, err
 		}
-		d = data
 	}
 
 	// Obtain PV name
