@@ -28,7 +28,7 @@ func (f fakeClient) FetchRegexTargetPVs(regex string, limit int) ([]string, erro
 }
 
 func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
-	if target == "invalid" {
+	if target == "invalid" || target == "invalid2" {
 		return models.SingleData{}, errors.New("test error")
 	}
 
@@ -352,7 +352,7 @@ func TestQueryWithInvalidResponse(t *testing.T) {
                     		"operator": "",
                     		"refId":"A" ,
                     		"regex":false ,
-                    		"target":"invalid" ,
+                    		"target":"(invalid|invalid2|PV:NAME1)" ,
 							"functions":[
 							]
 						}`),
@@ -372,8 +372,15 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := Query(testCase.ctx, f, testCase.req)
-			if result.Responses["A"].Error == nil {
+			res := result.Responses["A"]
+			if res.Error == nil {
 				t.Errorf("An unexpected error has occurred")
+			}
+			if len(res.Frames) != 1 {
+				t.Errorf("resposne length sould be 1")
+			}
+			if res.Frames[0].Name != "PV:NAME1" {
+				t.Errorf("got %v, want PV:NAME1", res.Frames[0].Name)
 			}
 		})
 	}

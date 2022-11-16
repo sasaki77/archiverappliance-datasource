@@ -62,7 +62,6 @@ type queryResponse struct {
 }
 
 func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client) backend.DataResponse {
-	response := backend.DataResponse{}
 
 	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
@@ -84,12 +83,16 @@ func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client clien
 	}
 
 	// Collect responses from the request goroutines
+	var responseErr error
 responseCollector:
 	for range targetPvList {
 		select {
 		case response := <-responsePipe:
 			if response.err != nil {
-				return backend.DataResponse{Error: response.err}
+				if responseErr == nil {
+					responseErr = response.err
+				}
+				continue
 			}
 			responseData = append(responseData, &response.response)
 		case <-timeoutPipe:
@@ -119,6 +122,8 @@ responseCollector:
 		responseData[idx] = dataExtrapol(data, qm)
 	}
 
+	response := backend.DataResponse{}
+
 	// for each query response, compile the data into response.Frames
 	for _, singleResponse := range responseData {
 		frame := singleResponse.ToFrame(qm.FormatOption)
@@ -126,6 +131,8 @@ responseCollector:
 		// add the frames to the response
 		response.Frames = append(response.Frames, frame)
 	}
+
+	response.Error = responseErr
 
 	return response
 }
