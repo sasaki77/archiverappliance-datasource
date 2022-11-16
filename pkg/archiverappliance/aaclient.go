@@ -44,6 +44,9 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
 	queryResponse, _ := archiverSingleQuery(queryUrl)
 	parsedResponse, err := archiverSingleQueryParser(queryResponse)
+	if err != nil {
+		err = fmt.Errorf("target = %q: %w", target, err)
+	}
 	return parsedResponse, err
 }
 
