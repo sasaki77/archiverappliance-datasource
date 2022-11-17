@@ -2,6 +2,7 @@ name: nightly-builds.yml
 on:
   schedule:
     - cron: "0 17 * * *"
+  workflow_dispatch:
 jobs:
   nightly-builds:
     runs-on: ubuntu-latest
@@ -17,6 +18,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: "recursive"
+      - name: Move nightly tag
+        uses: EndBug/latest-tag@latest
+        with:
+          ref: nightly
+          description: "For nightly build"
+          force-branch: true
       - name: Setup NodeJS environment
         uses: actions/setup-node@v1
         with:
