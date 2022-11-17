@@ -23,7 +23,7 @@ jobs:
         with:
           ref: nightly
           description: "For nightly build"
-          force-branch: true
+          force-branch: false
       - name: Setup NodeJS environment
         uses: actions/setup-node@v1
         with:
