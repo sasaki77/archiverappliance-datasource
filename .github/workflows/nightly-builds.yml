@@ -1,5 +1,7 @@
 name: nightly-builds.yml
-on: workflow_dispatch
+on:
+  schedule:
+    - cron: "0 17 * * *"
 jobs:
   nightly-builds:
     runs-on: ubuntu-latest
@@ -50,16 +52,6 @@ jobs:
           pushd ../
           zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./${{ env.zip-name }}.zip
-          asset_name: ${{ env.zip-name }}.zip
-          asset_content_type: application/zip
       - name: Upload nightly builds
         uses: softprops/action-gh-release@v1
         with:
