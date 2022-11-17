@@ -2,7 +2,7 @@ name: publish-release.yml
 on:
   push:
     tags:
-      - "*" # run this action exclusively on tags
+      - "[0-9]+.[0-9]+.[0-9]+"
 jobs:
   build-and-test-plugin:
     runs-on: ubuntu-latest
