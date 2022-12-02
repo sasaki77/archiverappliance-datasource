@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
-import { DataSourceHttpSettings } from '@grafana/ui';
+import { DataSourceHttpSettings, InlineSwitch, InlineField } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { LegacyForms } from '@grafana/ui';
 import { AADataSourceOptions } from '../types';
+
+const LABEL_WIDTH = 26;
 
 export type Props = DataSourcePluginOptionsEditorProps<AADataSourceOptions>;
 
@@ -32,14 +33,17 @@ export class ConfigEditor extends PureComponent<Props> {
         />
         <h3 className="page-heading">Misc</h3>
         <div className="gf-form-group">
-          <div className="gf-form">
-            <LegacyForms.Switch
-              checked={options.jsonData.useBackend ?? false}
+          <div className="gf-form-inline">
+            <InlineField
               label="Use Backend"
-              labelClass={'width-13'}
+              labelWidth={LABEL_WIDTH}
               tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
-              onChange={this.onUseBEChange}
-            />
+            >
+              <InlineSwitch
+                value={options.jsonData.useBackend ?? false}
+                onChange={this.onUseBEChange}
+              />
+            </InlineField>
           </div>
         </div>
       </>

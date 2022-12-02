@@ -44,15 +44,18 @@ exports[`Render should render component 1`] = `
     className="gf-form-group"
   >
     <div
-      className="gf-form"
+      className="gf-form-inline"
     >
-      <Switch$1
-        checked={false}
+      <InlineField
         label="Use Backend"
-        labelClass="width-13"
-        onChange={[Function]}
+        labelWidth={26}
         tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
-      />
+      >
+        <Switch
+          onChange={[Function]}
+          value={false}
+        />
+      </InlineField>
     </div>
   </div>
 </Fragment>
