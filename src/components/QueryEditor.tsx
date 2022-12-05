@@ -1,6 +1,6 @@
 import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
-import { InlineFormLabel, LegacyForms } from '@grafana/ui';
+import { InlineFormLabel, InlineSwitch } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import Autosuggest from 'react-autosuggest';
@@ -164,7 +164,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             PV
           </InlineFormLabel>
-          <div className="max-width-30" style={{ marginRight: '4px' }}>
+          <div className="max-width-30 gf-form-spacing">
             <Autosuggest
               suggestions={pvSuggestions}
               onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
@@ -185,11 +185,19 @@ export class QueryEditor extends PureComponent<Props, State> {
               }}
             />
           </div>
-          <LegacyForms.Switch
-            checked={query.regex}
-            label="Regex"
-            labelClass={'width-7  query-keyword'}
-            tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+          <InlineFormLabel
+            width={7}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+              </p>
+            }
+          >
+            Regex
+          </InlineFormLabel>
+          <InlineSwitch
+            value={query.regex}
             onChange={this.onRegexChange}
           />
         </div>
@@ -215,7 +223,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             Operator
           </InlineFormLabel>
-          <div className="max-width-30" style={{ marginRight: '4px' }}>
+          <div className="max-width-30 gf-form-spacing">
             <Autosuggest
               suggestions={oprSuggestions}
               onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
@@ -235,12 +243,21 @@ export class QueryEditor extends PureComponent<Props, State> {
               }}
             />
           </div>
-          <LegacyForms.Switch
-            checked={query.stream}
-            label="Stream"
-            labelClass={'width-7  query-keyword'}
-            tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
+          <InlineFormLabel
+            width={7}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+              </p>
+            }
+          >
+            Stream
+          </InlineFormLabel>
+          <InlineSwitch
+            value={query.stream}
             onChange={this.onStreamChange}
+            className="gf-form-spacing"
           />
           <InlineFormLabel
             width={6}
