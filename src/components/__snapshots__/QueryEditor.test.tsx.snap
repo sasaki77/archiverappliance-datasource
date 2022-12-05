@@ -21,12 +21,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
       PV
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -134,12 +129,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
       Operator
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -199,18 +189,11 @@ exports[`Render Editor with basic options should render normally 1`] = `
     >
       Stream
     </FormLabel>
-    <div
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
-    >
-      <Switch
-        onChange={[Function]}
-        value={false}
-      />
-    </div>
+    <Switch
+      className="gf-form-spacing"
+      onChange={[Function]}
+      value={false}
+    />
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -371,12 +354,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
       PV
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -486,12 +464,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
       Operator
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -551,18 +524,11 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
     >
       Stream
     </FormLabel>
-    <div
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
-    >
-      <Switch
-        onChange={[Function]}
-        value={false}
-      />
-    </div>
+    <Switch
+      className="gf-form-spacing"
+      onChange={[Function]}
+      value={false}
+    />
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -723,12 +689,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
       PV
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -836,12 +797,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
       Operator
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -901,18 +857,11 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
     >
       Stream
     </FormLabel>
-    <div
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
-    >
-      <Switch
-        onChange={[Function]}
-        value={false}
-      />
-    </div>
+    <Switch
+      className="gf-form-spacing"
+      onChange={[Function]}
+      value={false}
+    />
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -1077,12 +1026,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
       PV
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -1190,12 +1134,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
       Operator
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -1255,18 +1194,11 @@ exports[`Render Editor with basic options should render with stream 1`] = `
     >
       Stream
     </FormLabel>
-    <div
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
-    >
-      <Switch
-        onChange={[Function]}
-        value={true}
-      />
-    </div>
+    <Switch
+      className="gf-form-spacing"
+      onChange={[Function]}
+      value={true}
+    />
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -1427,12 +1359,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
       PV
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -1540,12 +1467,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
       Operator
     </FormLabel>
     <div
-      className="max-width-30"
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
+      className="max-width-30 gf-form-spacing"
     >
       <Autosuggest
         alwaysRenderSuggestions={false}
@@ -1605,18 +1527,11 @@ exports[`Render Editor with basic options should render with top function 1`] = 
     >
       Stream
     </FormLabel>
-    <div
-      style={
-        Object {
-          "marginRight": "4px",
-        }
-      }
-    >
-      <Switch
-        onChange={[Function]}
-        value={false}
-      />
-    </div>
+    <Switch
+      className="gf-form-spacing"
+      onChange={[Function]}
+      value={false}
+    />
     <FormLabel
       className="query-keyword"
       tooltip={
