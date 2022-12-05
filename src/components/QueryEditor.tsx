@@ -164,7 +164,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             PV
           </InlineFormLabel>
-          <div className="max-width-30" style={{ marginRight: '4px' }}>
+          <div className="max-width-30 gf-form-spacing">
             <Autosuggest
               suggestions={pvSuggestions}
               onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
@@ -223,7 +223,7 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             Operator
           </InlineFormLabel>
-          <div className="max-width-30" style={{ marginRight: '4px' }}>
+          <div className="max-width-30 gf-form-spacing">
             <Autosuggest
               suggestions={oprSuggestions}
               onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
@@ -254,12 +254,11 @@ export class QueryEditor extends PureComponent<Props, State> {
           >
             Stream
           </InlineFormLabel>
-          <div style={{ marginRight: '4px' }}>
-            <InlineSwitch
-              value={query.stream}
-              onChange={this.onStreamChange}
-            />
-          </div>
+          <InlineSwitch
+            value={query.stream}
+            onChange={this.onStreamChange}
+            className="gf-form-spacing"
+          />
           <InlineFormLabel
             width={6}
             className="query-keyword"
