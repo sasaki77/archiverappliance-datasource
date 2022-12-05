@@ -1,6 +1,6 @@
 import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
-import { InlineFormLabel, LegacyForms } from '@grafana/ui';
+import { InlineFormLabel, InlineSwitch } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import Autosuggest from 'react-autosuggest';
@@ -185,11 +185,19 @@ export class QueryEditor extends PureComponent<Props, State> {
               }}
             />
           </div>
-          <LegacyForms.Switch
-            checked={query.regex}
-            label="Regex"
-            labelClass={'width-7  query-keyword'}
-            tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+          <InlineFormLabel
+            width={7}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+              </p>
+            }
+          >
+            Regex
+          </InlineFormLabel>
+          <InlineSwitch
+            value={query.regex}
             onChange={this.onRegexChange}
           />
         </div>
@@ -235,13 +243,23 @@ export class QueryEditor extends PureComponent<Props, State> {
               }}
             />
           </div>
-          <LegacyForms.Switch
-            checked={query.stream}
-            label="Stream"
-            labelClass={'width-7  query-keyword'}
-            tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-            onChange={this.onStreamChange}
-          />
+          <InlineFormLabel
+            width={7}
+            className="query-keyword"
+            tooltip={
+              <p>
+                Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+              </p>
+            }
+          >
+            Stream
+          </InlineFormLabel>
+          <div style={{ marginRight: '4px' }}>
+            <InlineSwitch
+              value={query.stream}
+              onChange={this.onStreamChange}
+            />
+          </div>
           <InlineFormLabel
             width={6}
             className="query-keyword"

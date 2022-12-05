@@ -76,12 +76,20 @@ exports[`Render Editor with basic options should render normally 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Regex"
-      labelClass="width-7  query-keyword"
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+        </p>
+      }
+      width={7}
+    >
+      Regex
+    </FormLabel>
+    <Switch
       onChange={[Function]}
-      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+      value={false}
     />
   </div>
   <div
@@ -180,13 +188,29 @@ exports[`Render Editor with basic options should render normally 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Stream"
-      labelClass="width-7  query-keyword"
-      onChange={[Function]}
-      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+        </p>
+      }
+      width={7}
+    >
+      Stream
+    </FormLabel>
+    <div
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Switch
+        onChange={[Function]}
+        value={false}
+      />
+    </div>
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -404,12 +428,20 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={true}
-      label="Regex"
-      labelClass="width-7  query-keyword"
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+        </p>
+      }
+      width={7}
+    >
+      Regex
+    </FormLabel>
+    <Switch
       onChange={[Function]}
-      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+      value={true}
     />
   </div>
   <div
@@ -508,13 +540,29 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Stream"
-      labelClass="width-7  query-keyword"
-      onChange={[Function]}
-      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+        </p>
+      }
+      width={7}
+    >
+      Stream
+    </FormLabel>
+    <div
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Switch
+        onChange={[Function]}
+        value={false}
+      />
+    </div>
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -730,12 +778,20 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Regex"
-      labelClass="width-7  query-keyword"
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+        </p>
+      }
+      width={7}
+    >
+      Regex
+    </FormLabel>
+    <Switch
       onChange={[Function]}
-      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+      value={false}
     />
   </div>
   <div
@@ -834,13 +890,29 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Stream"
-      labelClass="width-7  query-keyword"
-      onChange={[Function]}
-      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+        </p>
+      }
+      width={7}
+    >
+      Stream
+    </FormLabel>
+    <div
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Switch
+        onChange={[Function]}
+        value={false}
+      />
+    </div>
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -1060,12 +1132,20 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Regex"
-      labelClass="width-7  query-keyword"
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+        </p>
+      }
+      width={7}
+    >
+      Regex
+    </FormLabel>
+    <Switch
       onChange={[Function]}
-      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+      value={false}
     />
   </div>
   <div
@@ -1164,13 +1244,29 @@ exports[`Render Editor with basic options should render with stream 1`] = `
         }
       />
     </div>
-    <Switch$1
-      checked={true}
-      label="Stream"
-      labelClass="width-7  query-keyword"
-      onChange={[Function]}
-      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+        </p>
+      }
+      width={7}
+    >
+      Stream
+    </FormLabel>
+    <div
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Switch
+        onChange={[Function]}
+        value={true}
+      />
+    </div>
     <FormLabel
       className="query-keyword"
       tooltip={
@@ -1386,12 +1482,20 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Regex"
-      labelClass="width-7  query-keyword"
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+        </p>
+      }
+      width={7}
+    >
+      Regex
+    </FormLabel>
+    <Switch
       onChange={[Function]}
-      tooltip="Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins."
+      value={false}
     />
   </div>
   <div
@@ -1490,13 +1594,29 @@ exports[`Render Editor with basic options should render with top function 1`] = 
         }
       />
     </div>
-    <Switch$1
-      checked={false}
-      label="Stream"
-      labelClass="width-7  query-keyword"
-      onChange={[Function]}
-      tooltip="Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved."
-    />
+    <FormLabel
+      className="query-keyword"
+      tooltip={
+        <p>
+          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+        </p>
+      }
+      width={7}
+    >
+      Stream
+    </FormLabel>
+    <div
+      style={
+        Object {
+          "marginRight": "4px",
+        }
+      }
+    >
+      <Switch
+        onChange={[Function]}
+        value={false}
+      />
+    </div>
     <FormLabel
       className="query-keyword"
       tooltip={
