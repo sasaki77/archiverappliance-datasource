@@ -169,6 +169,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
         strmCap: target.strmCap,
         functions: target.functions,
         regex: target.regex,
+        live: target.live,
         aliasPattern: target.aliasPattern,
         options,
         from,

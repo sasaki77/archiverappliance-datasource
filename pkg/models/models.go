@@ -27,6 +27,7 @@ type ArchiverQueryModel struct {
 	AliasPattern string                         `json:"aliasPattern"` // use for collecting a large number of returned values
 	Operator     string                         `json:"operator"`     // ?
 	Regex        bool                           `json:"regex"`        // configured by the user's setting of the "Regex" field in the panel
+	Live         bool                           `json:"live"`         // configured by the user's setting of the "Live" field in the panel
 	Functions    []FunctionDescriptorQueryModel `json:"functions"`    // collection of functions to be applied to the data by the archiver
 
 	// Only appears for visualization queries

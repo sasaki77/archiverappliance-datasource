@@ -51,6 +51,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     onRunQuery();
   };
 
+  const onLiveChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    onChange({ ...query, live: !query.live });
+    onRunQuery();
+  };
+
   const onOperatorChange = (option: SelectableValue) => {
     const changedOpertor = option && option.value != "" ? option.value : undefined;
     onChange({ ...query, operator: changedOpertor });
@@ -181,6 +186,21 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         <InlineSwitch
           value={query.regex}
           onChange={onRegexChange}
+        />
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Enable/Disable Live mode.
+            </p>
+          }
+        >
+          Live
+        </InlineFormLabel>
+        <InlineSwitch
+          value={query.live}
+          onChange={onLiveChange}
         />
       </div>
       <div className="gf-form-inline">

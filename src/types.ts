@@ -5,6 +5,7 @@ export interface AAQuery extends DataQuery {
   alias: string;
   operator: string;
   regex: boolean;
+  live: boolean;
   aliasPattern: string;
   stream: boolean;
   strmInt: string;
@@ -17,6 +18,7 @@ export const defaultQuery: Partial<AAQuery> = {
   alias: '',
   operator: '',
   regex: false,
+  live: false,
   aliasPattern: '',
   stream: false,
   strmInt: '',
@@ -35,6 +37,7 @@ export interface TargetQuery {
   operator: string;
   functions: FunctionDescriptor[];
   regex: boolean;
+  live: boolean;
   aliasPattern: string;
   options: { [key: string]: string };
   from: Date;

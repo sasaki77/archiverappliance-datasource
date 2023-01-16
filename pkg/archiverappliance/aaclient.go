@@ -24,9 +24,9 @@ type AAclient struct {
 	baseURL string
 }
 
-func NewAAClient(ctx context.Context, config models.DatasourceSettings) (*AAclient, error) {
+func NewAAClient(ctx context.Context, url string) (*AAclient, error) {
 	return &AAclient{
-		baseURL: config.URL,
+		baseURL: url,
 	}, nil
 }
 
@@ -53,7 +53,6 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) string {
 	// Build the URL to query the archiver built from Grafana's configuration
 	// Set some constants
-
 	const TIME_FORMAT = "2006-01-02T15:04:05.000-07:00"
 	const JSON_DATA_URL = "data/getData.qw"
 
