@@ -103,7 +103,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -126,7 +126,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -153,7 +153,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -180,7 +180,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(100);
         done();
       });
@@ -202,7 +202,7 @@ describe('Archiverappliance Datasource', () => {
         options: { maxNumPVs: 300 },
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(300);
         done();
       });
@@ -217,7 +217,7 @@ describe('Archiverappliance Datasource', () => {
         options: { binInterval: 100 },
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
           'url_header:/data/getData.qw?pv=mean_100(PV1)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
         );
@@ -234,7 +234,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target).then((url: any) => {
+      ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(6);
         expect(url[0]).toBe(
           'url_header:/data/getData.qw?pv=mean_9(PVA%3A1%3Atest)&from=2010-01-01T00:00:00.000Z&to=2010-01-01T00:00:30.000Z'
@@ -268,7 +268,7 @@ describe('Archiverappliance Datasource', () => {
         options: {},
       } as unknown) as TargetQuery;
 
-      ds.buildUrls(target)
+      ds.aaclient.buildUrls(target)
         .then(() => { })
         .catch(() => {
           done();
@@ -288,7 +288,7 @@ describe('Archiverappliance Datasource', () => {
         ({ target: 'PV6', operator: 'last', interval: '9', from, to, options } as unknown) as TargetQuery,
       ];
 
-      const urlProcs = targets.map((target) => ds.buildUrls(target));
+      const urlProcs = targets.map((target) => ds.aaclient.buildUrls(target));
 
       Promise.all(urlProcs).then((urls) => {
         expect(urls).toHaveLength(6);
