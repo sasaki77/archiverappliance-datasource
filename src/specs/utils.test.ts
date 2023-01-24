@@ -1,9 +1,8 @@
-//import {locateOuterParen, permuteQuery, selectiveInsert} from '../utils'
-import {locateOuterParen, permuteQuery, splitLowestLevelOnly, selectiveInsert} from '../utils'
+import { locateOuterParen, permuteQuery, splitLowestLevelOnly, selectiveInsert } from '../pvnameParser'
 
 describe('Utils tests', () => {
   it.each([
-    ['one (two (three)) (four five) six', ['(two (three))','(four five)'], [[4,17],[18,29]]],
+    ['one (two (three)) (four five) six', ['(two (three))', '(four five)'], [[4, 17], [18, 29]]],
     ['one (match) (here)', ['(match)', '(here)'], [[4, 11], [12, 18]]],
     ['one (match) here', ['(match)'], [[4, 11]]],
     ['no matches here', [], []]
