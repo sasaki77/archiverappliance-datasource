@@ -78,7 +78,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
           Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
         </p>
       }
-      width={7}
+      width={6}
     >
       Regex
     </FormLabel>
@@ -185,7 +185,7 @@ exports[`Render Editor with basic options should render normally 1`] = `
           Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
         </p>
       }
-      width={7}
+      width={6}
     >
       Stream
     </FormLabel>
@@ -306,9 +306,9 @@ exports[`Render Editor with basic options should render normally 1`] = `
           for more detail.
         </p>
       }
-      width={7}
+      width={6}
     >
-      Alias pattern
+      Pattern
     </FormLabel>
     <input
       className="gf-form-input max-width-30"
@@ -413,7 +413,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
         </p>
       }
-      width={7}
+      width={6}
     >
       Regex
     </FormLabel>
@@ -520,7 +520,7 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
         </p>
       }
-      width={7}
+      width={6}
     >
       Stream
     </FormLabel>
@@ -641,9 +641,9 @@ exports[`Render Editor with basic options should render regex mode 1`] = `
           for more detail.
         </p>
       }
-      width={7}
+      width={6}
     >
-      Alias pattern
+      Pattern
     </FormLabel>
     <input
       className="gf-form-input max-width-30"
@@ -746,7 +746,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
           Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
         </p>
       }
-      width={7}
+      width={6}
     >
       Regex
     </FormLabel>
@@ -853,7 +853,7 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
           Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
         </p>
       }
-      width={7}
+      width={6}
     >
       Stream
     </FormLabel>
@@ -978,9 +978,9 @@ exports[`Render Editor with basic options should render with alias pattern 1`] =
           for more detail.
         </p>
       }
-      width={7}
+      width={6}
     >
-      Alias pattern
+      Pattern
     </FormLabel>
     <input
       className="gf-form-input max-width-30"
@@ -1083,7 +1083,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
           Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
         </p>
       }
-      width={7}
+      width={6}
     >
       Regex
     </FormLabel>
@@ -1190,7 +1190,7 @@ exports[`Render Editor with basic options should render with stream 1`] = `
           Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
         </p>
       }
-      width={7}
+      width={6}
     >
       Stream
     </FormLabel>
@@ -1311,9 +1311,9 @@ exports[`Render Editor with basic options should render with stream 1`] = `
           for more detail.
         </p>
       }
-      width={7}
+      width={6}
     >
-      Alias pattern
+      Pattern
     </FormLabel>
     <input
       className="gf-form-input max-width-30"
@@ -1416,7 +1416,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
         </p>
       }
-      width={7}
+      width={6}
     >
       Regex
     </FormLabel>
@@ -1523,7 +1523,7 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
         </p>
       }
-      width={7}
+      width={6}
     >
       Stream
     </FormLabel>
@@ -1644,9 +1644,9 @@ exports[`Render Editor with basic options should render with top function 1`] = 
           for more detail.
         </p>
       }
-      width={7}
+      width={6}
     >
-      Alias pattern
+      Pattern
     </FormLabel>
     <input
       className="gf-form-input max-width-30"
