@@ -186,7 +186,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             />
           </div>
           <InlineFormLabel
-            width={7}
+            width={6}
             className="query-keyword"
             tooltip={
               <p>
@@ -244,7 +244,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             />
           </div>
           <InlineFormLabel
-            width={7}
+            width={6}
             className="query-keyword"
             tooltip={
               <p>
@@ -317,7 +317,7 @@ export class QueryEditor extends PureComponent<Props, State> {
             onKeyDown={this.onKeydownEnter}
           />
           <InlineFormLabel
-            width={7}
+            width={6}
             className="query-keyword"
             tooltip={
               <p>
