@@ -1,6 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { render } from '@testing-library/react';
 
 import { Functions, FunctionsProps } from './Functions';
 
@@ -13,13 +12,13 @@ const setup = (propOverrides?: object) => {
 
   Object.assign(props, propOverrides);
 
-  return shallow(<Functions {...props} />);
+  return render(<Functions {...props} />);
 };
 
 describe('Render', () => {
   it('should render component', () => {
     const wrapper = setup();
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('should render with functions', () => {
@@ -61,6 +60,6 @@ describe('Render', () => {
       },
     ];
     const wrapper = setup({ funcs: funcs });
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });

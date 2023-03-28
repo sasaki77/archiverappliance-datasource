@@ -1,7 +1,6 @@
 import defaults from 'lodash/defaults';
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { render } from '@testing-library/react';
 import { QueryEditor } from './QueryEditor';
 import { DataSource } from '../DataSource';
 import { AAQuery, defaultQuery } from '../types';
@@ -36,37 +35,31 @@ const setup = (propOverrides?: object) => {
 
   Object.assign(props, propOverrides);
 
-  const wrapper = shallow(<QueryEditor {...props} />);
-  const instance = wrapper.instance() as QueryEditor;
-
-  return {
-    instance,
-    wrapper,
-  };
+  return render(<QueryEditor {...props} />);
 };
 
 describe('Render Editor with basic options', () => {
   it('should render normally', () => {
-    const { wrapper } = setup();
-    expect(toJson(wrapper)).toMatchSnapshot();
+    const wrapper = setup();
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('should render regex mode', () => {
     const props = defaults({ regex: true }, defaultQuery);
-    const { wrapper } = setup({ query: props });
-    expect(toJson(wrapper)).toMatchSnapshot();
+    const wrapper = setup({ query: props });
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('should render with alias pattern', () => {
     const props = defaults({ aliasPattern: '.*' }, defaultQuery);
-    const { wrapper } = setup({ query: props });
-    expect(toJson(wrapper)).toMatchSnapshot();
+    const wrapper = setup({ query: props });
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('should render with stream', () => {
     const props = defaults({ stream: true }, defaultQuery);
-    const { wrapper } = setup({ query: props });
-    expect(toJson(wrapper)).toMatchSnapshot();
+    const wrapper = setup({ query: props });
+    expect(wrapper).toMatchSnapshot();
   });
 
   it('should render with top function', () => {
@@ -93,7 +86,7 @@ describe('Render Editor with basic options', () => {
       },
     ];
     const props = defaults({ functions: func }, defaultQuery);
-    const { wrapper } = setup({ query: props });
-    expect(toJson(wrapper)).toMatchSnapshot();
+    const wrapper = setup({ query: props });
+    expect(wrapper).toMatchSnapshot();
   });
 });

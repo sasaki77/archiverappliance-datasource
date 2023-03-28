@@ -1,1708 +1,3570 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Render Editor with basic options should render normally 1`] = `
-<Fragment>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
-          <code>
-            (PV:1|PV:2)
-          </code>
-          )
-        </p>
-      }
-      width={6}
-    >
-      PV
-    </FormLabel>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          PV
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="PV name"
+              spellcheck="false"
+              type="text"
+              value="pvname"
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Regex
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-1"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-1"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Operator
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="mean"
+              spellcheck="false"
+              type="text"
+              value="mean"
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Stream
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12 gf-form-spacing"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-2"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-2"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Interval
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Capacity
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Alias
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias"
+          type="text"
+          value="alias"
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Pattern
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="gf-form"
+        >
+          <label
+            class="query-keyword gf-form-label width-6"
+          >
+            Functions
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+        </div>
+        <div
+          class="gf-form"
+        />
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-z53gi5-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="angle-down"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </span>
+          </button>
+        </div>
+        <div
+          class="gf-form gf-form--grow"
+        >
+          <div
+            class="gf-form-label gf-form-label--grow"
+          />
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form-inline"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "PV name",
-            "spellCheck": false,
-            "style": Object {},
-            "value": "pvname",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        PV
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="PV name"
+            spellcheck="false"
+            type="text"
+            value="pvname"
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Regex
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-1"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-1"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="gf-form-inline"
+    >
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Operator
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="mean"
+            spellcheck="false"
+            type="text"
+            value="mean"
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Stream
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12 gf-form-spacing"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-2"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-2"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Interval
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Capacity
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-        </p>
-      }
-      width={6}
-    >
-      Regex
-    </FormLabel>
-    <Switch
-      onChange={[Function]}
-      value={false}
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Controls processing of data during data retrieval. Refer
-           
-          <a
-            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Archiver Appliance User Guide
-          </a>
-           
-          about processing of data. Special operator 
-          <code>
-            raw
-          </code>
-           and 
-          <code>
-            last
-          </code>
-           are also available.
-           
-          <code>
-            raw
-          </code>
-           allows to retrieve the data without processing. 
-          <code>
-            last
-          </code>
-           allows to retrieve the last data in the specified time range.
-        </p>
-      }
-      width={6}
-    >
-      Operator
-    </FormLabel>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "mean",
-            "spellCheck": false,
-            "value": "mean",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Alias
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias"
+        type="text"
+        value="alias"
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Pattern
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias regex pattern"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-        </p>
-      }
-      width={6}
+    <div
+      class="gf-form-inline"
     >
-      Stream
-    </FormLabel>
-    <Switch
-      className="gf-form-spacing"
-      onChange={[Function]}
-      value={false}
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
-          <code>
-            1s
-          </code>
-          ,
-           
-          <code>
-            1m
-          </code>
-          , 
-          <code>
-            1h
-          </code>
-          . The default is determined by width of panel and time range.
-        </p>
-      }
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
-        </p>
-      }
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set alias for the legend.
-        </p>
-      }
-      width={6}
-    >
-      Alias
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias"
-      style={Object {}}
-      type="text"
-      value="alias"
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
-          <code>
-            Alias
-          </code>
-           text input like 
-          <code>
-            $1
-          </code>
-          ,
-           
-          <code>
-            $2
-          </code>
-          , …, 
-          <code>
-            $n
-          </code>
-          . Refer the
-           
-          <a
-            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-            rel="noopener noreferrer"
-            target="_blank"
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Functions
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
           >
-            documentation
-          </a>
-           
-          for more detail.
-        </p>
-      }
-      width={6}
-    >
-      Pattern
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias regex pattern"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=""
-    />
-  </div>
-  <Functions
-    funcs={Array []}
-    onChange={[Function]}
-    onRunQuery={[MockFunction]}
-  />
-</Fragment>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+      </div>
+      <div
+        class="gf-form"
+      />
+      <div
+        class="gf-form"
+      >
+        <button
+          class="css-z53gi5-button"
+          type="button"
+        >
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+          <span
+            class="css-1mhnkuh"
+          >
+            Add
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="angle-down"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </span>
+        </button>
+      </div>
+      <div
+        class="gf-form gf-form--grow"
+      >
+        <div
+          class="gf-form-label gf-form-label--grow"
+        />
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
 exports[`Render Editor with basic options should render regex mode 1`] = `
-<Fragment>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
-          <code>
-            (PV:1|PV:2)
-          </code>
-          )
-        </p>
-      }
-      width={6}
-    >
-      PV
-    </FormLabel>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          PV
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="PV name"
+              spellcheck="false"
+              style="color: rgb(214, 158, 46);"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Regex
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              checked=""
+              id="switch-3"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-3"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Operator
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="mean"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Stream
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12 gf-form-spacing"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-4"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-4"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Interval
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Capacity
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Alias
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Pattern
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="gf-form"
+        >
+          <label
+            class="query-keyword gf-form-label width-6"
+          >
+            Functions
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+        </div>
+        <div
+          class="gf-form"
+        />
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-z53gi5-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="angle-down"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </span>
+          </button>
+        </div>
+        <div
+          class="gf-form gf-form--grow"
+        >
+          <div
+            class="gf-form-label gf-form-label--grow"
+          />
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form-inline"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "PV name",
-            "spellCheck": false,
-            "style": Object {
-              "color": "#d69e2e",
-            },
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        PV
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="PV name"
+            spellcheck="false"
+            style="color: rgb(214, 158, 46);"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Regex
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            checked=""
+            id="switch-3"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-3"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="gf-form-inline"
+    >
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Operator
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="mean"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Stream
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12 gf-form-spacing"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-4"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-4"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Interval
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Capacity
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-        </p>
-      }
-      width={6}
-    >
-      Regex
-    </FormLabel>
-    <Switch
-      onChange={[Function]}
-      value={true}
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Controls processing of data during data retrieval. Refer
-           
-          <a
-            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Archiver Appliance User Guide
-          </a>
-           
-          about processing of data. Special operator 
-          <code>
-            raw
-          </code>
-           and 
-          <code>
-            last
-          </code>
-           are also available.
-           
-          <code>
-            raw
-          </code>
-           allows to retrieve the data without processing. 
-          <code>
-            last
-          </code>
-           allows to retrieve the last data in the specified time range.
-        </p>
-      }
-      width={6}
-    >
-      Operator
-    </FormLabel>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "mean",
-            "spellCheck": false,
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Alias
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Pattern
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias regex pattern"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-        </p>
-      }
-      width={6}
+    <div
+      class="gf-form-inline"
     >
-      Stream
-    </FormLabel>
-    <Switch
-      className="gf-form-spacing"
-      onChange={[Function]}
-      value={false}
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
-          <code>
-            1s
-          </code>
-          ,
-           
-          <code>
-            1m
-          </code>
-          , 
-          <code>
-            1h
-          </code>
-          . The default is determined by width of panel and time range.
-        </p>
-      }
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
-        </p>
-      }
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set alias for the legend.
-        </p>
-      }
-      width={6}
-    >
-      Alias
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias"
-      style={Object {}}
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
-          <code>
-            Alias
-          </code>
-           text input like 
-          <code>
-            $1
-          </code>
-          ,
-           
-          <code>
-            $2
-          </code>
-          , …, 
-          <code>
-            $n
-          </code>
-          . Refer the
-           
-          <a
-            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-            rel="noopener noreferrer"
-            target="_blank"
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Functions
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
           >
-            documentation
-          </a>
-           
-          for more detail.
-        </p>
-      }
-      width={6}
-    >
-      Pattern
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias regex pattern"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=""
-    />
-  </div>
-  <Functions
-    funcs={Array []}
-    onChange={[Function]}
-    onRunQuery={[MockFunction]}
-  />
-</Fragment>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+      </div>
+      <div
+        class="gf-form"
+      />
+      <div
+        class="gf-form"
+      >
+        <button
+          class="css-z53gi5-button"
+          type="button"
+        >
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+          <span
+            class="css-1mhnkuh"
+          >
+            Add
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="angle-down"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </span>
+        </button>
+      </div>
+      <div
+        class="gf-form gf-form--grow"
+      >
+        <div
+          class="gf-form-label gf-form-label--grow"
+        />
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
 exports[`Render Editor with basic options should render with alias pattern 1`] = `
-<Fragment>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
-          <code>
-            (PV:1|PV:2)
-          </code>
-          )
-        </p>
-      }
-      width={6}
-    >
-      PV
-    </FormLabel>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          PV
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="PV name"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Regex
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-5"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-5"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Operator
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="mean"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Stream
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12 gf-form-spacing"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-6"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-6"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Interval
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Capacity
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Alias
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Pattern
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=".*"
+        />
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="gf-form"
+        >
+          <label
+            class="query-keyword gf-form-label width-6"
+          >
+            Functions
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+        </div>
+        <div
+          class="gf-form"
+        />
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-z53gi5-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="angle-down"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </span>
+          </button>
+        </div>
+        <div
+          class="gf-form gf-form--grow"
+        >
+          <div
+            class="gf-form-label gf-form-label--grow"
+          />
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form-inline"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "PV name",
-            "spellCheck": false,
-            "style": Object {},
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        PV
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="PV name"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Regex
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-5"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-5"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="gf-form-inline"
+    >
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Operator
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="mean"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Stream
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12 gf-form-spacing"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-6"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-6"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Interval
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Capacity
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-        </p>
-      }
-      width={6}
-    >
-      Regex
-    </FormLabel>
-    <Switch
-      onChange={[Function]}
-      value={false}
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Controls processing of data during data retrieval. Refer
-           
-          <a
-            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Archiver Appliance User Guide
-          </a>
-           
-          about processing of data. Special operator 
-          <code>
-            raw
-          </code>
-           and 
-          <code>
-            last
-          </code>
-           are also available.
-           
-          <code>
-            raw
-          </code>
-           allows to retrieve the data without processing. 
-          <code>
-            last
-          </code>
-           allows to retrieve the last data in the specified time range.
-        </p>
-      }
-      width={6}
-    >
-      Operator
-    </FormLabel>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "mean",
-            "spellCheck": false,
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Alias
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Pattern
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias regex pattern"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=".*"
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-        </p>
-      }
-      width={6}
+    <div
+      class="gf-form-inline"
     >
-      Stream
-    </FormLabel>
-    <Switch
-      className="gf-form-spacing"
-      onChange={[Function]}
-      value={false}
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
-          <code>
-            1s
-          </code>
-          ,
-           
-          <code>
-            1m
-          </code>
-          , 
-          <code>
-            1h
-          </code>
-          . The default is determined by width of panel and time range.
-        </p>
-      }
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
-        </p>
-      }
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set alias for the legend.
-        </p>
-      }
-      width={6}
-    >
-      Alias
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
-          <code>
-            Alias
-          </code>
-           text input like 
-          <code>
-            $1
-          </code>
-          ,
-           
-          <code>
-            $2
-          </code>
-          , …, 
-          <code>
-            $n
-          </code>
-          . Refer the
-           
-          <a
-            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-            rel="noopener noreferrer"
-            target="_blank"
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Functions
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
           >
-            documentation
-          </a>
-           
-          for more detail.
-        </p>
-      }
-      width={6}
-    >
-      Pattern
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias regex pattern"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=".*"
-    />
-  </div>
-  <Functions
-    funcs={Array []}
-    onChange={[Function]}
-    onRunQuery={[MockFunction]}
-  />
-</Fragment>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+      </div>
+      <div
+        class="gf-form"
+      />
+      <div
+        class="gf-form"
+      >
+        <button
+          class="css-z53gi5-button"
+          type="button"
+        >
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+          <span
+            class="css-1mhnkuh"
+          >
+            Add
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="angle-down"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </span>
+        </button>
+      </div>
+      <div
+        class="gf-form gf-form--grow"
+      >
+        <div
+          class="gf-form-label gf-form-label--grow"
+        />
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
 exports[`Render Editor with basic options should render with stream 1`] = `
-<Fragment>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
-          <code>
-            (PV:1|PV:2)
-          </code>
-          )
-        </p>
-      }
-      width={6}
-    >
-      PV
-    </FormLabel>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          PV
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="PV name"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Regex
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-7"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-7"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Operator
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="mean"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Stream
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12 gf-form-spacing"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              checked=""
+              id="switch-8"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-8"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Interval
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Capacity
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Alias
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Pattern
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="gf-form"
+        >
+          <label
+            class="query-keyword gf-form-label width-6"
+          >
+            Functions
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+        </div>
+        <div
+          class="gf-form"
+        />
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-z53gi5-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="angle-down"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </span>
+          </button>
+        </div>
+        <div
+          class="gf-form gf-form--grow"
+        >
+          <div
+            class="gf-form-label gf-form-label--grow"
+          />
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form-inline"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "PV name",
-            "spellCheck": false,
-            "style": Object {},
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        PV
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="PV name"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Regex
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-7"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-7"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="gf-form-inline"
+    >
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Operator
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="mean"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Stream
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12 gf-form-spacing"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            checked=""
+            id="switch-8"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-8"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Interval
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Capacity
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-        </p>
-      }
-      width={6}
-    >
-      Regex
-    </FormLabel>
-    <Switch
-      onChange={[Function]}
-      value={false}
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Controls processing of data during data retrieval. Refer
-           
-          <a
-            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Archiver Appliance User Guide
-          </a>
-           
-          about processing of data. Special operator 
-          <code>
-            raw
-          </code>
-           and 
-          <code>
-            last
-          </code>
-           are also available.
-           
-          <code>
-            raw
-          </code>
-           allows to retrieve the data without processing. 
-          <code>
-            last
-          </code>
-           allows to retrieve the last data in the specified time range.
-        </p>
-      }
-      width={6}
-    >
-      Operator
-    </FormLabel>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "mean",
-            "spellCheck": false,
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Alias
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Pattern
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias regex pattern"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-        </p>
-      }
-      width={6}
+    <div
+      class="gf-form-inline"
     >
-      Stream
-    </FormLabel>
-    <Switch
-      className="gf-form-spacing"
-      onChange={[Function]}
-      value={true}
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
-          <code>
-            1s
-          </code>
-          ,
-           
-          <code>
-            1m
-          </code>
-          , 
-          <code>
-            1h
-          </code>
-          . The default is determined by width of panel and time range.
-        </p>
-      }
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
-        </p>
-      }
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set alias for the legend.
-        </p>
-      }
-      width={6}
-    >
-      Alias
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias"
-      style={Object {}}
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
-          <code>
-            Alias
-          </code>
-           text input like 
-          <code>
-            $1
-          </code>
-          ,
-           
-          <code>
-            $2
-          </code>
-          , …, 
-          <code>
-            $n
-          </code>
-          . Refer the
-           
-          <a
-            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-            rel="noopener noreferrer"
-            target="_blank"
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Functions
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
           >
-            documentation
-          </a>
-           
-          for more detail.
-        </p>
-      }
-      width={6}
-    >
-      Pattern
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias regex pattern"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=""
-    />
-  </div>
-  <Functions
-    funcs={Array []}
-    onChange={[Function]}
-    onRunQuery={[MockFunction]}
-  />
-</Fragment>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+      </div>
+      <div
+        class="gf-form"
+      />
+      <div
+        class="gf-form"
+      >
+        <button
+          class="css-z53gi5-button"
+          type="button"
+        >
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+          <span
+            class="css-1mhnkuh"
+          >
+            Add
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="angle-down"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </span>
+        </button>
+      </div>
+      <div
+        class="gf-form gf-form--grow"
+      >
+        <div
+          class="gf-form-label gf-form-label--grow"
+        />
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
 exports[`Render Editor with basic options should render with top function 1`] = `
-<Fragment>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. 
-          <code>
-            (PV:1|PV:2)
-          </code>
-          )
-        </p>
-      }
-      width={6}
-    >
-      PV
-    </FormLabel>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          PV
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="PV name"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Regex
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-9"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-9"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Operator
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="max-width-30 gf-form-spacing"
+        >
+          <div
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-owns="react-autowhatever-1"
+            class="react-autosuggest__container"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-controls="react-autowhatever-1"
+              autocomplete="off"
+              class="gf-form-input"
+              placeholder="mean"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="react-autosuggest__suggestions-container"
+              id="react-autowhatever-1"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Stream
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <div
+          class="css-15rfc12 gf-form-spacing"
+        >
+          <div
+            class="css-1so7yeh"
+          >
+            <input
+              id="switch-10"
+              type="checkbox"
+            />
+            <label
+              aria-label="Toggle switch"
+              for="switch-10"
+            />
+          </div>
+        </div>
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Interval
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Capacity
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-7"
+          placeholder="auto"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Alias
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias"
+          type="text"
+          value=""
+        />
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Pattern
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
+          >
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+        <input
+          class="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style="color: rgb(214, 158, 46);"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="gf-form"
+        >
+          <label
+            class="query-keyword gf-form-label width-6"
+          >
+            Functions
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+        </div>
+        <div
+          class="gf-form"
+        >
+          <span
+            class="gf-form-label query-part"
+          >
+            <span
+              style="cursor: pointer;"
+              tabindex="0"
+            >
+              top
+            </span>
+            <span>
+              (
+            </span>
+            
+            <div>
+              <div
+                class="aa-func-param"
+              >
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-owns="react-autowhatever-1"
+                  class="react-autosuggest__container"
+                  role="combobox"
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="react-autowhatever-1"
+                    autocomplete="off"
+                    class="tight-form-func-param"
+                    placeholder="number"
+                    spellcheck="false"
+                    style="width: 1ch; font-family: Consolas, "Courier New", Courier, Monaco, monospace;"
+                    type="text"
+                    value="5"
+                  />
+                  <div
+                    class="react-autosuggest__suggestions-container"
+                    id="react-autowhatever-1"
+                    role="listbox"
+                  />
+                </div>
+              </div>
+            </div>
+            <span
+              class="comma"
+            >
+              , 
+            </span>
+            <div>
+              <div
+                class="aa-func-param"
+              >
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="listbox"
+                  aria-owns="react-autowhatever-1"
+                  class="react-autosuggest__container"
+                  role="combobox"
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="react-autowhatever-1"
+                    autocomplete="off"
+                    class="tight-form-func-param"
+                    placeholder="value"
+                    spellcheck="false"
+                    style="width: 3ch; font-family: Consolas, "Courier New", Courier, Monaco, monospace;"
+                    type="text"
+                    value="avg"
+                  />
+                  <div
+                    class="react-autosuggest__suggestions-container"
+                    id="react-autowhatever-1"
+                    role="listbox"
+                  />
+                </div>
+              </div>
+            </div>
+            <span>
+              )
+            </span>
+          </span>
+        </div>
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-z53gi5-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="angle-down"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </span>
+          </button>
+        </div>
+        <div
+          class="gf-form gf-form--grow"
+        >
+          <div
+            class="gf-form-label gf-form-label--grow"
+          />
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form-inline"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "PV name",
-            "spellCheck": false,
-            "style": Object {},
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        PV
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="PV name"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Regex
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-9"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-9"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="gf-form-inline"
+    >
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Operator
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="max-width-30 gf-form-spacing"
+      >
+        <div
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-owns="react-autowhatever-1"
+          class="react-autosuggest__container"
+          role="combobox"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-autowhatever-1"
+            autocomplete="off"
+            class="gf-form-input"
+            placeholder="mean"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="react-autosuggest__suggestions-container"
+            id="react-autowhatever-1"
+            role="listbox"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Stream
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <div
+        class="css-15rfc12 gf-form-spacing"
+      >
+        <div
+          class="css-1so7yeh"
+        >
+          <input
+            id="switch-10"
+            type="checkbox"
+          />
+          <label
+            aria-label="Toggle switch"
+            for="switch-10"
+          />
+        </div>
+      </div>
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Interval
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Capacity
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-7"
+        placeholder="auto"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-        </p>
-      }
-      width={6}
-    >
-      Regex
-    </FormLabel>
-    <Switch
-      onChange={[Function]}
-      value={false}
-    />
-  </div>
-  <div
-    className="gf-form-inline"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Controls processing of data during data retrieval. Refer
-           
-          <a
-            href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Archiver Appliance User Guide
-          </a>
-           
-          about processing of data. Special operator 
-          <code>
-            raw
-          </code>
-           and 
-          <code>
-            last
-          </code>
-           are also available.
-           
-          <code>
-            raw
-          </code>
-           allows to retrieve the data without processing. 
-          <code>
-            last
-          </code>
-           allows to retrieve the last data in the specified time range.
-        </p>
-      }
-      width={6}
-    >
-      Operator
-    </FormLabel>
     <div
-      className="max-width-30 gf-form-spacing"
+      class="gf-form"
     >
-      <Autosuggest
-        alwaysRenderSuggestions={false}
-        containerProps={Object {}}
-        focusInputOnSuggestionClick={true}
-        getSuggestionValue={[Function]}
-        highlightFirstSuggestion={false}
-        id="1"
-        inputProps={
-          Object {
-            "className": "gf-form-input",
-            "onBlur": [MockFunction],
-            "onChange": [Function],
-            "onKeyDown": [Function],
-            "placeholder": "mean",
-            "spellCheck": false,
-            "value": "",
-          }
-        }
-        multiSection={false}
-        onSuggestionSelected={[Function]}
-        onSuggestionsClearRequested={[Function]}
-        onSuggestionsFetchRequested={[Function]}
-        renderSuggestion={[Function]}
-        renderSuggestionsContainer={[Function]}
-        shouldKeepSuggestionsOnSelect={[Function]}
-        shouldRenderSuggestions={[Function]}
-        suggestions={Array []}
-        theme={
-          Object {
-            "container": "react-autosuggest__container",
-            "containerOpen": "react-autosuggest__container--open",
-            "input": "react-autosuggest__input",
-            "inputFocused": "react-autosuggest__input--focused",
-            "inputOpen": "react-autosuggest__input--open",
-            "sectionContainer": "react-autosuggest__section-container",
-            "sectionContainerFirst": "react-autosuggest__section-container--first",
-            "sectionTitle": "react-autosuggest__section-title",
-            "suggestion": "react-autosuggest__suggestion",
-            "suggestionFirst": "react-autosuggest__suggestion--first",
-            "suggestionHighlighted": "react-autosuggest__suggestion--highlighted",
-            "suggestionsContainer": "react-autosuggest__suggestions-container",
-            "suggestionsContainerOpen": "react-autosuggest__suggestions-container--open",
-            "suggestionsList": "react-autosuggest__suggestions-list",
-          }
-        }
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Alias
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias"
+        type="text"
+        value=""
+      />
+      <label
+        class="query-keyword gf-form-label width-6"
+      >
+        Pattern
+        <div
+          class="css-wf08df-Icon"
+          tabindex="0"
+        >
+          <svg
+            data-testid="info-circle"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </label>
+      <input
+        class="gf-form-input max-width-30"
+        placeholder="Alias regex pattern"
+        style="color: rgb(214, 158, 46);"
+        type="text"
+        value=""
       />
     </div>
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-        </p>
-      }
-      width={6}
+    <div
+      class="gf-form-inline"
     >
-      Stream
-    </FormLabel>
-    <Switch
-      className="gf-form-spacing"
-      onChange={[Function]}
-      value={false}
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Streaming interval in milliseconds. You can also use a number with unit. e.g. 
-          <code>
-            1s
-          </code>
-          ,
-           
-          <code>
-            1m
-          </code>
-          , 
-          <code>
-            1h
-          </code>
-          . The default is determined by width of panel and time range.
-        </p>
-      }
-      width={6}
-    >
-      Interval
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by initial data size.
-        </p>
-      }
-      width={6}
-    >
-      Capacity
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-7"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="auto"
-      type="text"
-      value=""
-    />
-  </div>
-  <div
-    className="gf-form"
-  >
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set alias for the legend.
-        </p>
-      }
-      width={6}
-    >
-      Alias
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias"
-      style={Object {}}
-      type="text"
-      value=""
-    />
-    <FormLabel
-      className="query-keyword"
-      tooltip={
-        <p>
-          Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name. Matched characters within parentheses can be used in 
-          <code>
-            Alias
-          </code>
-           text input like 
-          <code>
-            $1
-          </code>
-          ,
-           
-          <code>
-            $2
-          </code>
-          , …, 
-          <code>
-            $n
-          </code>
-          . Refer the
-           
-          <a
-            href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-            rel="noopener noreferrer"
-            target="_blank"
+      <div
+        class="gf-form"
+      >
+        <label
+          class="query-keyword gf-form-label width-6"
+        >
+          Functions
+          <div
+            class="css-wf08df-Icon"
+            tabindex="0"
           >
-            documentation
-          </a>
-           
-          for more detail.
-        </p>
-      }
-      width={6}
-    >
-      Pattern
-    </FormLabel>
-    <input
-      className="gf-form-input max-width-30"
-      onBlur={[MockFunction]}
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="Alias regex pattern"
-      style={
-        Object {
-          "color": "#d69e2e",
-        }
-      }
-      type="text"
-      value=""
-    />
-  </div>
-  <Functions
-    funcs={
-      Array [
-        Object {
-          "def": Object {
-            "category": "Filter Series",
-            "defaultParams": Array [
-              5,
-              "avg",
-            ],
-            "name": "top",
-            "params": Array [
-              Object {
-                "name": "number",
-                "type": "int",
-              },
-              Object {
-                "name": "value",
-                "options": Array [
-                  "avg",
-                  "min",
-                  "max",
-                  "absoluteMin",
-                  "absoluteMax",
-                  "sum",
-                ],
-                "type": "string",
-              },
-            ],
-          },
-          "params": Array [
-            "5",
-            "avg",
-          ],
-          "text": "top(5, avg)",
-        },
-      ]
-    }
-    onChange={[Function]}
-    onRunQuery={[MockFunction]}
-  />
-</Fragment>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </label>
+      </div>
+      <div
+        class="gf-form"
+      >
+        <span
+          class="gf-form-label query-part"
+        >
+          <span
+            style="cursor: pointer;"
+            tabindex="0"
+          >
+            top
+          </span>
+          <span>
+            (
+          </span>
+          
+          <div>
+            <div
+              class="aa-func-param"
+            >
+              <div
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-owns="react-autowhatever-1"
+                class="react-autosuggest__container"
+                role="combobox"
+              >
+                <input
+                  aria-autocomplete="list"
+                  aria-controls="react-autowhatever-1"
+                  autocomplete="off"
+                  class="tight-form-func-param"
+                  placeholder="number"
+                  spellcheck="false"
+                  style="width: 1ch; font-family: Consolas, "Courier New", Courier, Monaco, monospace;"
+                  type="text"
+                  value="5"
+                />
+                <div
+                  class="react-autosuggest__suggestions-container"
+                  id="react-autowhatever-1"
+                  role="listbox"
+                />
+              </div>
+            </div>
+          </div>
+          <span
+            class="comma"
+          >
+            , 
+          </span>
+          <div>
+            <div
+              class="aa-func-param"
+            >
+              <div
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-owns="react-autowhatever-1"
+                class="react-autosuggest__container"
+                role="combobox"
+              >
+                <input
+                  aria-autocomplete="list"
+                  aria-controls="react-autowhatever-1"
+                  autocomplete="off"
+                  class="tight-form-func-param"
+                  placeholder="value"
+                  spellcheck="false"
+                  style="width: 3ch; font-family: Consolas, "Courier New", Courier, Monaco, monospace;"
+                  type="text"
+                  value="avg"
+                />
+                <div
+                  class="react-autosuggest__suggestions-container"
+                  id="react-autowhatever-1"
+                  role="listbox"
+                />
+              </div>
+            </div>
+          </div>
+          <span>
+            )
+          </span>
+        </span>
+      </div>
+      <div
+        class="gf-form"
+      >
+        <button
+          class="css-z53gi5-button"
+          type="button"
+        >
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+          <span
+            class="css-1mhnkuh"
+          >
+            Add
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="angle-down"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </span>
+        </button>
+      </div>
+      <div
+        class="gf-form gf-form--grow"
+      >
+        <div
+          class="gf-form-label gf-form-label--grow"
+        />
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

@@ -1,6 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { render } from '@testing-library/react';
 
 import { FunctionParam, FunctionParamProps } from './FunctionParam';
 
@@ -19,12 +18,12 @@ const setup = (propOverrides?: object) => {
 
   Object.assign(props, propOverrides);
 
-  return shallow(<FunctionParam {...props} />);
+  return render(<FunctionParam {...props} />);
 };
 
 describe('Render', () => {
   it('should render component', () => {
     const wrapper = setup();
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });
