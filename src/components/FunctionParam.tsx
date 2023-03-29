@@ -1,4 +1,7 @@
 import React from 'react';
+import { GrafanaTheme2 } from '@grafana/data';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
 import { SegmentInput, Segment } from '@grafana/ui';
 import { toSelectableValue } from './toSelectableValue';
 
@@ -10,48 +13,56 @@ export interface FunctionParamProps {
   onRunQuery: () => void;
 }
 
-class FunctionParam extends React.PureComponent<FunctionParamProps> {
-
-  constructor(props: FunctionParamProps) {
-    super(props);
-  }
-
-  onChange = (paramIndex: number, value: any) => {
-    console.log("test");
-    const { onRunQuery } = this.props;
-    this.props.onChange(paramIndex, String(value));
+export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: FunctionParamProps): JSX.Element => {
+  const onInputChange = (paramIndex: number, value: any) => {
+    onChange(paramIndex, String(value));
     onRunQuery();
   };
 
-  render() {
-    const { param, paramDef, index } = this.props;
+  const styles = useStyles2(getStyles);
 
-    if (paramDef.options === undefined) {
-      return (
-        <SegmentInput
-          value={param}
-          placeholder={paramDef.name}
-          onChange={(text) => {
-            this.onChange(index, text);
-          }}
-        />
-      );
-    }
-
-    const options = paramDef.options.map(toSelectableValue);
-
+  if (paramDef.options === undefined) {
     return (
-      <Segment
+      <SegmentInput
         value={param}
-        options={options}
-        placeholder="Enter a value"
-        onChange={(item) => {
-          this.onChange(index, item.value);
+        placeholder={paramDef.name}
+        className={styles.input}
+        onChange={(text) => {
+          onInputChange(index, text);
         }}
-        width={param.length}
+        // input style
+        style={{ height: '25px', paddingTop: '2px', marginTop: '2px', paddingLeft: '4px', minWidth: '100px' }}
       />
     );
   }
+
+  const options = paramDef.options.map(toSelectableValue);
+
+  return (
+    <Segment
+      value={param}
+      className={styles.segment}
+      options={options}
+      placeholder={paramDef.name}
+      inputMinWidth={150}
+      onChange={(item) => {
+        onInputChange(index, item.value);
+      }}
+      width={param.length}
+    />
+  );
 }
 
-export { FunctionParam };
+const getStyles = (theme: GrafanaTheme2) => ({
+  segment: css({
+    margin: 0,
+    padding: 0,
+  }),
+  input: css`
+    margin: 0;
+    padding: 0;
+    input {
+      height: 25px;
+    },
+  `,
+});
