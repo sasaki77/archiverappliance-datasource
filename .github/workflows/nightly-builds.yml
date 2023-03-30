@@ -10,7 +10,7 @@ jobs:
       zip-name: archiverappliance-datasource
     strategy:
       matrix:
-        node: [14]
+        node: [16]
         continue-on-error: [false]
     continue-on-error: ${{ matrix.continue-on-error }}
     steps:
