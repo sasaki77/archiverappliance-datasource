@@ -32,12 +32,14 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const customStyles = useStyles2(getStyles);
 
   const onPVChange = (option: SelectableValue) => {
+    const changedTarget = option ? option.value : "";
+    onChange({ ...query, target: changedTarget });
+    setInputValue(changedTarget);
+    setOptionValue(option);
+
     if (option && option.value !== null) {
-      onChange({ ...query, target: option.value });
       onRunQuery();
     }
-    setInputValue(option ? option.value : "");
-    setOptionValue(option);
   };
 
   const onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -102,7 +104,6 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   }
 
   const query_ = defaults(query, defaultQuery);
-  //const pvInputStyle = query.regex ? { color: colorYellow } : {};
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
   return (
