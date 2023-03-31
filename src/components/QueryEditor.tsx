@@ -21,23 +21,25 @@ const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOptio
 const Input = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
-  const defaultOption = query.target ? toOption(query.target) : undefined;
-
+  const defaultPvOption = query.target ? toOption(query.target) : undefined;
+  const defaultOperatorOption = query.operator && query.operator != "" ? toOption(query.operator) : undefined;
 
   // These states are used to control PV name suggestions with AsyncSelect.
   // The following web pages were consulted.
   // How to set current value or how to enable edit of the selected tag? · Issue #1558 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1558
   // How to force reload of options? · Issue #1581 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1581
-  const [optionValue, setOptionValue] = useState(defaultOption);
-  const [inputvalue, setInputValue] = useState(query.target);
+  const [pvOptionValue, setPVOptionValue] = useState(defaultPvOption);
+  const [pvInputValue, setPVInputValue] = useState(query.target);
+  const [operatorOptionValue, setOperatorOptionValue] = useState(defaultOperatorOption);
+  const [operatorInputValue, setOperatorInputValue] = useState(query.operator);
 
   const customStyles = useStyles2(getStyles);
 
   const onPVChange = (option: SelectableValue) => {
     const changedTarget = option ? option.value : "";
     onChange({ ...query, target: changedTarget });
-    setInputValue(changedTarget);
-    setOptionValue(option);
+    setPVInputValue(changedTarget);
+    setPVOptionValue(option);
 
     if (option && option.value !== null) {
       onRunQuery();
@@ -50,8 +52,12 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   };
 
   const onOperatorChange = (option: SelectableValue) => {
-    if (option.value !== null) {
-      onChange({ ...query, operator: option.value });
+    const changedOpertor = option && option.value != "" ? option.value : undefined;
+    onChange({ ...query, operator: changedOpertor });
+    setOperatorInputValue(changedOpertor);
+    setOperatorOptionValue(option);
+
+    if (option && option.value !== null) {
       onRunQuery();
     }
   };
@@ -87,15 +93,27 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     }
   };
 
-  const onInputChange = (inputValue: string, { action }: InputActionMeta) => {
+  const onPVInputChange = (inputValue: string, { action }: InputActionMeta) => {
     // onBlur => issue onPVChange with a current input value
     if (action === "input-blur") {
-      onPVChange(toOption(inputvalue));
+      onPVChange(toOption(pvInputValue));
     }
 
     // onInputChange => update inputValue
     if (action === "input-change") {
-      setInputValue(inputValue);
+      setPVInputValue(inputValue);
+    }
+  };
+
+  const onOperatorInputChange = (inputValue: string, { action }: InputActionMeta) => {
+    // onBlur => issue onPVChange with a current input value
+    if (action === "input-blur") {
+      onOperatorChange(toOption(operatorInputValue));
+    }
+
+    // onInputChange => update inputValue
+    if (action === "input-change") {
+      setOperatorInputValue(inputValue);
     }
   };
 
@@ -131,8 +149,8 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         </InlineFormLabel>
         <div className="max-width-30 gf-form-spacing">
           <AsyncSelect
-            value={optionValue}
-            inputValue={inputvalue}
+            value={pvOptionValue}
+            inputValue={pvInputValue}
             defaultOptions
             allowCustomValue
             isClearable
@@ -140,11 +158,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             components={{
               Input
             }}
-            onInputChange={onInputChange}
+            onInputChange={onPVInputChange}
             loadOptions={debounceLoadSuggestions}
             onChange={onPVChange}
             placeholder="PV name"
-            key={JSON.stringify(optionValue)}
+            key={JSON.stringify(pvOptionValue)}
             className={query.regex ? customStyles.regexinput : ""}
           />
         </div>
@@ -188,9 +206,16 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         </InlineFormLabel>
         <div className="max-width-30 gf-form-spacing">
           <Select
-            value={query.operator}
+            value={operatorOptionValue}
             options={operatorOptions}
             onChange={onOperatorChange}
+            onInputChange={onOperatorInputChange}
+            allowCustomValue
+            isClearable
+            createOptionPosition="first"
+            components={{
+              Input
+            }}
             placeholder="mean"
           />
         </div>
