@@ -86,6 +86,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   };
 
   const onInputChange = (inputValue: string, { action }: InputActionMeta) => {
+    // onBlur => issue onPVChange with a current input value
+    if (action === "input-blur") {
+      onPVChange(toOption(inputvalue));
+    }
+
     // onInputChange => update inputValue
     if (action === "input-change") {
       setInputValue(inputValue);
