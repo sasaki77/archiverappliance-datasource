@@ -1,5 +1,9 @@
-import React, { KeyboardEvent, FormEvent, FocusEvent } from 'react';
-import Autosuggest from 'react-autosuggest';
+import React from 'react';
+import { GrafanaTheme2 } from '@grafana/data';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { SegmentInput, Segment } from '@grafana/ui';
+import { toSelectableValue } from './toSelectableValue';
 
 export interface FunctionParamProps {
   param: string;
@@ -9,122 +13,56 @@ export interface FunctionParamProps {
   onRunQuery: () => void;
 }
 
-interface State {
-  suggestions: any[];
-  focused: boolean;
-}
-
-const getSuggestionValue = (suggestion: any) => {
-  return suggestion;
-};
-
-const renderSuggestion = (suggestion: any) => {
-  return <span>{suggestion}</span>;
-};
-
-class FunctionParam extends React.PureComponent<FunctionParamProps, State> {
-  state = { suggestions: [], focused: false };
-
-  constructor(props: FunctionParamProps) {
-    super(props);
-  }
-
-  onChange = (paramIndex: number, event: FormEvent<any>, { newValue }: any) => {
-    this.props.onChange(paramIndex, String(newValue));
-  };
-
-  onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === 13) {
-      event.currentTarget.blur();
-    }
-  };
-
-  onPVSuggestionsFetchRequested = ({ value }: { value: any }, options: string[] | undefined) => {
-    const suggestions = options === undefined ? [] : options;
-    this.setState({
-      suggestions: suggestions,
-    });
-  };
-
-  onPVSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: [],
-    });
-  };
-
-  onSuggestionsSelected = (
-    event: React.FormEvent<any>,
-    {
-      suggestion,
-      suggestionValue,
-      suggestionIndex,
-      sectionIndex,
-      method,
-    }: {
-      suggestion: any;
-      suggestionValue: string;
-      suggestionIndex: number;
-      sectionIndex: number | null;
-      method: 'click' | 'enter';
-    }
-  ) => {
-    if (method === 'enter') {
-      event.currentTarget.blur();
-    }
-  };
-
-  onFocus = (event: FocusEvent<any>) => {
-    this.setState({
-      focused: true,
-    });
-  };
-
-  onBlur = (event: FocusEvent<any>) => {
-    const { onRunQuery } = this.props;
-    this.setState({
-      focused: false,
-    });
+export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: FunctionParamProps): JSX.Element => {
+  const onInputChange = (paramIndex: number, value: any) => {
+    onChange(paramIndex, String(value));
     onRunQuery();
   };
 
-  calcInputWidth = (focused: boolean, param: string, placeholder: string) => {
-    const paramLength = param.length;
+  const styles = useStyles2(getStyles);
 
-    if (focused) {
-      return paramLength < 13 ? `13ch` : `${paramLength + 2}ch`;
-    }
-
-    return paramLength < 1 ? `${placeholder.length}ch` : `${paramLength}ch`;
-  };
-
-  render() {
-    const { suggestions, focused } = this.state;
-    const { param, paramDef, index } = this.props;
-    const inputWidth = this.calcInputWidth(focused, param, paramDef.name);
+  if (paramDef.options === undefined) {
     return (
-      <div className="aa-func-param">
-        <Autosuggest
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={(e) => this.onPVSuggestionsFetchRequested(e, paramDef.options)}
-          onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
-          onSuggestionSelected={this.onSuggestionsSelected}
-          getSuggestionValue={getSuggestionValue}
-          renderSuggestion={renderSuggestion}
-          inputProps={{
-            value: param,
-            className: 'tight-form-func-param',
-            placeholder: paramDef ? paramDef.name : '',
-            spellCheck: false,
-            onChange: (e, params) => this.onChange(index, e, params),
-            onBlur: this.onBlur,
-            onKeyDown: this.onKeydownEnter,
-            onFocus: this.onFocus,
-            style: { width: inputWidth, fontFamily: 'Consolas, "Courier New", Courier, Monaco, monospace' },
-          }}
-        />
-      </div>
+      <SegmentInput
+        value={param}
+        placeholder={paramDef.name}
+        className={styles.input}
+        onChange={(text) => {
+          onInputChange(index, text);
+        }}
+        // input style
+        style={{ height: '25px', paddingTop: '2px', marginTop: '2px', paddingLeft: '4px', minWidth: '100px' }}
+      />
     );
   }
+
+  const options = paramDef.options.map(toSelectableValue);
+
+  return (
+    <Segment
+      value={param}
+      className={styles.segment}
+      options={options}
+      placeholder={paramDef.name}
+      inputMinWidth={150}
+      onChange={(item) => {
+        onInputChange(index, item.value);
+      }}
+      width={param.length}
+    />
+  );
 }
 
-export { FunctionParam };
+const getStyles = (theme: GrafanaTheme2) => ({
+  segment: css({
+    margin: 0,
+    padding: 0,
+  }),
+  input: css`
+    margin: 0;
+    padding: 0;
+    input {
+      height: 25px;
+    },
+  `,
+});

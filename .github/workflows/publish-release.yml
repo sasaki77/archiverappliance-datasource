@@ -8,42 +8,39 @@ jobs:
     runs-on: ubuntu-latest
     env:
       zip-name: archiverappliance-datasource
-    strategy:
-      matrix:
-        node: [14]
-        continue-on-error: [false]
-    continue-on-error: ${{ matrix.continue-on-error }}
     steps:
       - name: Checkout Github repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: "recursive"
+
       - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: "16"
+          cache: "yarn"
+
       - name: Setup Go environment
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
+
+      - name: Install dependencies
+        run: yarn install --immutable --prefer-offline
+
+      - name: Build and test frontend
+        run: yarn build
+
       - name: Run Go tests using Mage
-        uses: magefile/mage-action@v1
+        uses: magefile/mage-action@v2
         with:
           version: latest
           args: vtest
+
       - name: Build backend
-        uses: magefile/mage-action@v1
+        uses: magefile/mage-action@v2
         with:
           version: latest
           args: -v buildAll
-      - name: Install frontend tools
-        run: |
-          npm install -g yarn
-          yarn install
-      - name: List all Yarn packages
-        run: |
-          yarn list
-      - name: Build frontend
-        run: |
-          yarn build
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -56,6 +53,7 @@ jobs:
             This release as been been automatically generated.
           draft: false
           prerelease: true
+
       - name: Prepare Release
         env:
           ZIP_NAME: ${{ env.zip-name }}
@@ -65,6 +63,7 @@ jobs:
           pushd ../
           zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
+
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1

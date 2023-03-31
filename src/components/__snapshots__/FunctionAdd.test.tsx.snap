@@ -1,146 +1,120 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Render should render component 1`] = `
-<ButtonCascader
-  icon="plus"
-  onChange={[Function]}
-  options={
-    Array [
-      Object {
-        "children": Array [
-          Object {
-            "label": "scale",
-            "value": "scale",
-          },
-          Object {
-            "label": "offset",
-            "value": "offset",
-          },
-          Object {
-            "label": "delta",
-            "value": "delta",
-          },
-          Object {
-            "label": "fluctuation",
-            "value": "fluctuation",
-          },
-          Object {
-            "label": "movingAverage",
-            "value": "movingAverage",
-          },
-        ],
-        "label": "Transform",
-        "value": "Transform",
-      },
-      Object {
-        "children": Array [
-          Object {
-            "label": "toScalarByAvg",
-            "value": "toScalarByAvg",
-          },
-          Object {
-            "label": "toScalarByMax",
-            "value": "toScalarByMax",
-          },
-          Object {
-            "label": "toScalarByMin",
-            "value": "toScalarByMin",
-          },
-          Object {
-            "label": "toScalarBySum",
-            "value": "toScalarBySum",
-          },
-          Object {
-            "label": "toScalarByMed",
-            "value": "toScalarByMed",
-          },
-          Object {
-            "label": "toScalarByStd",
-            "value": "toScalarByStd",
-          },
-        ],
-        "label": "Array to Scalar",
-        "value": "Array to Scalar",
-      },
-      Object {
-        "children": Array [
-          Object {
-            "label": "top",
-            "value": "top",
-          },
-          Object {
-            "label": "bottom",
-            "value": "bottom",
-          },
-          Object {
-            "label": "exclude",
-            "value": "exclude",
-          },
-        ],
-        "label": "Filter Series",
-        "value": "Filter Series",
-      },
-      Object {
-        "children": Array [
-          Object {
-            "label": "sortByAvg",
-            "value": "sortByAvg",
-          },
-          Object {
-            "label": "sortByMax",
-            "value": "sortByMax",
-          },
-          Object {
-            "label": "sortByMin",
-            "value": "sortByMin",
-          },
-          Object {
-            "label": "sortBySum",
-            "value": "sortBySum",
-          },
-          Object {
-            "label": "sortByAbsMax",
-            "value": "sortByAbsMax",
-          },
-          Object {
-            "label": "sortByAbsMin",
-            "value": "sortByAbsMin",
-          },
-        ],
-        "label": "Sort",
-        "value": "Sort",
-      },
-      Object {
-        "children": Array [
-          Object {
-            "label": "maxNumPVs",
-            "value": "maxNumPVs",
-          },
-          Object {
-            "label": "binInterval",
-            "value": "binInterval",
-          },
-          Object {
-            "label": "disableAutoRaw",
-            "value": "disableAutoRaw",
-          },
-          Object {
-            "label": "disableExtrapol",
-            "value": "disableExtrapol",
-          },
-          Object {
-            "label": "arrayFormat",
-            "value": "arrayFormat",
-          },
-        ],
-        "label": "Options",
-        "value": "Options",
-      },
-    ]
-  }
-  value={Array []}
-  variant="primary"
->
-  Add
-</ButtonCascader>
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <button
+        class="css-z53gi5-button"
+        type="button"
+      >
+        <div
+          class="css-wf08df-Icon"
+        >
+          <svg
+            data-testid="plus"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+        <span
+          class="css-1mhnkuh"
+        >
+          Add
+          <div
+            class="css-wf08df-Icon"
+          >
+            <svg
+              data-testid="angle-down"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </div>
+        </span>
+      </button>
+    </div>
+  </body>,
+  "container": <div>
+    <button
+      class="css-z53gi5-button"
+      type="button"
+    >
+      <div
+        class="css-wf08df-Icon"
+      >
+        <svg
+          data-testid="plus"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        />
+      </div>
+      <span
+        class="css-1mhnkuh"
+      >
+        Add
+        <div
+          class="css-wf08df-Icon"
+        >
+          <svg
+            data-testid="angle-down"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          />
+        </div>
+      </span>
+    </button>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

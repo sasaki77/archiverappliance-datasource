@@ -35,6 +35,8 @@ profile.cov
 grafana
 .notouch
 
+.eslintcache
+
 # Production files
 /dist
 

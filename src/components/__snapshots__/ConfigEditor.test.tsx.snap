@@ -1,62 +1,974 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Render should render component 1`] = `
-<Fragment>
-  <DataSourceHttpSettings
-    dataSourceConfig={
-      Object {
-        "access": "proxy",
-        "basicAuth": false,
-        "basicAuthUser": "",
-        "database": "",
-        "id": 1,
-        "isDefault": true,
-        "jsonData": Object {},
-        "name": "ArchiverAppliance",
-        "orgId": 1,
-        "readOnly": false,
-        "secureJsonData": Object {
-          "accessKey": "",
-          "secretKey": "",
-        },
-        "secureJsonFields": Object {
-          "accessKey": false,
-          "secretKey": false,
-        },
-        "type": "ArchiverAppliance",
-        "typeLogoUrl": "",
-        "typeName": "ArchiverAppliance",
-        "uid": "",
-        "url": "",
-        "user": "",
-        "withCredentials": false,
-      }
-    }
-    defaultUrl="http://localhost:17668/retrieval"
-    onChange={[MockFunction]}
-  />
-  <h3
-    className="page-heading"
-  >
-    Misc
-  </h3>
-  <div
-    className="gf-form-group"
-  >
-    <div
-      className="gf-form-inline"
-    >
-      <InlineField
-        label="Use Backend"
-        labelWidth={26}
-        tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="gf-form-group"
       >
-        <Switch
-          onChange={[Function]}
-          value={false}
-        />
-      </InlineField>
+        <h3
+          class="page-heading"
+        >
+          HTTP
+        </h3>
+        <div
+          class="gf-form-group"
+        >
+          <div
+            class="gf-form"
+          >
+            <div
+              class="css-aq4c43"
+            >
+              <label
+                class="gf-form-label width-13"
+              >
+                URL
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <div
+                style="flex-grow: 1;"
+              >
+                <input
+                  aria-label="Datasource HTTP settings url"
+                  class="gf-form-input width-20 css-y1sxu8"
+                  placeholder="http://localhost:17668/retrieval"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="gf-form-group"
+          >
+            <div
+              class="gf-form"
+            >
+              <label
+                class="gf-form-label width-13"
+              >
+                Allowed cookies
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <div
+                class="css-1k4ludt"
+              >
+                <div
+                  class="css-xcstkt-input-wrapper"
+                  data-testid="input-wrapper"
+                >
+                  <div
+                    class="css-1w5c5dq-input-inputWrapper"
+                  >
+                    <input
+                      class="css-1mlczho-input-input"
+                      placeholder="New tag (enter key to add)"
+                      style="padding-right: 12px;"
+                      value=""
+                    />
+                    <div
+                      class="css-7y3u6k-input-suffix"
+                    >
+                      <button
+                        class="css-7e4tcf-button"
+                        disabled=""
+                        type="button"
+                      >
+                        <span
+                          class="css-1mhnkuh"
+                        >
+                          Add
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="gf-form"
+            >
+              <div
+                class="css-aq4c43"
+              >
+                <label
+                  class="gf-form-label width-13"
+                >
+                  Timeout
+                  <div
+                    class="css-wf08df-Icon"
+                    tabindex="0"
+                  >
+                    <svg
+                      data-testid="info-circle"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </div>
+                </label>
+                <input
+                  aria-label="Timeout in seconds"
+                  class="gf-form-input width-20"
+                  placeholder="Timeout in seconds"
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3
+          class="page-heading"
+        >
+          Auth
+        </h3>
+        <div
+          class="gf-form-group"
+        >
+          <div
+            class="gf-form-inline"
+          >
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-basic-auth"
+              >
+                Basic auth
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-basic-auth"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-basic-auth"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-with-credentials"
+              >
+                With Credentials
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-with-credentials"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-with-credentials"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gf-form-inline"
+          >
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-tls-client-auth"
+              >
+                TLS Client Auth
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-tls-client-auth"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-tls-client-auth"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-ca-cert"
+              >
+                With CA Cert
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-ca-cert"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-ca-cert"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gf-form-inline"
+          >
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-skip-tls-verify"
+              >
+                Skip TLS Verify
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-skip-tls-verify"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-skip-tls-verify"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gf-form-inline"
+          >
+            <div
+              class="css-1f5gueu"
+            >
+              <label
+                class="css-1mfv0aj"
+                for="http-settings-forward-oauth"
+              >
+                Forward OAuth Identity
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <div
+                class="css-1rfunm5"
+              >
+                <div
+                  class="css-15rfc12"
+                >
+                  <div
+                    class="css-1so7yeh"
+                  >
+                    <input
+                      id="http-settings-forward-oauth"
+                      type="checkbox"
+                    />
+                    <label
+                      aria-label="Toggle switch"
+                      for="http-settings-forward-oauth"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-group"
+        >
+          <div
+            class="gf-form"
+          >
+            <h6>
+              Custom HTTP Headers
+            </h6>
+          </div>
+          <div />
+          <div
+            class="gf-form"
+          >
+            <button
+              class="css-b2ba3d-button"
+              type="button"
+            >
+              <div
+                class="css-wf08df-Icon"
+              >
+                <svg
+                  data-testid="plus"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+              <span
+                class="css-1mhnkuh"
+              >
+                Add header
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <h3
+        class="page-heading"
+      >
+        Misc
+      </h3>
+      <div
+        class="gf-form-group"
+      >
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+            >
+              Use Backend
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="switch-1"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="switch-1"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</Fragment>
+  </body>,
+  "container": <div>
+    <div
+      class="gf-form-group"
+    >
+      <h3
+        class="page-heading"
+      >
+        HTTP
+      </h3>
+      <div
+        class="gf-form-group"
+      >
+        <div
+          class="gf-form"
+        >
+          <div
+            class="css-aq4c43"
+          >
+            <label
+              class="gf-form-label width-13"
+            >
+              URL
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              style="flex-grow: 1;"
+            >
+              <input
+                aria-label="Datasource HTTP settings url"
+                class="gf-form-input width-20 css-y1sxu8"
+                placeholder="http://localhost:17668/retrieval"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-group"
+        >
+          <div
+            class="gf-form"
+          >
+            <label
+              class="gf-form-label width-13"
+            >
+              Allowed cookies
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1k4ludt"
+            >
+              <div
+                class="css-xcstkt-input-wrapper"
+                data-testid="input-wrapper"
+              >
+                <div
+                  class="css-1w5c5dq-input-inputWrapper"
+                >
+                  <input
+                    class="css-1mlczho-input-input"
+                    placeholder="New tag (enter key to add)"
+                    style="padding-right: 12px;"
+                    value=""
+                  />
+                  <div
+                    class="css-7y3u6k-input-suffix"
+                  >
+                    <button
+                      class="css-7e4tcf-button"
+                      disabled=""
+                      type="button"
+                    >
+                      <span
+                        class="css-1mhnkuh"
+                      >
+                        Add
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gf-form"
+          >
+            <div
+              class="css-aq4c43"
+            >
+              <label
+                class="gf-form-label width-13"
+              >
+                Timeout
+                <div
+                  class="css-wf08df-Icon"
+                  tabindex="0"
+                >
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </div>
+              </label>
+              <input
+                aria-label="Timeout in seconds"
+                class="gf-form-input width-20"
+                placeholder="Timeout in seconds"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3
+        class="page-heading"
+      >
+        Auth
+      </h3>
+      <div
+        class="gf-form-group"
+      >
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-basic-auth"
+            >
+              Basic auth
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-basic-auth"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-basic-auth"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-with-credentials"
+            >
+              With Credentials
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-with-credentials"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-with-credentials"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-tls-client-auth"
+            >
+              TLS Client Auth
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-tls-client-auth"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-tls-client-auth"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-ca-cert"
+            >
+              With CA Cert
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-ca-cert"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-ca-cert"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-skip-tls-verify"
+            >
+              Skip TLS Verify
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-skip-tls-verify"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-skip-tls-verify"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+              for="http-settings-forward-oauth"
+            >
+              Forward OAuth Identity
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="http-settings-forward-oauth"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="http-settings-forward-oauth"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-group"
+      >
+        <div
+          class="gf-form"
+        >
+          <h6>
+            Custom HTTP Headers
+          </h6>
+        </div>
+        <div />
+        <div
+          class="gf-form"
+        >
+          <button
+            class="css-b2ba3d-button"
+            type="button"
+          >
+            <div
+              class="css-wf08df-Icon"
+            >
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+            <span
+              class="css-1mhnkuh"
+            >
+              Add header
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <h3
+      class="page-heading"
+    >
+      Misc
+    </h3>
+    <div
+      class="gf-form-group"
+    >
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="css-1f5gueu"
+        >
+          <label
+            class="css-1mfv0aj"
+          >
+            Use Backend
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+          <div
+            class="css-1rfunm5"
+          >
+            <div
+              class="css-15rfc12"
+            >
+              <div
+                class="css-1so7yeh"
+              >
+                <input
+                  id="switch-1"
+                  type="checkbox"
+                />
+                <label
+                  aria-label="Toggle switch"
+                  for="switch-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

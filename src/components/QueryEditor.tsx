@@ -1,355 +1,303 @@
 import defaults from 'lodash/defaults';
-import React, { ChangeEvent, PureComponent, KeyboardEvent } from 'react';
-import { InlineFormLabel, InlineSwitch } from '@grafana/ui';
-import { QueryEditorProps } from '@grafana/data';
+import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { components } from "react-select";
+import { InlineFormLabel, InlineSwitch, Select, AsyncSelect, InputActionMeta } from '@grafana/ui';
+import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
+import { GrafanaTheme2 } from '@grafana/data';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
 import { getTemplateSrv } from '@grafana/runtime';
-import Autosuggest from 'react-autosuggest';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescriptor } from '../types';
 
 import { Functions } from './Functions';
+import { toSelectableValue } from './toSelectableValue';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
-interface State {
-  pvSuggestions: any[];
-  oprSuggestions: any[];
-}
-
 const colorYellow = '#d69e2e';
+const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
+const Input = (props: any) => <components.Input {...props} isHidden={false} />;
 
-const getSuggestionValue = (suggestion: any) => {
-  return suggestion;
-};
+export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
+  const defaultOption = query.target ? toOption(query.target) : undefined;
 
-const renderSuggestion = (suggestion: any) => {
-  return <span>{suggestion}</span>;
-};
+  // These states are used to control PV name suggestions with AsyncSelect.
+  // The following web pages were consulted.
+  // How to set current value or how to enable edit of the selected tag? · Issue #1558 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1558
+  // How to force reload of options? · Issue #1581 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1581
+  const [optionValue, setOptionValue] = useState(defaultOption);
+  const [inputvalue, setInputValue] = useState(query.target);
 
-export class QueryEditor extends PureComponent<Props, State> {
-  state = { pvSuggestions: [], oprSuggestions: [] };
+  const customStyles = useStyles2(getStyles);
 
-  onPVChange = (event: React.FormEvent<HTMLElement>, { newValue }: any) => {
-    const { onChange, query } = this.props;
-    onChange({ ...query, target: newValue });
+  const onPVChange = (option: SelectableValue) => {
+    const changedTarget = option ? option.value : "";
+    onChange({ ...query, target: changedTarget });
+    setInputValue(changedTarget);
+    setOptionValue(option);
+
+    if (option && option.value !== null) {
+      onRunQuery();
+    }
   };
 
-  onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const { onChange, onRunQuery, query } = this.props;
+  const onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     onChange({ ...query, regex: !query.regex });
     onRunQuery();
   };
 
-  onOperatorChange = (event: React.FormEvent<HTMLElement>, { newValue }: any) => {
-    const { onChange, query } = this.props;
-    onChange({ ...query, operator: newValue });
+  const onOperatorChange = (option: SelectableValue) => {
+    if (option.value !== null) {
+      onChange({ ...query, operator: option.value });
+      onRunQuery();
+    }
   };
 
-  onAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props;
+  const onAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...query, alias: event.target.value });
   };
 
-  onAliaspatternChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props;
+  const onAliaspatternChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...query, aliasPattern: event.target.value });
   };
 
-  onFuncsChange = (funcs: FunctionDescriptor[]) => {
-    const { onChange, query } = this.props;
+  const onFuncsChange = (funcs: FunctionDescriptor[]) => {
     onChange({ ...query, functions: funcs });
   };
 
-  onStreamChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const { onChange, onRunQuery, query } = this.props;
+  const onStreamChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     onChange({ ...query, stream: !query.stream });
     onRunQuery();
   };
 
-  onStrmIntChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props;
+  const onStrmIntChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...query, strmInt: event.target.value });
   };
 
-  onStrmCapChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props;
+  const onStrmCapChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...query, strmCap: event.target.value });
   };
 
-  onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+  const onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
       event.currentTarget.blur();
     }
   };
 
-  loadPVSuggestions(value: string) {
+  const onInputChange = (inputValue: string, { action }: InputActionMeta) => {
+    // onInputChange => update inputValue
+    if (action === "input-change") {
+      setInputValue(inputValue);
+    }
+  };
+
+  const loadPVSuggestions = (value: string) => {
     const templateSrv = getTemplateSrv();
     const replacedQuery = templateSrv.replace(value, undefined, 'regex');
-    const { regex } = this.props.query;
+    const { regex } = query;
     const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
-    this.props.datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
-      this.setState({
-        pvSuggestions: res,
-      });
+    return datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
+      const suggestions: Array<SelectableValue<string>> = res.map(toSelectableValue);
+      return suggestions;
     });
   }
 
-  onPVSuggestionsFetchRequested = ({ value }: { value: any }) => {
-    this.loadPVSuggestions(value);
-  };
+  const query_ = defaults(query, defaultQuery);
+  const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
-  onPVSuggestionsClearRequested = () => {
-    this.setState({
-      pvSuggestions: [],
-    });
-  };
-
-  onOprSuggestionsFetchRequested = ({ value }: { value: any }) => {
-    const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp('.*' + escapedValue, 'i');
-
-    const suggestions = operatorList.filter((operator) => regex.test(operator));
-
-    this.setState({
-      oprSuggestions: suggestions,
-    });
-  };
-
-  onOprSuggestionsClearRequested = () => {
-    this.setState({
-      oprSuggestions: [],
-    });
-  };
-
-  onSuggestionsSelected = (
-    event: React.FormEvent<any>,
-    {
-      suggestion,
-      suggestionValue,
-      suggestionIndex,
-      sectionIndex,
-      method,
-    }: {
-      suggestion: any;
-      suggestionValue: string;
-      suggestionIndex: number;
-      sectionIndex: number | null;
-      method: 'click' | 'enter';
-    }
-  ) => {
-    if (method === 'enter') {
-      event.currentTarget.blur();
-    }
-  };
-
-  render() {
-    const query = defaults(this.props.query, defaultQuery);
-    const { pvSuggestions, oprSuggestions } = this.state;
-    const { onRunQuery } = this.props;
-    const pvInputStyle = query.regex ? { color: colorYellow } : {};
-    const aliasInputStyle = query.aliasPattern ? { color: colorYellow } : {};
-
-    return (
-      <>
-        <div className="gf-form-inline">
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation
-                pattern (e.g. <code>(PV:1|PV:2)</code>)
-              </p>
-            }
-          >
-            PV
-          </InlineFormLabel>
-          <div className="max-width-30 gf-form-spacing">
-            <Autosuggest
-              suggestions={pvSuggestions}
-              onSuggestionsFetchRequested={this.onPVSuggestionsFetchRequested}
-              onSuggestionsClearRequested={this.onPVSuggestionsClearRequested}
-              getSuggestionValue={getSuggestionValue}
-              onSuggestionSelected={this.onSuggestionsSelected}
-              renderSuggestion={renderSuggestion}
-              shouldRenderSuggestions={() => true}
-              inputProps={{
-                value: query.target,
-                className: 'gf-form-input',
-                placeholder: 'PV name',
-                spellCheck: false,
-                style: pvInputStyle,
-                onChange: this.onPVChange,
-                onBlur: onRunQuery,
-                onKeyDown: this.onKeydownEnter,
-              }}
-            />
-          </div>
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-              </p>
-            }
-          >
-            Regex
-          </InlineFormLabel>
-          <InlineSwitch
-            value={query.regex}
-            onChange={this.onRegexChange}
+  return (
+    <>
+      <div className="gf-form-inline">
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation
+              pattern (e.g. <code>(PV:1|PV:2)</code>)
+            </p>
+          }
+        >
+          PV
+        </InlineFormLabel>
+        <div className="max-width-30 gf-form-spacing">
+          <AsyncSelect
+            value={optionValue}
+            inputValue={inputvalue}
+            defaultOptions
+            allowCustomValue
+            isClearable
+            createOptionPosition="first"
+            components={{
+              Input
+            }}
+            onInputChange={onInputChange}
+            loadOptions={loadPVSuggestions}
+            onChange={onPVChange}
+            placeholder="PV name"
+            key={JSON.stringify(optionValue)}
+            className={query.regex ? customStyles.regexinput : ""}
           />
         </div>
-        <div className="gf-form-inline">
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Controls processing of data during data retrieval. Refer{' '}
-                <a
-                  href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Archiver Appliance User Guide
-                </a>{' '}
-                about processing of data. Special operator <code>raw</code> and <code>last</code> are also available.{' '}
-                <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve
-                the last data in the specified time range.
-              </p>
-            }
-          >
-            Operator
-          </InlineFormLabel>
-          <div className="max-width-30 gf-form-spacing">
-            <Autosuggest
-              suggestions={oprSuggestions}
-              onSuggestionsFetchRequested={this.onOprSuggestionsFetchRequested}
-              onSuggestionsClearRequested={this.onOprSuggestionsClearRequested}
-              onSuggestionSelected={this.onSuggestionsSelected}
-              getSuggestionValue={getSuggestionValue}
-              renderSuggestion={renderSuggestion}
-              shouldRenderSuggestions={() => true}
-              inputProps={{
-                value: query.operator,
-                className: 'gf-form-input',
-                placeholder: 'mean',
-                spellCheck: false,
-                onChange: this.onOperatorChange,
-                onBlur: onRunQuery,
-                onKeyDown: this.onKeydownEnter,
-              }}
-            />
-          </div>
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
-              </p>
-            }
-          >
-            Stream
-          </InlineFormLabel>
-          <InlineSwitch
-            value={query.stream}
-            onChange={this.onStreamChange}
-            className="gf-form-spacing"
-          />
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
-                <code>1m</code>, <code>1h</code>. The default is determined by width of panel and time range.
-              </p>
-            }
-          >
-            Interval
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.strmInt}
-            className="gf-form-input max-width-7"
-            placeholder="auto"
-            onChange={this.onStrmIntChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
-                detemined by initial data size.
-              </p>
-            }
-          >
-            Capacity
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.strmCap}
-            className="gf-form-input max-width-7"
-            placeholder="auto"
-            onChange={this.onStrmCapChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
+            </p>
+          }
+        >
+          Regex
+        </InlineFormLabel>
+        <InlineSwitch
+          value={query.regex}
+          onChange={onRegexChange}
+        />
+      </div>
+      <div className="gf-form-inline">
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Controls processing of data during data retrieval. Refer{' '}
+              <a
+                href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Archiver Appliance User Guide
+              </a>{' '}
+              about processing of data. Special operator <code>raw</code> and <code>last</code> are also available.{' '}
+              <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve
+              the last data in the specified time range.
+            </p>
+          }
+        >
+          Operator
+        </InlineFormLabel>
+        <div className="max-width-30 gf-form-spacing">
+          <Select
+            value={query.operator}
+            options={operatorOptions}
+            onChange={onOperatorChange}
+            placeholder="mean"
           />
         </div>
-        <div className="gf-form">
-          <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Set alias for the legend.</p>}>
-            Alias
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.alias}
-            className="gf-form-input max-width-30"
-            placeholder="Alias"
-            style={aliasInputStyle}
-            onChange={this.onAliasChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name.
-                Matched characters within parentheses can be used in <code>Alias</code> text input like <code>$1</code>,{' '}
-                <code>$2</code>, …, <code>$n</code>. Refer the{' '}
-                <a
-                  href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  documentation
-                </a>{' '}
-                for more detail.
-              </p>
-            }
-          >
-            Pattern
-          </InlineFormLabel>
-          <input
-            type="text"
-            value={query.aliasPattern}
-            className="gf-form-input max-width-30"
-            placeholder="Alias regex pattern"
-            style={{ color: colorYellow }}
-            onChange={this.onAliaspatternChange}
-            onBlur={onRunQuery}
-            onKeyDown={this.onKeydownEnter}
-          />
-        </div>
-        <Functions funcs={query.functions} onChange={this.onFuncsChange} onRunQuery={onRunQuery} />
-      </>
-    );
-  }
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+            </p>
+          }
+        >
+          Stream
+        </InlineFormLabel>
+        <InlineSwitch
+          value={query.stream}
+          onChange={onStreamChange}
+          className="gf-form-spacing"
+        />
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
+              <code>1m</code>, <code>1h</code>. The default is determined by width of panel and time range.
+            </p>
+          }
+        >
+          Interval
+        </InlineFormLabel>
+        <input
+          type="text"
+          value={query.strmInt}
+          className="gf-form-input max-width-7"
+          placeholder="auto"
+          onChange={onStrmIntChange}
+          onBlur={onRunQuery}
+          onKeyDown={onKeydownEnter}
+        />
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
+              detemined by initial data size.
+            </p>
+          }
+        >
+          Capacity
+        </InlineFormLabel>
+        <input
+          type="text"
+          value={query.strmCap}
+          className="gf-form-input max-width-7"
+          placeholder="auto"
+          onChange={onStrmCapChange}
+          onBlur={onRunQuery}
+          onKeyDown={onKeydownEnter}
+        />
+      </div>
+      <div className="gf-form">
+        <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Set alias for the legend.</p>}>
+          Alias
+        </InlineFormLabel>
+        <input
+          type="text"
+          value={query.alias}
+          className="gf-form-input max-width-30"
+          placeholder="Alias"
+          style={aliasInputStyle}
+          onChange={onAliasChange}
+          onBlur={onRunQuery}
+          onKeyDown={onKeydownEnter}
+        />
+        <InlineFormLabel
+          width={6}
+          className="query-keyword"
+          tooltip={
+            <p>
+              Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name.
+              Matched characters within parentheses can be used in <code>Alias</code> text input like <code>$1</code>,{' '}
+              <code>$2</code>, …, <code>$n</code>. Refer the{' '}
+              <a
+                href="https://sasaki77.github.io/archiverappliance-datasource/query.html#legend-alias-with-regex-pattern"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                documentation
+              </a>{' '}
+              for more detail.
+            </p>
+          }
+        >
+          Pattern
+        </InlineFormLabel>
+        <input
+          type="text"
+          value={query.aliasPattern}
+          className="gf-form-input max-width-30"
+          placeholder="Alias regex pattern"
+          style={{ color: colorYellow }}
+          onChange={onAliaspatternChange}
+          onBlur={onRunQuery}
+          onKeyDown={onKeydownEnter}
+        />
+      </div>
+      <Functions funcs={query.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
+    </>
+  );
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  regexinput: css`
+    color: ${colorYellow};
+  `,
+});

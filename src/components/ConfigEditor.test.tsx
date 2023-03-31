@@ -1,6 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
+import { render } from '@testing-library/react';
 
 import { ConfigEditor, Props } from './ConfigEditor';
 
@@ -38,12 +37,12 @@ const setup = (propOverrides?: object) => {
 
   Object.assign(props, propOverrides);
 
-  return shallow(<ConfigEditor {...props} />);
+  return render(<ConfigEditor {...props} />);
 };
 
 describe('Render', () => {
   it('should render component', () => {
     const wrapper = setup();
-    expect(toJson(wrapper)).toMatchSnapshot();
+    expect(wrapper).toMatchSnapshot();
   });
 });
