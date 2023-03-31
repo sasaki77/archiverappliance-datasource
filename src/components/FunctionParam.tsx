@@ -48,6 +48,7 @@ export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: 
       onChange={(item) => {
         onInputChange(index, item.value);
       }}
+      allowCustomValue
       width={param.length}
     />
   );
