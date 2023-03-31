@@ -1,4 +1,5 @@
 import defaults from 'lodash/defaults';
+import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { components } from "react-select";
 import { InlineFormLabel, InlineSwitch, Select, AsyncSelect, InputActionMeta } from '@grafana/ui';
@@ -21,6 +22,7 @@ const Input = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
   const defaultOption = query.target ? toOption(query.target) : undefined;
+
 
   // These states are used to control PV name suggestions with AsyncSelect.
   // The following web pages were consulted.
@@ -107,6 +109,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
       return suggestions;
     });
   }
+  const debounceLoadSuggestions = debounce((query: string) => loadPVSuggestions(query), 200);
 
   const query_ = defaults(query, defaultQuery);
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
@@ -138,7 +141,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
               Input
             }}
             onInputChange={onInputChange}
-            loadOptions={loadPVSuggestions}
+            loadOptions={debounceLoadSuggestions}
             onChange={onPVChange}
             placeholder="PV name"
             key={JSON.stringify(optionValue)}
