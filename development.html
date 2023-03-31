@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Development &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,11 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Archiver Appliance Datasource
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -73,7 +76,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Development</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/development.md" class="fa fa-github"> Edit on GitHub</a>
@@ -95,26 +98,26 @@
 <p><a class="reference external" href="https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit">grafana-toolkit</a> is used to develop the plugin. Please refer grafana-toolkit documentation for more information.</p>
 <ol class="arabic">
 <li><p>Begin by installing Yarn (<a class="reference external" href="https://yarnpkg.com/">https://yarnpkg.com/</a>)</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install -g yarn
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>yarn
 </pre></div>
 </div>
 </li>
 <li><p>Install dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn<span class="w"> </span>install
 </pre></div>
 </div>
 </li>
 <li><p>Build plugin in development mode or run in watch mode</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn dev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn<span class="w"> </span>dev
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn watch
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn<span class="w"> </span>watch
 </pre></div>
 </div>
 </li>
 <li><p>Build plugin in production mode</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn build
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn<span class="w"> </span>build
 </pre></div>
 </div>
 </li>
@@ -125,17 +128,17 @@
 <p>If the Mage build tool is not already installed, you may install it using the installation instructions on the <a class="reference external" href="https://magefile.org/">Mage homepage</a></p>
 <ol class="arabic">
 <li><p>Update <a class="reference external" href="https://grafana.com/docs/grafana/latest/developers/plugins/backend/grafana-plugin-sdk-for-go/">Grafana plugin SDK for Go</a> dependency to the latest minor version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>go get -u github.com/grafana/grafana-plugin-sdk-go
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>go<span class="w"> </span>get<span class="w"> </span>-u<span class="w"> </span>github.com/grafana/grafana-plugin-sdk-go
 </pre></div>
 </div>
 </li>
 <li><p>Build backend plugin binaries for Linux, Windows and Darwin:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mage -v
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mage<span class="w"> </span>-v
 </pre></div>
 </div>
 </li>
 <li><p>List all available Mage targets for additional commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mage -l
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mage<span class="w"> </span>-l
 </pre></div>
 </div>
 </li>
@@ -144,11 +147,11 @@
 <section id="test-environment-with-docker-compose">
 <h3>Test environment with Docker Compose<a class="headerlink" href="#test-environment-with-docker-compose" title="Permalink to this heading"></a></h3>
 <p>Thanks to <a class="reference external" href="https://github.com/pklaus/docker-archiver-appliance">pklaus / docker-archiver-appliance</a> and <a class="reference external" href="https://github.com/pklaus/archiver-appliance-with-example-ioc">pklaus / archiver-appliance-with-example-ioc</a>, the test environment is available with Docker Compose.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose up
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>up
 </pre></div>
 </div>
 <p>The following containers are runinng after <code class="docutils literal notranslate"><span class="pre">docker-compse</span> <span class="pre">up</span></code>.</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Description</p></th>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Functions &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,11 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Archiver Appliance Datasource
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -185,7 +188,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Functions</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/functions.md" class="fa fa-github"> Edit on GitHub</a>
@@ -220,8 +223,8 @@
 
 <p>Multiplies datapoint by <em>factor</em> at each point.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">scale</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span><span class="w"></span>
-<span class="nx">scale</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">scale</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+<span class="nx">scale</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -234,8 +237,8 @@
 
 <p>Adds <em>delta</em> to each datapoint.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">offset</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span><span class="w"></span>
-<span class="nx">offset</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">offset</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span>
+<span class="nx">offset</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -266,8 +269,8 @@
 
 <p>Calculates the moving average of datapoints over a fixed number of past points, specified by windowSize param.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">movingAverage</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span><span class="w"></span>
-<span class="nx">movingAverage</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">movingAverage</span><span class="p">(</span><span class="mf">10</span><span class="p">)</span>
+<span class="nx">movingAverage</span><span class="p">(</span><span class="mf">50</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -341,8 +344,8 @@
 <p>Returns top N series sorted by <em>value</em>.
 Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</em>, <em>absoluteMin</em>, <em>absoluteMax</em>, and <em>sum</em>.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">top</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="nx">max</span><span class="p">)</span><span class="w"></span>
-<span class="nx">top</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="nx">avg</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">top</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="nx">max</span><span class="p">)</span>
+<span class="nx">top</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="nx">avg</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -356,8 +359,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <p>Returns bottom N series sorted by <em>value</em>.
 Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</em>, <em>absoluteMin</em>, <em>absoluteMax</em>, and <em>sum</em>.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">bottom</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="nx">avg</span><span class="p">)</span><span class="w"></span>
-<span class="nx">bottom</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="nx">min</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">bottom</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="nx">avg</span><span class="p">)</span>
+<span class="nx">bottom</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="nx">min</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -370,7 +373,7 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Exclude PV data that match the regular expression.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">exclude</span><span class="p">(</span><span class="nx">PV</span><span class="p">[</span><span class="mf">0</span><span class="o">-</span><span class="mf">9</span><span class="p">])</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">exclude</span><span class="p">(</span><span class="nx">PV</span><span class="p">[</span><span class="mf">0</span><span class="o">-</span><span class="mf">9</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -386,8 +389,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the average value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAvg</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -400,8 +403,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the maximum value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortByMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -414,8 +417,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the minimum value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortByMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -428,8 +431,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the total value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortBySum</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortBySum</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortBySum</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortBySum</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -442,8 +445,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the absolute maximum value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAbsMax</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -456,8 +459,8 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Sort the list of timeseries by the absolute minimum value across the time period specified.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span><span class="w"></span>
-<span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">desc</span><span class="p">)</span>
+<span class="nx">sortByAbsMin</span><span class="p">(</span><span class="nx">asc</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -473,7 +476,7 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 
 <p>Set maximum number of PVs you can select for a target.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">maxNumPVs</span><span class="p">(</span><span class="mf">500</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">maxNumPVs</span><span class="p">(</span><span class="mf">500</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -487,7 +490,7 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 <p>Set binning interval for processing of data.
 For example, if binInterval is set 100 and operator in query is set mean then returned values are average values in 100 seconds wide bins.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">binInterval</span><span class="p">(</span><span class="mf">100</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">binInterval</span><span class="p">(</span><span class="mf">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -498,10 +501,10 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <span class="sig-name descname"><span class="pre">disableAutoRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableAutoRaw" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<p>Disable <a class="reference internal" href="tips.html#auto-raw-operation"><span class="std std-doc">auto raw feature</span></a>.</p>
+<p>Disable <a class="reference internal" href="tips.html#auto-raw-operation"><span class="std std-ref">auto raw feature</span></a>.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"></span>
-<span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">disableAutoRaw</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -512,10 +515,10 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <span class="sig-name descname"><span class="pre">disableExtrapol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#disableExtrapol" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<p>Disable <a class="reference internal" href="tips.html#extrapolation-for-raw-operation"><span class="std std-doc">extrapolation for raw data</span></a>.</p>
+<p>Disable <a class="reference internal" href="tips.html#extrapolation-for-raw-operation"><span class="std std-ref">extrapolation for raw data</span></a>.</p>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"></span>
-<span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -533,7 +536,7 @@ There are 3 types of format: <code class="docutils literal notranslate"><span cl
 <h4>timeseries<a class="headerlink" href="#timeseries" title="Permalink to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">timeseries</span></code> format, the default format of array, has a time column and columns for each element of the array.
 Following is an example of array data for a PV that has 361 elements.</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>time</p></th>
 <th class="head"><p>PV:NAME[0]</p></th>
@@ -562,7 +565,7 @@ Following is an example of array data for a PV that has 361 elements.</p>
 <h4>index<a class="headerlink" href="#index" title="Permalink to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">index</span></code> format has a index column and columns for array data at each sampling time.
 Column name for each sampling time is a RFC3339-style time format.</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>index</p></th>
 <th class="head"><p>2020-01-01T00:00:10.000Z</p></th>
@@ -595,7 +598,7 @@ Column name for each sampling time is a RFC3339-style time format.</p>
 <h4>dt-space<a class="headerlink" href="#dt-space" title="Permalink to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">dt-space</span></code> format transforms multiple datapoints into a single timeseries data.
 It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (<code class="docutils literal notranslate"><span class="pre">sampling</span> <span class="pre">time</span></code> + <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">milliseconds</span></code>).</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>time</p></th>
 <th class="head"><p>PV:NAME</p></th>
@@ -629,9 +632,9 @@ It creates a new time vector starting from the sampling time. Timestamp of Nth e
 </tbody>
 </table>
 <p>Examples:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">timeseries</span><span class="p">)</span><span class="w"></span>
-<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span><span class="w"></span>
-<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">dt</span><span class="o">-</span><span class="nx">space</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">timeseries</span><span class="p">)</span>
+<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span>
+<span class="nx">arrayFormat</span><span class="p">(</span><span class="nx">dt</span><span class="o">-</span><span class="nx">space</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tips &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,11 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Archiver Appliance Datasource
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -73,7 +76,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Tips</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/tips.md" class="fa fa-github"> Edit on GitHub</a>
@@ -95,19 +98,19 @@ Basically, the interval is determined by width of panel and time range.</p>
 <section id="auto-raw-operation">
 <h2>Auto raw operation<a class="headerlink" href="#auto-raw-operation" title="Permalink to this heading"></a></h2>
 <p>When a binning interval is less than 1 second, raw data is retrieved even if other operator is set.
-To disable auto raw operation, <a class="reference internal" href="functions.html#disableautoraw"><span class="std std-ref">disableAutoRaw</span></a> function is available.</p>
+To disable auto raw operation, <a class="reference internal" href="functions.html#disableAutoRaw"><span class="std std-ref">disableAutoRaw</span></a> function is available.</p>
 </section>
 <section id="extrapolation-for-raw-operation">
 <h2>Extrapolation for raw operation<a class="headerlink" href="#extrapolation-for-raw-operation" title="Permalink to this heading"></a></h2>
 <p>In raw operator mode, the retrieved data is extrapolated by last data value.
 This feature prevents a graph from cutting of or not being desplayed.
-To disable the extrapolation, <a class="reference internal" href="functions.html#disableextrapol"><span class="std std-ref">disableExtrapol</span></a> function is available.</p>
+To disable the extrapolation, <a class="reference internal" href="functions.html#disableExtrapol"><span class="std std-ref">disableExtrapol</span></a> function is available.</p>
 </section>
 <section id="array-data-support">
 <h2>Array data support<a class="headerlink" href="#array-data-support" title="Permalink to this heading"></a></h2>
 <p>The plugin supports array data from version 1.2.0.</p>
 <p>Array data is managed like a table in the plugin. Following is a example of array data that has 3 elements:</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>time</p></th>
 <th class="head"><p>PV:NAME[0]</p></th>
@@ -135,9 +138,9 @@ To disable the extrapolation, <a class="reference internal" href="functions.html
 </table>
 <p>The data has a column for <code class="docutils literal notranslate"><span class="pre">time</span></code> and columns for each array elements. Column name for a array element is set as PV name with suffix for an index.
 This table format called <a class="reference external" href="https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/#wide-format">wide format data frame</a> is available from most of Grafana panel.</p>
-<p>The plugin also supports conversion from array data to scalar data with the <a class="reference internal" href="functions.html#array-to-scalar-functions"><span class="std std-doc">Array to Scalar</span></a> functions.
-Above array data becomes as following with <a class="reference internal" href="functions.html#toscalarbymin"><span class="std std-doc">toScalarByMin</span></a>:</p>
-<table class="colwidths-auto docutils align-default">
+<p>The plugin also supports conversion from array data to scalar data with the <a class="reference internal" href="functions.html#array-to-scalar-functions"><span class="std std-ref">Array to Scalar</span></a> functions.
+Above array data becomes as following with <a class="reference internal" href="functions.html#toscalarbymin"><span class="std std-ref">toScalarByMin</span></a>:</p>
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>time</p></th>
 <th class="head"><p>PV:NAME (min)</p></th>
@@ -159,11 +162,11 @@ Above array data becomes as following with <a class="reference internal" href="f
 The other functions except <code class="docutils literal notranslate"><span class="pre">Options</span></code> are not supported for array data.</p>
 <section id="array-format">
 <h3>Array format<a class="headerlink" href="#array-format" title="Permalink to this heading"></a></h3>
-<p>From version 1.4.0, the plugin supports <a class="reference internal" href="functions.html#arrayformat"><span class="std std-doc">arrayFormat</span></a> function to change the table format for array data.
+<p>From version 1.4.0, the plugin supports <a class="reference internal" href="functions.html#arrayformat"><span class="std std-ref">arrayFormat</span></a> function to change the table format for array data.
 There are 3 types of format: <code class="docutils literal notranslate"><span class="pre">timeseries</span></code>, <code class="docutils literal notranslate"><span class="pre">index</span></code>, and <code class="docutils literal notranslate"><span class="pre">dt-space</span></code>. <code class="docutils literal notranslate"><span class="pre">timeseries</span></code> format is default format described above.</p>
 <p><code class="docutils literal notranslate"><span class="pre">index</span></code> format has a index column and columns for array data at each sampling time.
 Column name for each sampling time is a RFC3339-style time format.</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>index</p></th>
 <th class="head"><p>2020-01-01T00:00:10.000Z</p></th>
@@ -193,7 +196,7 @@ Column name for each sampling time is a RFC3339-style time format.</p>
 <p><img alt="index format of array" src="_images/array-format-index.png" /></p>
 <p><code class="docutils literal notranslate"><span class="pre">dt-space</span></code> format transforms multiple datapoints into a single timeseries data.
 It creates a new time vector starting from the sampling time. Timestamp of Nth elements of the array is reproduced with (<code class="docutils literal notranslate"><span class="pre">sampling</span> <span class="pre">time</span></code> + <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">milliseconds</span></code>).</p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>time</p></th>
 <th class="head"><p>PV:NAME</p></th>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Query Edit &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,11 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Archiver Appliance Datasource
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -76,7 +79,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Query Edit</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/query.md" class="fa fa-github"> Edit on GitHub</a>
@@ -92,7 +95,7 @@
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p><img alt="Query Overview" src="_images/aa-query-overview.png" /></p>
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Configuration</p></th>
 <th class="head"><p>Description</p></th>
@@ -103,7 +106,7 @@
 <td><p>Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. <code class="docutils literal notranslate"><span class="pre">(PV:1|PV:2)</span></code>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Regex</strong></p></td>
-<td><p>Enable/Disable Regex mode. Refer <a class="reference internal" href="#select-multiple-pvs-by-regex"><span class="std std-doc">Select Multiple PVs by Regex</span></a>.</p></td>
+<td><p>Enable/Disable Regex mode. Refer <a class="reference internal" href="#select-multiple-pvs-by-regex">Select Multiple PVs by Regex</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Operator</strong></p></td>
 <td><p>Controls processing of data during data retrieval (Default: <code class="docutils literal notranslate"><span class="pre">mean</span></code>). Refer <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> about processing of data. Special operator <code class="docutils literal notranslate"><span class="pre">raw</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> are also available. <code class="docutils literal notranslate"><span class="pre">raw</span></code> allows to retrieve the data without processing. <code class="docutils literal notranslate"><span class="pre">last</span></code> allows to retrieve the last data in the specified time range.</p></td>
@@ -121,10 +124,10 @@
 <td><p>Set alias for legend.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Alias pattern</strong></p></td>
-<td><p>Set regular expressoin pattern to use PV name for legend alias. Refer <a class="reference internal" href="#legend-alias-with-regex-pattern"><span class="std std-doc">Legend Alias with Regex Pattern</span></a></p></td>
+<td><p>Set regular expressoin pattern to use PV name for legend alias. Refer <a class="reference internal" href="#legend-alias-with-regex-pattern">Legend Alias with Regex Pattern</a></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Function</strong></p></td>
-<td><p>Apply processing function for retrieved data. Refer <a class="reference internal" href="#apply-processing-functions"><span class="std std-doc">Apply Processing Functions</span></a></p></td>
+<td><p>Apply processing function for retrieved data. Refer <a class="reference internal" href="#apply-processing-functions">Apply Processing Functions</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -145,7 +148,7 @@ To enable Regex mode, click <code class="docutils literal notranslate"><span cla
 <p>The plugin supports only <strong>wildcard pattern</strong> and <strong>alternation pattern</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Maximum number of PVs you can select on Regex mode is <strong>100</strong> in default.  <a class="reference internal" href="functions.html#maxnumpvs"><span class="std std-ref">maxNumPVs</span></a> function is available to change maximum number.</p>
+<p>Maximum number of PVs you can select on Regex mode is <strong>100</strong> in default.  <a class="reference internal" href="functions.html#maxNumPVs"><span class="std std-ref">maxNumPVs</span></a> function is available to change maximum number.</p>
 </div>
 <section id="wildcard-pattern">
 <h3>Wildcard Pattern<a class="headerlink" href="#wildcard-pattern" title="Permalink to this heading"></a></h3>

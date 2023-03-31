@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,11 +29,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Archiver Appliance Datasource
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Archiver Appliance Datasource
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -68,7 +71,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/sasaki77/archiverappliance-datasource/blob/master/docs/installation.md" class="fa fa-github"> Edit on GitHub</a>
@@ -90,13 +93,13 @@ the default path is <code class="docutils literal notranslate"><span class="pre"
 <li><p>Install the plugin with Grafana CLI. Execute Grafana CLI as following:</p></li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install latest version. You can also use this command to update the plugin to the latest version.</span>
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/latest/download/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana-cli<span class="w"> </span>--pluginUrl<span class="w"> </span>https://github.com/sasaki77/archiverappliance-datasource/releases/latest/download/archiverappliance-datasource.zip<span class="w"> </span>plugins<span class="w"> </span>install<span class="w"> </span>sasaki77-archiverappliance-datasource
 
 <span class="c1"># Install particular version. This example will install v1.4.2.</span>
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/1.4.2/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana-cli<span class="w"> </span>--pluginUrl<span class="w"> </span>https://github.com/sasaki77/archiverappliance-datasource/releases/download/1.4.2/archiverappliance-datasource.zip<span class="w"> </span>plugins<span class="w"> </span>install<span class="w"> </span>sasaki77-archiverappliance-datasource
 
 <span class="c1"># Install nightly builds.</span>
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/nightly/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana-cli<span class="w"> </span>--pluginUrl<span class="w"> </span>https://github.com/sasaki77/archiverappliance-datasource/releases/download/nightly/archiverappliance-datasource.zip<span class="w"> </span>plugins<span class="w"> </span>install<span class="w"> </span>sasaki77-archiverappliance-datasource
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
