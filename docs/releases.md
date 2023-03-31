@@ -1,4 +1,18 @@
 # Release Notes
+## 1.5.0
+
+**2023-03-31**
+
+### Enhancements
+- Migrate @grafana/toolkit to @grafana/plugin-tools
+- **Frontend**: Update components in the query editor with Segment UI and Select UI components
+- **Frontend**: Update components to use InlineSwitch and InlineField instead of LegacyForms.Switch
+- **Frontend**: Debounce the loading of PV names in 200 msec to reduce the number of requests made to the Archiver Appliance server
+- **Backend**: Return frames even if a response error occurs
+
+### Bug fixes
+- **Frontend**: Fix the alias pattern label so that it appears as just Pattern
+
 ## 1.4.4
 
 **2022-11-09**
@@ -106,7 +120,7 @@
 
 ### Bug fixes
 - Fix stream parameters to be able to use variables
-- Fix the problem that all plots were displayed with the name "values" when using the backend data source 
+- Fix the problem that all plots were displayed with the name "values" when using the backend data source
 
 ## 1.3.0
 
@@ -126,7 +140,7 @@
 **2020-10-30**
 
 ### Features / Enhancements
-- Support array data 
+- Support array data
 - Add `Array to Scalar` functions
 - Add `movingAverage` function
 - Improve query process to retrieve data from Archiver Appliance efficiently
