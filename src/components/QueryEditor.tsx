@@ -207,6 +207,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         <div className="max-width-30 gf-form-spacing">
           <Select
             value={operatorOptionValue}
+            inputValue={operatorInputValue}
             options={operatorOptions}
             onChange={onOperatorChange}
             onInputChange={onOperatorInputChange}
