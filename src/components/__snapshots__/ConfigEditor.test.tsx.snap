@@ -459,6 +459,96 @@ exports[`Render should render component 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+            >
+              Default Operator
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15fuo2f-input-wrapper css-1kstem6-SelectContainer"
+              >
+                <span
+                  class="css-1f43avz-a11yText-A11yText"
+                  id="react-select-2-live-region"
+                />
+                <span
+                  aria-atomic="false"
+                  aria-live="polite"
+                  aria-relevant="additions text"
+                  class="css-1f43avz-a11yText-A11yText"
+                />
+                <div
+                  class="css-1scgfe8"
+                >
+                  <div
+                    class="css-1kl463j-grafana-select-value-container"
+                  >
+                    <div
+                      class=" css-1yc0yww-placeholder"
+                      id="react-select-2-placeholder"
+                    >
+                      mean
+                    </div>
+                    <div
+                      class=" css-8r78wt-Input"
+                      data-value=""
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        aria-describedby="react-select-2-placeholder"
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        class=""
+                        id="react-select-2-input"
+                        role="combobox"
+                        spellcheck="false"
+                        style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="css-uvldi-input-suffix"
+                  >
+                    <div
+                      class="css-wf08df-Icon"
+                    >
+                      <svg
+                        data-testid="angle-down"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>,
@@ -912,6 +1002,96 @@ exports[`Render should render component 1`] = `
                   aria-label="Toggle switch"
                   for="switch-1"
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="css-1f5gueu"
+        >
+          <label
+            class="css-1mfv0aj"
+          >
+            Default Operator
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+          <div
+            class="css-1rfunm5"
+          >
+            <div
+              class="css-15fuo2f-input-wrapper css-1kstem6-SelectContainer"
+            >
+              <span
+                class="css-1f43avz-a11yText-A11yText"
+                id="react-select-2-live-region"
+              />
+              <span
+                aria-atomic="false"
+                aria-live="polite"
+                aria-relevant="additions text"
+                class="css-1f43avz-a11yText-A11yText"
+              />
+              <div
+                class="css-1scgfe8"
+              >
+                <div
+                  class="css-1kl463j-grafana-select-value-container"
+                >
+                  <div
+                    class=" css-1yc0yww-placeholder"
+                    id="react-select-2-placeholder"
+                  >
+                    mean
+                  </div>
+                  <div
+                    class=" css-8r78wt-Input"
+                    data-value=""
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      aria-describedby="react-select-2-placeholder"
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      autocapitalize="none"
+                      autocomplete="off"
+                      autocorrect="off"
+                      class=""
+                      id="react-select-2-input"
+                      role="combobox"
+                      spellcheck="false"
+                      style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                      tabindex="0"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="css-uvldi-input-suffix"
+                >
+                  <div
+                    class="css-wf08df-Icon"
+                  >
+                    <svg
+                      data-testid="angle-down"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

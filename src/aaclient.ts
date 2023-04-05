@@ -116,7 +116,8 @@ export class AAclient {
                 return `${pvname}`;
             }
 
-            // Default Operator
+            // Operator is usually provided even if the user doesn't provide it because of the default operator
+            // This code maintains compatibility with older versions
             if (_.includes(['', undefined], operator)) {
                 return `mean_${interval}(${pvname})`;
             }

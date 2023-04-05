@@ -130,6 +130,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const debounceLoadSuggestions = debounce((query: string) => loadPVSuggestions(query), 200);
 
   const query_ = defaults(query, defaultQuery);
+  const defaultOperator = datasource.defaultOperator || "mean";
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
   return (
@@ -217,7 +218,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             components={{
               Input
             }}
-            placeholder="mean"
+            placeholder={defaultOperator}
           />
         </div>
         <InlineFormLabel
