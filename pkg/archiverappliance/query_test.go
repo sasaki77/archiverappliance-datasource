@@ -57,10 +57,11 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryMod
 func TestQuery(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
-		name string
-		ctx  context.Context
-		req  *backend.QueryDataRequest
-		out  *backend.QueryDataResponse
+		name   string
+		ctx    context.Context
+		req    *backend.QueryDataRequest
+		config models.DatasourceSettings
+		out    *backend.QueryDataResponse
 	}{
 		{
 			name: "test",
@@ -71,8 +72,8 @@ func TestQuery(t *testing.T) {
 						JSON: json.RawMessage(`{
                     		"alias": "$2:$1",
                     		"aliasPattern": "(.*):(.*)",
-                    		"constant":6.5, 
-                    		"functions":[], 
+                    		"constant":6.5,
+                    		"functions":[],
                     		"hide":false ,
                     		"operator": "max",
                     		"refId":"A" ,
@@ -111,6 +112,9 @@ func TestQuery(t *testing.T) {
 						},
 					},
 				},
+			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -168,8 +172,8 @@ func TestQuery(t *testing.T) {
 						JSON: json.RawMessage(`{
                     		"alias": "$2:$1",
                     		"aliasPattern": "(.*):(.*)",
-                    		"constant":6.5, 
-                    		"functions":[], 
+                    		"constant":6.5,
+                    		"functions":[],
                     		"hide":false ,
                     		"operator": "max",
                     		"refId":"A" ,
@@ -185,6 +189,9 @@ func TestQuery(t *testing.T) {
 						},
 					},
 				},
+			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -242,8 +249,8 @@ func TestQuery(t *testing.T) {
 						JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
-                    		"constant":6.5, 
-                    		"functions":[], 
+                    		"constant":6.5,
+                    		"functions":[],
                     		"hide":false ,
                     		"operator": "",
                     		"refId":"A" ,
@@ -259,6 +266,9 @@ func TestQuery(t *testing.T) {
 						},
 					},
 				},
+			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -292,7 +302,7 @@ func TestQuery(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req)
+			result := Query(testCase.ctx, f, testCase.req, testCase.config)
 			for i, frame := range result.Responses["A"].Frames {
 				out := testCase.out.Responses["A"].Frames[i]
 
@@ -333,9 +343,10 @@ func TestQuery(t *testing.T) {
 func TestQueryWithInvalidResponse(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
-		name string
-		ctx  context.Context
-		req  *backend.QueryDataRequest
+		name   string
+		ctx    context.Context
+		req    *backend.QueryDataRequest
+		config models.DatasourceSettings
 	}{
 		{
 			name: "invalid response",
@@ -346,8 +357,8 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 						JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
-                    		"constant":6.5, 
-                    		"functions":[], 
+                    		"constant":6.5,
+                    		"functions":[],
                     		"hide":false ,
                     		"operator": "",
                     		"refId":"A" ,
@@ -366,12 +377,15 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 					},
 				},
 			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
+			},
 		},
 	}
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req)
+			result := Query(testCase.ctx, f, testCase.req, testCase.config)
 			res := result.Responses["A"]
 			if res.Error == nil {
 				t.Errorf("An unexpected error has occurred")

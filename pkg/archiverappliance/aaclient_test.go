@@ -23,7 +23,7 @@ func TestBuildQueryUrl(t *testing.T) {
 		output string
 	}{
 		{
-			name:   "URL for auto raw data with empty operator (interval is less than 1 second)",
+			name:   "URL for auto raw data with mean operator (interval is less than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
 			qm: models.ArchiverQueryModel{
@@ -36,7 +36,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				// format: ,
 				Functions: []models.FunctionDescriptorQueryModel{},
 				// Hide: false,
-				Operator:  "",
+				Operator:  "mean",
 				QueryText: "",
 				QueryType: nil,
 				RefId:     "A",
@@ -52,13 +52,13 @@ func TestBuildQueryUrl(t *testing.T) {
 			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 		{
-			name:   "URL for empty operator (interval is higher than 1 second)",
+			name:   "URL for mean operator (interval is higher than 1 second)",
 			target: "MR1K1:BEND:PIP:1:PMON",
 			url:    "http://localhost:3396/retrieval",
 			qm: models.ArchiverQueryModel{
 				IntervalMs: testhelper.InitIntPointer(7200),
 				Functions:  []models.FunctionDescriptorQueryModel{},
-				Operator:   "",
+				Operator:   "mean",
 				QueryText:  "",
 				QueryType:  nil,
 				RefId:      "A",

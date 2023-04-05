@@ -187,16 +187,26 @@ func convertNanosec(number *json.Number) time.Time {
 }
 
 type DatasourceSettings struct {
+	DefaultOperator string `json:"defaultOperator"`
+
 	URL string `json:"-"`
 }
 
-func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
+func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (ArchiverQueryModel, error) {
 	const REGEX_MAXIMUM_MATCHES = 1000
 	model := ArchiverQueryModel{}
 
 	err := json.Unmarshal(query.JSON, &model)
 	if err != nil {
 		return model, fmt.Errorf("error reading query: %s", err.Error())
+	}
+
+	if model.Operator == "" {
+		if config.DefaultOperator != "" {
+			model.Operator = config.DefaultOperator
+		} else {
+			model.Operator = "mean"
+		}
 	}
 
 	// Parameters Not from JSON
@@ -224,6 +234,12 @@ func ReadQueryModel(query backend.DataQuery) (ArchiverQueryModel, error) {
 
 func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
 	model := DatasourceSettings{}
+
+	err := json.Unmarshal(ctx.DataSourceInstanceSettings.JSONData, &model)
+
+	if err != nil {
+		return model, fmt.Errorf("error reading datasource instance settings: %s", err.Error())
+	}
 
 	model.URL = ctx.DataSourceInstanceSettings.URL
 

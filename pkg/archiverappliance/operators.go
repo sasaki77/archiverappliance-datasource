@@ -15,7 +15,6 @@ func operatorValidator(input string) bool {
 
 	// copied from the types.ts specification
 	RECOGNIZED_OPERATORS := []string{
-		"",
 		"firstSample",
 		"lastSample",
 		"firstFill",
@@ -74,13 +73,8 @@ func createOperatorQuery(qm models.ArchiverQueryModel) (string, error) {
 		binInterval = 1
 	}
 
-	opr := qm.Operator
-	if opr == "" {
-		opr = "mean"
-	}
-
 	var opBuilder strings.Builder
-	opBuilder.WriteString(opr)
+	opBuilder.WriteString(qm.Operator)
 	opBuilder.WriteString("_")
 	opBuilder.WriteString(strconv.Itoa(binInterval))
 

@@ -13,15 +13,15 @@ import (
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
-func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backend.QueryDataResponse {
+func Query(ctx context.Context, c client, req *backend.QueryDataRequest, config models.DatasourceSettings) *backend.QueryDataResponse {
 	// create response struct
 	response := backend.NewQueryDataResponse()
 	responsePipe := make(chan models.QueryMgr)
 
 	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, client client, responsePipe chan models.QueryMgr) {
+		go func(ctx context.Context, q backend.DataQuery, client client, config models.DatasourceSettings, responsePipe chan models.QueryMgr) {
 			res := backend.DataResponse{}
-			qm, err := models.ReadQueryModel(q)
+			qm, err := models.ReadQueryModel(q, config)
 
 			if err != nil {
 				res.Error = err
@@ -33,7 +33,7 @@ func Query(ctx context.Context, c client, req *backend.QueryDataRequest) *backen
 				Res:    res,
 				QRefID: q.RefID,
 			}
-		}(ctx, q, c, responsePipe)
+		}(ctx, q, c, config, responsePipe)
 	}
 
 	timeoutDurationSeconds := 30 // units are seconds
