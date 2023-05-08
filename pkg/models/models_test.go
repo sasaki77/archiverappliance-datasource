@@ -17,6 +17,7 @@ func TestReadQueryModel(t *testing.T) {
 	var tests = []struct {
 		name   string
 		input  backend.DataQuery
+		config DatasourceSettings
 		output ArchiverQueryModel
 	}{
 		{
@@ -41,6 +42,9 @@ func TestReadQueryModel(t *testing.T) {
 					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
+			},
+			config: DatasourceSettings{
+				DefaultOperator: "mean",
 			},
 			output: ArchiverQueryModel{
 				Target:       ".*(1|2)",
@@ -131,11 +135,14 @@ func TestReadQueryModel(t *testing.T) {
 					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
 				},
 			},
+			config: DatasourceSettings{
+				DefaultOperator: "max",
+			},
 			output: ArchiverQueryModel{
 				Target:       "PV:TEST",
 				Alias:        "",
 				AliasPattern: "",
-				Operator:     "",
+				Operator:     "max",
 				Regex:        false,
 				Functions: []FunctionDescriptorQueryModel{
 					{
@@ -198,7 +205,7 @@ func TestReadQueryModel(t *testing.T) {
 
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result, _ := ReadQueryModel(testCase.input)
+			result, _ := ReadQueryModel(testCase.input, testCase.config)
 			if diff := cmp.Diff(testCase.output, result); diff != "" {
 				t.Errorf("Compare value is mismatch (-v1 +v2):%s\n", diff)
 			}

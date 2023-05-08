@@ -52,19 +52,19 @@ func TestCreateOperatorQuery(t *testing.T) {
 			output: "",
 		},
 		{
-			name: "empty operator with 0 second interval",
+			name: "mean operator with 0 second interval",
 			input: models.ArchiverQueryModel{
 				IntervalMs: testhelper.InitIntPointer(100),
-				Operator:   "",
+				Operator:   "mean",
 				Interval:   0,
 			},
 			output: "",
 		},
 		{
-			name: "empty operator with 0 second interval and DisableAutoRaw true",
+			name: "mean operator with 0 second interval and DisableAutoRaw true",
 			input: models.ArchiverQueryModel{
 				IntervalMs:     testhelper.InitIntPointer(100),
-				Operator:       "",
+				Operator:       "mean",
 				Interval:       0,
 				DisableAutoRaw: true,
 			},

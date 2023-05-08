@@ -31,7 +31,7 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 		return nil, err
 	}
 
-	response := archiverappliance.Query(ctx, client, req)
+	response := archiverappliance.Query(ctx, client, req, config)
 
 	return response, nil
 }

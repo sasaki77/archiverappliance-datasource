@@ -1449,3 +1449,63 @@ describe('Archiverappliance Datasource', () => {
     });
   });
 });
+
+describe('Default Operator test', () => {
+  let ds: DataSource;
+
+  beforeEach(() => {
+    const instanceSettings = ({
+      url: 'url_header:',
+      jsonData: {
+        useBackend: false,
+        defaultOperator: "max"
+      },
+    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    ds = new DataSource(instanceSettings);
+  });
+
+  describe('Default Operator test', () => {
+    it('should return parameters with the default operator', (done) => {
+      const options = ({
+        targets: [{ target: 'PV1', refId: 'A' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
+        maxDataPoints: 1800,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const targets = ds.buildQueryParameters(options);
+
+      expect(targets).toHaveLength(1);
+      expect(targets[0].operator).toBe('max');
+      done();
+    });
+
+    it('should return parameters with a specified operator', (done) => {
+      const options = ({
+        targets: [{ target: 'PV1', refId: 'A', operator: 'mean' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
+        maxDataPoints: 1800,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const targets = ds.buildQueryParameters(options);
+
+      expect(targets).toHaveLength(1);
+      expect(targets[0].operator).toBe('mean');
+      done();
+    });
+
+    it('should return parameters with the default operator if the oeprator is a empty string', (done) => {
+      const options = ({
+        targets: [{ target: 'PV1', refId: 'A', operator: '' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
+        maxDataPoints: 1800,
+      } as unknown) as DataQueryRequest<AAQuery>;
+
+      const targets = ds.buildQueryParameters(options);
+
+      expect(targets).toHaveLength(1);
+      expect(targets[0].operator).toBe('max');
+      done();
+    });
+
+  })
+});

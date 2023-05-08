@@ -21,6 +21,7 @@ import { StreamQuery } from './streamQuery';
 export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptions> {
   name: string;
   useBackend?: boolean | undefined;
+  defaultOperator?: string;
   aaclient: AAclient;
   streamQuery: StreamQuery;
 
@@ -32,6 +33,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     }
     this.name = instanceSettings.name;
     this.useBackend = instanceSettings.jsonData.useBackend;
+    this.defaultOperator = instanceSettings.jsonData.defaultOperator;
     this.aaclient = new AAclient(url, instanceSettings.withCredentials || false);
     this.streamQuery = new StreamQuery(this.aaclient)
   }
@@ -153,6 +155,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const targets: TargetQuery[] = _.map(query.targets, (target) => {
       const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
+      const operator = target.operator || this.defaultOperator || "mean";
 
       return {
         //target: templateSrv.replace(target.target, query.scopedVars, 'regex'),
@@ -160,7 +163,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
         refId: target.refId,
         hide: target.hide,
         alias: target.alias,
-        operator: target.operator,
+        operator,
         stream: target.stream,
         strmInt: target.strmInt,
         strmCap: target.strmCap,
