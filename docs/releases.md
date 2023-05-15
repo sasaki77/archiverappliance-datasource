@@ -1,4 +1,14 @@
 # Release Notes
+## 1.5.1
+
+**2023-05-15**
+
+### Enhancements
+- Add the default operator to the data source settings
+
+### Bug fixes
+- **Frontend**: Operator and function parameters can't set custom value
+
 ## 1.5.0
 
 **2023-03-31**
