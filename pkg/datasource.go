@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
-	"time"
+	"fmt"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
-	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/aalive"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/archiverappliance"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
@@ -69,35 +68,37 @@ func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStr
 
 	// Create the same data frame as for query data.
 	pvname := aalive.ConvURL2PV(req.Path)
-	frame := data.NewFrame(pvname)
 
-	// Add fields (matching the same schema used in QueryData).
-	frame.Fields = append(frame.Fields,
-		data.NewField("time", nil, make([]time.Time, 1)),
-		data.NewField(pvname, nil, make([]int64, 1)),
-	)
+	wsDataProxy, err := aalive.NewWsDataProxy(ctx, req, sender, pvname)
+	if err != nil {
+		errCtx := "Starting WebSocket"
 
-	counter := 0
+		log.DefaultLogger.Error(errCtx, "error", err.Error())
 
-	// Stream data frames periodically till stream closed by Grafana.
-	for {
-		select {
-		case <-ctx.Done():
-			log.DefaultLogger.Info("Context done, finish streaming", "path", req.Path)
-			return nil
-		case <-time.After(time.Second):
-			// Send new data periodically.
-			frame.Fields[0].Set(0, time.Now())
-			frame.Fields[1].Set(0, int64(10*(counter%2+1)))
+		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", errCtx, err.Error()), sender)
 
-			counter++
+		return err
+	}
 
-			err := sender.SendFrame(frame, data.IncludeAll)
-			if err != nil {
-				log.DefaultLogger.Error("Error sending frame", "error", err)
-				continue
-			}
-		}
+	go wsDataProxy.ProxyMessage()
+
+	go wsDataProxy.ReadMessage()
+
+	select {
+	case <-ctx.Done():
+
+		wsDataProxy.Done <- true
+
+		log.DefaultLogger.Info("Closing Channel", "channel", req.Path)
+
+		return nil
+	case rError := <-wsDataProxy.ReadingErrors:
+		log.DefaultLogger.Error("Error reading the websocket", "error", err.Error())
+		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", "Error reading the websocket", err.Error()), sender)
+
+		log.DefaultLogger.Info("Closing Channel due an error to read websocket", "channel", req.Path)
+
+		return rError
 	}
 }
 

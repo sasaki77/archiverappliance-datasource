@@ -186,6 +186,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         <InlineSwitch
           value={query.regex}
           onChange={onRegexChange}
+          className="gf-form-spacing"
         />
         <InlineFormLabel
           width={6}
