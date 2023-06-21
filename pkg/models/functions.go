@@ -21,6 +21,7 @@ const (
 type FunctionOption string
 
 const (
+	FUNC_OPTION_LIVEONLY        = FunctionOption("liveOnly")
 	FUNC_OPTION_MAXNUMPVS       = FunctionOption("maxNumPVs")
 	FUNC_OPTION_DISABLEAUTORAW  = FunctionOption("disableAutoRaw")
 	FUNC_OPTION_DISABLEEXTRAPOL = FunctionOption("disableExtrapol")

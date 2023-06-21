@@ -226,6 +226,13 @@ addFuncDef({
 // Options
 
 addFuncDef({
+  name: 'liveOnly',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
+addFuncDef({
   name: 'maxNumPVs',
   category: 'Options',
   params: [{ name: 'number', type: 'int' }],

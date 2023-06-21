@@ -41,6 +41,16 @@ func (client AAclient) FetchRegexTargetPVs(regex string, limit int) ([]string, e
 func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
 	// wrap together the individual operations build a query, execute the query, and compile the data into a singleData structure
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
+
+	// For liveOnly response
+	if qm.LiveOnly {
+		var sD models.SingleData
+		sD.Name = target
+		sD.PVname = target
+		sD.Values = &models.Scalars{}
+		return sD, nil
+	}
+
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
 	queryResponse, _ := archiverSingleQuery(queryUrl)
 	parsedResponse, err := archiverSingleQueryParser(queryResponse)
