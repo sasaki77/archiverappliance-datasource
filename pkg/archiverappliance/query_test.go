@@ -115,6 +115,7 @@ func TestQuery(t *testing.T) {
 			},
 			config: models.DatasourceSettings{
 				DefaultOperator: "mean",
+				UID:             "uuid",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -192,6 +193,7 @@ func TestQuery(t *testing.T) {
 			},
 			config: models.DatasourceSettings{
 				DefaultOperator: "mean",
+				UID:             "uuid",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -269,6 +271,7 @@ func TestQuery(t *testing.T) {
 			},
 			config: models.DatasourceSettings{
 				DefaultOperator: "mean",
+				UID:             "uuid",
 			},
 			out: &backend.QueryDataResponse{
 				Responses: map[string]backend.DataResponse{
@@ -379,6 +382,7 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 			},
 			config: models.DatasourceSettings{
 				DefaultOperator: "mean",
+				UID:             "uuid",
 			},
 		},
 	}

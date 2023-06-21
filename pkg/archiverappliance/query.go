@@ -31,7 +31,7 @@ func Query(ctx context.Context, c client, req *backend.QueryDataRequest, config 
 			if err != nil {
 				res.Error = err
 			} else {
-				res = singleQuery(ctx, qm, c, req.PluginContext.DataSourceInstanceSettings.UID)
+				res = singleQuery(ctx, qm, c, config.UID)
 			}
 
 			responsePipe <- models.QueryMgr{
@@ -134,7 +134,7 @@ responseCollector:
 		frame := singleResponse.ToFrame(qm.FormatOption)
 
 		if qm.Live {
-			channelFrame, err := createLiveChannel(frame, uuid)
+			channelFrame, err := createLiveChannel(singleResponse.PVname, frame, uuid)
 			if err != nil {
 				log.DefaultLogger.Warn("Error applying live channel:", err)
 			} else {
@@ -216,8 +216,8 @@ func makeTargetPVList(client client, target string, regex bool, maxNum int) []st
 	return uniqPVList
 }
 
-func createLiveChannel(frame *data.Frame, uuid string) (*data.FrameMeta, error) {
-	pvname := frame.Fields[1].Config.DisplayName
+func createLiveChannel(pvname string, frame *data.Frame, uuid string) (*data.FrameMeta, error) {
+	//pvname := frame.Fields[1].Config.DisplayName
 	valid := aalive.IsPVnameValid(pvname)
 
 	if !valid {

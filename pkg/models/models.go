@@ -192,6 +192,7 @@ type DatasourceSettings struct {
 	DefaultOperator string `json:"defaultOperator"`
 
 	URL string `json:"-"`
+	UID string `json:"-"`
 }
 
 func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (ArchiverQueryModel, error) {
@@ -245,6 +246,7 @@ func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
 	}
 
 	model.URL = ctx.DataSourceInstanceSettings.URL
+	model.UID = ctx.DataSourceInstanceSettings.UID
 
 	return model, nil
 }
