@@ -16,65 +16,71 @@ import (
 
 type wsDataProxy struct {
 	wsUrl         string
+	wsConn        *websocket.Conn
 	msgRead       chan []byte
 	sender        *backend.StreamSender
-	pv            string
-	ctx           context.Context
-	Done          chan bool
+	pvname        string
 	ReadingErrors chan error
+	Done          chan bool
 }
 
-func NewWsDataProxy(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender, pv string) (*wsDataProxy, error) {
+func NewWsDataProxy(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender, pvname string) (*wsDataProxy, error) {
 	wsDataProxy := &wsDataProxy{
 		msgRead:       make(chan []byte),
 		sender:        sender,
-		pv:            pv,
-		ctx:           ctx,
-		Done:          make(chan bool, 1),
+		pvname:        pvname,
 		ReadingErrors: make(chan error),
+		Done:          make(chan bool, 1),
 	}
 
-	url, err := wsDataProxy.encodeURL(pv)
+	url, err := wsDataProxy.encodeURL(pvname)
 	if err != nil {
 		return nil, fmt.Errorf("encode URL Error: %s", err.Error())
 	}
 	wsDataProxy.wsUrl = url
 	log.DefaultLogger.Info(url)
 
+	c, err := wsDataProxy.wsConnect(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("connection Error: %s", err.Error())
+	}
+	wsDataProxy.wsConn = c
+
 	return wsDataProxy, nil
 }
 
 func (wsdp *wsDataProxy) ReadMessage() {
+	defer func() {
+		wsdp.wsConn.Close(websocket.StatusNormalClosure, "")
+		close(wsdp.msgRead)
+		log.DefaultLogger.Info("Read Message routine", "detail", "closing websocket connection and msgRead channel")
+	}()
+
 	ctx := context.Background()
 
-	c, _, _ := websocket.Dial(ctx, wsdp.wsUrl, nil)
-	defer c.Close(websocket.StatusInternalError, "the sky is falling")
-
-	log.DefaultLogger.Info("Ws Connect", "connected to", wsdp.wsUrl)
-
+	// Start Subscribe
 	b := []byte(`{ "type": "subscribe", "pvs": [ "ET_SASAKI:TEST" ] }`)
-	err := c.Write(ctx, 1, b)
+	err := wsdp.wsConn.Write(ctx, 1, b)
 	if err != nil {
-		log.DefaultLogger.Info("ERROR")
+		wsdp.ReadingErrors <- fmt.Errorf("%s: %s", "Error writing the websocket", err.Error())
+		return
 	}
 
-	for {
-		select {
-		case <-wsdp.Done:
-			return
-		default:
-			_, v, err := c.Read(ctx)
-			log.DefaultLogger.Info(string(v))
+	go func() {
+		for {
+			_, v, err := wsdp.wsConn.Read(ctx)
+			log.DefaultLogger.Debug(string(v))
 			if err != nil {
-				log.DefaultLogger.Info(err.Error())
 				time.Sleep(3 * time.Second)
 				wsdp.ReadingErrors <- fmt.Errorf("%s: %s", "Error reading the websocket", err.Error())
 				return
-			} else {
-				wsdp.msgRead <- v
 			}
+			wsdp.msgRead <- v
 		}
-	}
+	}()
+
+	<-wsdp.Done
+	log.DefaultLogger.Info("ReadMessage closed")
 }
 
 type messageModel struct {
@@ -84,11 +90,11 @@ type messageModel struct {
 }
 
 func (wsdp *wsDataProxy) ProxyMessage() {
-	frame := data.NewFrame(wsdp.pv)
+	frame := data.NewFrame(wsdp.pvname)
 
 	frame.Fields = append(frame.Fields,
 		data.NewField("time", nil, make([]time.Time, 1)),
-		data.NewField(wsdp.pv, nil, make([]float64, 1)),
+		data.NewField(wsdp.pvname, nil, make([]float64, 1)),
 	)
 
 	m := messageModel{}
@@ -97,6 +103,7 @@ func (wsdp *wsDataProxy) ProxyMessage() {
 		message, ok := <-wsdp.msgRead
 		// if channel was closed
 		if !ok {
+			log.DefaultLogger.Info("ProxyMessage closed")
 			return
 		}
 
@@ -113,7 +120,6 @@ func (wsdp *wsDataProxy) ProxyMessage() {
 	}
 }
 
-// encodeURL is hard coded with some variables like scheme and x-api-key but will be definetly refactored after changes in the config editor
 func (wsdp *wsDataProxy) encodeURL(req string) (string, error) {
 	host := "ws://172.20.240.1:8080/pvws/pv"
 
@@ -128,12 +134,14 @@ func (wsdp *wsDataProxy) encodeURL(req string) (string, error) {
 	return host, nil
 }
 
-func SendErrorFrame(msg string, sender *backend.StreamSender) {
-	frame := data.NewFrame("error")
-	frame.Fields = append(frame.Fields, data.NewField("error", nil, []string{msg}))
+func (wsdp *wsDataProxy) wsConnect(ctx context.Context) (*websocket.Conn, error) {
+	log.DefaultLogger.Info("Ws Connect", "connecting to", wsdp.wsUrl)
 
-	serr := sender.SendFrame(frame, data.IncludeAll)
-	if serr != nil {
-		log.DefaultLogger.Error("Failed to send error frame", "error", serr)
+	c, _, err := websocket.Dial(ctx, wsdp.wsUrl, nil)
+	if err != nil {
+		return nil, err
 	}
+	log.DefaultLogger.Info("Ws Connect", "connected to", wsdp.wsUrl)
+
+	return c, nil
 }

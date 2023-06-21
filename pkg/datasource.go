@@ -72,25 +72,19 @@ func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStr
 	wsDataProxy, err := aalive.NewWsDataProxy(ctx, req, sender, pvname)
 	if err != nil {
 		errCtx := "Starting WebSocket"
-
 		log.DefaultLogger.Error(errCtx, "error", err.Error())
-
 		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", errCtx, err.Error()), sender)
 
 		return err
 	}
 
 	go wsDataProxy.ProxyMessage()
-
 	go wsDataProxy.ReadMessage()
 
 	select {
 	case <-ctx.Done():
-
 		wsDataProxy.Done <- true
-
 		log.DefaultLogger.Info("Closing Channel", "channel", req.Path)
-
 		return nil
 	case rError := <-wsDataProxy.ReadingErrors:
 		log.DefaultLogger.Error("Error reading the websocket", "error", err.Error())
