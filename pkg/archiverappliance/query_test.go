@@ -343,6 +343,65 @@ func TestQuery(t *testing.T) {
 	}
 }
 
+func TestLiveQuery(t *testing.T) {
+	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
+	var tests = []struct {
+		name   string
+		ctx    context.Context
+		req    *backend.QueryDataRequest
+		config models.DatasourceSettings
+	}{
+		{
+			name: "Live Test",
+			req: &backend.QueryDataRequest{
+				Queries: []backend.DataQuery{
+					{
+						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						JSON: json.RawMessage(`{
+                    		"alias": "",
+                    		"aliasPattern": "",
+                    		"constant":6.5,
+                    		"hide":false ,
+                    		"operator": "max",
+                    		"refId":"A" ,
+                    		"regex":false,
+							"live": true,
+                    		"target":"PV:NAME1" ,
+							"functions":[
+							]
+						}`),
+						MaxDataPoints: 1000,
+						QueryType:     "",
+						RefID:         "A",
+						TimeRange: backend.TimeRange{
+							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+						},
+					},
+				},
+			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
+				UID:             "uuid",
+				UseLiveUpdate:   true,
+				LiveUpdateURI:   "uri",
+			},
+		},
+	}
+	f := fakeClient{}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := Query(testCase.ctx, f, testCase.req, testCase.config)
+			for _, frame := range result.Responses["A"].Frames {
+				path := "ds/uuid/PV=NAME1"
+				if frame.Meta.Channel != path {
+					t.Errorf("got %v, want %v", frame.Meta.Channel, path)
+				}
+			}
+		})
+	}
+}
+
 func TestQueryWithInvalidResponse(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
