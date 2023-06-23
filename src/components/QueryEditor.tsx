@@ -51,6 +51,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     onRunQuery();
   };
 
+  const onLiveChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    onChange({ ...query, live: !query.live });
+    onRunQuery();
+  };
+
   const onOperatorChange = (option: SelectableValue) => {
     const changedOpertor = option && option.value != "" ? option.value : undefined;
     onChange({ ...query, operator: changedOpertor });
@@ -131,6 +136,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
 
   const query_ = defaults(query, defaultQuery);
   const defaultOperator = datasource.defaultOperator || "mean";
+  const useLiveUpdate = datasource.useLiveUpdate || false;
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
   return (
@@ -181,7 +187,27 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         <InlineSwitch
           value={query.regex}
           onChange={onRegexChange}
+          className="gf-form-spacing"
         />
+        {useLiveUpdate === true &&
+          <div className="gf-form-inline">
+            <InlineFormLabel
+              width={6}
+              className="query-keyword"
+              tooltip={
+                <p>
+                  Enable/Disable Live mode.
+                </p>
+              }
+            >
+              Live
+            </InlineFormLabel>
+            <InlineSwitch
+              value={query.live}
+              onChange={onLiveChange}
+            />
+          </div>
+        }
       </div>
       <div className="gf-form-inline">
         <InlineFormLabel

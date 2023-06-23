@@ -29,6 +29,10 @@ func (v *Arrays) ToFields(pvname string, name string, format FormatOption) []*da
 }
 
 func (v *Arrays) Extrapolation(t time.Time) {
+	if len(v.Values) == 0 {
+		return
+	}
+
 	v.Values = append(v.Values, v.Values[len(v.Values)-1])
 	v.Times = append(v.Times, t)
 }

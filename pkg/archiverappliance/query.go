@@ -2,6 +2,8 @@ package archiverappliance
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"regexp"
 	"sort"
 	"strconv"
@@ -9,6 +11,9 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/grafana/grafana-plugin-sdk-go/data"
+	"github.com/grafana/grafana-plugin-sdk-go/live"
+	"github.com/sasaki77/archiverappliance-datasource/pkg/aalive"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/functions"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
@@ -26,7 +31,7 @@ func Query(ctx context.Context, c client, req *backend.QueryDataRequest, config 
 			if err != nil {
 				res.Error = err
 			} else {
-				res = singleQuery(ctx, qm, c)
+				res = singleQuery(ctx, qm, c, config)
 			}
 
 			responsePipe <- models.QueryMgr{
@@ -61,7 +66,7 @@ type queryResponse struct {
 	err      error
 }
 
-func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client) backend.DataResponse {
+func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client, config models.DatasourceSettings) backend.DataResponse {
 
 	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
@@ -127,6 +132,15 @@ responseCollector:
 	// for each query response, compile the data into response.Frames
 	for _, singleResponse := range responseData {
 		frame := singleResponse.ToFrame(qm.FormatOption)
+
+		if config.UseLiveUpdate && qm.Live {
+			channelFrame, err := createLiveChannel(singleResponse.PVname, frame, config.UID)
+			if err != nil {
+				log.DefaultLogger.Warn("Error applying live channel:", err)
+			} else {
+				frame.SetMeta(channelFrame)
+			}
+		}
 
 		// add the frames to the response
 		response.Frames = append(response.Frames, frame)
@@ -200,4 +214,27 @@ func makeTargetPVList(client client, target string, regex bool, maxNum int) []st
 	}
 
 	return uniqPVList
+}
+
+func createLiveChannel(pvname string, frame *data.Frame, uuid string) (*data.FrameMeta, error) {
+	//pvname := frame.Fields[1].Config.DisplayName
+	valid := aalive.IsPVnameValid(pvname)
+
+	if !valid {
+		errMsg := fmt.Sprintf("createLiveChannel: invalid pvname %s", pvname)
+		return nil, errors.New(errMsg)
+	}
+
+	var framemeta *data.FrameMeta
+	if valid {
+		path := aalive.ConvPV2URL(pvname)
+		channel := live.Channel{
+			Scope:     live.ScopeDatasource,
+			Namespace: uuid,
+			Path:      path,
+		}
+		framemeta = &data.FrameMeta{Channel: channel.String()}
+	}
+
+	return framemeta, nil
 }

@@ -260,6 +260,14 @@ addFuncDef({
   defaultParams: ['timeseries'],
 });
 
+addFuncDef({
+  name: 'liveOnly',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
+
 export function getFuncDef(name: string) {
   return funcIndex[name];
 }

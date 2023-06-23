@@ -1,6 +1,7 @@
 package archiverappliance
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -408,6 +409,59 @@ func TestArchiverRegexQueryParser(t *testing.T) {
 				if testCase.output[idx] != result[idx] {
 					t.Errorf("got %v, want %v", result, testCase.output)
 				}
+			}
+		})
+	}
+}
+
+func TestLiveOnly(t *testing.T) {
+	//            "2021-01-27T14:25:41.678-08:00"
+	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
+	var tests = []struct {
+		name   string
+		target string
+		qm     models.ArchiverQueryModel
+	}{
+		{
+			target: "PV:NAME",
+			qm: models.ArchiverQueryModel{
+				IntervalMs: testhelper.InitIntPointer(300),
+				Functions:  []models.FunctionDescriptorQueryModel{},
+				// Hide: false,
+				Operator:  "mean",
+				QueryText: "",
+				QueryType: nil,
+				RefId:     "A",
+				Regex:     true,
+				LiveOnly:  true,
+				// String: nil,
+				Target: "MR1K1:BEND:PIP:1:PMON",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:25:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+				},
+				Interval: 0,
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			ctx := context.Background()
+			client, _ := NewAAClient(ctx, "url")
+			result, _ := client.ExecuteSingleQuery(testCase.target, testCase.qm)
+			pvname := "PV:NAME"
+
+			if result.Name != pvname {
+				t.Errorf("got %v, want %v", result.Name, pvname)
+			}
+			if result.PVname != pvname {
+				t.Errorf("got %v, want %v", result.Name, pvname)
+			}
+			if len(result.Values.(*models.Scalars).Values) != 0 {
+				t.Errorf("Values should be empty")
+			}
+			if len(result.Values.(*models.Scalars).Times) != 0 {
+				t.Errorf("Times should be empty")
 			}
 		})
 	}

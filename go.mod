@@ -7,4 +7,5 @@ require (
 	github.com/grafana/grafana-plugin-sdk-go v0.139.0
 	github.com/magefile/mage v1.13.0
 	github.com/montanaflynn/stats v0.6.6
+	nhooyr.io/websocket v1.8.7
 )

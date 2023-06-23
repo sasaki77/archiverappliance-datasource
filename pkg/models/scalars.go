@@ -34,6 +34,9 @@ func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*d
 }
 
 func (v *Scalars) Extrapolation(t time.Time) {
+	if len(v.Values) == 0 {
+		return
+	}
 	v.Values = append(v.Values, v.Values[len(v.Values)-1])
 	v.Times = append(v.Times, t)
 }

@@ -22,6 +22,8 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
   name: string;
   useBackend?: boolean | undefined;
   defaultOperator?: string;
+  useLiveUpdate?: boolean | undefined;
+  liveUpdateURI?: string | undefined;
   aaclient: AAclient;
   streamQuery: StreamQuery;
 
@@ -34,6 +36,8 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     this.name = instanceSettings.name;
     this.useBackend = instanceSettings.jsonData.useBackend;
     this.defaultOperator = instanceSettings.jsonData.defaultOperator;
+    this.useLiveUpdate = instanceSettings.jsonData.useLiveUpdate;
+    this.liveUpdateURI = instanceSettings.jsonData.liveUpdateURI || "ws://localhost:8080/pvws/pv";
     this.aaclient = new AAclient(url, instanceSettings.withCredentials || false);
     this.streamQuery = new StreamQuery(this.aaclient)
   }
@@ -169,6 +173,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
         strmCap: target.strmCap,
         functions: target.functions,
         regex: target.regex,
+        live: target.live,
         aliasPattern: target.aliasPattern,
         options,
         from,

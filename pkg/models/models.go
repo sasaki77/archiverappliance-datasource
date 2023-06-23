@@ -27,6 +27,7 @@ type ArchiverQueryModel struct {
 	AliasPattern string                         `json:"aliasPattern"` // use for collecting a large number of returned values
 	Operator     string                         `json:"operator"`     // ?
 	Regex        bool                           `json:"regex"`        // configured by the user's setting of the "Regex" field in the panel
+	Live         bool                           `json:"live"`         // configured by the user's setting of the "Live" field in the panel
 	Functions    []FunctionDescriptorQueryModel `json:"functions"`    // collection of functions to be applied to the data by the archiver
 
 	// Only appears for visualization queries
@@ -48,6 +49,7 @@ type ArchiverQueryModel struct {
 	TimeRange       backend.TimeRange `json:"-"`
 	Interval        int               `json:"-"`
 	BackendQuery    bool              `json:"-"`
+	LiveOnly        bool              `json:"-"`
 	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
@@ -188,8 +190,11 @@ func convertNanosec(number *json.Number) time.Time {
 
 type DatasourceSettings struct {
 	DefaultOperator string `json:"defaultOperator"`
+	UseLiveUpdate   bool   `json:"useLiveUpdate"`
+	LiveUpdateURI   string `json:"liveUpdateURI"`
 
 	URL string `json:"-"`
+	UID string `json:"-"`
 }
 
 func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (ArchiverQueryModel, error) {
@@ -225,6 +230,7 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	model.MaxNumPVs, _ = model.LoadIntOption(FunctionOption(FUNC_OPTION_MAXNUMPVS), REGEX_MAXIMUM_MATCHES)
 	model.DisableAutoRaw, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEAUTORAW), false)
 	model.DisableExtrapol, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL), false)
+	model.LiveOnly, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_LIVEONLY), false)
 
 	f, _ := model.LoadStrOption(FUNC_OPTION_ARRAY_FORMAT, string(FORMAT_TIMESERIES))
 	model.FormatOption = FormatOption(f)
@@ -242,6 +248,7 @@ func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
 	}
 
 	model.URL = ctx.DataSourceInstanceSettings.URL
+	model.UID = ctx.DataSourceInstanceSettings.UID
 
 	return model, nil
 }
