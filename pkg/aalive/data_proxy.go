@@ -67,7 +67,6 @@ func (wsdp *wsDataProxy) ReadMessage() {
 	go func() {
 		for {
 			_, v, err := wsdp.wsConn.Read(ctx)
-			log.DefaultLogger.Debug(string(v))
 			if err != nil {
 				time.Sleep(3 * time.Second)
 				wsdp.ReadingErrors <- fmt.Errorf("%s: %s", "Error reading the websocket", err.Error())
