@@ -226,13 +226,6 @@ addFuncDef({
 // Options
 
 addFuncDef({
-  name: 'liveOnly',
-  category: 'Options',
-  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
-  defaultParams: ['true'],
-});
-
-addFuncDef({
   name: 'maxNumPVs',
   category: 'Options',
   params: [{ name: 'number', type: 'int' }],
@@ -266,6 +259,14 @@ addFuncDef({
   params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
   defaultParams: ['timeseries'],
 });
+
+addFuncDef({
+  name: 'liveOnly',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
 
 export function getFuncDef(name: string) {
   return funcIndex[name];

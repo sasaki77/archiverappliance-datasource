@@ -137,6 +137,8 @@ export interface AADataSourceOptions extends DataSourceJsonData {
   path?: string;
   useBackend?: boolean;
   defaultOperator?: string;
+  useLiveUpdate?: boolean;
+  liveUpdateURI?: string;
 }
 
 /**

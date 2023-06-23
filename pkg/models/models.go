@@ -190,6 +190,8 @@ func convertNanosec(number *json.Number) time.Time {
 
 type DatasourceSettings struct {
 	DefaultOperator string `json:"defaultOperator"`
+	UseLiveUpdate   bool   `json:"useLiveUpdate"`
+	LiveUpdateURI   string `json:"liveUpdateURI"`
 
 	URL string `json:"-"`
 	UID string `json:"-"`

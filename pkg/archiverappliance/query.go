@@ -31,7 +31,7 @@ func Query(ctx context.Context, c client, req *backend.QueryDataRequest, config 
 			if err != nil {
 				res.Error = err
 			} else {
-				res = singleQuery(ctx, qm, c, config.UID)
+				res = singleQuery(ctx, qm, c, config)
 			}
 
 			responsePipe <- models.QueryMgr{
@@ -66,7 +66,7 @@ type queryResponse struct {
 	err      error
 }
 
-func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client, uuid string) backend.DataResponse {
+func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client, config models.DatasourceSettings) backend.DataResponse {
 
 	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
@@ -133,8 +133,8 @@ responseCollector:
 	for _, singleResponse := range responseData {
 		frame := singleResponse.ToFrame(qm.FormatOption)
 
-		if qm.Live {
-			channelFrame, err := createLiveChannel(singleResponse.PVname, frame, uuid)
+		if config.UseLiveUpdate && qm.Live {
+			channelFrame, err := createLiveChannel(singleResponse.PVname, frame, config.UID)
 			if err != nil {
 				log.DefaultLogger.Warn("Error applying live channel:", err)
 			} else {

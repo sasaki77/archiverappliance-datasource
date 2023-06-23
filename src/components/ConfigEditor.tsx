@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, ChangeEvent } from 'react';
 import { DataSourceHttpSettings, InlineSwitch, InlineField, Select } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps, toOption, SelectableValue } from '@grafana/data';
 import { AADataSourceOptions, operatorList } from '../types';
@@ -27,6 +27,24 @@ export class ConfigEditor extends PureComponent<Props> {
     const jsonData = {
       ...options.jsonData,
       defaultOperator: option.value,
+    };
+    onOptionsChange({ ...options, jsonData });
+  };
+
+  onUseLiveUpdateChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData = {
+      ...options.jsonData,
+      useLiveUpdate: !options.jsonData.useLiveUpdate,
+    };
+    onOptionsChange({ ...options, jsonData });
+  };
+
+  onLiveUpdateURIChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData = {
+      ...options.jsonData,
+      liveUpdateURI: event.target.value,
     };
     onOptionsChange({ ...options, jsonData });
   };
@@ -80,6 +98,33 @@ export class ConfigEditor extends PureComponent<Props> {
                 options={operatorOptions}
                 onChange={this.onOperatorChange}
                 placeholder="mean"
+              />
+            </InlineField>
+          </div>
+          <div className="gf-form-inline">
+            <InlineField
+              label="Use live feature (Alpha)"
+              labelWidth={LABEL_WIDTH}
+              tooltip="(Caution) This is a alpha feature. Live feature provides live updating with PVWS WebSocket server."
+            >
+              <InlineSwitch
+                value={options.jsonData.useLiveUpdate ?? false}
+                onChange={this.onUseLiveUpdateChange}
+              />
+            </InlineField>
+          </div>
+          <div className="gf-form-inline">
+            <InlineField
+              label="PVWS URI (Alpha)"
+              labelWidth={LABEL_WIDTH}
+              tooltip="URI for PVWS WebSocket server."
+            >
+              <input
+                type="text"
+                value={options.jsonData.liveUpdateURI}
+                className="gf-form-input max-width-15"
+                placeholder="ws://localhost:8080/pvws/pv"
+                onChange={this.onLiveUpdateURIChange}
               />
             </InlineField>
           </div>

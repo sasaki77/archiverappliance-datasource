@@ -549,6 +549,82 @@ exports[`Render should render component 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+            >
+              Use live feature (Alpha)
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <div
+                class="css-15rfc12"
+              >
+                <div
+                  class="css-1so7yeh"
+                >
+                  <input
+                    id="switch-2"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="switch-2"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1f5gueu"
+          >
+            <label
+              class="css-1mfv0aj"
+            >
+              PVWS URI (Alpha)
+              <div
+                class="css-wf08df-Icon"
+                tabindex="0"
+              >
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
+              </div>
+            </label>
+            <div
+              class="css-1rfunm5"
+            >
+              <input
+                class="gf-form-input max-width-15"
+                placeholder="ws://localhost:8080/pvws/pv"
+                type="text"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>,
@@ -1094,6 +1170,82 @@ exports[`Render should render component 1`] = `
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="css-1f5gueu"
+        >
+          <label
+            class="css-1mfv0aj"
+          >
+            Use live feature (Alpha)
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+          <div
+            class="css-1rfunm5"
+          >
+            <div
+              class="css-15rfc12"
+            >
+              <div
+                class="css-1so7yeh"
+              >
+                <input
+                  id="switch-2"
+                  type="checkbox"
+                />
+                <label
+                  aria-label="Toggle switch"
+                  for="switch-2"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="css-1f5gueu"
+        >
+          <label
+            class="css-1mfv0aj"
+          >
+            PVWS URI (Alpha)
+            <div
+              class="css-wf08df-Icon"
+              tabindex="0"
+            >
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </div>
+          </label>
+          <div
+            class="css-1rfunm5"
+          >
+            <input
+              class="gf-form-input max-width-15"
+              placeholder="ws://localhost:8080/pvws/pv"
+              type="text"
+              value=""
+            />
           </div>
         </div>
       </div>

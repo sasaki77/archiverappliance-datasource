@@ -136,6 +136,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
 
   const query_ = defaults(query, defaultQuery);
   const defaultOperator = datasource.defaultOperator || "mean";
+  const useLiveUpdate = datasource.useLiveUpdate || false;
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
   return (
@@ -188,21 +189,25 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
           onChange={onRegexChange}
           className="gf-form-spacing"
         />
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
-          tooltip={
-            <p>
-              Enable/Disable Live mode.
-            </p>
-          }
-        >
-          Live
-        </InlineFormLabel>
-        <InlineSwitch
-          value={query.live}
-          onChange={onLiveChange}
-        />
+        {useLiveUpdate === true &&
+          <div className="gf-form-inline">
+            <InlineFormLabel
+              width={6}
+              className="query-keyword"
+              tooltip={
+                <p>
+                  Enable/Disable Live mode.
+                </p>
+              }
+            >
+              Live
+            </InlineFormLabel>
+            <InlineSwitch
+              value={query.live}
+              onChange={onLiveChange}
+            />
+          </div>
+        }
       </div>
       <div className="gf-form-inline">
         <InlineFormLabel

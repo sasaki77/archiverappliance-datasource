@@ -66,10 +66,13 @@ func (td *ArchiverDatasource) SubscribeStream(_ context.Context, req *backend.Su
 func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender) error {
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
-	// Create the same data frame as for query data.
 	pvname := aalive.ConvURL2PV(req.Path)
+	config, err := models.LoadSettings(req.PluginContext)
+	if err != nil {
+		return err
+	}
 
-	wsDataProxy, err := aalive.NewWsDataProxy(ctx, req, sender, pvname)
+	wsDataProxy, err := aalive.NewWsDataProxy(ctx, sender, pvname, config.LiveUpdateURI)
 	if err != nil {
 		errCtx := "Starting WebSocket"
 		log.DefaultLogger.Error(errCtx, "error", err.Error())

@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"path"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -24,7 +22,7 @@ type wsDataProxy struct {
 	Done          chan bool
 }
 
-func NewWsDataProxy(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender, pvname string) (*wsDataProxy, error) {
+func NewWsDataProxy(ctx context.Context, sender *backend.StreamSender, pvname string, uri string) (*wsDataProxy, error) {
 	wsDataProxy := &wsDataProxy{
 		msgRead:       make(chan []byte),
 		sender:        sender,
@@ -33,7 +31,7 @@ func NewWsDataProxy(ctx context.Context, req *backend.RunStreamRequest, sender *
 		Done:          make(chan bool, 1),
 	}
 
-	url, err := wsDataProxy.encodeURL(pvname)
+	url, err := wsDataProxy.encodeURL(uri)
 	if err != nil {
 		return nil, fmt.Errorf("encode URL Error: %s", err.Error())
 	}
@@ -59,7 +57,7 @@ func (wsdp *wsDataProxy) ReadMessage() {
 	ctx := context.Background()
 
 	// Start Subscribe
-	b := []byte(`{ "type": "subscribe", "pvs": [ "ET_SASAKI:TEST" ] }`)
+	b := []byte(fmt.Sprintf(`{ "type": "subscribe", "pvs": [ "%s" ] }`, wsdp.pvname))
 	err := wsdp.wsConn.Write(ctx, 1, b)
 	if err != nil {
 		wsdp.ReadingErrors <- fmt.Errorf("%s: %s", "Error writing the websocket", err.Error())
@@ -120,17 +118,9 @@ func (wsdp *wsDataProxy) ProxyMessage() {
 	}
 }
 
-func (wsdp *wsDataProxy) encodeURL(req string) (string, error) {
-	host := "ws://172.20.240.1:8080/pvws/pv"
+func (wsdp *wsDataProxy) encodeURL(uri string) (string, error) {
+	host := uri
 
-	wsUrl, err := url.Parse(host)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse host string from the Plugin's Config Editor: %s", err.Error())
-	}
-
-	wsUrl.Path = path.Join(wsUrl.Path)
-
-	//return wsUrl.String(), nil
 	return host, nil
 }
 
