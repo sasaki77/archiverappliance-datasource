@@ -646,6 +646,7 @@ describe('Archiverappliance Datasource', () => {
           expect(seriesName).toBe('header:PV1');
 
           const indexArray = dataFrame.fields[0].values.toArray();
+          expect(indexArray).toHaveLength(3);
           expect(indexArray[0]).toBe(0);
           expect(indexArray[1]).toBe(1);
           expect(indexArray[2]).toBe(2);
@@ -663,14 +664,13 @@ describe('Archiverappliance Datasource', () => {
           const valArray2 = dataFrame.fields[2].values.toArray();
           const valArray3 = dataFrame.fields[3].values.toArray();
 
-          expect(valArray1).toHaveLength(4);
-          expect(valArray2).toHaveLength(4);
-          expect(valArray3).toHaveLength(4);
+          expect(valArray1).toHaveLength(3);
+          expect(valArray2).toHaveLength(3);
+          expect(valArray3).toHaveLength(3);
 
           expect(valArray1[0]).toBe(1);
           expect(valArray1[1]).toBe(2);
           expect(valArray1[2]).toBe(3);
-          expect(valArray1[3]).toBe(3);
 
           done();
         });

@@ -38,6 +38,10 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
     // Extrapolation for raw operator
     const to_msec = target.to.getTime();
     const extrapolationDataFrames = _.map(dataFrames, (dataframe) => {
+        if (dataframe.fields[0].name != "time") {
+            return dataframe;
+        }
+
         const latestval = dataframe.get(dataframe.length - 1);
         const addval = { ...latestval, time: to_msec };
 
