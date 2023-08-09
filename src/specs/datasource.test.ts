@@ -598,70 +598,139 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
-    it('should return index array data when waveform is true and arrayFormat is index', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
+    describe('index array in UTC', () => {
+      beforeEach(() => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(
+          () => 0
+        );
+      });
+
+      afterAll(() => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+      });
+
+      it('should return index array data when waveform is true and arrayFormat is index in UTC', (done) => {
+        datasourceRequestMock.mockImplementation((request) =>
+          Promise.resolve({
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000123, val: [1, 2, 3] },
+                  { millis: 1262304001456, val: [4, 5, 6] },
+                  { millis: 1262304002789, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          })
+        );
+
+        const query = ({
+          targets: [
             {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000123, val: [1, 2, 3] },
-                { millis: 1262304001456, val: [4, 5, 6] },
-                { millis: 1262304002789, val: [7, 8, 9, 10] },
-              ],
+              target: 'header:PV1',
+              refId: 'A',
+              functions: [{ params: ["index"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
             },
           ],
-        })
-      );
+          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+          maxDataPoints: 1000,
+        } as unknown) as DataQueryRequest<AAQuery>;
 
-      const query = ({
-        targets: [
-          {
-            target: 'header:PV1',
-            refId: 'A',
-            functions: [{ params: ["index"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
-          },
-        ],
-        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
-        maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+        ds.query(query).subscribe((result: any) => {
+          expect(result.data).toHaveLength(1);
+          const dataFrame: MutableDataFrame = result.data[0];
+          expect(dataFrame.fields).toHaveLength(4);
 
-      ds.query(query).subscribe((result: any) => {
-        expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
-        expect(dataFrame.fields).toHaveLength(4);
+          const seriesName = dataFrame.name;
+          expect(seriesName).toBe('header:PV1');
 
-        const seriesName = dataFrame.name;
-        expect(seriesName).toBe('header:PV1');
+          const indexArray = dataFrame.fields[0].values.toArray();
+          expect(indexArray[0]).toBe(0);
+          expect(indexArray[1]).toBe(1);
+          expect(indexArray[2]).toBe(2);
 
-        const indexArray = dataFrame.fields[0].values.toArray();
-        expect(indexArray[0]).toBe(0);
-        expect(indexArray[1]).toBe(1);
-        expect(indexArray[2]).toBe(2);
+          const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
+          const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+          const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
+          const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
+          expect(name0).toBe("index");
+          expect(name1).toBe(new Date(1262304000123).toISOString());
+          expect(name2).toBe(new Date(1262304001456).toISOString());
+          expect(name3).toBe(new Date(1262304002789).toISOString());
 
-        const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
-        const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-        const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
-        const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
-        expect(name0).toBe("index");
-        expect(name1).toBe(new Date(1262304000123).toISOString());
-        expect(name2).toBe(new Date(1262304001456).toISOString());
-        expect(name3).toBe(new Date(1262304002789).toISOString());
+          const valArray1 = dataFrame.fields[1].values.toArray();
+          const valArray2 = dataFrame.fields[2].values.toArray();
+          const valArray3 = dataFrame.fields[3].values.toArray();
 
-        const valArray1 = dataFrame.fields[1].values.toArray();
-        const valArray2 = dataFrame.fields[2].values.toArray();
-        const valArray3 = dataFrame.fields[3].values.toArray();
+          expect(valArray1).toHaveLength(4);
+          expect(valArray2).toHaveLength(4);
+          expect(valArray3).toHaveLength(4);
 
-        expect(valArray1).toHaveLength(4);
-        expect(valArray2).toHaveLength(4);
-        expect(valArray3).toHaveLength(4);
+          expect(valArray1[0]).toBe(1);
+          expect(valArray1[1]).toBe(2);
+          expect(valArray1[2]).toBe(3);
+          expect(valArray1[3]).toBe(3);
 
-        expect(valArray1[0]).toBe(1);
-        expect(valArray1[1]).toBe(2);
-        expect(valArray1[2]).toBe(3);
-        expect(valArray1[3]).toBe(3);
+          done();
+        });
+      });
+    });
 
-        done();
+    describe('index array in JST', () => {
+      beforeEach(() => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(
+          () => -540
+        );
+      });
+
+      afterAll(() => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+      });
+
+      it('should return index array data when waveform is true and arrayFormat is index in JST', (done) => {
+        datasourceRequestMock.mockImplementation((request) =>
+          Promise.resolve({
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000123, val: [1, 2, 3] },
+                  { millis: 1262304001456, val: [4, 5, 6] },
+                  { millis: 1262304002789, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          })
+        );
+
+        const query = ({
+          targets: [
+            {
+              target: 'header:PV1',
+              refId: 'A',
+              functions: [{ params: ["index"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
+            },
+          ],
+          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+          maxDataPoints: 1000,
+        } as unknown) as DataQueryRequest<AAQuery>;
+
+        ds.query(query).subscribe((result: any) => {
+          const dataFrame: MutableDataFrame = result.data[0];
+
+          const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
+          const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+          const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
+          const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
+
+          expect(name0).toBe("index");
+          expect(name1).toBe("2010-01-01T00:00:00.123+09:00");
+          expect(name2).toBe("2010-01-01T00:00:01.456+09:00");
+          expect(name3).toBe("2010-01-01T00:00:02.789+09:00");
+
+          done();
+        });
       });
     });
 

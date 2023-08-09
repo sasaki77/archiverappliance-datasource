@@ -80,7 +80,7 @@ func (v *Arrays) makeIndexFields(pvname string, name string) []*data.Field {
 		labels := make(data.Labels, 1)
 		labels["pvname"] = pvname
 
-		n := v.Times[idx].Format(time.RFC3339)
+		n := v.Times[idx].Local().Format("2006-01-02T15:04:05.000Z07:00")
 		valueField := data.NewField(n, labels, datapoint[0:dataLen])
 		valueField.Config = &data.FieldConfig{DisplayName: n}
 		fields = append(fields, valueField)

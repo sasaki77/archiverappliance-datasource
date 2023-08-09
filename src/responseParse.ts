@@ -158,7 +158,7 @@ function makeIndexArrayFields(targetRes: AADataQueryData) {
             const date = new Date(data.millis);
             const val = data.val.length >= len ? data.val.slice(0, len) : data.val;
             const field = {
-                name: date.toISOString(),
+                name: toISOStringWithTimezone(date),
                 type: FieldType.number,
                 values: val,
             };
@@ -213,4 +213,33 @@ function parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): M
         ],
     });
     return frame;
+}
+
+// ISO 8601 format Date with Timezone Offset
+// https://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
+// https://qiita.com/h53/items/05139982c6fd81212b08
+function toISOStringWithTimezone(date: Date): string {
+    const pad = function (str: string, num: number = 2): string {
+        return ('0' + str).slice(-1 * num);
+    }
+
+    const year = (date.getFullYear()).toString();
+    const month = pad((date.getMonth() + 1).toString());
+    const day = pad((date.getDate()).toString());
+    const hour = pad(date.getHours().toString());
+    const min = pad(date.getMinutes().toString());
+    const sec = pad(date.getSeconds().toString());
+    const milli = pad(date.getMilliseconds().toString(), 3);
+    const tz = -date.getTimezoneOffset();
+
+    if (tz == 0) {
+        return `${year}-${month}-${day}T${hour}:${min}:${sec}.${milli}Z`;
+    }
+
+    const dif = tz >= 0 ? '+' : '-';
+    const abstz = Math.abs(tz);
+    const tzHour = pad((Math.floor(abstz / 60)).toString());
+    const tzMin = pad((abstz % 60).toString());
+
+    return `${year}-${month}-${day}T${hour}:${min}:${sec}.${milli}${dif}${tzHour}:${tzMin}`;
 }

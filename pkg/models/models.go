@@ -185,7 +185,7 @@ func convertNanosec(number *json.Number) time.Time {
 	}
 
 	// use convert to nanoseconds
-	return time.Unix(0, 1e6*millisCache)
+	return time.Unix(0, 1e6*millisCache).UTC()
 }
 
 type DatasourceSettings struct {
