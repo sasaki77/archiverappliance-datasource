@@ -6,7 +6,7 @@ exports[`Render should render component 1`] = `
   "baseElement": <body>
     <div>
       <button
-        class="css-z53gi5-button"
+        class="css-td06pi-button"
         type="button"
       >
         <div
@@ -37,7 +37,7 @@ exports[`Render should render component 1`] = `
   </body>,
   "container": <div>
     <button
-      class="css-z53gi5-button"
+      class="css-td06pi-button"
       type="button"
     >
       <div
