@@ -1,4 +1,13 @@
 # Change Log
+## 1.6.0 (2023-08-23)
+
+### Enhancements
+- (Alpha) add the Live feature
+- Fix to use local time for index array format
+
+### Bug fixes
+- **Frontend**: disable extrapolation in index array
+
 ## 1.5.1 (2023-05-15)
 
 ### Enhancements
