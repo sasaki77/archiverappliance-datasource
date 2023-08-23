@@ -81,7 +81,7 @@ exports[`Render should render component 1`] = `
                     class="css-1w5c5dq-input-inputWrapper"
                   >
                     <input
-                      class="css-1mlczho-input-input"
+                      class="css-1n6y0bv-input-input"
                       placeholder="New tag (enter key to add)"
                       style="padding-right: 12px;"
                       value=""
@@ -90,7 +90,7 @@ exports[`Render should render component 1`] = `
                       class="css-7y3u6k-input-suffix"
                     >
                       <button
-                        class="css-7e4tcf-button"
+                        class="css-m5e3oq-button"
                         disabled=""
                         type="button"
                       >
@@ -152,7 +152,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-basic-auth"
               >
                 Basic auth
@@ -161,10 +161,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-basic-auth"
@@ -182,7 +182,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-with-credentials"
               >
                 With Credentials
@@ -201,10 +201,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-with-credentials"
@@ -226,7 +226,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-tls-client-auth"
               >
                 TLS Client Auth
@@ -235,10 +235,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-tls-client-auth"
@@ -256,7 +256,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-ca-cert"
               >
                 With CA Cert
@@ -275,10 +275,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-ca-cert"
@@ -300,7 +300,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-skip-tls-verify"
               >
                 Skip TLS Verify
@@ -309,10 +309,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-skip-tls-verify"
@@ -334,7 +334,7 @@ exports[`Render should render component 1`] = `
               class="css-1f5gueu"
             >
               <label
-                class="css-1mfv0aj"
+                class="css-1g4yjoj"
                 for="http-settings-forward-oauth"
               >
                 Forward OAuth Identity
@@ -353,10 +353,10 @@ exports[`Render should render component 1`] = `
                 class="css-1rfunm5"
               >
                 <div
-                  class="css-15rfc12"
+                  class="css-12h61pz"
                 >
                   <div
-                    class="css-1so7yeh"
+                    class="css-1gx4o12"
                   >
                     <input
                       id="http-settings-forward-oauth"
@@ -387,7 +387,7 @@ exports[`Render should render component 1`] = `
             class="gf-form"
           >
             <button
-              class="css-b2ba3d-button"
+              class="css-8b29hm-button"
               type="button"
             >
               <div
@@ -423,7 +423,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
             >
               Use Backend
               <div
@@ -441,10 +441,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="switch-1"
@@ -466,7 +466,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
             >
               Default Operator
               <div
@@ -484,7 +484,7 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15fuo2f-input-wrapper css-1kstem6-SelectContainer"
+                class="css-jjhwg3-input-wrapper css-1kstem6-SelectContainer"
               >
                 <span
                   class="css-1f43avz-a11yText-A11yText"
@@ -503,13 +503,13 @@ exports[`Render should render component 1`] = `
                     class="css-1kl463j-grafana-select-value-container"
                   >
                     <div
-                      class=" css-1yc0yww-placeholder"
+                      class=" css-1n8tjau-placeholder"
                       id="react-select-2-placeholder"
                     >
                       mean
                     </div>
                     <div
-                      class=" css-8r78wt-Input"
+                      class=" css-lq7btu-Input"
                       data-value=""
                     >
                       <input
@@ -556,7 +556,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
             >
               Use live feature (Alpha)
               <div
@@ -574,10 +574,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="switch-2"
@@ -599,7 +599,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
             >
               PVWS URI (Alpha)
               <div
@@ -705,7 +705,7 @@ exports[`Render should render component 1`] = `
                   class="css-1w5c5dq-input-inputWrapper"
                 >
                   <input
-                    class="css-1mlczho-input-input"
+                    class="css-1n6y0bv-input-input"
                     placeholder="New tag (enter key to add)"
                     style="padding-right: 12px;"
                     value=""
@@ -714,7 +714,7 @@ exports[`Render should render component 1`] = `
                     class="css-7y3u6k-input-suffix"
                   >
                     <button
-                      class="css-7e4tcf-button"
+                      class="css-m5e3oq-button"
                       disabled=""
                       type="button"
                     >
@@ -776,7 +776,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-basic-auth"
             >
               Basic auth
@@ -785,10 +785,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-basic-auth"
@@ -806,7 +806,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-with-credentials"
             >
               With Credentials
@@ -825,10 +825,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-with-credentials"
@@ -850,7 +850,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-tls-client-auth"
             >
               TLS Client Auth
@@ -859,10 +859,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-tls-client-auth"
@@ -880,7 +880,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-ca-cert"
             >
               With CA Cert
@@ -899,10 +899,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-ca-cert"
@@ -924,7 +924,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-skip-tls-verify"
             >
               Skip TLS Verify
@@ -933,10 +933,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-skip-tls-verify"
@@ -958,7 +958,7 @@ exports[`Render should render component 1`] = `
             class="css-1f5gueu"
           >
             <label
-              class="css-1mfv0aj"
+              class="css-1g4yjoj"
               for="http-settings-forward-oauth"
             >
               Forward OAuth Identity
@@ -977,10 +977,10 @@ exports[`Render should render component 1`] = `
               class="css-1rfunm5"
             >
               <div
-                class="css-15rfc12"
+                class="css-12h61pz"
               >
                 <div
-                  class="css-1so7yeh"
+                  class="css-1gx4o12"
                 >
                   <input
                     id="http-settings-forward-oauth"
@@ -1011,7 +1011,7 @@ exports[`Render should render component 1`] = `
           class="gf-form"
         >
           <button
-            class="css-b2ba3d-button"
+            class="css-8b29hm-button"
             type="button"
           >
             <div
@@ -1047,7 +1047,7 @@ exports[`Render should render component 1`] = `
           class="css-1f5gueu"
         >
           <label
-            class="css-1mfv0aj"
+            class="css-1g4yjoj"
           >
             Use Backend
             <div
@@ -1065,10 +1065,10 @@ exports[`Render should render component 1`] = `
             class="css-1rfunm5"
           >
             <div
-              class="css-15rfc12"
+              class="css-12h61pz"
             >
               <div
-                class="css-1so7yeh"
+                class="css-1gx4o12"
               >
                 <input
                   id="switch-1"
@@ -1090,7 +1090,7 @@ exports[`Render should render component 1`] = `
           class="css-1f5gueu"
         >
           <label
-            class="css-1mfv0aj"
+            class="css-1g4yjoj"
           >
             Default Operator
             <div
@@ -1108,7 +1108,7 @@ exports[`Render should render component 1`] = `
             class="css-1rfunm5"
           >
             <div
-              class="css-15fuo2f-input-wrapper css-1kstem6-SelectContainer"
+              class="css-jjhwg3-input-wrapper css-1kstem6-SelectContainer"
             >
               <span
                 class="css-1f43avz-a11yText-A11yText"
@@ -1127,13 +1127,13 @@ exports[`Render should render component 1`] = `
                   class="css-1kl463j-grafana-select-value-container"
                 >
                   <div
-                    class=" css-1yc0yww-placeholder"
+                    class=" css-1n8tjau-placeholder"
                     id="react-select-2-placeholder"
                   >
                     mean
                   </div>
                   <div
-                    class=" css-8r78wt-Input"
+                    class=" css-lq7btu-Input"
                     data-value=""
                   >
                     <input
@@ -1180,7 +1180,7 @@ exports[`Render should render component 1`] = `
           class="css-1f5gueu"
         >
           <label
-            class="css-1mfv0aj"
+            class="css-1g4yjoj"
           >
             Use live feature (Alpha)
             <div
@@ -1198,10 +1198,10 @@ exports[`Render should render component 1`] = `
             class="css-1rfunm5"
           >
             <div
-              class="css-15rfc12"
+              class="css-12h61pz"
             >
               <div
-                class="css-1so7yeh"
+                class="css-1gx4o12"
               >
                 <input
                   id="switch-2"
@@ -1223,7 +1223,7 @@ exports[`Render should render component 1`] = `
           class="css-1f5gueu"
         >
           <label
-            class="css-1mfv0aj"
+            class="css-1g4yjoj"
           >
             PVWS URI (Alpha)
             <div
