@@ -32,7 +32,7 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryMod
 		return models.SingleData{}, errors.New("test error")
 	}
 	if target == "emptyErr" {
-		return models.SingleData{}, &EmptyResponseError{}
+		return models.SingleData{}, errEmptyResponse
 	}
 
 	var v models.Values
@@ -534,8 +534,7 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := Query(testCase.ctx, f, testCase.req, testCase.config)
 			res := result.Responses["A"]
-			emptyError := &EmptyResponseError{}
-			if !errors.Is(res.Error, emptyError) {
+			if !errors.Is(res.Error, errEmptyResponse) {
 				t.Errorf("An unexpected error has occurred")
 			}
 			if len(res.Frames) != 1 {

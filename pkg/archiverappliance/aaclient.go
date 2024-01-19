@@ -23,13 +23,6 @@ type AAclient struct {
 	baseURL string
 }
 
-type EmptyResponseError struct {
-}
-
-func (e *EmptyResponseError) Error() string {
-	return "response is empty"
-}
-
 func NewAAClient(ctx context.Context, url string) (*AAclient, error) {
 	return &AAclient{
 		baseURL: url,
@@ -163,7 +156,7 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 
 	if len(response) < 1 {
 		log.DefaultLogger.Warn("Response is empty")
-		return sD, &EmptyResponseError{}
+		return sD, errEmptyResponse
 	}
 
 	var d models.DataResponse
