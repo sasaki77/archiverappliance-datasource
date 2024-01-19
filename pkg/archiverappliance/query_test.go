@@ -31,6 +31,9 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryMod
 	if target == "invalid" || target == "invalid2" {
 		return models.SingleData{}, errors.New("test error")
 	}
+	if target == "emptyErr" {
+		return models.SingleData{}, &EmptyResponseError{}
+	}
 
 	var v models.Values
 
@@ -451,6 +454,88 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 			result := Query(testCase.ctx, f, testCase.req, testCase.config)
 			res := result.Responses["A"]
 			if res.Error == nil {
+				t.Errorf("An unexpected error has occurred")
+			}
+			if len(res.Frames) != 1 {
+				t.Errorf("resposne length sould be 1")
+			}
+			if res.Frames[0].Name != "PV:NAME1" {
+				t.Errorf("got %v, want PV:NAME1", res.Frames[0].Name)
+			}
+		})
+	}
+}
+
+func TestQueryWithEmptyResponse(t *testing.T) {
+	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
+	var tests = []struct {
+		name   string
+		ctx    context.Context
+		req    *backend.QueryDataRequest
+		config models.DatasourceSettings
+	}{
+		{
+			name: "invalid response",
+			req: &backend.QueryDataRequest{
+				Queries: []backend.DataQuery{
+					{
+						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+						JSON: json.RawMessage(`{
+                    		"alias": "",
+                    		"aliasPattern": "",
+                    		"constant":6.5,
+                    		"hide":false ,
+                    		"operator": "",
+                    		"refId":"A" ,
+                    		"regex":false ,
+                    		"target":"(emptyErr|PV:NAME1)" ,
+							"functions":[
+								{
+									"params": [
+										"boolean"
+									],
+									"def": {
+										"defaultParams": "true",
+										"shortName": "",
+										"version": "",
+										"category": "Options",
+										"description": "",
+										"fake": false,
+										"name": "ignoreEmptyErr",
+										"params": [
+											{
+												"name": "boolean",
+												"options": ["true", "false"],
+												"type": "string"
+											}
+										]
+									}
+								}
+							]
+						}`),
+						MaxDataPoints: 1000,
+						QueryType:     "",
+						RefID:         "A",
+						TimeRange: backend.TimeRange{
+							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
+						},
+					},
+				},
+			},
+			config: models.DatasourceSettings{
+				DefaultOperator: "mean",
+				UID:             "uuid",
+			},
+		},
+	}
+	f := fakeClient{}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := Query(testCase.ctx, f, testCase.req, testCase.config)
+			res := result.Responses["A"]
+			emptyError := &EmptyResponseError{}
+			if !errors.Is(res.Error, emptyError) {
 				t.Errorf("An unexpected error has occurred")
 			}
 			if len(res.Frames) != 1 {

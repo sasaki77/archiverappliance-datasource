@@ -3,7 +3,6 @@ package archiverappliance
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -22,6 +21,13 @@ type client interface {
 
 type AAclient struct {
 	baseURL string
+}
+
+type EmptyResponseError struct {
+}
+
+func (e *EmptyResponseError) Error() string {
+	return "response is empty"
 }
 
 func NewAAClient(ctx context.Context, url string) (*AAclient, error) {
@@ -157,7 +163,7 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 
 	if len(response) < 1 {
 		log.DefaultLogger.Warn("Response is empty")
-		return sD, errors.New("response is empty")
+		return sD, &EmptyResponseError{}
 	}
 
 	var d models.DataResponse
