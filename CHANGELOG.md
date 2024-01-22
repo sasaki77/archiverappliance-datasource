@@ -1,4 +1,9 @@
 # Change Log
+## 1.6.1 (2024-01-22)
+
+### Enhancements
+- Add the `ignoreEmptyErr` function
+
 ## 1.6.0 (2023-08-23)
 
 ### Enhancements
