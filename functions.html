@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Functions &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5f1687b9" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -164,6 +166,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#timeseries">timeseries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#index">index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dt-space">dt-space</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ignoreemptyerr"><em>ignoreEmptyErr</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ignoreEmptyErr"><code class="docutils literal notranslate"><span class="pre">ignoreEmptyErr()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -638,6 +644,26 @@ It creates a new time vector starting from the sampling time. Timestamp of Nth e
 </pre></div>
 </div>
 </section>
+</section>
+<section id="ignoreemptyerr">
+<h3><em>ignoreEmptyErr</em><a class="headerlink" href="#ignoreemptyerr" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ignoreEmptyErr">
+<span class="sig-name descname"><span class="pre">ignoreEmptyErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ignoreEmptyErr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>Ignore <code class="docutils literal notranslate"><span class="pre">response</span> <span class="pre">is</span> <span class="pre">empty</span></code> errors.
+Archiver Appliance sometimes returns an empty response as follows.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[]</span>
+</pre></div>
+</div>
+<p>The plugin handles such a response as an error.
+This function ignores such errors.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">ignoreEmptyErr</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">ignoreEmptyErr</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
