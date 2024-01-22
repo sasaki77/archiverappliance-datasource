@@ -94,9 +94,14 @@ responseCollector:
 		select {
 		case response := <-responsePipe:
 			if response.err != nil {
+				if qm.IgnoreEmptyErr && errors.Is(response.err, errEmptyResponse) {
+					continue
+				}
+
 				if responseErr == nil {
 					responseErr = response.err
 				}
+
 				continue
 			}
 			responseData = append(responseData, &response.response)

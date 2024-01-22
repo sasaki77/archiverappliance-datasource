@@ -355,3 +355,25 @@ arrayFormat(timeseries)
 arrayFormat(index)
 arrayFormat(dt-space)
 ```
+
+### _ignoreEmptyErr_
+```{eval-rst}
+.. function:: ignoreEmptyErr(boolean)
+```
+
+Ignore `response is empty` errors.
+Archiver Appliance sometimes returns an empty response as follows.
+
+```json
+[]
+```
+
+The plugin handles such a response as an error.
+This function ignores such errors.
+
+Examples:
+
+```js
+ignoreEmptyErr(true)
+ignoreEmptyErr(false)
+```

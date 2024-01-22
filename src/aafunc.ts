@@ -261,6 +261,13 @@ addFuncDef({
 });
 
 addFuncDef({
+  name: 'ignoreEmptyErr',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
+addFuncDef({
   name: 'liveOnly',
   category: 'Options',
   params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],

@@ -3,7 +3,6 @@ package archiverappliance
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -157,7 +156,7 @@ func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
 
 	if len(response) < 1 {
 		log.DefaultLogger.Warn("Response is empty")
-		return sD, errors.New("response is empty")
+		return sD, errEmptyResponse
 	}
 
 	var d models.DataResponse
