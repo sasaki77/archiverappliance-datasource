@@ -6,62 +6,48 @@ exports[`Render should render component 1`] = `
   "baseElement": <body>
     <div>
       <button
+        aria-disabled="false"
         class="css-td06pi-button"
         type="button"
-      >
-        <div
-          class="css-wf08df-Icon"
-        >
-          <svg
-            data-testid="plus"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          />
-        </div>
-        <span
-          class="css-1mhnkuh"
-        >
-          Add
-          <div
-            class="css-wf08df-Icon"
-          >
-            <svg
-              data-testid="angle-down"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            />
-          </div>
-        </span>
-      </button>
-    </div>
-  </body>,
-  "container": <div>
-    <button
-      class="css-td06pi-button"
-      type="button"
-    >
-      <div
-        class="css-wf08df-Icon"
       >
         <svg
           data-testid="plus"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         />
-      </div>
-      <span
-        class="css-1mhnkuh"
-      >
-        Add
-        <div
-          class="css-wf08df-Icon"
+        <span
+          class="css-1riaxdn"
         >
+          Add
           <svg
             data-testid="angle-down"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           />
-        </div>
+        </span>
+      </button>
+    </div>
+  </body>,
+  "container": <div>
+    <button
+      aria-disabled="false"
+      class="css-td06pi-button"
+      type="button"
+    >
+      <svg
+        data-testid="plus"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      />
+      <span
+        class="css-1riaxdn"
+      >
+        Add
+        <svg
+          data-testid="angle-down"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        />
       </span>
     </button>
   </div>,

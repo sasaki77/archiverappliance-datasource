@@ -20,29 +20,25 @@ exports[`Render should render component 1`] = `
             class="gf-form"
           >
             <div
-              class="css-aq4c43"
+              class="css-cxl4gu"
             >
               <label
                 class="gf-form-label width-13"
               >
                 URL
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <div
                 style="flex-grow: 1;"
               >
                 <input
-                  aria-label="Datasource HTTP settings url"
-                  class="gf-form-input width-20 css-y1sxu8"
+                  class="gf-form-input width-20 css-3i8soy"
+                  data-testid="data-testid Datasource HTTP settings url"
+                  id=":r0:"
                   placeholder="http://localhost:17668/retrieval"
                   value=""
                 />
@@ -59,43 +55,39 @@ exports[`Render should render component 1`] = `
                 class="gf-form-label width-13"
               >
                 Allowed cookies
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <div
-                class="css-1k4ludt"
+                class="css-1alsqm6"
               >
                 <div
-                  class="css-xcstkt-input-wrapper"
+                  class="css-1cvb0sk-input-wrapper"
                   data-testid="input-wrapper"
                 >
                   <div
-                    class="css-1w5c5dq-input-inputWrapper"
+                    class="css-10lnb82-input-inputWrapper"
                   >
                     <input
-                      class="css-1n6y0bv-input-input"
+                      class="css-8tk2dk-input-input"
                       placeholder="New tag (enter key to add)"
                       style="padding-right: 12px;"
                       value=""
                     />
                     <div
-                      class="css-7y3u6k-input-suffix"
+                      class="css-7099m8-input-suffix"
                     >
                       <button
-                        class="css-m5e3oq-button"
+                        aria-disabled="false"
+                        class="css-kigwq3-button"
                         disabled=""
                         type="button"
                       >
                         <span
-                          class="css-1mhnkuh"
+                          class="css-1riaxdn"
                         >
                           Add
                         </span>
@@ -109,22 +101,17 @@ exports[`Render should render component 1`] = `
               class="gf-form"
             >
               <div
-                class="css-aq4c43"
+                class="css-cxl4gu"
               >
                 <label
                   class="gf-form-label width-13"
                 >
                   Timeout
-                  <div
-                    class="css-wf08df-Icon"
-                    tabindex="0"
-                  >
-                    <svg
-                      data-testid="info-circle"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    />
-                  </div>
+                  <svg
+                    data-testid="info-circle"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
                 </label>
                 <input
                   aria-label="Timeout in seconds"
@@ -149,22 +136,22 @@ exports[`Render should render component 1`] = `
             class="gf-form-inline"
           >
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-basic-auth"
               >
                 Basic auth
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-basic-auth"
@@ -173,38 +160,39 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-basic-auth"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-with-credentials"
               >
                 With Credentials
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-with-credentials"
@@ -213,7 +201,13 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-with-credentials"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
@@ -223,22 +217,22 @@ exports[`Render should render component 1`] = `
             class="gf-form-inline"
           >
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-tls-client-auth"
               >
                 TLS Client Auth
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-tls-client-auth"
@@ -247,38 +241,39 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-tls-client-auth"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-ca-cert"
               >
                 With CA Cert
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-ca-cert"
@@ -287,7 +282,13 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-ca-cert"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
@@ -297,22 +298,22 @@ exports[`Render should render component 1`] = `
             class="gf-form-inline"
           >
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-skip-tls-verify"
               >
                 Skip TLS Verify
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-skip-tls-verify"
@@ -321,7 +322,13 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-skip-tls-verify"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
@@ -331,32 +338,27 @@ exports[`Render should render component 1`] = `
             class="gf-form-inline"
           >
             <div
-              class="css-1f5gueu"
+              class="css-1uqla6q"
             >
               <label
-                class="css-1g4yjoj"
+                class="css-11mm3ru"
                 for="http-settings-forward-oauth"
               >
                 Forward OAuth Identity
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <div
-                class="css-1rfunm5"
+                class="css-1tu59u4"
               >
                 <div
-                  class="css-12h61pz"
+                  class="css-77nuzo"
                 >
                   <div
-                    class="css-1gx4o12"
+                    class="css-g9jraf"
                   >
                     <input
                       id="http-settings-forward-oauth"
@@ -365,7 +367,13 @@ exports[`Render should render component 1`] = `
                     <label
                       aria-label="Toggle switch"
                       for="http-settings-forward-oauth"
-                    />
+                    >
+                      <svg
+                        data-testid="check"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
@@ -387,20 +395,17 @@ exports[`Render should render component 1`] = `
             class="gf-form"
           >
             <button
+              aria-disabled="false"
               class="css-8b29hm-button"
               type="button"
             >
-              <div
-                class="css-wf08df-Icon"
-              >
-                <svg
-                  data-testid="plus"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="plus"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
               <span
-                class="css-1mhnkuh"
+                class="css-1riaxdn"
               >
                 Add header
               </span>
@@ -420,31 +425,26 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
             >
               Use Backend
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="switch-1"
@@ -453,7 +453,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="switch-1"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -463,28 +469,23 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
             >
               Default Operator
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-jjhwg3-input-wrapper css-1kstem6-SelectContainer"
+                class="css-1nmqu8c-input-wrapper css-1kstem6-SelectContainer"
               >
                 <span
                   class="css-1f43avz-a11yText-A11yText"
@@ -495,12 +496,13 @@ exports[`Render should render component 1`] = `
                   aria-live="polite"
                   aria-relevant="additions text"
                   class="css-1f43avz-a11yText-A11yText"
+                  role="log"
                 />
                 <div
-                  class="css-1scgfe8"
+                  class="css-1i88p6p"
                 >
                   <div
-                    class="css-1kl463j-grafana-select-value-container"
+                    class="css-1q0c0d5-grafana-select-value-container"
                   >
                     <div
                       class=" css-1n8tjau-placeholder"
@@ -509,10 +511,11 @@ exports[`Render should render component 1`] = `
                       mean
                     </div>
                     <div
-                      class=" css-lq7btu-Input"
+                      class=" css-1tkw9oc-Input"
                       data-value=""
                     >
                       <input
+                        aria-activedescendant=""
                         aria-autocomplete="list"
                         aria-describedby="react-select-2-placeholder"
                         aria-expanded="false"
@@ -532,17 +535,13 @@ exports[`Render should render component 1`] = `
                     </div>
                   </div>
                   <div
-                    class="css-uvldi-input-suffix"
+                    class="css-zyjsuv-input-suffix"
                   >
-                    <div
-                      class="css-wf08df-Icon"
-                    >
-                      <svg
-                        data-testid="angle-down"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      />
-                    </div>
+                    <svg
+                      data-testid="angle-down"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
                   </div>
                 </div>
               </div>
@@ -553,31 +552,26 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
             >
               Use live feature (Alpha)
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="switch-2"
@@ -586,7 +580,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="switch-2"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -596,25 +596,20 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
             >
               PVWS URI (Alpha)
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <input
                 class="gf-form-input max-width-15"
@@ -644,29 +639,25 @@ exports[`Render should render component 1`] = `
           class="gf-form"
         >
           <div
-            class="css-aq4c43"
+            class="css-cxl4gu"
           >
             <label
               class="gf-form-label width-13"
             >
               URL
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
               style="flex-grow: 1;"
             >
               <input
-                aria-label="Datasource HTTP settings url"
-                class="gf-form-input width-20 css-y1sxu8"
+                class="gf-form-input width-20 css-3i8soy"
+                data-testid="data-testid Datasource HTTP settings url"
+                id=":r0:"
                 placeholder="http://localhost:17668/retrieval"
                 value=""
               />
@@ -683,43 +674,39 @@ exports[`Render should render component 1`] = `
               class="gf-form-label width-13"
             >
               Allowed cookies
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1k4ludt"
+              class="css-1alsqm6"
             >
               <div
-                class="css-xcstkt-input-wrapper"
+                class="css-1cvb0sk-input-wrapper"
                 data-testid="input-wrapper"
               >
                 <div
-                  class="css-1w5c5dq-input-inputWrapper"
+                  class="css-10lnb82-input-inputWrapper"
                 >
                   <input
-                    class="css-1n6y0bv-input-input"
+                    class="css-8tk2dk-input-input"
                     placeholder="New tag (enter key to add)"
                     style="padding-right: 12px;"
                     value=""
                   />
                   <div
-                    class="css-7y3u6k-input-suffix"
+                    class="css-7099m8-input-suffix"
                   >
                     <button
-                      class="css-m5e3oq-button"
+                      aria-disabled="false"
+                      class="css-kigwq3-button"
                       disabled=""
                       type="button"
                     >
                       <span
-                        class="css-1mhnkuh"
+                        class="css-1riaxdn"
                       >
                         Add
                       </span>
@@ -733,22 +720,17 @@ exports[`Render should render component 1`] = `
             class="gf-form"
           >
             <div
-              class="css-aq4c43"
+              class="css-cxl4gu"
             >
               <label
                 class="gf-form-label width-13"
               >
                 Timeout
-                <div
-                  class="css-wf08df-Icon"
-                  tabindex="0"
-                >
-                  <svg
-                    data-testid="info-circle"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  />
-                </div>
+                <svg
+                  data-testid="info-circle"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                />
               </label>
               <input
                 aria-label="Timeout in seconds"
@@ -773,22 +755,22 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-basic-auth"
             >
               Basic auth
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-basic-auth"
@@ -797,38 +779,39 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-basic-auth"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-with-credentials"
             >
               With Credentials
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-with-credentials"
@@ -837,7 +820,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-with-credentials"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -847,22 +836,22 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-tls-client-auth"
             >
               TLS Client Auth
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-tls-client-auth"
@@ -871,38 +860,39 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-tls-client-auth"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-ca-cert"
             >
               With CA Cert
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-ca-cert"
@@ -911,7 +901,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-ca-cert"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -921,22 +917,22 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-skip-tls-verify"
             >
               Skip TLS Verify
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-skip-tls-verify"
@@ -945,7 +941,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-skip-tls-verify"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -955,32 +957,27 @@ exports[`Render should render component 1`] = `
           class="gf-form-inline"
         >
           <div
-            class="css-1f5gueu"
+            class="css-1uqla6q"
           >
             <label
-              class="css-1g4yjoj"
+              class="css-11mm3ru"
               for="http-settings-forward-oauth"
             >
               Forward OAuth Identity
-              <div
-                class="css-wf08df-Icon"
-                tabindex="0"
-              >
-                <svg
-                  data-testid="info-circle"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                />
-              </div>
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
             </label>
             <div
-              class="css-1rfunm5"
+              class="css-1tu59u4"
             >
               <div
-                class="css-12h61pz"
+                class="css-77nuzo"
               >
                 <div
-                  class="css-1gx4o12"
+                  class="css-g9jraf"
                 >
                   <input
                     id="http-settings-forward-oauth"
@@ -989,7 +986,13 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="http-settings-forward-oauth"
-                  />
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
                 </div>
               </div>
             </div>
@@ -1011,20 +1014,17 @@ exports[`Render should render component 1`] = `
           class="gf-form"
         >
           <button
+            aria-disabled="false"
             class="css-8b29hm-button"
             type="button"
           >
-            <div
-              class="css-wf08df-Icon"
-            >
-              <svg
-                data-testid="plus"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              />
-            </div>
+            <svg
+              data-testid="plus"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
             <span
-              class="css-1mhnkuh"
+              class="css-1riaxdn"
             >
               Add header
             </span>
@@ -1044,31 +1044,26 @@ exports[`Render should render component 1`] = `
         class="gf-form-inline"
       >
         <div
-          class="css-1f5gueu"
+          class="css-1uqla6q"
         >
           <label
-            class="css-1g4yjoj"
+            class="css-11mm3ru"
           >
             Use Backend
-            <div
-              class="css-wf08df-Icon"
-              tabindex="0"
-            >
-              <svg
-                data-testid="info-circle"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              />
-            </div>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
           </label>
           <div
-            class="css-1rfunm5"
+            class="css-1tu59u4"
           >
             <div
-              class="css-12h61pz"
+              class="css-77nuzo"
             >
               <div
-                class="css-1gx4o12"
+                class="css-g9jraf"
               >
                 <input
                   id="switch-1"
@@ -1077,7 +1072,13 @@ exports[`Render should render component 1`] = `
                 <label
                   aria-label="Toggle switch"
                   for="switch-1"
-                />
+                >
+                  <svg
+                    data-testid="check"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </label>
               </div>
             </div>
           </div>
@@ -1087,28 +1088,23 @@ exports[`Render should render component 1`] = `
         class="gf-form-inline"
       >
         <div
-          class="css-1f5gueu"
+          class="css-1uqla6q"
         >
           <label
-            class="css-1g4yjoj"
+            class="css-11mm3ru"
           >
             Default Operator
-            <div
-              class="css-wf08df-Icon"
-              tabindex="0"
-            >
-              <svg
-                data-testid="info-circle"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              />
-            </div>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
           </label>
           <div
-            class="css-1rfunm5"
+            class="css-1tu59u4"
           >
             <div
-              class="css-jjhwg3-input-wrapper css-1kstem6-SelectContainer"
+              class="css-1nmqu8c-input-wrapper css-1kstem6-SelectContainer"
             >
               <span
                 class="css-1f43avz-a11yText-A11yText"
@@ -1119,12 +1115,13 @@ exports[`Render should render component 1`] = `
                 aria-live="polite"
                 aria-relevant="additions text"
                 class="css-1f43avz-a11yText-A11yText"
+                role="log"
               />
               <div
-                class="css-1scgfe8"
+                class="css-1i88p6p"
               >
                 <div
-                  class="css-1kl463j-grafana-select-value-container"
+                  class="css-1q0c0d5-grafana-select-value-container"
                 >
                   <div
                     class=" css-1n8tjau-placeholder"
@@ -1133,10 +1130,11 @@ exports[`Render should render component 1`] = `
                     mean
                   </div>
                   <div
-                    class=" css-lq7btu-Input"
+                    class=" css-1tkw9oc-Input"
                     data-value=""
                   >
                     <input
+                      aria-activedescendant=""
                       aria-autocomplete="list"
                       aria-describedby="react-select-2-placeholder"
                       aria-expanded="false"
@@ -1156,17 +1154,13 @@ exports[`Render should render component 1`] = `
                   </div>
                 </div>
                 <div
-                  class="css-uvldi-input-suffix"
+                  class="css-zyjsuv-input-suffix"
                 >
-                  <div
-                    class="css-wf08df-Icon"
-                  >
-                    <svg
-                      data-testid="angle-down"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    />
-                  </div>
+                  <svg
+                    data-testid="angle-down"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
                 </div>
               </div>
             </div>
@@ -1177,31 +1171,26 @@ exports[`Render should render component 1`] = `
         class="gf-form-inline"
       >
         <div
-          class="css-1f5gueu"
+          class="css-1uqla6q"
         >
           <label
-            class="css-1g4yjoj"
+            class="css-11mm3ru"
           >
             Use live feature (Alpha)
-            <div
-              class="css-wf08df-Icon"
-              tabindex="0"
-            >
-              <svg
-                data-testid="info-circle"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              />
-            </div>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
           </label>
           <div
-            class="css-1rfunm5"
+            class="css-1tu59u4"
           >
             <div
-              class="css-12h61pz"
+              class="css-77nuzo"
             >
               <div
-                class="css-1gx4o12"
+                class="css-g9jraf"
               >
                 <input
                   id="switch-2"
@@ -1210,7 +1199,13 @@ exports[`Render should render component 1`] = `
                 <label
                   aria-label="Toggle switch"
                   for="switch-2"
-                />
+                >
+                  <svg
+                    data-testid="check"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </label>
               </div>
             </div>
           </div>
@@ -1220,25 +1215,20 @@ exports[`Render should render component 1`] = `
         class="gf-form-inline"
       >
         <div
-          class="css-1f5gueu"
+          class="css-1uqla6q"
         >
           <label
-            class="css-1g4yjoj"
+            class="css-11mm3ru"
           >
             PVWS URI (Alpha)
-            <div
-              class="css-wf08df-Icon"
-              tabindex="0"
-            >
-              <svg
-                data-testid="info-circle"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              />
-            </div>
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
           </label>
           <div
-            class="css-1rfunm5"
+            class="css-1tu59u4"
           >
             <input
               class="gf-form-input max-width-15"
