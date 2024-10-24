@@ -76,7 +76,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
   const tsData = _.map(dataFrames, (dataFrame) => {
     const timesField = dataFrame.fields[0];
     const valField = dataFrame.fields[1];
-    const vals = func(...funcArgs, timesField.values.toArray(), valField.values.toArray());
+    const vals = func(...funcArgs, timesField.values, valField.values);
 
     const newTimesField = {
       ...timesField,
@@ -156,7 +156,7 @@ const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefi
 
 function extraction(order: string, n: number, orderFunc: string, dataFrames: MutableDataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values.toArray());
+  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values);
 
   const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
   if (order === 'bottom') {
@@ -169,7 +169,7 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Mut
 // [Support Funcs] Wrapper function for sort by AggFuncs
 function sortByAggFuncs(orderFunc: string, order: string, dataFrames: MutableDataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values.toArray());
+  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values);
 
   const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
 
