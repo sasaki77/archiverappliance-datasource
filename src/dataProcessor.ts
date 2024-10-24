@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MutableDataFrame, ArrayVector, getFieldDisplayName } from '@grafana/data';
+import { MutableDataFrame, getFieldDisplayName } from '@grafana/data';
 import * as math from 'mathjs';
 
 // Transform
@@ -80,12 +80,12 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
 
     const newTimesField = {
       ...timesField,
-      values: new ArrayVector(vals.times),
+      values: vals.times,
     };
 
     const newValfield = {
       ...valField,
-      values: new ArrayVector(vals.values),
+      values: vals.values,
     };
 
     return new MutableDataFrame({
