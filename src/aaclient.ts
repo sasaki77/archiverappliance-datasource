@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
 
-import { operatorList, TargetQuery } from 'types';
+import { operatorList, TargetQuery, AADataQueryData } from 'types';
 import { parseTargetPV } from 'pvnameParser';
 
 export class AAclient {
@@ -89,7 +89,8 @@ export class AAclient {
       const requests = _.map(urls, (url) => {
         if (!(url in requestHash)) {
           const options = this.makeRequestOption(url);
-          requestHash[url] = this.doRequest(options);
+          const response = getBackendSrv().fetch<AADataQueryData[]>(options);
+          requestHash[url] = lastValueFrom(response);
         }
         return requestHash[url];
       });
@@ -97,18 +98,6 @@ export class AAclient {
     });
 
     return requestsArray;
-  }
-
-  private doRequest(options: {
-    method?: string;
-    url: any;
-    requestId?: any;
-    withCredentials?: any;
-    headers?: any;
-    inspect?: any;
-  }) {
-    const result = getBackendSrv().datasourceRequest(options);
-    return result;
   }
 
   private makeRequestOption(url: string) {

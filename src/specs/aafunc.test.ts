@@ -6,16 +6,17 @@ import {
   DataSourceInstanceSettings,
   DataQueryRequest,
 } from '@grafana/data';
+import { from } from 'rxjs';
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
 import { seriesFunctions } from '../dataProcessor';
 import { AAQuery, AADataSourceOptions } from '../types';
 
-const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
+const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
 jest.spyOn(runtime, 'getBackendSrv').mockImplementation(() => {
-  return { datasourceRequest: datasourceRequestMock } as any as runtime.BackendSrv;
+  return { fetch: fetchMock } as any as runtime.BackendSrv;
 });
 
 jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
@@ -23,7 +24,7 @@ jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
 });
 
 beforeEach(() => {
-  datasourceRequestMock.mockClear();
+  fetchMock.mockClear();
 });
 
 function createDefaultResponse() {
@@ -55,18 +56,20 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with scale function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -100,19 +103,21 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with offset function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -146,19 +151,21 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with delta function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -190,20 +197,22 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with fluctuation function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 100 },
-              { millis: 1262304002789, val: 200 },
-              { millis: 1262304002789, val: 300 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 100 },
+                { millis: 1262304002789, val: 200 },
+                { millis: 1262304002789, val: 300 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -236,24 +245,26 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with movingAverage function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-              { millis: 1262304002789, val: 3 },
-              { millis: 1262304002790, val: 4 },
-              { millis: 1262304002791, val: 5 },
-              { millis: 1262304002792, val: 6 },
-              { millis: 1262304002793, val: 7 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+                { millis: 1262304002789, val: 3 },
+                { millis: 1262304002790, val: 4 },
+                { millis: 1262304002791, val: 5 },
+                { millis: 1262304002792, val: 6 },
+                { millis: 1262304002793, val: 7 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -299,19 +310,21 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return correct scalar data with toScalar funcs', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'header:PV1', PREC: '0', waveform: true },
-            data: [
-              { millis: 1262304000123, val: [1, 2, 3] },
-              { millis: 1262304001456, val: [4, 5, 6] },
-              { millis: 1262304002789, val: [7, 8, 9, 10] },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'header:PV1', PREC: '0', waveform: true },
+              data: [
+                { millis: 1262304000123, val: [1, 2, 3] },
+                { millis: 1262304001456, val: [4, 5, 6] },
+                { millis: 1262304002789, val: [7, 8, 9, 10] },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {
@@ -406,7 +419,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with top function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -444,10 +457,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -642,7 +657,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with exclude function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       const pvdata = [
         {
@@ -651,10 +666,12 @@ describe('Archiverappliance Functions', () => {
         },
       ];
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -682,7 +699,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByMax function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -720,10 +737,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -753,7 +772,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByMin function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -791,10 +810,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -824,7 +845,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAvg function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -862,10 +883,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -895,7 +918,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortBySum function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -933,10 +956,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -966,7 +991,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAbsMax function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1004,10 +1029,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -1037,7 +1064,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAbsMin function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1075,10 +1102,12 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
     const query = {
@@ -1148,19 +1177,21 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return non extrapolation data when disableExtrapol func is set', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304000123, val: 0 },
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
     const query = {

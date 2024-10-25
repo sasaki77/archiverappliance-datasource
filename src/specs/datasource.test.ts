@@ -15,19 +15,14 @@ import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
 import { take, toArray } from 'rxjs/operators';
 
-const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
 jest.spyOn(runtime, 'getBackendSrv').mockImplementation(() => {
-  return { datasourceRequest: datasourceRequestMock, fetch: fetchMock } as any as runtime.BackendSrv;
+  return { fetch: fetchMock } as any as runtime.BackendSrv;
 });
 
 jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
   return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
-});
-
-beforeEach(() => {
-  datasourceRequestMock.mockClear();
 });
 
 beforeEach(() => {
@@ -376,19 +371,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results when a target is set', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -417,16 +414,18 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return the server results once for each url', (done) => {
       let counter = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         counter += 1;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [{ millis: 1262304000123, val: counter }],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [{ millis: 1262304000123, val: counter }],
+              },
+            ],
+          },
+        ]);
       });
 
       const query = {
@@ -458,19 +457,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return array data when waveform is true', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000123, val: [1, 2, 3] },
-                { millis: 1262304001456, val: [4, 5, 6] },
-                { millis: 1262304002789, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000123, val: [1, 2, 3] },
+                  { millis: 1262304001456, val: [4, 5, 6] },
+                  { millis: 1262304002789, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -530,19 +531,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return dt-space array data when waveform is true and arrayFormat is dt-space', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000000, val: [1, 2, 3] },
-                { millis: 1262304001000, val: [4, 5, 6] },
-                { millis: 1262304002000, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000000, val: [1, 2, 3] },
+                  { millis: 1262304001000, val: [4, 5, 6] },
+                  { millis: 1262304002000, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -607,19 +610,21 @@ describe('Archiverappliance Datasource', () => {
       });
 
       it('should return index array data when waveform is true and arrayFormat is index in UTC', (done) => {
-        datasourceRequestMock.mockImplementation((request) =>
-          Promise.resolve({
-            data: [
-              {
-                meta: { name: 'header:PV1', PREC: '0', waveform: true },
-                data: [
-                  { millis: 1262304000123, val: [1, 2, 3] },
-                  { millis: 1262304001456, val: [4, 5, 6] },
-                  { millis: 1262304002789, val: [7, 8, 9, 10] },
-                ],
-              },
-            ],
-          })
+        fetchMock.mockImplementation((request) =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000123, val: [1, 2, 3] },
+                    { millis: 1262304001456, val: [4, 5, 6] },
+                    { millis: 1262304002789, val: [7, 8, 9, 10] },
+                  ],
+                },
+              ],
+            },
+          ])
         );
 
         const query = {
@@ -693,19 +698,21 @@ describe('Archiverappliance Datasource', () => {
       });
 
       it('should return index array data when waveform is true and arrayFormat is index in JST', (done) => {
-        datasourceRequestMock.mockImplementation((request) =>
-          Promise.resolve({
-            data: [
-              {
-                meta: { name: 'header:PV1', PREC: '0', waveform: true },
-                data: [
-                  { millis: 1262304000123, val: [1, 2, 3] },
-                  { millis: 1262304001456, val: [4, 5, 6] },
-                  { millis: 1262304002789, val: [7, 8, 9, 10] },
-                ],
-              },
-            ],
-          })
+        fetchMock.mockImplementation((request) =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000123, val: [1, 2, 3] },
+                    { millis: 1262304001456, val: [4, 5, 6] },
+                    { millis: 1262304002789, val: [7, 8, 9, 10] },
+                  ],
+                },
+              ],
+            },
+          ])
         );
 
         const query = {
@@ -748,19 +755,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return timeseries array data when waveform is true and arrayFormat is timeseries', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000123, val: [1, 2, 3] },
-                { millis: 1262304001456, val: [4, 5, 6] },
-                { millis: 1262304002789, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000123, val: [1, 2, 3] },
+                  { millis: 1262304001456, val: [4, 5, 6] },
+                  { millis: 1262304002789, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -812,20 +821,18 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const pv = request.url.slice(31, 34);
-        Promise.resolve({
-          status: 'success',
-          data: { data: ['value1', 'value2', 'value3'] },
-        });
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: pv, PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: pv, PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const query = {
@@ -864,15 +871,17 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias pattern', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0' },
-              data: [],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -900,15 +909,17 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias pattern for array data', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [{ millis: 1262304000123, val: [1, 2, 3] }],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [{ millis: 1262304000123, val: [1, 2, 3] }],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -940,19 +951,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return extrapolation data when operator is set as raw', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -976,19 +989,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return extrapolation data when time range is narrow', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -1012,19 +1027,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return normal data when the stream is enabled but rangeRaw is absent', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -1050,19 +1067,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return normal data when the stream is enabled but rangeRaw is not now', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
       const query = {
@@ -1089,25 +1108,27 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data when the stream is enabled', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms + 2001, val: 0 },
-                { millis: Math.floor((from_ms + 2000 + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms + 2001, val: 0 },
+                  { millis: Math.floor((from_ms + 2000 + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1142,25 +1163,27 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data with strmInt while without strmCap', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms - 1, val: 0 },
-                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms - 1, val: 0 },
+                  { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1194,25 +1217,27 @@ describe('Archiverappliance Datasource', () => {
     }, 10000);
 
     it('should return stream data with unit strmInt while without strmCap', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms - 1, val: 0 },
-                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms - 1, val: 0 },
+                  { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1246,26 +1271,28 @@ describe('Archiverappliance Datasource', () => {
     }, 10000);
 
     it('should ignore out of range data on stream', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms + 2000, val: 0 },
-                { millis: from_ms + 2002, val: 1 },
-                { millis: to_ms, val: 2 },
-                { millis: to_ms + 1, val: 3 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms + 2000, val: 0 },
+                  { millis: from_ms + 2002, val: 1 },
+                  { millis: to_ms, val: 2 },
+                  { millis: to_ms + 1, val: 3 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1297,21 +1324,23 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return raw url when strmInt is less than 1000', (done) => {
       let i = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         if (i === 0) {
           expect(request.url.includes('mean_10')).toBeTruthy();
         } else {
           expect(request.url.includes('mean')).toBeFalsy();
         }
         i++;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1332,21 +1361,23 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return mean url when strmInt is greater than 1000', (done) => {
       let i = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         if (i === 0) {
           expect(request.url.includes('mean_10')).toBeTruthy();
         } else {
           expect(request.url.includes('mean_1')).toBeTruthy();
         }
         i++;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
@@ -1366,16 +1397,18 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return raw url when the range is narrow', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         expect(request.url.includes('mean')).toBeFalsy();
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
