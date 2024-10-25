@@ -2,7 +2,7 @@ name: publish-release.yml
 on:
   push:
     tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
+      - '[0-9]+.[0-9]+.[0-9]+'
 jobs:
   build-and-test-plugin:
     runs-on: ubuntu-latest
@@ -12,13 +12,13 @@ jobs:
       - name: Checkout Github repository
         uses: actions/checkout@v3
         with:
-          submodules: "recursive"
+          submodules: 'recursive'
 
       - name: Setup NodeJS environment
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
-          cache: "yarn"
+          node-version: '20'
+          cache: 'yarn'
 
       - name: Setup Go environment
         uses: actions/setup-go@v3
