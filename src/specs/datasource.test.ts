@@ -397,8 +397,8 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
         const seriesName = dataFrame.name;
         const displayName = getFieldDisplayName(dataFrame.fields[1], dataFrame);
 
@@ -445,10 +445,10 @@ describe('Archiverappliance Datasource', () => {
         const dataFrame2: DataFrame = result.data[1];
         const dataFrame3: DataFrame = result.data[2];
         const dataFrame4: DataFrame = result.data[3];
-        const valArray1 = dataFrame1.fields[1].values.toArray();
-        const valArray2 = dataFrame2.fields[1].values.toArray();
-        const valArray3 = dataFrame3.fields[1].values.toArray();
-        const valArray4 = dataFrame4.fields[1].values.toArray();
+        const valArray1 = dataFrame1.fields[1].values;
+        const valArray2 = dataFrame2.fields[1].values;
+        const valArray3 = dataFrame3.fields[1].values;
+        const valArray4 = dataFrame4.fields[1].values;
 
         expect(min([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(1);
         expect(max([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(3);
@@ -493,7 +493,7 @@ describe('Archiverappliance Datasource', () => {
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray[0]).toBe(1262304000123);
 
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -503,10 +503,10 @@ describe('Archiverappliance Datasource', () => {
         expect(name2).toBe('header:PV1[1]');
         expect(name3).toBe('header:PV1[2]');
 
-        const valArray1 = dataFrame.fields[1].values.toArray();
-        const valArray2 = dataFrame.fields[2].values.toArray();
-        const valArray3 = dataFrame.fields[3].values.toArray();
-        const valArray4 = dataFrame.fields[4].values.toArray();
+        const valArray1 = dataFrame.fields[1].values;
+        const valArray2 = dataFrame.fields[2].values;
+        const valArray3 = dataFrame.fields[3].values;
+        const valArray4 = dataFrame.fields[4].values;
         expect(valArray1).toHaveLength(4);
         expect(valArray2).toHaveLength(4);
         expect(valArray3).toHaveLength(4);
@@ -577,7 +577,7 @@ describe('Archiverappliance Datasource', () => {
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray).toHaveLength(11);
         expect(timesArray[0]).toBe(1262304000000);
         expect(timesArray[1]).toBe(1262304000001);
@@ -587,7 +587,7 @@ describe('Archiverappliance Datasource', () => {
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(name1).toBe('header:PV1');
 
-        const valArray = dataFrame.fields[1].values.toArray();
+        const valArray = dataFrame.fields[1].values;
         expect(valArray).toHaveLength(11);
 
         expect(valArray[0]).toBe(1);
@@ -656,7 +656,7 @@ describe('Archiverappliance Datasource', () => {
           const seriesName = dataFrame.name;
           expect(seriesName).toBe('header:PV1');
 
-          const indexArray = dataFrame.fields[0].values.toArray();
+          const indexArray = dataFrame.fields[0].values;
           expect(indexArray).toHaveLength(3);
           expect(indexArray[0]).toBe(0);
           expect(indexArray[1]).toBe(1);
@@ -671,9 +671,9 @@ describe('Archiverappliance Datasource', () => {
           expect(name2).toBe(new Date(1262304001456).toISOString());
           expect(name3).toBe(new Date(1262304002789).toISOString());
 
-          const valArray1 = dataFrame.fields[1].values.toArray();
-          const valArray2 = dataFrame.fields[2].values.toArray();
-          const valArray3 = dataFrame.fields[3].values.toArray();
+          const valArray1 = dataFrame.fields[1].values;
+          const valArray2 = dataFrame.fields[2].values;
+          const valArray3 = dataFrame.fields[3].values;
 
           expect(valArray1).toHaveLength(3);
           expect(valArray2).toHaveLength(3);
@@ -792,7 +792,7 @@ describe('Archiverappliance Datasource', () => {
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray[0]).toBe(1262304000123);
 
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -802,10 +802,10 @@ describe('Archiverappliance Datasource', () => {
         expect(name2).toBe('header:PV1[1]');
         expect(name3).toBe('header:PV1[2]');
 
-        const valArray1 = dataFrame.fields[1].values.toArray();
-        const valArray2 = dataFrame.fields[2].values.toArray();
-        const valArray3 = dataFrame.fields[3].values.toArray();
-        const valArray4 = dataFrame.fields[4].values.toArray();
+        const valArray1 = dataFrame.fields[1].values;
+        const valArray2 = dataFrame.fields[2].values;
+        const valArray3 = dataFrame.fields[3].values;
+        const valArray4 = dataFrame.fields[4].values;
         expect(valArray1).toHaveLength(4);
         expect(valArray2).toHaveLength(4);
         expect(valArray3).toHaveLength(4);
@@ -977,8 +977,8 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1015,8 +1015,8 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1055,8 +1055,8 @@ describe('Archiverappliance Datasource', () => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1096,8 +1096,8 @@ describe('Archiverappliance Datasource', () => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1148,7 +1148,7 @@ describe('Archiverappliance Datasource', () => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([0, 1, 2, 0, 1, 2, 0, 1, 2]);
@@ -1256,7 +1256,7 @@ describe('Archiverappliance Datasource', () => {
         const result = results[2];
         expect(result.data).toHaveLength(1);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([2, 1, 2]);
@@ -1312,7 +1312,7 @@ describe('Archiverappliance Datasource', () => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
         const dataFrame: DataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([0, 1, 2, 3, 1, 2, 1, 2]);

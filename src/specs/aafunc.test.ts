@@ -89,8 +89,8 @@ describe('Archiverappliance Functions', () => {
       expect(result.data).toHaveLength(1);
       const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(2);
@@ -137,8 +137,8 @@ describe('Archiverappliance Functions', () => {
       expect(result.data).toHaveLength(1);
       const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(2);
@@ -185,8 +185,8 @@ describe('Archiverappliance Functions', () => {
       expect(result.data).toHaveLength(1);
       const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(1);
@@ -232,8 +232,8 @@ describe('Archiverappliance Functions', () => {
       expect(result.data).toHaveLength(1);
       const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(3);
@@ -289,8 +289,8 @@ describe('Archiverappliance Functions', () => {
       expect(result.data).toHaveLength(2);
       const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(7);
@@ -301,8 +301,8 @@ describe('Archiverappliance Functions', () => {
       expect(valArray[6]).toBe(6);
 
       const dataFrame2: DataFrame = result.data[1];
-      const valArray2 = dataFrame2.fields[1].values.toArray();
-      const timesArray2 = dataFrame2.fields[0].values.toArray();
+      const valArray2 = dataFrame2.fields[1].values;
+      const timesArray2 = dataFrame2.fields[0].values;
       expect(timesArray2).toHaveLength(7);
       expect(valArray2).toHaveLength(7);
       expect(valArray2[6]).toBe(7);
@@ -369,12 +369,12 @@ describe('Archiverappliance Functions', () => {
       expect(seriesNameMed).toBe('header:PV1');
       expect(seriesNameStd).toBe('header:PV1');
 
-      const valArrayAvg = dataFrameAvg.fields[1].values.toArray();
-      const valArrayMax = dataFrameMax.fields[1].values.toArray();
-      const valArrayMin = dataFrameMin.fields[1].values.toArray();
-      const valArraySum = dataFrameSum.fields[1].values.toArray();
-      const valArrayMed = dataFrameMed.fields[1].values.toArray();
-      const valArrayStd = dataFrameStd.fields[1].values.toArray();
+      const valArrayAvg = dataFrameAvg.fields[1].values;
+      const valArrayMax = dataFrameMax.fields[1].values;
+      const valArrayMin = dataFrameMin.fields[1].values;
+      const valArraySum = dataFrameSum.fields[1].values;
+      const valArrayMed = dataFrameMed.fields[1].values;
+      const valArrayStd = dataFrameStd.fields[1].values;
 
       expect(valArrayAvg).toHaveLength(4);
       expect(valArrayMax).toHaveLength(4);
@@ -402,12 +402,12 @@ describe('Archiverappliance Functions', () => {
       expect(nameMed).toBe('header:PV1 (median)');
       expect(nameStd).toBe('header:PV1 (std)');
 
-      const timesArrayAvg = dataFrameAvg.fields[0].values.toArray();
-      const timesArrayMax = dataFrameMax.fields[0].values.toArray();
-      const timesArrayMin = dataFrameMin.fields[0].values.toArray();
-      const timesArraySum = dataFrameSum.fields[0].values.toArray();
-      const timesArrayMed = dataFrameMed.fields[0].values.toArray();
-      const timesArrayStd = dataFrameStd.fields[0].values.toArray();
+      const timesArrayAvg = dataFrameAvg.fields[0].values;
+      const timesArrayMax = dataFrameMax.fields[0].values;
+      const timesArrayMin = dataFrameMin.fields[0].values;
+      const timesArraySum = dataFrameSum.fields[0].values;
+      const timesArrayMed = dataFrameMed.fields[0].values;
+      const timesArrayStd = dataFrameStd.fields[0].values;
       expect(timesArrayAvg[0]).toBe(1262304000123);
       expect(timesArrayMax[0]).toBe(1262304000123);
       expect(timesArrayMin[0]).toBe(1262304000123);
@@ -483,8 +483,8 @@ describe('Archiverappliance Functions', () => {
       const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
-      const timesArray1 = dataFrameArray[0].fields[0].values.toArray();
-      const valArray1 = dataFrameArray[0].fields[1].values.toArray();
+      const timesArray1 = dataFrameArray[0].fields[0].values;
+      const valArray1 = dataFrameArray[0].fields[1].values;
 
       expect(pvname1).toBe('PV2');
       expect(pvname2).toBe('PV1');
@@ -1209,8 +1209,8 @@ describe('Archiverappliance Functions', () => {
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
       const dataFrame: DataFrame = result.data[0];
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(valArray).toHaveLength(3);
       expect(timesArray).toHaveLength(3);
