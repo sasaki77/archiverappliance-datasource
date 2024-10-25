@@ -30,13 +30,17 @@ export class AAclient {
         const options = this.makeRequestOption(`${this.url}/bpl/getVersion`)
         return this.doRequest(options).then((response) => {
             if (response.status === 200) {
-                return { status: 'success', message: 'Data source is working', title: 'Success' };
+                return { status: 'success', message: 'Data source is working' };
+            }
+
+            let msg = "Test Error"
+            if (typeof response.data === 'string') {
+                msg = response.data
             }
 
             return {
                 status: 'error',
-                title: 'Failed',
-                message: response.data,
+                message: msg,
             };
         });
     }

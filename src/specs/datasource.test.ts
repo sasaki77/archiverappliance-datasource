@@ -71,7 +71,6 @@ describe('Archiverappliance Datasource', () => {
       ds.testDatasource().then((result: any) => {
         expect(result.status).toBe('success');
         expect(result.message).toBe('Data source is working');
-        expect(result.title).toBe('Success');
         done();
       });
     });
@@ -87,7 +86,6 @@ describe('Archiverappliance Datasource', () => {
       ds.testDatasource().then((result: any) => {
         expect(result.status).toBe('error');
         expect(result.message).toBe('Bad gateway');
-        expect(result.title).toBe('Failed');
         done();
       });
     });
