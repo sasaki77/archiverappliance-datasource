@@ -68,7 +68,7 @@ export function locateOuterParen(data: string): { phrases: string[]; idxs: numbe
 
 export function permuteQuery(input: string[][]): string[][] {
   /*
-      Generate all ordered permutations of the input strings to make the following operation occur: 
+      Generate all ordered permutations of the input strings to make the following operation occur:
 
       input:
           {

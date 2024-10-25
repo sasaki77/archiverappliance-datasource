@@ -67,10 +67,7 @@ export class ConfigEditor extends PureComponent<Props> {
               labelWidth={LABEL_WIDTH}
               tooltip="Checking this option will enable the data retrieval with backend. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client."
             >
-              <InlineSwitch
-                value={options.jsonData.useBackend ?? false}
-                onChange={this.onUseBEChange}
-              />
+              <InlineSwitch value={options.jsonData.useBackend ?? false} onChange={this.onUseBEChange} />
             </InlineField>
           </div>
           <div className="gf-form-inline">
@@ -107,18 +104,11 @@ export class ConfigEditor extends PureComponent<Props> {
               labelWidth={LABEL_WIDTH}
               tooltip="(Caution) This is a alpha feature. Live feature provides live updating with PVWS WebSocket server."
             >
-              <InlineSwitch
-                value={options.jsonData.useLiveUpdate ?? false}
-                onChange={this.onUseLiveUpdateChange}
-              />
+              <InlineSwitch value={options.jsonData.useLiveUpdate ?? false} onChange={this.onUseLiveUpdateChange} />
             </InlineField>
           </div>
           <div className="gf-form-inline">
-            <InlineField
-              label="PVWS URI (Alpha)"
-              labelWidth={LABEL_WIDTH}
-              tooltip="URI for PVWS WebSocket server."
-            >
+            <InlineField label="PVWS URI (Alpha)" labelWidth={LABEL_WIDTH} tooltip="URI for PVWS WebSocket server.">
               <input
                 type="text"
                 value={options.jsonData.liveUpdateURI}

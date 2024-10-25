@@ -1,7 +1,7 @@
 import defaults from 'lodash/defaults';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { components } from "react-select";
+import { components } from 'react-select';
 import { InlineFormLabel, InlineSwitch, Select, AsyncSelect, InputActionMeta } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
 import { GrafanaTheme2 } from '@grafana/data';
@@ -22,7 +22,7 @@ const Input = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
   const defaultPvOption = query.target ? toOption(query.target) : undefined;
-  const defaultOperatorOption = query.operator && query.operator != "" ? toOption(query.operator) : undefined;
+  const defaultOperatorOption = query.operator && query.operator != '' ? toOption(query.operator) : undefined;
 
   // These states are used to control PV name suggestions with AsyncSelect.
   // The following web pages were consulted.
@@ -36,7 +36,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const customStyles = useStyles2(getStyles);
 
   const onPVChange = (option: SelectableValue) => {
-    const changedTarget = option ? option.value : "";
+    const changedTarget = option ? option.value : '';
     onChange({ ...query, target: changedTarget });
     setPVInputValue(changedTarget);
     setPVOptionValue(option);
@@ -57,7 +57,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   };
 
   const onOperatorChange = (option: SelectableValue) => {
-    const changedOpertor = option && option.value != "" ? option.value : undefined;
+    const changedOpertor = option && option.value != '' ? option.value : undefined;
     onChange({ ...query, operator: changedOpertor });
     setOperatorInputValue(changedOpertor);
     setOperatorOptionValue(option);
@@ -100,24 +100,24 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
 
   const onPVInputChange = (inputValue: string, { action }: InputActionMeta) => {
     // onBlur => issue onPVChange with a current input value
-    if (action === "input-blur") {
+    if (action === 'input-blur') {
       onPVChange(toOption(pvInputValue));
     }
 
     // onInputChange => update inputValue
-    if (action === "input-change") {
+    if (action === 'input-change') {
       setPVInputValue(inputValue);
     }
   };
 
   const onOperatorInputChange = (inputValue: string, { action }: InputActionMeta) => {
     // onBlur => issue onPVChange with a current input value
-    if (action === "input-blur") {
+    if (action === 'input-blur') {
       onOperatorChange(toOption(operatorInputValue));
     }
 
     // onInputChange => update inputValue
-    if (action === "input-change") {
+    if (action === 'input-change') {
       setOperatorInputValue(inputValue);
     }
   };
@@ -131,11 +131,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
       const suggestions: Array<SelectableValue<string>> = res.map(toSelectableValue);
       return suggestions;
     });
-  }
+  };
   const debounceLoadSuggestions = debounce((query: string) => loadPVSuggestions(query), 200);
 
   const query_ = defaults(query, defaultQuery);
-  const defaultOperator = datasource.defaultOperator || "mean";
+  const defaultOperator = datasource.defaultOperator || 'mean';
   const useLiveUpdate = datasource.useLiveUpdate || false;
   const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
 
@@ -163,51 +163,32 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             isClearable
             createOptionPosition="first"
             components={{
-              Input
+              Input,
             }}
             onInputChange={onPVInputChange}
             loadOptions={debounceLoadSuggestions}
             onChange={onPVChange}
             placeholder="PV name"
             key={JSON.stringify(pvOptionValue)}
-            className={query.regex ? customStyles.regexinput : ""}
+            className={query.regex ? customStyles.regexinput : ''}
           />
         </div>
         <InlineFormLabel
           width={6}
           className="query-keyword"
-          tooltip={
-            <p>
-              Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.
-            </p>
-          }
+          tooltip={<p>Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.</p>}
         >
           Regex
         </InlineFormLabel>
-        <InlineSwitch
-          value={query.regex}
-          onChange={onRegexChange}
-          className="gf-form-spacing"
-        />
-        {useLiveUpdate === true &&
+        <InlineSwitch value={query.regex} onChange={onRegexChange} className="gf-form-spacing" />
+        {useLiveUpdate === true && (
           <div className="gf-form-inline">
-            <InlineFormLabel
-              width={6}
-              className="query-keyword"
-              tooltip={
-                <p>
-                  Enable/Disable Live mode.
-                </p>
-              }
-            >
+            <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Enable/Disable Live mode.</p>}>
               Live
             </InlineFormLabel>
-            <InlineSwitch
-              value={query.live}
-              onChange={onLiveChange}
-            />
+            <InlineSwitch value={query.live} onChange={onLiveChange} />
           </div>
-        }
+        )}
       </div>
       <div className="gf-form-inline">
         <InlineFormLabel
@@ -224,8 +205,8 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
                 Archiver Appliance User Guide
               </a>{' '}
               about processing of data. Special operator <code>raw</code> and <code>last</code> are also available.{' '}
-              <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve
-              the last data in the specified time range.
+              <code>raw</code> allows to retrieve the data without processing. <code>last</code> allows to retrieve the
+              last data in the specified time range.
             </p>
           }
         >
@@ -242,7 +223,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             isClearable
             createOptionPosition="first"
             components={{
-              Input
+              Input,
             }}
             placeholder={defaultOperator}
           />
@@ -252,17 +233,14 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
           className="query-keyword"
           tooltip={
             <p>
-              Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.
+              Stream allows to periodically update the data without refreshing the dashboard. The difference data from
+              the last updated values is only retrieved.
             </p>
           }
         >
           Stream
         </InlineFormLabel>
-        <InlineSwitch
-          value={query.stream}
-          onChange={onStreamChange}
-          className="gf-form-spacing"
-        />
+        <InlineSwitch value={query.stream} onChange={onStreamChange} className="gf-form-spacing" />
         <InlineFormLabel
           width={6}
           className="query-keyword"
@@ -355,7 +333,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
       <Functions funcs={query.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
     </>
   );
-}
+};
 
 const getStyles = (theme: GrafanaTheme2) => ({
   regexinput: css`

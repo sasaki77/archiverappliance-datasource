@@ -1,147 +1,146 @@
 import _ from 'lodash';
 
-import { getBackendSrv } from "@grafana/runtime";
+import { getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
 
 import { operatorList, TargetQuery } from 'types';
 import { parseTargetPV } from 'pvnameParser';
 
 export class AAclient {
-    url: string;
-    withCredentials: boolean;
-    headers: { [key: string]: string };
+  url: string;
+  withCredentials: boolean;
+  headers: { [key: string]: string };
 
-    constructor(url: string, withCredentials: boolean) {
-        this.url = url;
-        this.withCredentials = withCredentials;
-        this.headers = { 'Content-Type': 'application/json' };
+  constructor(url: string, withCredentials: boolean) {
+    this.url = url;
+    this.withCredentials = withCredentials;
+    this.headers = { 'Content-Type': 'application/json' };
+  }
+
+  async pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
+    if (!query) {
+      return Promise.resolve([]);
     }
 
-    async pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
-        if (!query) {
-            return Promise.resolve([]);
+    const url = `${this.url}/bpl/getMatchingPVs?limit=${maxPvs}&regex=${encodeURIComponent(query)}`;
+
+    const response = getBackendSrv().fetch<string[]>({
+      url: url,
+    });
+    const res = await lastValueFrom(response);
+    return res.data;
+  }
+
+  async testDatasource() {
+    const url = `${this.url}/bpl/getVersion`;
+    const response = getBackendSrv().fetch<string>({
+      url: url,
+    });
+    const res = await lastValueFrom(response);
+
+    if (res.status === 200) {
+      return { status: 'success', message: 'Data source is working' };
+    }
+
+    return {
+      status: 'error',
+      message: res.data,
+    };
+  }
+
+  buildUrls(target: TargetQuery): Promise<string[]> {
+    // Get Option values
+    const maxNumPVs = Number(target.options.maxNumPVs) || 100;
+    const binInterval = target.options.binInterval || target.interval;
+
+    const targetPVs = parseTargetPV(target.target);
+
+    // Create Promise to fetch PV names
+    const pvnamesPromise = _.map(targetPVs, (targetPV) => {
+      if (target.regex) {
+        return this.pvNamesFindQuery(targetPV, maxNumPVs);
+      }
+
+      return Promise.resolve([targetPV]);
+    });
+
+    return Promise.all(pvnamesPromise).then(
+      (pvnamesArray) =>
+        new Promise((resolve, reject) => {
+          const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
+          let urls: string[] = [];
+
+          try {
+            urls = _.map(pvnames, (pvname) =>
+              this.buildUrl(this.url, pvname, target.operator, binInterval, target.from, target.to)
+            );
+          } catch (e) {
+            reject(e);
+          }
+
+          resolve(urls);
+        })
+    );
+  }
+
+  createUrlRequests(urlsArray: string[][]) {
+    const requestHash: { [key: string]: Promise<any> } = {};
+
+    const requestsArray = _.map(urlsArray, (urls) => {
+      const requests = _.map(urls, (url) => {
+        if (!(url in requestHash)) {
+          const options = this.makeRequestOption(url);
+          requestHash[url] = this.doRequest(options);
         }
+        return requestHash[url];
+      });
+      return requests;
+    });
 
-        const url = `${this.url}/bpl/getMatchingPVs?limit=${maxPvs}&regex=${encodeURIComponent(query)}`;
+    return requestsArray;
+  }
 
-        const response = getBackendSrv().fetch<string[]>({
-            url: url,
-        });
-        const res = await lastValueFrom(response);
-        return res.data;
-    }
+  private doRequest(options: {
+    method?: string;
+    url: any;
+    requestId?: any;
+    withCredentials?: any;
+    headers?: any;
+    inspect?: any;
+  }) {
+    const result = getBackendSrv().datasourceRequest(options);
+    return result;
+  }
 
-    async testDatasource() {
-        const url = `${this.url}/bpl/getVersion`
-        const response = getBackendSrv().fetch<string>({
-            url: url,
-        });
-        const res = await lastValueFrom(response);
+  private makeRequestOption(url: string) {
+    return { method: 'GET', url, headers: this.headers, withCredentials: this.withCredentials };
+  }
 
-        if (res.status === 200) {
-            return { status: 'success', message: 'Data source is working' };
-        }
+  private buildUrl(baseUrl: string, pvname: string, operator: string, interval: string, from: Date, to: Date) {
+    const pv = (() => {
+      // raw Operator or last Operator or interval is less than 1 sec
+      if (operator === 'raw' || operator === 'last' || interval === '') {
+        return `${pvname}`;
+      }
 
-        return {
-            status: 'error',
-            message: res.data,
-        };
-    }
+      // Operator is usually provided even if the user doesn't provide it because of the default operator
+      // This code maintains compatibility with older versions
+      if (_.includes(['', undefined], operator)) {
+        return `mean_${interval}(${pvname})`;
+      }
 
-    buildUrls(target: TargetQuery): Promise<string[]> {
-        // Get Option values
-        const maxNumPVs = Number(target.options.maxNumPVs) || 100;
-        const binInterval = target.options.binInterval || target.interval;
+      // Other Operator
+      if (_.includes(operatorList, operator)) {
+        return `${operator}_${interval}(${pvname})`;
+      }
 
-        const targetPVs = parseTargetPV(target.target);
+      throw new Error('Data Processing Operator is invalid.');
+    })();
 
-        // Create Promise to fetch PV names
-        const pvnamesPromise = _.map(targetPVs, (targetPV) => {
-            if (target.regex) {
-                return this.pvNamesFindQuery(targetPV, maxNumPVs);
-            }
+    const from_str = operator === 'last' ? to.toISOString() : from.toISOString();
 
-            return Promise.resolve([targetPV]);
-        });
+    const url = `${baseUrl}/data/getData.qw?pv=${encodeURIComponent(pv)}&from=${from_str}&to=${to.toISOString()}`;
 
-        return Promise.all(pvnamesPromise).then(
-            (pvnamesArray) =>
-                new Promise((resolve, reject) => {
-                    const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
-                    let urls: string[] = [];
-
-                    try {
-                        urls = _.map(pvnames, (pvname) =>
-                            this.buildUrl(this.url, pvname, target.operator, binInterval, target.from, target.to)
-                        );
-                    } catch (e) {
-                        reject(e);
-                    }
-
-                    resolve(urls);
-                })
-        );
-    }
-
-    createUrlRequests(urlsArray: string[][]) {
-        const requestHash: { [key: string]: Promise<any> } = {};
-
-        const requestsArray = _.map(urlsArray, (urls) => {
-            const requests = _.map(urls, (url) => {
-                if (!(url in requestHash)) {
-                    const options = this.makeRequestOption(url)
-                    requestHash[url] = this.doRequest(options);
-                }
-                return requestHash[url];
-            });
-            return requests;
-        });
-
-        return requestsArray;
-    }
-
-    private doRequest(options: {
-        method?: string;
-        url: any;
-        requestId?: any;
-        withCredentials?: any;
-        headers?: any;
-        inspect?: any;
-    }) {
-        const result = getBackendSrv().datasourceRequest(options);
-        return result;
-    }
-
-    private makeRequestOption(url: string) {
-        return { method: "GET", url, headers: this.headers, withCredentials: this.withCredentials }
-    }
-
-    private buildUrl(baseUrl: string, pvname: string, operator: string, interval: string, from: Date, to: Date) {
-        const pv = (() => {
-            // raw Operator or last Operator or interval is less than 1 sec
-            if (operator === 'raw' || operator === 'last' || interval === '') {
-                return `${pvname}`;
-            }
-
-            // Operator is usually provided even if the user doesn't provide it because of the default operator
-            // This code maintains compatibility with older versions
-            if (_.includes(['', undefined], operator)) {
-                return `mean_${interval}(${pvname})`;
-            }
-
-            // Other Operator
-            if (_.includes(operatorList, operator)) {
-                return `${operator}_${interval}(${pvname})`;
-            }
-
-            throw new Error('Data Processing Operator is invalid.');
-        })();
-
-        const from_str = operator === 'last' ? to.toISOString() : from.toISOString();
-
-        const url = `${baseUrl}/data/getData.qw?pv=${encodeURIComponent(pv)}&from=${from_str}&to=${to.toISOString()}`;
-
-        return url;
-    }
-
+    return url;
+  }
 }

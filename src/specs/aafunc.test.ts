@@ -6,7 +6,7 @@ import {
   DataSourceInstanceSettings,
   DataQueryRequest,
 } from '@grafana/data';
-import * as runtime from '@grafana/runtime'
+import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
 import { seriesFunctions } from '../dataProcessor';
@@ -14,17 +14,13 @@ import { AAQuery, AADataSourceOptions } from '../types';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
-jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
-  () => {
-    return {datasourceRequest: datasourceRequestMock} as any as runtime.BackendSrv;
-  }
-);
+jest.spyOn(runtime, 'getBackendSrv').mockImplementation(() => {
+  return { datasourceRequest: datasourceRequestMock } as any as runtime.BackendSrv;
+});
 
-jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
-  () => {
-      return {replace: jest.fn().mockImplementation((query) => query)} as any as runtime.TemplateSrv;
-  }
-);
+jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
+  return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
+});
 
 beforeEach(() => {
   datasourceRequestMock.mockClear();
@@ -49,12 +45,12 @@ describe('Archiverappliance Functions', () => {
   let ds: DataSource;
 
   beforeEach(() => {
-    const instanceSettings = ({
+    const instanceSettings = {
       url: 'url_header:',
       jsonData: {
-        useBackend: false
+        useBackend: false,
       },
-    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    } as unknown as DataSourceInstanceSettings<AADataSourceOptions>;
     ds = new DataSource(instanceSettings);
   });
 
@@ -73,7 +69,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -83,7 +79,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
@@ -119,7 +115,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -129,7 +125,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
@@ -165,7 +161,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -175,7 +171,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
@@ -210,7 +206,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -220,7 +216,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
@@ -260,7 +256,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -275,7 +271,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
@@ -318,7 +314,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'header:PV1',
@@ -335,7 +331,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(6);
@@ -454,7 +450,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -464,7 +460,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
@@ -661,7 +657,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PVA|PVB)',
@@ -671,7 +667,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
@@ -730,7 +726,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -740,7 +736,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -801,7 +797,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -811,7 +807,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -872,7 +868,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -882,7 +878,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -943,7 +939,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -953,7 +949,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -1014,7 +1010,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -1024,7 +1020,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -1085,7 +1081,7 @@ describe('Archiverappliance Functions', () => {
       });
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -1095,7 +1091,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
@@ -1112,7 +1108,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return option variables if option functions are applied', (done) => {
-    const options = ({
+    const options = {
       targets: [
         {
           target: 'PV',
@@ -1122,7 +1118,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     const targets = ds.buildQueryParameters(options);
 
@@ -1132,7 +1128,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return 1 second interval when interval time is less than 1 second and disableAutoRaw is true', (done) => {
-    const options = ({
+    const options = {
       targets: [
         {
           target: 'PV1',
@@ -1142,7 +1138,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     const targets = ds.buildQueryParameters(options);
 
@@ -1167,7 +1163,7 @@ describe('Archiverappliance Functions', () => {
       })
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -1178,7 +1174,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);

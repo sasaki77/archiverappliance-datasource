@@ -274,7 +274,6 @@ addFuncDef({
   defaultParams: ['true'],
 });
 
-
 export function getFuncDef(name: string) {
   return funcIndex[name];
 }
