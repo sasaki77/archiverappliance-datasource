@@ -8,16 +8,19 @@ import {
   DataQueryRequest,
   LoadingState,
 } from '@grafana/data';
+import { from } from 'rxjs';
+
 import * as runtime from '@grafana/runtime'
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
 import { take, toArray } from 'rxjs/operators';
 
 const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
+const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
 jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
   () => {
-    return { datasourceRequest: datasourceRequestMock } as any as runtime.BackendSrv;
+    return { datasourceRequest: datasourceRequestMock, fetch: fetchMock } as any as runtime.BackendSrv;
   }
 );
 
@@ -29,6 +32,10 @@ jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
 
 beforeEach(() => {
   datasourceRequestMock.mockClear();
+});
+
+beforeEach(() => {
+  fetchMock.mockClear();
 });
 
 function createDefaultResponse() {
@@ -110,10 +117,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid multi urls', (done) => {
-      datasourceRequestMock.mockImplementation((requesty) =>
-        Promise.resolve({
-          data: ['PV1', 'PV2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['PV1', 'PV2']}],
+        )
       );
       const target = ({
         target: 'PV*',
@@ -136,10 +143,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid unique urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['PV1', 'PV2', 'PV1'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['PV1', 'PV2', 'PV1']}],
+        )
       );
 
       const target = ({
@@ -163,10 +170,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an 100 urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: range(1000).map((num) => String(num)),
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: range(1000).map((num) => String(num))}],
+        )
       );
 
       const target = ({
@@ -185,10 +192,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an required number of urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: range(1000).map((num) => String(num)),
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: range(1000).map((num) => String(num))}],
+        )
       );
 
       const target = ({
@@ -1382,10 +1389,10 @@ describe('Archiverappliance Datasource', () => {
 
   describe('PV name find query tests', () => {
     it('should return the pv name results when a target is null', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['metric_0', 'metric_1', 'metric_2']}],
+        )
       );
 
       ds.pvNamesFindQuery(null, 100).then((result: any) => {
@@ -1395,10 +1402,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is undefined', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['metric_0', 'metric_1', 'metric_2']}],
+        )
       );
 
       ds.pvNamesFindQuery(undefined, 100).then((result: any) => {
@@ -1408,10 +1415,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is empty', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['metric_0', 'metric_1', 'metric_2']}],
+        )
       );
 
       ds.pvNamesFindQuery('', 100).then((result: any) => {
@@ -1421,10 +1428,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is set', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{data: ['metric_0', 'metric_1', 'metric_2']}],
+        )
       );
 
       ds.pvNamesFindQuery('metric', 100).then((result: any) => {
@@ -1439,11 +1446,10 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Metric find query tests', () => {
     it('should return the pv name results for metricFindQuery', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          _request: request,
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{_request: request, data: ['metric_0', 'metric_1', 'metric_2']}],
+        )
       );
 
       ds.metricFindQuery('metric').then((result: any) => {
@@ -1456,11 +1462,10 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with regex OR', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          _request: request,
-          data: [unescape(split(request.url, /regex=(.*)/)[1])],
-        })
+      fetchMock.mockImplementation((request) =>
+        from(
+          [{_request: request, data: [unescape(split(request.url, /regex=(.*)/)[1])]}],
+        )
       );
 
       ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result: any) => {
@@ -1476,17 +1481,17 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with limit parameter', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) =>{
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
         const data = [`${pvname}${limit}`];
 
-        return Promise.resolve({
-          _request: request,
-          data,
-        });
+        return from(
+          [{_request: request, data: data}],
+        )
       });
+
 
       ds.metricFindQuery('PV?limit=5').then((result: any) => {
         expect(result).toHaveLength(1);
@@ -1496,16 +1501,16 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with invalid limit parameter', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) =>{
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
         const data = [`${pvname}${limit}`];
 
-        return Promise.resolve({
-          _request: request,
-          data,
-        });
+
+        return from(
+          [{_request: request, data: data}],
+        )
       });
 
       ds.metricFindQuery('PV?limit=a').then((result: any) => {

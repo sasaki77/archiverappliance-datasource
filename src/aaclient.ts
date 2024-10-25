@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
 import { getBackendSrv } from "@grafana/runtime";
+import { lastValueFrom } from 'rxjs';
+
 import { operatorList, TargetQuery } from 'types';
 import { parseTargetPV } from 'pvnameParser';
 
@@ -15,15 +17,18 @@ export class AAclient {
         this.headers = { 'Content-Type': 'application/json' };
     }
 
-    pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
+    async pvNamesFindQuery(query: string | undefined | null, maxPvs: number) {
         if (!query) {
             return Promise.resolve([]);
         }
 
         const url = `${this.url}/bpl/getMatchingPVs?limit=${maxPvs}&regex=${encodeURIComponent(query)}`;
 
-        let options = this.makeRequestOption(url);
-        return this.doRequest(options).then((res) => res.data);
+        const response = getBackendSrv().fetch<string[]>({
+            url: url,
+        });
+        const res = await lastValueFrom(response);
+        return res.data;
     }
 
     async testDatasource() {
