@@ -32,22 +32,20 @@ export class AAclient {
     }
 
     async testDatasource() {
-        const options = this.makeRequestOption(`${this.url}/bpl/getVersion`)
-        return this.doRequest(options).then((response) => {
-            if (response.status === 200) {
-                return { status: 'success', message: 'Data source is working' };
-            }
-
-            let msg = "Test Error"
-            if (typeof response.data === 'string') {
-                msg = response.data
-            }
-
-            return {
-                status: 'error',
-                message: msg,
-            };
+        const url = `${this.url}/bpl/getVersion`
+        const response = getBackendSrv().fetch<string>({
+            url: url,
         });
+        const res = await lastValueFrom(response);
+
+        if (res.status === 200) {
+            return { status: 'success', message: 'Data source is working' };
+        }
+
+        return {
+            status: 'error',
+            message: res.data,
+        };
     }
 
     buildUrls(target: TargetQuery): Promise<string[]> {

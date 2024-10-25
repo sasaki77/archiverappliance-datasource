@@ -68,11 +68,13 @@ describe('Archiverappliance Datasource', () => {
 
   describe('testDatasource tests', () => {
     it('should return success message', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          status: 200,
-          message: 'Success',
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            status: 200,
+            message: 'Success',
+          },
+        ])
       );
 
       ds.testDatasource().then((result: any) => {
@@ -83,11 +85,13 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return error message', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          status: 404,
-          data: 'Bad gateway',
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            status: 404,
+            data: 'Bad gateway',
+          },
+        ])
       );
 
       ds.testDatasource().then((result: any) => {
