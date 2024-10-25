@@ -23,28 +23,27 @@ export class AAclient {
     }
 
     const url = `${this.url}/bpl/getMatchingPVs?limit=${maxPvs}&regex=${encodeURIComponent(query)}`;
+    const options = this.makeRequestOption(url);
+    const responseObservable = getBackendSrv().fetch<string[]>(options);
 
-    const response = getBackendSrv().fetch<string[]>({
-      url: url,
-    });
-    const res = await lastValueFrom(response);
-    return res.data;
+    const response = await lastValueFrom(responseObservable);
+    return response.data;
   }
 
   async testDatasource() {
     const url = `${this.url}/bpl/getVersion`;
-    const response = getBackendSrv().fetch<string>({
-      url: url,
-    });
-    const res = await lastValueFrom(response);
+    const options = this.makeRequestOption(url);
+    const responseObservable = getBackendSrv().fetch<string>(options);
 
-    if (res.status === 200) {
+    const response = await lastValueFrom(responseObservable);
+
+    if (response.status === 200) {
       return { status: 'success', message: 'Data source is working' };
     }
 
     return {
       status: 'error',
-      message: res.data,
+      message: response.data,
     };
   }
 
