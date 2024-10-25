@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import ms from 'ms';
-import { CircularDataFrame, DataQueryResponse, LoadingState, MutableDataFrame } from '@grafana/data';
+import { CircularDataFrame, DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
@@ -112,7 +112,7 @@ function doQueryStream(
   return targetProcesses.then((dataFramesArray) => streamPostProcess(dataFramesArray));
 }
 
-function streamPostProcess(dataFramesArray: MutableDataFrame[][]) {
+function streamPostProcess(dataFramesArray: DataFrame[][]) {
   const dataFrames = _.flatten(dataFramesArray);
 
   return { data: dataFrames, state: LoadingState.Streaming };
@@ -129,10 +129,10 @@ function updateTargetDate(targets: TargetQuery[]) {
 }
 
 function mergeResToCirFrames(
-  dataFrames: MutableDataFrame[],
+  dataFrames: DataFrame[],
   cirFrames: { [key: string]: CircularDataFrame },
   target: TargetQuery
-): Promise<MutableDataFrame[]> {
+): Promise<DataFrame[]> {
   const to = target.to.getTime();
   const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
 
@@ -151,7 +151,11 @@ function mergeResToCirFrames(
 
     // Update frame data
     for (let i = 0; i < frame.length; i++) {
-      const fields = frame.get(i);
+      const fields: { [name: string]: any } = {};
+      for (const field of frame.fields) {
+        fields[field.name] = field.values[i];
+      }
+
       if (fields['time'] <= last_time || fields['time'] > to) {
         continue;
       }
@@ -163,7 +167,7 @@ function mergeResToCirFrames(
   return Promise.resolve(frames);
 }
 
-function createStreamFrame(target: TargetQuery, dataFrame: MutableDataFrame) {
+function createStreamFrame(target: TargetQuery, dataFrame: DataFrame) {
   const c = parseInt(target.strmCap, 10);
   const cap = dataFrame.refId ? c || dataFrame.length : dataFrame.length;
 

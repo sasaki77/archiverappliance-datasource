@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MutableDataFrame, getFieldDisplayName } from '@grafana/data';
+import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
 import * as math from 'mathjs';
 
 // Transform
@@ -71,7 +71,7 @@ function movingAverage(windowSize: number, times: number[], values: number[]) {
 
 function transformWrapper(func: (...args: any) => { times: number[]; values: number[] }, ...args: any) {
   const funcArgs = args.slice(0, -1);
-  const dataFrames: MutableDataFrame[] = args[args.length - 1];
+  const dataFrames: DataFrame[] = args[args.length - 1];
 
   const tsData = _.map(dataFrames, (dataFrame) => {
     const timesField = dataFrame.fields[0];
@@ -88,7 +88,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
       values: vals.values,
     };
 
-    return new MutableDataFrame({
+    return createDataFrame({
       ...dataFrame,
       fields: [newTimesField, newValfield],
     });
@@ -98,7 +98,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
 }
 
 // Filter Series
-function exclude(pattern: string, dataFrames: MutableDataFrame[]) {
+function exclude(pattern: string, dataFrames: DataFrame[]) {
   const regex = new RegExp(pattern);
   return _.filter(dataFrames, (dataFrame) => {
     const valfield = dataFrame.fields[1];
@@ -154,9 +154,9 @@ const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefi
 
 // [Support Funcs] Wrapper function for top and bottom function
 
-function extraction(order: string, n: number, orderFunc: string, dataFrames: MutableDataFrame[]) {
+function extraction(order: string, n: number, orderFunc: string, dataFrames: DataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values);
+  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
 
   const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
   if (order === 'bottom') {
@@ -167,9 +167,9 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Mut
 }
 
 // [Support Funcs] Wrapper function for sort by AggFuncs
-function sortByAggFuncs(orderFunc: string, order: string, dataFrames: MutableDataFrame[]) {
+function sortByAggFuncs(orderFunc: string, order: string, dataFrames: DataFrame[]) {
   const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: MutableDataFrame) => orderByCallback(dataFrame.fields[1].values);
+  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
 
   const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
 

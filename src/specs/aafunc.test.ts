@@ -1,6 +1,7 @@
 import split from 'lodash/split';
 import {
-  MutableDataFrame,
+  createDataFrame,
+  DataFrame,
   FieldType,
   getFieldDisplayName,
   DataSourceInstanceSettings,
@@ -86,7 +87,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
@@ -134,7 +135,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
@@ -182,7 +183,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
@@ -229,7 +230,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
@@ -286,7 +287,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
@@ -299,7 +300,7 @@ describe('Archiverappliance Functions', () => {
       expect(valArray[2]).toBe(2);
       expect(valArray[6]).toBe(6);
 
-      const dataFrame2: MutableDataFrame = result.data[1];
+      const dataFrame2: DataFrame = result.data[1];
       const valArray2 = dataFrame2.fields[1].values.toArray();
       const timesArray2 = dataFrame2.fields[0].values.toArray();
       expect(timesArray2).toHaveLength(7);
@@ -348,12 +349,12 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(6);
-      const dataFrameAvg: MutableDataFrame = result.data[0];
-      const dataFrameMax: MutableDataFrame = result.data[1];
-      const dataFrameMin: MutableDataFrame = result.data[2];
-      const dataFrameSum: MutableDataFrame = result.data[3];
-      const dataFrameMed: MutableDataFrame = result.data[4];
-      const dataFrameStd: MutableDataFrame = result.data[5];
+      const dataFrameAvg: DataFrame = result.data[0];
+      const dataFrameMax: DataFrame = result.data[1];
+      const dataFrameMin: DataFrame = result.data[2];
+      const dataFrameSum: DataFrame = result.data[3];
+      const dataFrameMed: DataFrame = result.data[4];
+      const dataFrameStd: DataFrame = result.data[5];
 
       const seriesNameAvg = dataFrameAvg.name;
       const seriesNameMax = dataFrameMax.name;
@@ -479,7 +480,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const timesArray1 = dataFrameArray[0].fields[0].values.toArray();
@@ -539,15 +540,14 @@ describe('Archiverappliance Functions', () => {
       },
     ];
 
-    const timeseriesData: MutableDataFrame[] = data.map(
-      (d) =>
-        new MutableDataFrame({
-          name: d.name,
-          fields: [
-            { name: 'time', type: FieldType.time, values: d.times },
-            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
-          ],
-        })
+    const timeseriesData: DataFrame[] = data.map((d) =>
+      createDataFrame({
+        name: d.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: d.times },
+          { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+        ],
+      })
     );
 
     const topFunction = seriesFunctions.top;
@@ -627,15 +627,14 @@ describe('Archiverappliance Functions', () => {
       },
     ];
 
-    const timeseriesDataAbs: MutableDataFrame[] = absData.map(
-      (d) =>
-        new MutableDataFrame({
-          name: d.name,
-          fields: [
-            { name: 'time', type: FieldType.time, values: d.times },
-            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
-          ],
-        })
+    const timeseriesDataAbs: DataFrame[] = absData.map((d) =>
+      createDataFrame({
+        name: d.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: d.times },
+          { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+        ],
+      })
     );
 
     const absMinTopData = topFunction(1, 'absoluteMin', timeseriesDataAbs);
@@ -688,7 +687,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
 
@@ -759,7 +758,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -832,7 +831,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -905,7 +904,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -978,7 +977,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -1051,7 +1050,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -1124,7 +1123,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -1209,7 +1208,7 @@ describe('Archiverappliance Functions', () => {
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const timesArray = dataFrame.fields[0].values.toArray();
       const valArray = dataFrame.fields[1].values.toArray();
 

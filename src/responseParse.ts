@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MutableDataFrame, FieldType } from '@grafana/data';
+import { createDataFrame, DataFrame, FieldType, addRow } from '@grafana/data';
 
 import { getToScalarFuncs } from './aafunc';
 import { TargetQuery, AADataQueryData, AADataQueryResponse, isNumberArray } from './types';
@@ -34,10 +34,17 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
       return dataframe;
     }
 
-    const latestval = dataframe.get(dataframe.length - 1);
-    const addval = { ...latestval, time: to_msec };
+    //const latestval = dataframe.get(dataframe.length - 1);
+    const newRow = [];
+    const lastindex = dataframe.length - 1;
 
-    dataframe.add(addval);
+    for (const field of dataframe.fields) {
+      newRow.push(field.values[lastindex]);
+    }
+    // first field is time field
+    newRow[0] = to_msec;
+
+    addRow(dataframe, newRow);
 
     return dataframe;
   });
@@ -52,13 +59,13 @@ function parseArrayResponseToScalar(
 ) {
   // Type check for columnValues
   if (!isNumberArray(targetRes)) {
-    return new MutableDataFrame();
+    return [];
   }
 
   const frames = _.map(toScalarFuncs, (func) => {
     const values = _.map(targetRes.data, (datapoint) => func.func(datapoint.val));
     const times = _.map(targetRes.data, (datapoint) => datapoint.millis);
-    const frame = new MutableDataFrame({
+    const frame = createDataFrame({
       refId: target.refId,
       name: targetRes.meta.name,
       fields: [
@@ -88,10 +95,10 @@ function parseArrayResponse(targetRes: AADataQueryData, target: TargetQuery) {
   }
 
   if (fields.length == 0) {
-    return new MutableDataFrame();
+    return createDataFrame({ fields: [] });
   }
 
-  const frame = new MutableDataFrame({
+  const frame = createDataFrame({
     refId: target.refId,
     name: targetRes.meta.name,
     fields,
@@ -197,10 +204,10 @@ function makeTimeseriesArrayFields(targetRes: AADataQueryData) {
   return fields;
 }
 
-function parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): MutableDataFrame {
+function parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): DataFrame {
   const values = _.map(targetRes.data, (datapoint) => datapoint.val);
   const times = _.map(targetRes.data, (datapoint) => datapoint.millis);
-  const frame = new MutableDataFrame({
+  const frame = createDataFrame({
     refId: target.refId,
     name: targetRes.meta.name,
     fields: [

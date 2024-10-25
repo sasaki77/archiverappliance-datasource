@@ -2,7 +2,7 @@ import range from 'lodash/range';
 import split from 'lodash/split';
 import { min, max } from 'lodash';
 import {
-  MutableDataFrame,
+  DataFrame,
   getFieldDisplayName,
   DataSourceInstanceSettings,
   DataQueryRequest,
@@ -396,7 +396,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
         const seriesName = dataFrame.name;
@@ -441,10 +441,10 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
-        const dataFrame1: MutableDataFrame = result.data[0];
-        const dataFrame2: MutableDataFrame = result.data[1];
-        const dataFrame3: MutableDataFrame = result.data[2];
-        const dataFrame4: MutableDataFrame = result.data[3];
+        const dataFrame1: DataFrame = result.data[0];
+        const dataFrame2: DataFrame = result.data[1];
+        const dataFrame3: DataFrame = result.data[2];
+        const dataFrame4: DataFrame = result.data[3];
         const valArray1 = dataFrame1.fields[1].values.toArray();
         const valArray2 = dataFrame2.fields[1].values.toArray();
         const valArray3 = dataFrame3.fields[1].values.toArray();
@@ -487,7 +487,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(5);
 
         const seriesName = dataFrame.name;
@@ -571,7 +571,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(2);
 
         const seriesName = dataFrame.name;
@@ -650,7 +650,7 @@ describe('Archiverappliance Datasource', () => {
 
         ds.query(query).subscribe((result: any) => {
           expect(result.data).toHaveLength(1);
-          const dataFrame: MutableDataFrame = result.data[0];
+          const dataFrame: DataFrame = result.data[0];
           expect(dataFrame.fields).toHaveLength(4);
 
           const seriesName = dataFrame.name;
@@ -737,7 +737,7 @@ describe('Archiverappliance Datasource', () => {
         } as unknown as DataQueryRequest<AAQuery>;
 
         ds.query(query).subscribe((result: any) => {
-          const dataFrame: MutableDataFrame = result.data[0];
+          const dataFrame: DataFrame = result.data[0];
 
           const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
           const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -786,7 +786,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(5);
 
         const seriesName = dataFrame.name;
@@ -848,7 +848,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
-        const dataFrameArray: MutableDataFrame[] = result.data;
+        const dataFrameArray: DataFrame[] = result.data;
         const seriesName1 = dataFrameArray[0].name;
         const seriesName2 = dataFrameArray[1].name;
         const seriesName3 = dataFrameArray[2].name;
@@ -899,7 +899,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const seriesName = dataFrame.name;
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(seriesName).toBe('header:PV1');
@@ -937,7 +937,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const seriesName = dataFrame.name;
         const alias1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         const alias2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
@@ -976,7 +976,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1014,7 +1014,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1054,7 +1054,7 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1095,7 +1095,7 @@ describe('Archiverappliance Datasource', () => {
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1147,7 +1147,7 @@ describe('Archiverappliance Datasource', () => {
         const result = results[2];
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1201,7 +1201,7 @@ describe('Archiverappliance Datasource', () => {
         expect(results).toHaveLength(3);
         const result = results[2];
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1255,7 +1255,7 @@ describe('Archiverappliance Datasource', () => {
         expect(results).toHaveLength(3);
         const result = results[2];
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1311,7 +1311,7 @@ describe('Archiverappliance Datasource', () => {
         const result = results[2];
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 

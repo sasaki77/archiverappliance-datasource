@@ -1,12 +1,12 @@
 import _ from 'lodash';
-import { MutableDataFrame, getFieldDisplayName } from '@grafana/data';
+import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
 
 import { applyFunctionDefs } from './aafunc';
 import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
 import { responseParse } from 'responseParse';
 
-export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ data: Array<MutableDataFrame<any>> }> {
+export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ data: Array<DataFrame> }> {
   // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
   const urlsArray = _.map(targets, (target) => aaclient.buildUrls(target));
 
@@ -27,7 +27,7 @@ export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ d
   return targetProcesses.then((dataFramesArray) => postProcess(dataFramesArray));
 }
 
-export async function setAlias(dataFrames: MutableDataFrame[], target: TargetQuery): Promise<MutableDataFrame[]> {
+export async function setAlias(dataFrames: DataFrame[], target: TargetQuery): Promise<DataFrame[]> {
   if (!target.alias) {
     return Promise.resolve(dataFrames);
   }
@@ -57,7 +57,7 @@ export async function setAlias(dataFrames: MutableDataFrame[], target: TargetQue
       };
     });
 
-    return new MutableDataFrame({
+    return createDataFrame({
       ...dataFrame,
       fields: [dataFrame.fields[0]].concat(newValfields),
     });
@@ -66,7 +66,7 @@ export async function setAlias(dataFrames: MutableDataFrame[], target: TargetQue
   return Promise.resolve(newDataFrames);
 }
 
-export function applyFunctions(dataFrames: MutableDataFrame[], target: TargetQuery) {
+export function applyFunctions(dataFrames: DataFrame[], target: TargetQuery) {
   if (target.functions === undefined) {
     return Promise.resolve(dataFrames);
   }
@@ -80,7 +80,7 @@ function targetProcess(responses: any, target: TargetQuery) {
     .then((dataFrames) => applyFunctions(dataFrames, target));
 }
 
-function postProcess(dataFramesArray: MutableDataFrame[][]) {
+function postProcess(dataFramesArray: DataFrame[][]) {
   const dataFrames = _.flatten(dataFramesArray);
 
   return { data: dataFrames };
