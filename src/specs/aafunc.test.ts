@@ -1,33 +1,31 @@
 import split from 'lodash/split';
 import {
-  MutableDataFrame,
+  createDataFrame,
+  DataFrame,
   FieldType,
   getFieldDisplayName,
   DataSourceInstanceSettings,
   DataQueryRequest,
 } from '@grafana/data';
-import * as runtime from '@grafana/runtime'
+import { from } from 'rxjs';
+import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import * as aafunc from '../aafunc';
 import { seriesFunctions } from '../dataProcessor';
 import { AAQuery, AADataSourceOptions } from '../types';
 
-const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
+const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
-jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
-  () => {
-    return {datasourceRequest: datasourceRequestMock} as any as runtime.BackendSrv;
-  }
-);
+jest.spyOn(runtime, 'getBackendSrv').mockImplementation(() => {
+  return { fetch: fetchMock } as any as runtime.BackendSrv;
+});
 
-jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
-  () => {
-      return {replace: jest.fn().mockImplementation((query) => query)} as any as runtime.TemplateSrv;
-  }
-);
+jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
+  return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
+});
 
 beforeEach(() => {
-  datasourceRequestMock.mockClear();
+  fetchMock.mockClear();
 });
 
 function createDefaultResponse() {
@@ -49,31 +47,33 @@ describe('Archiverappliance Functions', () => {
   let ds: DataSource;
 
   beforeEach(() => {
-    const instanceSettings = ({
+    const instanceSettings = {
       url: 'url_header:',
       jsonData: {
-        useBackend: false
+        useBackend: false,
       },
-    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    } as unknown as DataSourceInstanceSettings<AADataSourceOptions>;
     ds = new DataSource(instanceSettings);
   });
 
   it('should return the server results with scale function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -83,14 +83,14 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(2);
@@ -104,22 +104,24 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with offset function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -129,14 +131,14 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(2);
@@ -150,22 +152,24 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with delta function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -175,14 +179,14 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(1);
@@ -194,23 +198,25 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with fluctuation function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 100 },
-              { millis: 1262304002789, val: 200 },
-              { millis: 1262304002789, val: 300 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 100 },
+                { millis: 1262304002789, val: 200 },
+                { millis: 1262304002789, val: 300 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -220,14 +226,14 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(3);
@@ -240,27 +246,29 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with movingAverage function', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        _request: request,
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-              { millis: 1262304002789, val: 3 },
-              { millis: 1262304002790, val: 4 },
-              { millis: 1262304002791, val: 5 },
-              { millis: 1262304002792, val: 6 },
-              { millis: 1262304002793, val: 7 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          _request: request,
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+                { millis: 1262304002789, val: 3 },
+                { millis: 1262304002790, val: 4 },
+                { millis: 1262304002791, val: 5 },
+                { millis: 1262304002792, val: 6 },
+                { millis: 1262304002793, val: 7 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -275,14 +283,14 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrame: MutableDataFrame = result.data[0];
+      const dataFrame: DataFrame = result.data[0];
       const pvname = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(pvname).toBe('PV');
       expect(timesArray).toHaveLength(7);
@@ -292,9 +300,9 @@ describe('Archiverappliance Functions', () => {
       expect(valArray[2]).toBe(2);
       expect(valArray[6]).toBe(6);
 
-      const dataFrame2: MutableDataFrame = result.data[1];
-      const valArray2 = dataFrame2.fields[1].values.toArray();
-      const timesArray2 = dataFrame2.fields[0].values.toArray();
+      const dataFrame2: DataFrame = result.data[1];
+      const valArray2 = dataFrame2.fields[1].values;
+      const timesArray2 = dataFrame2.fields[0].values;
       expect(timesArray2).toHaveLength(7);
       expect(valArray2).toHaveLength(7);
       expect(valArray2[6]).toBe(7);
@@ -303,22 +311,24 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return correct scalar data with toScalar funcs', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'header:PV1', PREC: '0', waveform: true },
-            data: [
-              { millis: 1262304000123, val: [1, 2, 3] },
-              { millis: 1262304001456, val: [4, 5, 6] },
-              { millis: 1262304002789, val: [7, 8, 9, 10] },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'header:PV1', PREC: '0', waveform: true },
+              data: [
+                { millis: 1262304000123, val: [1, 2, 3] },
+                { millis: 1262304001456, val: [4, 5, 6] },
+                { millis: 1262304002789, val: [7, 8, 9, 10] },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'header:PV1',
@@ -335,16 +345,16 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(6);
-      const dataFrameAvg: MutableDataFrame = result.data[0];
-      const dataFrameMax: MutableDataFrame = result.data[1];
-      const dataFrameMin: MutableDataFrame = result.data[2];
-      const dataFrameSum: MutableDataFrame = result.data[3];
-      const dataFrameMed: MutableDataFrame = result.data[4];
-      const dataFrameStd: MutableDataFrame = result.data[5];
+      const dataFrameAvg: DataFrame = result.data[0];
+      const dataFrameMax: DataFrame = result.data[1];
+      const dataFrameMin: DataFrame = result.data[2];
+      const dataFrameSum: DataFrame = result.data[3];
+      const dataFrameMed: DataFrame = result.data[4];
+      const dataFrameStd: DataFrame = result.data[5];
 
       const seriesNameAvg = dataFrameAvg.name;
       const seriesNameMax = dataFrameMax.name;
@@ -359,12 +369,12 @@ describe('Archiverappliance Functions', () => {
       expect(seriesNameMed).toBe('header:PV1');
       expect(seriesNameStd).toBe('header:PV1');
 
-      const valArrayAvg = dataFrameAvg.fields[1].values.toArray();
-      const valArrayMax = dataFrameMax.fields[1].values.toArray();
-      const valArrayMin = dataFrameMin.fields[1].values.toArray();
-      const valArraySum = dataFrameSum.fields[1].values.toArray();
-      const valArrayMed = dataFrameMed.fields[1].values.toArray();
-      const valArrayStd = dataFrameStd.fields[1].values.toArray();
+      const valArrayAvg = dataFrameAvg.fields[1].values;
+      const valArrayMax = dataFrameMax.fields[1].values;
+      const valArrayMin = dataFrameMin.fields[1].values;
+      const valArraySum = dataFrameSum.fields[1].values;
+      const valArrayMed = dataFrameMed.fields[1].values;
+      const valArrayStd = dataFrameStd.fields[1].values;
 
       expect(valArrayAvg).toHaveLength(4);
       expect(valArrayMax).toHaveLength(4);
@@ -392,12 +402,12 @@ describe('Archiverappliance Functions', () => {
       expect(nameMed).toBe('header:PV1 (median)');
       expect(nameStd).toBe('header:PV1 (std)');
 
-      const timesArrayAvg = dataFrameAvg.fields[0].values.toArray();
-      const timesArrayMax = dataFrameMax.fields[0].values.toArray();
-      const timesArrayMin = dataFrameMin.fields[0].values.toArray();
-      const timesArraySum = dataFrameSum.fields[0].values.toArray();
-      const timesArrayMed = dataFrameMed.fields[0].values.toArray();
-      const timesArrayStd = dataFrameStd.fields[0].values.toArray();
+      const timesArrayAvg = dataFrameAvg.fields[0].values;
+      const timesArrayMax = dataFrameMax.fields[0].values;
+      const timesArrayMin = dataFrameMin.fields[0].values;
+      const timesArraySum = dataFrameSum.fields[0].values;
+      const timesArrayMed = dataFrameMed.fields[0].values;
+      const timesArrayStd = dataFrameStd.fields[0].values;
       expect(timesArrayAvg[0]).toBe(1262304000123);
       expect(timesArrayMax[0]).toBe(1262304000123);
       expect(timesArrayMin[0]).toBe(1262304000123);
@@ -410,7 +420,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with top function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -448,13 +458,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -464,15 +476,15 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
-      const timesArray1 = dataFrameArray[0].fields[0].values.toArray();
-      const valArray1 = dataFrameArray[0].fields[1].values.toArray();
+      const timesArray1 = dataFrameArray[0].fields[0].values;
+      const valArray1 = dataFrameArray[0].fields[1].values;
 
       expect(pvname1).toBe('PV2');
       expect(pvname2).toBe('PV1');
@@ -528,15 +540,14 @@ describe('Archiverappliance Functions', () => {
       },
     ];
 
-    const timeseriesData: MutableDataFrame[] = data.map(
-      (d) =>
-        new MutableDataFrame({
-          name: d.name,
-          fields: [
-            { name: 'time', type: FieldType.time, values: d.times },
-            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
-          ],
-        })
+    const timeseriesData: DataFrame[] = data.map((d) =>
+      createDataFrame({
+        name: d.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: d.times },
+          { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+        ],
+      })
     );
 
     const topFunction = seriesFunctions.top;
@@ -616,15 +627,14 @@ describe('Archiverappliance Functions', () => {
       },
     ];
 
-    const timeseriesDataAbs: MutableDataFrame[] = absData.map(
-      (d) =>
-        new MutableDataFrame({
-          name: d.name,
-          fields: [
-            { name: 'time', type: FieldType.time, values: d.times },
-            { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
-          ],
-        })
+    const timeseriesDataAbs: DataFrame[] = absData.map((d) =>
+      createDataFrame({
+        name: d.name,
+        fields: [
+          { name: 'time', type: FieldType.time, values: d.times },
+          { name: 'value', type: FieldType.number, values: d.values, config: { displayName: d.name } },
+        ],
+      })
     );
 
     const absMinTopData = topFunction(1, 'absoluteMin', timeseriesDataAbs);
@@ -646,7 +656,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with exclude function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       const pvdata = [
         {
@@ -655,13 +665,15 @@ describe('Archiverappliance Functions', () => {
         },
       ];
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PVA|PVB)',
@@ -671,11 +683,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(2);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
 
@@ -686,7 +698,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByMax function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -724,13 +736,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -740,11 +754,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -757,7 +771,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByMin function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -795,13 +809,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -811,11 +827,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -828,7 +844,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAvg function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -866,13 +882,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -882,11 +900,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -899,7 +917,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortBySum function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -937,13 +955,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -953,11 +973,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -970,7 +990,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAbsMax function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1008,13 +1028,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -1024,11 +1046,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -1041,7 +1063,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return the server results with sortByAbsMin function', (done) => {
-    datasourceRequestMock.mockImplementation((request) => {
+    fetchMock.mockImplementation((request) => {
       const pvname = unescape(split(request.url, /pv=mean_[0-9].*\((.*?)\)&/)[1]);
       let pvdata = [];
       if (pvname === 'PV1') {
@@ -1079,13 +1101,15 @@ describe('Archiverappliance Functions', () => {
         ];
       }
 
-      return Promise.resolve({
-        _request: request,
-        data: pvdata,
-      });
+      return from([
+        {
+          _request: request,
+          data: pvdata,
+        },
+      ]);
     });
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: '(PV1|PV2|PV3)',
@@ -1095,11 +1119,11 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(3);
-      const dataFrameArray: MutableDataFrame[] = result.data;
+      const dataFrameArray: DataFrame[] = result.data;
       const pvname1 = getFieldDisplayName(dataFrameArray[0].fields[1], dataFrameArray[0]);
       const pvname2 = getFieldDisplayName(dataFrameArray[1].fields[1], dataFrameArray[1]);
       const pvname3 = getFieldDisplayName(dataFrameArray[2].fields[1], dataFrameArray[2]);
@@ -1112,7 +1136,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return option variables if option functions are applied', (done) => {
-    const options = ({
+    const options = {
       targets: [
         {
           target: 'PV',
@@ -1122,7 +1146,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     const targets = ds.buildQueryParameters(options);
 
@@ -1132,7 +1156,7 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return 1 second interval when interval time is less than 1 second and disableAutoRaw is true', (done) => {
-    const options = ({
+    const options = {
       targets: [
         {
           target: 'PV1',
@@ -1142,7 +1166,7 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     const targets = ds.buildQueryParameters(options);
 
@@ -1152,22 +1176,24 @@ describe('Archiverappliance Functions', () => {
   });
 
   it('should return non extrapolation data when disableExtrapol func is set', (done) => {
-    datasourceRequestMock.mockImplementation((request) =>
-      Promise.resolve({
-        data: [
-          {
-            meta: { name: 'PV', PREC: '0' },
-            data: [
-              { millis: 1262304000123, val: 0 },
-              { millis: 1262304001456, val: 1 },
-              { millis: 1262304002789, val: 2 },
-            ],
-          },
-        ],
-      })
+    fetchMock.mockImplementation((request) =>
+      from([
+        {
+          data: [
+            {
+              meta: { name: 'PV', PREC: '0' },
+              data: [
+                { millis: 1262304000123, val: 0 },
+                { millis: 1262304001456, val: 1 },
+                { millis: 1262304002789, val: 2 },
+              ],
+            },
+          ],
+        },
+      ])
     );
 
-    const query = ({
+    const query = {
       targets: [
         {
           target: 'PV',
@@ -1178,13 +1204,13 @@ describe('Archiverappliance Functions', () => {
       ],
       range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
       maxDataPoints: 1000,
-    } as unknown) as DataQueryRequest<AAQuery>;
+    } as unknown as DataQueryRequest<AAQuery>;
 
     ds.query(query).subscribe((result: any) => {
       expect(result.data).toHaveLength(1);
-      const dataFrame: MutableDataFrame = result.data[0];
-      const timesArray = dataFrame.fields[0].values.toArray();
-      const valArray = dataFrame.fields[1].values.toArray();
+      const dataFrame: DataFrame = result.data[0];
+      const timesArray = dataFrame.fields[0].values;
+      const valArray = dataFrame.fields[1].values;
 
       expect(valArray).toHaveLength(3);
       expect(timesArray).toHaveLength(3);

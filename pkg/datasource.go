@@ -17,7 +17,7 @@ type ArchiverDatasource struct {
 	//im instancemgmt.InstanceManager
 }
 
-func newArchiverDataSource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
+func newArchiverDataSource(_ context.Context, _ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
 	return &ArchiverDatasource{}, nil
 }
 

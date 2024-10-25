@@ -2,33 +2,31 @@ import range from 'lodash/range';
 import split from 'lodash/split';
 import { min, max } from 'lodash';
 import {
-  MutableDataFrame,
+  DataFrame,
   getFieldDisplayName,
   DataSourceInstanceSettings,
   DataQueryRequest,
   LoadingState,
 } from '@grafana/data';
-import * as runtime from '@grafana/runtime'
+import { from } from 'rxjs';
+
+import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
 import { take, toArray } from 'rxjs/operators';
 
-const datasourceRequestMock = jest.fn().mockResolvedValue(createDefaultResponse());
+const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
-jest.spyOn(runtime, 'getBackendSrv').mockImplementation(
-  () => {
-    return { datasourceRequest: datasourceRequestMock } as any as runtime.BackendSrv;
-  }
-);
+jest.spyOn(runtime, 'getBackendSrv').mockImplementation(() => {
+  return { fetch: fetchMock } as any as runtime.BackendSrv;
+});
 
-jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(
-  () => {
-    return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
-  }
-);
+jest.spyOn(runtime, 'getTemplateSrv').mockImplementation(() => {
+  return { replace: jest.fn().mockImplementation((query) => query) } as any as runtime.TemplateSrv;
+});
 
 beforeEach(() => {
-  datasourceRequestMock.mockClear();
+  fetchMock.mockClear();
 });
 
 function createDefaultResponse() {
@@ -50,44 +48,46 @@ describe('Archiverappliance Datasource', () => {
   let ds: DataSource;
 
   beforeEach(() => {
-    const instanceSettings = ({
+    const instanceSettings = {
       url: 'url_header:',
       jsonData: {
-        useBackend: false
+        useBackend: false,
       },
-    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    } as unknown as DataSourceInstanceSettings<AADataSourceOptions>;
     ds = new DataSource(instanceSettings);
   });
 
   describe('testDatasource tests', () => {
     it('should return success message', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          status: 200,
-          message: 'Success',
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            status: 200,
+            message: 'Success',
+          },
+        ])
       );
 
       ds.testDatasource().then((result: any) => {
         expect(result.status).toBe('success');
         expect(result.message).toBe('Data source is working');
-        expect(result.title).toBe('Success');
         done();
       });
     });
 
     it('should return error message', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          status: 404,
-          data: 'Bad gateway',
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            status: 404,
+            data: 'Bad gateway',
+          },
+        ])
       );
 
       ds.testDatasource().then((result: any) => {
         expect(result.status).toBe('error');
         expect(result.message).toBe('Bad gateway');
-        expect(result.title).toBe('Failed');
         done();
       });
     });
@@ -95,13 +95,13 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Build URL tests', () => {
     it('should return an valid url', (done) => {
-      const target = ({
+      const target = {
         target: 'PV1',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
@@ -112,19 +112,15 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid multi urls', (done) => {
-      datasourceRequestMock.mockImplementation((requesty) =>
-        Promise.resolve({
-          data: ['PV1', 'PV2'],
-        })
-      );
-      const target = ({
+      fetchMock.mockImplementation((request) => from([{ data: ['PV1', 'PV2'] }]));
+      const target = {
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
@@ -138,20 +134,16 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid unique urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['PV1', 'PV2', 'PV1'],
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: ['PV1', 'PV2', 'PV1'] }]));
 
-      const target = ({
+      const target = {
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
@@ -165,20 +157,16 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an 100 urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: range(1000).map((num) => String(num)),
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: range(1000).map((num) => String(num)) }]));
 
-      const target = ({
+      const target = {
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(100);
@@ -187,20 +175,16 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an required number of urls', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: range(1000).map((num) => String(num)),
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: range(1000).map((num) => String(num)) }]));
 
-      const target = ({
+      const target = {
         target: 'PV*',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         regex: true,
         options: { maxNumPVs: 300 },
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(300);
@@ -209,13 +193,13 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an required bin interval url', (done) => {
-      const target = ({
+      const target = {
         target: 'PV1',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: { binInterval: 100 },
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url[0]).toBe(
@@ -226,13 +210,13 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an valid multi urls when regex OR target', (done) => {
-      const target = ({
+      const target = {
         target: 'PV(A|B):(1|2(3|4)):test',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
       ds.aaclient.buildUrls(target).then((url: any) => {
         expect(url).toHaveLength(6);
@@ -259,17 +243,18 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an Error when invalid data processing is required', (done) => {
-      const target = ({
+      const target = {
         target: 'PV1',
         operator: 'invalid',
         interval: '9',
         from: new Date('2010-01-01T00:00:00.000Z'),
         to: new Date('2010-01-01T00:00:30.000Z'),
         options: {},
-      } as unknown) as TargetQuery;
+      } as unknown as TargetQuery;
 
-      ds.aaclient.buildUrls(target)
-        .then(() => { })
+      ds.aaclient
+        .buildUrls(target)
+        .then(() => {})
         .catch(() => {
           done();
         });
@@ -280,12 +265,12 @@ describe('Archiverappliance Datasource', () => {
       const to = new Date('2010-01-01T00:00:30.000Z');
       const options = {};
       const targets = [
-        ({ target: 'PV1', operator: 'mean', interval: '9', from, to, options } as unknown) as TargetQuery,
-        ({ target: 'PV2', operator: 'raw', interval: '9', from, to, options } as unknown) as TargetQuery,
-        ({ target: 'PV3', operator: '', interval: '9', from, to, options } as unknown) as TargetQuery,
-        ({ target: 'PV4', interval: '9', from, to, options } as unknown) as TargetQuery,
-        ({ target: 'PV5', operator: 'max', interval: '', from, to, options } as unknown) as TargetQuery,
-        ({ target: 'PV6', operator: 'last', interval: '9', from, to, options } as unknown) as TargetQuery,
+        { target: 'PV1', operator: 'mean', interval: '9', from, to, options } as unknown as TargetQuery,
+        { target: 'PV2', operator: 'raw', interval: '9', from, to, options } as unknown as TargetQuery,
+        { target: 'PV3', operator: '', interval: '9', from, to, options } as unknown as TargetQuery,
+        { target: 'PV4', interval: '9', from, to, options } as unknown as TargetQuery,
+        { target: 'PV5', operator: 'max', interval: '', from, to, options } as unknown as TargetQuery,
+        { target: 'PV6', operator: 'last', interval: '9', from, to, options } as unknown as TargetQuery,
       ];
 
       const urlProcs = targets.map((target) => ds.aaclient.buildUrls(target));
@@ -317,11 +302,11 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Build query parameters tests', () => {
     it('should return valid interval time in integer', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
         maxDataPoints: 1800,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -331,11 +316,11 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return no interval data when interval time is less than 1 second', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -345,7 +330,7 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return filtered array when target is empty or undefined', (done) => {
-      const options = ({
+      const options = {
         targets: [
           { target: 'PV', refId: 'A' },
           { target: '', refId: 'B' },
@@ -353,7 +338,7 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -362,11 +347,11 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return 1 second range when from == to in seconds', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:00.100Z') },
         maxDataPoints: 1800,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -379,39 +364,41 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Query tests', () => {
     it('should return an empty array when no targets are set', (done) => {
-      ds.query(({ targets: [] } as unknown) as DataQueryRequest<AAQuery>).subscribe((result: any) => {
+      ds.query({ targets: [] } as unknown as DataQueryRequest<AAQuery>).subscribe((result: any) => {
         expect(result.data).toHaveLength(0);
         done();
       });
     });
 
     it('should return the server results when a target is set', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
         const seriesName = dataFrame.name;
         const displayName = getFieldDisplayName(dataFrame.fields[1], dataFrame);
 
@@ -427,19 +414,21 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return the server results once for each url', (done) => {
       let counter = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         counter += 1;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [{ millis: 1262304000123, val: counter }],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [{ millis: 1262304000123, val: counter }],
+              },
+            ],
+          },
+        ]);
       });
 
-      const query = ({
+      const query = {
         targets: [
           { target: 'PV1', refId: 'A' },
           { target: 'PV1', refId: 'B' },
@@ -448,18 +437,18 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
-        const dataFrame1: MutableDataFrame = result.data[0];
-        const dataFrame2: MutableDataFrame = result.data[1];
-        const dataFrame3: MutableDataFrame = result.data[2];
-        const dataFrame4: MutableDataFrame = result.data[3];
-        const valArray1 = dataFrame1.fields[1].values.toArray();
-        const valArray2 = dataFrame2.fields[1].values.toArray();
-        const valArray3 = dataFrame3.fields[1].values.toArray();
-        const valArray4 = dataFrame4.fields[1].values.toArray();
+        const dataFrame1: DataFrame = result.data[0];
+        const dataFrame2: DataFrame = result.data[1];
+        const dataFrame3: DataFrame = result.data[2];
+        const dataFrame4: DataFrame = result.data[3];
+        const valArray1 = dataFrame1.fields[1].values;
+        const valArray2 = dataFrame2.fields[1].values;
+        const valArray3 = dataFrame3.fields[1].values;
+        const valArray4 = dataFrame4.fields[1].values;
 
         expect(min([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(1);
         expect(max([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(3);
@@ -468,22 +457,24 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return array data when waveform is true', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000123, val: [1, 2, 3] },
-                { millis: 1262304001456, val: [4, 5, 6] },
-                { millis: 1262304002789, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000123, val: [1, 2, 3] },
+                  { millis: 1262304001456, val: [4, 5, 6] },
+                  { millis: 1262304002789, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [
           {
             target: 'header:PV1',
@@ -492,17 +483,17 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(5);
 
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray[0]).toBe(1262304000123);
 
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -512,10 +503,10 @@ describe('Archiverappliance Datasource', () => {
         expect(name2).toBe('header:PV1[1]');
         expect(name3).toBe('header:PV1[2]');
 
-        const valArray1 = dataFrame.fields[1].values.toArray();
-        const valArray2 = dataFrame.fields[2].values.toArray();
-        const valArray3 = dataFrame.fields[3].values.toArray();
-        const valArray4 = dataFrame.fields[4].values.toArray();
+        const valArray1 = dataFrame.fields[1].values;
+        const valArray2 = dataFrame.fields[2].values;
+        const valArray3 = dataFrame.fields[3].values;
+        const valArray4 = dataFrame.fields[4].values;
         expect(valArray1).toHaveLength(4);
         expect(valArray2).toHaveLength(4);
         expect(valArray3).toHaveLength(4);
@@ -540,42 +531,53 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return dt-space array data when waveform is true and arrayFormat is dt-space', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000000, val: [1, 2, 3] },
-                { millis: 1262304001000, val: [4, 5, 6] },
-                { millis: 1262304002000, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [
+                  { millis: 1262304000000, val: [1, 2, 3] },
+                  { millis: 1262304001000, val: [4, 5, 6] },
+                  { millis: 1262304002000, val: [7, 8, 9, 10] },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [
           {
             target: 'header:PV1',
             refId: 'A',
-            functions: [{ params: ["dt-space"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
+            functions: [
+              {
+                params: ['dt-space'],
+                def: {
+                  category: 'Options',
+                  name: 'arrayFormat',
+                  params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
+                },
+              },
+            ],
           },
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(2);
 
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray).toHaveLength(11);
         expect(timesArray[0]).toBe(1262304000000);
         expect(timesArray[1]).toBe(1262304000001);
@@ -585,7 +587,7 @@ describe('Archiverappliance Datasource', () => {
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(name1).toBe('header:PV1');
 
-        const valArray = dataFrame.fields[1].values.toArray();
+        const valArray = dataFrame.fields[1].values;
         expect(valArray).toHaveLength(11);
 
         expect(valArray[0]).toBe(1);
@@ -600,9 +602,7 @@ describe('Archiverappliance Datasource', () => {
 
     describe('index array in UTC', () => {
       beforeEach(() => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(
-          () => 0
-        );
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(() => 0);
       });
 
       afterAll(() => {
@@ -610,42 +610,53 @@ describe('Archiverappliance Datasource', () => {
       });
 
       it('should return index array data when waveform is true and arrayFormat is index in UTC', (done) => {
-        datasourceRequestMock.mockImplementation((request) =>
-          Promise.resolve({
-            data: [
-              {
-                meta: { name: 'header:PV1', PREC: '0', waveform: true },
-                data: [
-                  { millis: 1262304000123, val: [1, 2, 3] },
-                  { millis: 1262304001456, val: [4, 5, 6] },
-                  { millis: 1262304002789, val: [7, 8, 9, 10] },
-                ],
-              },
-            ],
-          })
+        fetchMock.mockImplementation((request) =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000123, val: [1, 2, 3] },
+                    { millis: 1262304001456, val: [4, 5, 6] },
+                    { millis: 1262304002789, val: [7, 8, 9, 10] },
+                  ],
+                },
+              ],
+            },
+          ])
         );
 
-        const query = ({
+        const query = {
           targets: [
             {
               target: 'header:PV1',
               refId: 'A',
-              functions: [{ params: ["index"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
+              functions: [
+                {
+                  params: ['index'],
+                  def: {
+                    category: 'Options',
+                    name: 'arrayFormat',
+                    params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
+                  },
+                },
+              ],
             },
           ],
           range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
           maxDataPoints: 1000,
-        } as unknown) as DataQueryRequest<AAQuery>;
+        } as unknown as DataQueryRequest<AAQuery>;
 
         ds.query(query).subscribe((result: any) => {
           expect(result.data).toHaveLength(1);
-          const dataFrame: MutableDataFrame = result.data[0];
+          const dataFrame: DataFrame = result.data[0];
           expect(dataFrame.fields).toHaveLength(4);
 
           const seriesName = dataFrame.name;
           expect(seriesName).toBe('header:PV1');
 
-          const indexArray = dataFrame.fields[0].values.toArray();
+          const indexArray = dataFrame.fields[0].values;
           expect(indexArray).toHaveLength(3);
           expect(indexArray[0]).toBe(0);
           expect(indexArray[1]).toBe(1);
@@ -655,14 +666,14 @@ describe('Archiverappliance Datasource', () => {
           const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
           const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
           const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
-          expect(name0).toBe("index");
+          expect(name0).toBe('index');
           expect(name1).toBe(new Date(1262304000123).toISOString());
           expect(name2).toBe(new Date(1262304001456).toISOString());
           expect(name3).toBe(new Date(1262304002789).toISOString());
 
-          const valArray1 = dataFrame.fields[1].values.toArray();
-          const valArray2 = dataFrame.fields[2].values.toArray();
-          const valArray3 = dataFrame.fields[3].values.toArray();
+          const valArray1 = dataFrame.fields[1].values;
+          const valArray2 = dataFrame.fields[2].values;
+          const valArray3 = dataFrame.fields[3].values;
 
           expect(valArray1).toHaveLength(3);
           expect(valArray2).toHaveLength(3);
@@ -679,9 +690,7 @@ describe('Archiverappliance Datasource', () => {
 
     describe('index array in JST', () => {
       beforeEach(() => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(
-          () => -540
-        );
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockImplementation(() => -540);
       });
 
       afterAll(() => {
@@ -689,8 +698,66 @@ describe('Archiverappliance Datasource', () => {
       });
 
       it('should return index array data when waveform is true and arrayFormat is index in JST', (done) => {
-        datasourceRequestMock.mockImplementation((request) =>
-          Promise.resolve({
+        fetchMock.mockImplementation((request) =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000123, val: [1, 2, 3] },
+                    { millis: 1262304001456, val: [4, 5, 6] },
+                    { millis: 1262304002789, val: [7, 8, 9, 10] },
+                  ],
+                },
+              ],
+            },
+          ])
+        );
+
+        const query = {
+          targets: [
+            {
+              target: 'header:PV1',
+              refId: 'A',
+              functions: [
+                {
+                  params: ['index'],
+                  def: {
+                    category: 'Options',
+                    name: 'arrayFormat',
+                    params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
+                  },
+                },
+              ],
+            },
+          ],
+          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
+          maxDataPoints: 1000,
+        } as unknown as DataQueryRequest<AAQuery>;
+
+        ds.query(query).subscribe((result: any) => {
+          const dataFrame: DataFrame = result.data[0];
+
+          const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
+          const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
+          const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
+          const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
+
+          expect(name0).toBe('index');
+          expect(name1).toBe('2010-01-01T00:00:00.123+09:00');
+          expect(name2).toBe('2010-01-01T00:00:01.456+09:00');
+          expect(name3).toBe('2010-01-01T00:00:02.789+09:00');
+
+          done();
+        });
+      });
+    });
+
+    it('should return timeseries array data when waveform is true and arrayFormat is timeseries', (done) => {
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
             data: [
               {
                 meta: { name: 'header:PV1', PREC: '0', waveform: true },
@@ -701,76 +768,31 @@ describe('Archiverappliance Datasource', () => {
                 ],
               },
             ],
-          })
-        );
-
-        const query = ({
-          targets: [
-            {
-              target: 'header:PV1',
-              refId: 'A',
-              functions: [{ params: ["index"], def: { category: "Options", name: "arrayFormat", params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }] } }],
-            },
-          ],
-          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
-          maxDataPoints: 1000,
-        } as unknown) as DataQueryRequest<AAQuery>;
-
-        ds.query(query).subscribe((result: any) => {
-          const dataFrame: MutableDataFrame = result.data[0];
-
-          const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
-          const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
-          const name2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
-          const name3 = getFieldDisplayName(dataFrame.fields[3], dataFrame);
-
-          expect(name0).toBe("index");
-          expect(name1).toBe("2010-01-01T00:00:00.123+09:00");
-          expect(name2).toBe("2010-01-01T00:00:01.456+09:00");
-          expect(name3).toBe("2010-01-01T00:00:02.789+09:00");
-
-          done();
-        });
-      });
-    });
-
-    it('should return timeseries array data when waveform is true and arrayFormat is timeseries', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [
-                { millis: 1262304000123, val: [1, 2, 3] },
-                { millis: 1262304001456, val: [4, 5, 6] },
-                { millis: 1262304002789, val: [7, 8, 9, 10] },
-              ],
-            },
-          ],
-        })
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [
           {
             target: 'header:PV1',
             refId: 'A',
-            options: { arrayFormat: "timeseries" },
+            options: { arrayFormat: 'timeseries' },
           },
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         expect(dataFrame.fields).toHaveLength(5);
 
         const seriesName = dataFrame.name;
         expect(seriesName).toBe('header:PV1');
 
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const timesArray = dataFrame.fields[0].values;
         expect(timesArray[0]).toBe(1262304000123);
 
         const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -780,10 +802,10 @@ describe('Archiverappliance Datasource', () => {
         expect(name2).toBe('header:PV1[1]');
         expect(name3).toBe('header:PV1[2]');
 
-        const valArray1 = dataFrame.fields[1].values.toArray();
-        const valArray2 = dataFrame.fields[2].values.toArray();
-        const valArray3 = dataFrame.fields[3].values.toArray();
-        const valArray4 = dataFrame.fields[4].values.toArray();
+        const valArray1 = dataFrame.fields[1].values;
+        const valArray2 = dataFrame.fields[2].values;
+        const valArray3 = dataFrame.fields[3].values;
+        const valArray4 = dataFrame.fields[4].values;
         expect(valArray1).toHaveLength(4);
         expect(valArray2).toHaveLength(4);
         expect(valArray3).toHaveLength(4);
@@ -799,23 +821,21 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const pv = request.url.slice(31, 34);
-        Promise.resolve({
-          status: 'success',
-          data: { data: ['value1', 'value2', 'value3'] },
-        });
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: pv, PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: pv, PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
-      const query = ({
+      const query = {
         targets: [
           { target: 'PV1', refId: 'A', alias: 'alias' },
           { target: 'PV2', refId: 'B', alias: '' },
@@ -824,11 +844,11 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(4);
-        const dataFrameArray: MutableDataFrame[] = result.data;
+        const dataFrameArray: DataFrame[] = result.data;
         const seriesName1 = dataFrameArray[0].name;
         const seriesName2 = dataFrameArray[1].name;
         const seriesName3 = dataFrameArray[2].name;
@@ -851,18 +871,20 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias pattern', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0' },
-              data: [],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [
           {
             target: 'header:PV1',
@@ -873,11 +895,11 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const seriesName = dataFrame.name;
         const alias = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         expect(seriesName).toBe('header:PV1');
@@ -887,18 +909,20 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the server results with alias pattern for array data', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'header:PV1', PREC: '0', waveform: true },
-              data: [{ millis: 1262304000123, val: [1, 2, 3] }],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'header:PV1', PREC: '0', waveform: true },
+                data: [{ millis: 1262304000123, val: [1, 2, 3] }],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [
           {
             target: 'header:PV1',
@@ -909,11 +933,11 @@ describe('Archiverappliance Datasource', () => {
         ],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const seriesName = dataFrame.name;
         const alias1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
         const alias2 = getFieldDisplayName(dataFrame.fields[2], dataFrame);
@@ -927,32 +951,34 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return extrapolation data when operator is set as raw', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', operator: 'raw' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-02T00:00:00.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -963,32 +989,34 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return extrapolation data when time range is narrow', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -999,34 +1027,36 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return normal data when the stream is enabled but rangeRaw is absent', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
         intervalMs: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1037,35 +1067,37 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return normal data when the stream is enabled but rangeRaw is not now', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: 1262304000123, val: 0 },
-                { millis: 1262304001456, val: 1 },
-                { millis: 1262304002789, val: 2 },
-              ],
-            },
-          ],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: 1262304000123, val: 0 },
+                  { millis: 1262304001456, val: 1 },
+                  { millis: 1262304002789, val: 2 },
+                ],
+              },
+            ],
+          },
+        ])
       );
 
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
         maxDataPoints: 1000,
         intervalMs: 1000,
         rangeRaw: { to: 'now-5m' },
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
-        const valArray = dataFrame.fields[1].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values;
 
         expect(valArray).toHaveLength(4);
         expect(timesArray).toHaveLength(4);
@@ -1076,35 +1108,37 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data when the stream is enabled', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms + 2001, val: 0 },
-                { millis: Math.floor((from_ms + 2000 + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms + 2001, val: 0 },
+                  { millis: Math.floor((from_ms + 2000 + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '', strmCap: '9' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
         intervalMs: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(3), toArray());
 
@@ -1113,8 +1147,8 @@ describe('Archiverappliance Datasource', () => {
         const result = results[2];
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([0, 1, 2, 0, 1, 2, 0, 1, 2]);
@@ -1129,35 +1163,37 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return stream data with strmInt while without strmCap', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms - 1, val: 0 },
-                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms - 1, val: 0 },
+                  { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '3000' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
         intervalMs: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(3), toArray());
 
@@ -1165,7 +1201,7 @@ describe('Archiverappliance Datasource', () => {
         expect(results).toHaveLength(3);
         const result = results[2];
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
+        const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
@@ -1181,35 +1217,37 @@ describe('Archiverappliance Datasource', () => {
     }, 10000);
 
     it('should return stream data with unit strmInt while without strmCap', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms - 1, val: 0 },
-                { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
-                { millis: to_ms, val: 2 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms - 1, val: 0 },
+                  { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '3s' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
         intervalMs: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(3), toArray());
 
@@ -1217,8 +1255,8 @@ describe('Archiverappliance Datasource', () => {
         expect(results).toHaveLength(3);
         const result = results[2];
         expect(result.data).toHaveLength(1);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([2, 1, 2]);
@@ -1233,36 +1271,38 @@ describe('Archiverappliance Datasource', () => {
     }, 10000);
 
     it('should ignore out of range data on stream', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
         const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
 
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [
-                { millis: from_ms + 2000, val: 0 },
-                { millis: from_ms + 2002, val: 1 },
-                { millis: to_ms, val: 2 },
-                { millis: to_ms + 1, val: 3 },
-              ],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms + 2000, val: 0 },
+                  { millis: from_ms + 2002, val: 1 },
+                  { millis: to_ms, val: 2 },
+                  { millis: to_ms + 1, val: 3 },
+                ],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '', strmCap: '12' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
         intervalMs: 1000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(3), toArray());
 
@@ -1271,8 +1311,8 @@ describe('Archiverappliance Datasource', () => {
         const result = results[2];
         expect(result.data).toHaveLength(1);
         expect(result.state).toEqual(LoadingState.Streaming);
-        const dataFrame: MutableDataFrame = result.data[0];
-        const timesArray = dataFrame.fields[0].values.toArray();
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
         expect(valArray).toEqual([0, 1, 2, 3, 1, 2, 1, 2]);
@@ -1284,31 +1324,33 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return raw url when strmInt is less than 1000', (done) => {
       let i = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         if (i === 0) {
           expect(request.url.includes('mean_10')).toBeTruthy();
         } else {
           expect(request.url.includes('mean')).toBeFalsy();
         }
         i++;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '999', strmCap: '12' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 100,
         intervalMs: 10000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(2), toArray());
 
@@ -1319,31 +1361,33 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return mean url when strmInt is greater than 1000', (done) => {
       let i = 0;
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         if (i === 0) {
           expect(request.url.includes('mean_10')).toBeTruthy();
         } else {
           expect(request.url.includes('mean_1')).toBeTruthy();
         }
         i++;
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '1500', strmCap: '12' }],
         range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 100,
         intervalMs: 10000,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(2), toArray());
 
@@ -1353,26 +1397,28 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return raw url when the range is narrow', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         expect(request.url.includes('mean')).toBeFalsy();
-        return Promise.resolve({
-          data: [
-            {
-              meta: { name: 'PV', PREC: '0' },
-              data: [],
-            },
-          ],
-        });
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [],
+              },
+            ],
+          },
+        ]);
       });
 
       const now = Date.now();
-      const query = ({
+      const query = {
         targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '1500', strmCap: '12' }],
         range: { from: new Date(now - 100 * 1000), to: new Date(now) },
         rangeRaw: { to: 'now' },
         maxDataPoints: 1000,
         intervalMs: 100,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const d = ds.query(query).pipe(take(2), toArray());
 
@@ -1384,11 +1430,7 @@ describe('Archiverappliance Datasource', () => {
 
   describe('PV name find query tests', () => {
     it('should return the pv name results when a target is null', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: ['metric_0', 'metric_1', 'metric_2'] }]));
 
       ds.pvNamesFindQuery(null, 100).then((result: any) => {
         expect(result).toHaveLength(0);
@@ -1397,11 +1439,7 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is undefined', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: ['metric_0', 'metric_1', 'metric_2'] }]));
 
       ds.pvNamesFindQuery(undefined, 100).then((result: any) => {
         expect(result).toHaveLength(0);
@@ -1410,11 +1448,7 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is empty', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: ['metric_0', 'metric_1', 'metric_2'] }]));
 
       ds.pvNamesFindQuery('', 100).then((result: any) => {
         expect(result).toHaveLength(0);
@@ -1423,11 +1457,7 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results when a target is set', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
-      );
+      fetchMock.mockImplementation((request) => from([{ data: ['metric_0', 'metric_1', 'metric_2'] }]));
 
       ds.pvNamesFindQuery('metric', 100).then((result: any) => {
         expect(result).toHaveLength(3);
@@ -1441,11 +1471,8 @@ describe('Archiverappliance Datasource', () => {
 
   describe('Metric find query tests', () => {
     it('should return the pv name results for metricFindQuery', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          _request: request,
-          data: ['metric_0', 'metric_1', 'metric_2'],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([{ _request: request, data: ['metric_0', 'metric_1', 'metric_2'] }])
       );
 
       ds.metricFindQuery('metric').then((result: any) => {
@@ -1458,11 +1485,8 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with regex OR', (done) => {
-      datasourceRequestMock.mockImplementation((request) =>
-        Promise.resolve({
-          _request: request,
-          data: [unescape(split(request.url, /regex=(.*)/)[1])],
-        })
+      fetchMock.mockImplementation((request) =>
+        from([{ _request: request, data: [unescape(split(request.url, /regex=(.*)/)[1])] }])
       );
 
       ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result: any) => {
@@ -1478,16 +1502,13 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with limit parameter', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
         const data = [`${pvname}${limit}`];
 
-        return Promise.resolve({
-          _request: request,
-          data,
-        });
+        return from([{ _request: request, data: data }]);
       });
 
       ds.metricFindQuery('PV?limit=5').then((result: any) => {
@@ -1498,16 +1519,13 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return the pv name results for metricFindQuery with invalid limit parameter', (done) => {
-      datasourceRequestMock.mockImplementation((request) => {
+      fetchMock.mockImplementation((request) => {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const limit = parseInt(String(params.get('limit')), 10);
         const pvname = params.get('regex');
         const data = [`${pvname}${limit}`];
 
-        return Promise.resolve({
-          _request: request,
-          data,
-        });
+        return from([{ _request: request, data: data }]);
       });
 
       ds.metricFindQuery('PV?limit=a').then((result: any) => {
@@ -1523,23 +1541,23 @@ describe('Default Operator test', () => {
   let ds: DataSource;
 
   beforeEach(() => {
-    const instanceSettings = ({
+    const instanceSettings = {
       url: 'url_header:',
       jsonData: {
         useBackend: false,
-        defaultOperator: "max"
+        defaultOperator: 'max',
       },
-    } as unknown) as DataSourceInstanceSettings<AADataSourceOptions>;
+    } as unknown as DataSourceInstanceSettings<AADataSourceOptions>;
     ds = new DataSource(instanceSettings);
   });
 
   describe('Default Operator test', () => {
     it('should return parameters with the default operator', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
         maxDataPoints: 1800,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -1549,11 +1567,11 @@ describe('Default Operator test', () => {
     });
 
     it('should return parameters with a specified operator', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A', operator: 'mean' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
         maxDataPoints: 1800,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -1563,11 +1581,11 @@ describe('Default Operator test', () => {
     });
 
     it('should return parameters with the default operator if the oeprator is a empty string', (done) => {
-      const options = ({
+      const options = {
         targets: [{ target: 'PV1', refId: 'A', operator: '' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:01.000Z') },
         maxDataPoints: 1800,
-      } as unknown) as DataQueryRequest<AAQuery>;
+      } as unknown as DataQueryRequest<AAQuery>;
 
       const targets = ds.buildQueryParameters(options);
 
@@ -1575,6 +1593,5 @@ describe('Default Operator test', () => {
       expect(targets[0].operator).toBe('max');
       done();
     });
-
-  })
+  });
 });

@@ -52,7 +52,7 @@ export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: 
       width={param.length}
     />
   );
-}
+};
 
 const getStyles = (theme: GrafanaTheme2) => ({
   segment: css({

@@ -1,20 +1,12 @@
 import _ from 'lodash';
 import { Observable, from } from 'rxjs';
 import { DataSourceWithBackend, getTemplateSrv } from '@grafana/runtime';
-import {
-  DataQueryResponse,
-  DataQueryRequest,
-  DataSourceInstanceSettings,
-} from '@grafana/data';
+import { DataQueryResponse, DataQueryRequest, DataSourceInstanceSettings } from '@grafana/data';
 
-import {
-  AAQuery,
-  AADataSourceOptions,
-  TargetQuery,
-} from './types';
+import { AAQuery, AADataSourceOptions, TargetQuery } from './types';
 import { getOptions } from './aafunc';
 import { doQuery } from './query';
-import { AAclient } from './aaclient'
+import { AAclient } from './aaclient';
 import { parseTargetPV } from 'pvnameParser';
 import { StreamQuery } from './streamQuery';
 
@@ -29,7 +21,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
 
   constructor(instanceSettings: DataSourceInstanceSettings<AADataSourceOptions>) {
     super(instanceSettings);
-    let url = "http://localhost:17668/retrieval";
+    let url = 'http://localhost:17668/retrieval';
     if (instanceSettings.url) {
       url = instanceSettings.url;
     }
@@ -37,9 +29,9 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     this.useBackend = instanceSettings.jsonData.useBackend;
     this.defaultOperator = instanceSettings.jsonData.defaultOperator;
     this.useLiveUpdate = instanceSettings.jsonData.useLiveUpdate;
-    this.liveUpdateURI = instanceSettings.jsonData.liveUpdateURI || "ws://localhost:8080/pvws/pv";
+    this.liveUpdateURI = instanceSettings.jsonData.liveUpdateURI || 'ws://localhost:8080/pvws/pv';
     this.aaclient = new AAclient(url, instanceSettings.withCredentials || false);
-    this.streamQuery = new StreamQuery(this.aaclient)
+    this.streamQuery = new StreamQuery(this.aaclient);
   }
 
   // Called from Grafana panels to get data
@@ -159,7 +151,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const targets: TargetQuery[] = _.map(query.targets, (target) => {
       const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
-      const operator = target.operator || this.defaultOperator || "mean";
+      const operator = target.operator || this.defaultOperator || 'mean';
 
       return {
         //target: templateSrv.replace(target.target, query.scopedVars, 'regex'),

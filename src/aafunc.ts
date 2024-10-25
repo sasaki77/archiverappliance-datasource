@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { FuncDef, FunctionDescriptor } from './types';
-import { MutableDataFrame } from '@grafana/data';
+import { DataFrame } from '@grafana/data';
 import { arrayFunctions, seriesFunctions } from './dataProcessor';
 
 const funcIndex: { [key: string]: FuncDef } = {};
@@ -38,7 +38,7 @@ function pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], requireC
 }
 
 function bindFunction(
-  metricFunctions: { [key: string]: (...args: any[]) => MutableDataFrame[] },
+  metricFunctions: { [key: string]: (...args: any[]) => DataFrame[] },
   funcDef: FunctionDescriptor
 ) {
   const func = metricFunctions[funcDef.def.name];
@@ -274,7 +274,6 @@ addFuncDef({
   defaultParams: ['true'],
 });
 
-
 export function getFuncDef(name: string) {
   return funcIndex[name];
 }
@@ -293,7 +292,7 @@ export function createFuncDescriptor(funcDef: FuncDef, params?: string[]): Funct
   return { def: funcDef, params: params };
 }
 
-export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames: MutableDataFrame[]) {
+export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames: DataFrame[]) {
   const applyFuncDefs = pickFuncDefsFromCategories(functionDefs, ['Transform', 'Filter Series', 'Sort']);
 
   const promises = _.reduce(
