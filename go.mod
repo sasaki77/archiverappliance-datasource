@@ -8,8 +8,8 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/grafana/grafana-plugin-sdk-go v0.257.0
 	github.com/magefile/mage v1.15.0
-	github.com/montanaflynn/stats v0.6.6
-	nhooyr.io/websocket v1.8.7
+	github.com/montanaflynn/stats v0.7.1
+	nhooyr.io/websocket v1.8.17
 )
 
 require (
@@ -29,7 +29,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.8 // indirect
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
