@@ -1,7 +1,7 @@
 name: nightly-builds.yml
 on:
   schedule:
-    - cron: "0 17 * * *"
+    - cron: '0 17 * * *'
   workflow_dispatch:
 jobs:
   nightly-builds:
@@ -10,19 +10,19 @@ jobs:
       zip-name: archiverappliance-datasource
     strategy:
       matrix:
-        node: [16]
+        node: [20]
         continue-on-error: [false]
     continue-on-error: ${{ matrix.continue-on-error }}
     steps:
       - name: Checkout Github repository
         uses: actions/checkout@v2
         with:
-          submodules: "recursive"
+          submodules: 'recursive'
       - name: Move nightly tag
         uses: EndBug/latest-tag@latest
         with:
           ref: nightly
-          description: "For nightly build"
+          description: 'For nightly build'
           force-branch: false
       - name: Setup NodeJS environment
         uses: actions/setup-node@v1
@@ -62,5 +62,5 @@ jobs:
       - name: Upload nightly builds
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "nightly"
+          tag_name: 'nightly'
           files: ${{ env.zip-name }}.zip
