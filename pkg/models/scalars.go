@@ -14,6 +14,11 @@ type Scalars struct {
 	Values []float64
 }
 
+func (v *Scalars) Append(val float64, t time.Time) {
+	v.Values = append(v.Values, val)
+	v.Times = append(v.Times, t)
+}
+
 func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*data.Field {
 	// ToFields doesn't use FormatOption in Scalars for now
 
