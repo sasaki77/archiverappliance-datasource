@@ -1,8 +1,0 @@
-[ 
-{ "meta": { "name": "PFROP:RING:STATUS_STR" , "waveform": false , "PREC": "0" },
-"data": [ 
-{ "millis": 1667779211808, "val": "Injection", "fields": { "DESC": "string input record"} },
-{ "millis": 1667842341792, "val": "Top-up" },
-{ "millis": 1667860584741, "val": "Injection" },
-{ "millis": 1667864794279, "val": "Top-up" }] }
- ]
