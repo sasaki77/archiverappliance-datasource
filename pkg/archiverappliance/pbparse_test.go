@@ -208,6 +208,12 @@ func TestParseArrayData(t *testing.T) {
 		lastData  outputArray
 	}{
 		{
+			name:      "WAVEFORM_BYTE_sampledata",
+			length:    2,
+			firstData: outputArray{0, time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC), 0},
+			lastData:  outputArray{1, time.Date(2012, 1, 2, 9, 43, 37, 0, time.UTC), 65536},
+		},
+		{
 			name:      "WAVEFORM_SHORT_sampledata",
 			length:    2,
 			firstData: outputArray{0, time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC), 1},

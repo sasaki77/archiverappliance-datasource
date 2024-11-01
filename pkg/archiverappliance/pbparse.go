@@ -37,14 +37,22 @@ func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
 	var dataType pb.PayloadType = -1
 	var year int32 = -1
 
-	scanner := bufio.NewScanner(in)
+	// Use ReadBytes insetead of bufioc.Scanner to handle large size array
+	reader := bufio.NewReader(in)
 
 	var values models.Values
-	for scanner.Scan() {
-		line := scanner.Bytes()
+	for {
+		lineWithDelim, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err != io.EOF {
+				log.DefaultLogger.Error("Failed to read pb message:", err)
+				return sD, errFailedToParsePBFormat
+			}
+			break
+		}
+		line := lineWithDelim[:len(lineWithDelim)-1]
 
-		// Chunks are separated by empty lines.
-		// length of a line is 0 if chunk is end because Scanner returns the line without newline
+		// length of a line is 0 if chunk is end
 		if len(line) <= 0 {
 			inChunk = false
 			dataType = -1
