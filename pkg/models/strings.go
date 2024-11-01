@@ -11,6 +11,11 @@ type Strings struct {
 	Values []string
 }
 
+func (v *Strings) Append(val string, t time.Time) {
+	v.Values = append(v.Values, val)
+	v.Times = append(v.Times, t)
+}
+
 func (v *Strings) ToFields(pvname string, name string, format FormatOption) []*data.Field {
 	// ToFields doesn't use FormatOption in Strings for now
 

@@ -3,8 +3,6 @@ package archiverappliance
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-	"math"
 	"testing"
 	"time"
 
@@ -50,7 +48,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				},
 				Interval: 0,
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.raw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 		{
 			name:   "URL for mean operator (interval is higher than 1 second)",
@@ -71,7 +69,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				},
 				Interval: 7,
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.raw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=mean_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
 		},
 		{
 			name:   "URL for max operator (interval is less than 1 second)",
@@ -92,7 +90,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				},
 				Interval: 0,
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.raw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T14%3A30%3A41.678-08%3A00",
 		},
 		{
 			name:   "URL for max operator (interval is higher than 1 second)",
@@ -113,7 +111,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				},
 				Interval: 7,
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=max_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.raw?donotchunk=&from=2021-01-27T14%3A25%3A41.678-08%3A00&pv=max_7%28MR1K1%3ABEND%3APIP%3A1%3APMON%29&to=2021-01-27T16%3A25%3A41.678-08%3A00",
 		},
 		{
 			name:   "URL for last operator (interval is less than 1 second)",
@@ -134,7 +132,7 @@ func TestBuildQueryUrl(t *testing.T) {
 				},
 				Interval: 0,
 			},
-			output: "http://localhost:3396/retrieval/data/getData.qw?donotchunk=&from=2021-01-27T16%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T16%3A25%3A41.678-08%3A00",
+			output: "http://localhost:3396/retrieval/data/getData.raw?donotchunk=&from=2021-01-27T16%3A25%3A41.678-08%3A00&pv=MR1K1%3ABEND%3APIP%3A1%3APMON&to=2021-01-27T16%3A25%3A41.678-08%3A00",
 		},
 	}
 	// fmt.Println(tests)
@@ -175,210 +173,6 @@ func TestBuildRegexUrl(t *testing.T) {
 			result := buildRegexUrl(testCase.regex, base_url, testCase.limit)
 			if testCase.output != result {
 				t.Errorf("got %v, want %v", result, testCase.output)
-			}
-		})
-	}
-}
-
-func TestArchiverSingleQueryParser(t *testing.T) {
-	ARCHIVER_FLOAT_PRECISION := 1e-18
-	type responseParams struct {
-		length   int
-		name     string
-		firstVal float64
-		lastVal  float64
-	}
-
-	var dataNames = []struct {
-		fileName string
-		output   responseParams
-	}{
-		{
-			fileName: "../test_data/good_query_response_01.JSON",
-			output:   responseParams{length: 612, name: "EM2K0:XGMD:GPI:10:PRESS_RBV", firstVal: 0.005249832756817341, lastVal: 0.005262143909931183},
-		},
-		{
-			fileName: "../test_data/good_query_response_waveform_01.JSON",
-			output:   responseParams{length: 61, name: "PLC:LFE:MOTION:FFO:02:FF:011:Info:InfoString_RBV", firstVal: 112, lastVal: 88},
-		},
-	}
-
-	type testData struct {
-		input  []byte
-		output responseParams
-	}
-
-	var tests []testData
-	for _, entry := range dataNames {
-		fileData, err := ioutil.ReadFile(entry.fileName)
-		if err != nil {
-			t.Fatalf("Failed to load test data: %v", err)
-		}
-		tests = append(tests, testData{input: fileData, output: entry.output})
-	}
-
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("Case: %d", idx)
-		t.Run(testName, func(t *testing.T) {
-			// result := testCase.output
-			result, err := archiverSingleQueryParser(testCase.input)
-			if err != nil {
-				t.Fatalf("An unexpected error has occurred")
-			}
-			if result.Name != testCase.output.name {
-				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.output.name, result.Name)
-			}
-
-			switch v := result.Values.(type) {
-			case *models.Scalars:
-				if len(v.Times) != len(v.Values) {
-					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
-				}
-				resultLength := len(v.Times)
-				if resultLength != testCase.output.length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
-				}
-				if math.Abs(v.Values[0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
-				}
-				if math.Abs(v.Values[resultLength-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
-				}
-			case *models.Arrays:
-				if len(v.Times) != len(v.Values) {
-					t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
-				}
-				resultLength := len(v.Times)
-				if resultLength != testCase.output.length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
-				}
-				if math.Abs(v.Values[0][0]-testCase.output.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
-				}
-				vlen := len(v.Values[resultLength-1])
-				if math.Abs(v.Values[resultLength-1][vlen-1]-testCase.output.lastVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
-				}
-			default:
-				t.Fatalf("Response Values are invalid")
-			}
-		})
-	}
-}
-
-func TestArchiverSingleQueryParserEmpty(t *testing.T) {
-	input := []byte("[]")
-	result, err := archiverSingleQueryParser(input)
-
-	if err == nil {
-		t.Fatalf("An unexpected error has occurred")
-	}
-
-	if result.Name != "" {
-		t.Fatalf("Names differ - Wanted: '' Got: %v", result.Name)
-	}
-
-	if result.PVname != "" {
-		t.Fatalf("Names differ - Wanted: '' Got: %v", result.PVname)
-	}
-
-	if result.Values != nil {
-		t.Fatalf("Values should be nil: '' Got: %v", result.Values)
-	}
-}
-
-func TestArchiverSingleQueryParserString(t *testing.T) {
-	type responseParams struct {
-		length   int
-		name     string
-		firstVal string
-		lastVal  string
-	}
-
-	var dataNames = []struct {
-		fileName string
-		output   responseParams
-	}{
-		{
-			fileName: "../test_data/string_value_response.JSON",
-			output:   responseParams{length: 4, name: "PFROP:RING:STATUS_STR", firstVal: "Injection", lastVal: "Top-up"},
-		},
-	}
-
-	type testData struct {
-		input  []byte
-		output responseParams
-	}
-
-	var tests []testData
-	for _, entry := range dataNames {
-		fileData, err := ioutil.ReadFile(entry.fileName)
-		if err != nil {
-			t.Fatalf("Failed to load test data: %v", err)
-		}
-		tests = append(tests, testData{input: fileData, output: entry.output})
-	}
-
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("Case: %d", idx)
-		t.Run(testName, func(t *testing.T) {
-			// result := testCase.output
-			result, err := archiverSingleQueryParser(testCase.input)
-			if err != nil {
-				t.Fatalf("An unexpected error has occurred")
-			}
-			if result.Name != testCase.output.name {
-				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.output.name, result.Name)
-			}
-
-			v := result.Values.(*models.Strings)
-			if len(v.Times) != len(v.Values) {
-				t.Fatalf("Lengths of Times and Values differ - Times: %v Values: %v", len(v.Times), len(v.Values))
-			}
-			resultLength := len(v.Times)
-			if resultLength != testCase.output.length {
-				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output.length, resultLength)
-			}
-			if v.Values[0] != testCase.output.firstVal {
-				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.output.firstVal, v.Values[0])
-			}
-			if v.Values[resultLength-1] != testCase.output.lastVal {
-				t.Fatalf("Last values differ - Wanted: %v Got: %v", testCase.output.lastVal, v.Values[resultLength-1])
-			}
-		})
-	}
-}
-
-func TestArchiverSingleQueryParserInvalidData(t *testing.T) {
-	var dataNames = []struct {
-		name     string
-		fileName string
-	}{
-		{
-			name:     "infinity data",
-			fileName: "../test_data/invalid_value_response.JSON",
-		},
-	}
-
-	type testData struct {
-		input []byte
-		name  string
-	}
-
-	var tests []testData
-	for _, entry := range dataNames {
-		fileData, err := ioutil.ReadFile(entry.fileName)
-		if err != nil {
-			t.Fatalf("Failed to load test data: %v", err)
-		}
-		tests = append(tests, testData{input: fileData, name: entry.name})
-	}
-
-	for _, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			_, err := archiverSingleQueryParser(testCase.input)
-			if err == nil {
-				t.Fatalf("An unexpected error has occurred")
 			}
 		})
 	}
