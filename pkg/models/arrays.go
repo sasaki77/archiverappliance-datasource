@@ -12,6 +12,11 @@ type Arrays struct {
 	Values [][]float64
 }
 
+func (v *Arrays) Append(val []float64, t time.Time) {
+	v.Values = append(v.Values, val)
+	v.Times = append(v.Times, t)
+}
+
 func (v *Arrays) ToFields(pvname string, name string, format FormatOption) []*data.Field {
 	if format == FormatOption(FORMAT_DTSPACE) {
 		fields := v.makeDtSpaceFields(pvname, name)

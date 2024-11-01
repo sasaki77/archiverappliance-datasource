@@ -92,6 +92,13 @@ func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
 			}
 			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
 			v.Append(value, t)
+		case *models.Arrays:
+			value, sec, nano, err := getArrayValue(escapedLine, dataType)
+			if err != nil {
+				return sD, errFailedToParsePBFormat
+			}
+			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			v.Append(value, t)
 		default:
 			return sD, errIllegalPayloadType
 		}
@@ -165,6 +172,31 @@ func getNumericValue(line []byte, dataType pb.PayloadType) (val float64, sec uin
 	return val, sec, nano, nil
 }
 
+func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uint32, nano uint32, err error) {
+	message := initPBMessage(dataType)
+
+	if message == nil {
+		return []float64{}, 0, 0, errIllegalPayloadType
+	}
+
+	if err := proto.Unmarshal(line, *message); err != nil {
+		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		return []float64{}, 0, 0, errIllegalPayloadType
+	}
+
+	sample, ok := (*message).(pb.ArraySamepleData)
+
+	if !ok {
+		return []float64{}, 0, 0, errIllegalPayloadType
+	}
+
+	val = sample.GetValAsFloat64()
+	sec = sample.GetSecondsintoyear()
+	nano = sample.GetNano()
+
+	return val, sec, nano, nil
+}
+
 func initPBMessage(dataType pb.PayloadType) *proto.Message {
 	var m proto.Message
 
@@ -181,6 +213,18 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 		m = &pb.ScalarFloat{}
 	case pb.PayloadType_SCALAR_DOUBLE:
 		m = &pb.ScalarDouble{}
+	case pb.PayloadType_WAVEFORM_BYTE:
+		m = &pb.VectorChar{}
+	case pb.PayloadType_WAVEFORM_SHORT:
+		m = &pb.VectorShort{}
+	case pb.PayloadType_WAVEFORM_INT:
+		m = &pb.VectorInt{}
+	case pb.PayloadType_WAVEFORM_ENUM:
+		m = &pb.VectorEnum{}
+	case pb.PayloadType_WAVEFORM_FLOAT:
+		m = &pb.VectorFloat{}
+	case pb.PayloadType_WAVEFORM_DOUBLE:
+		m = &pb.VectorDouble{}
 	default:
 		return nil
 	}
@@ -190,12 +234,12 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 
 func getMessageType(dataType pb.PayloadType) (MessageType, error) {
 	switch dataType {
-	case pb.PayloadType_SCALAR_SHORT,
-		pb.PayloadType_SCALAR_FLOAT,
+	case pb.PayloadType_SCALAR_BYTE,
+		pb.PayloadType_SCALAR_SHORT,
+		pb.PayloadType_SCALAR_INT,
 		pb.PayloadType_SCALAR_ENUM,
-		pb.PayloadType_SCALAR_BYTE,
-		pb.PayloadType_SCALAR_DOUBLE,
-		pb.PayloadType_SCALAR_INT:
+		pb.PayloadType_SCALAR_FLOAT,
+		pb.PayloadType_SCALAR_DOUBLE:
 		{
 			return MessageType_Numeric, nil
 		}
@@ -203,11 +247,11 @@ func getMessageType(dataType pb.PayloadType) (MessageType, error) {
 		{
 			return MessageType_String, nil
 		}
-	case pb.PayloadType_WAVEFORM_SHORT,
-		pb.PayloadType_WAVEFORM_FLOAT,
-		pb.PayloadType_WAVEFORM_ENUM,
-		pb.PayloadType_WAVEFORM_BYTE,
+	case pb.PayloadType_WAVEFORM_BYTE,
+		pb.PayloadType_WAVEFORM_SHORT,
 		pb.PayloadType_WAVEFORM_INT,
+		pb.PayloadType_WAVEFORM_ENUM,
+		pb.PayloadType_WAVEFORM_FLOAT,
 		pb.PayloadType_WAVEFORM_DOUBLE:
 		{
 			return MessageType_Array, nil
