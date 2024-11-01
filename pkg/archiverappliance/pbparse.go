@@ -107,6 +107,13 @@ func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
 			}
 			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
 			v.Append(value, t)
+		case *models.Strings:
+			value, sec, nano, err := getStringValue(escapedLine)
+			if err != nil {
+				return sD, errFailedToParsePBFormat
+			}
+			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			v.Append(value, t)
 		default:
 			return sD, errIllegalPayloadType
 		}
@@ -176,6 +183,21 @@ func getNumericValue(line []byte, dataType pb.PayloadType) (val float64, sec uin
 	val = sample.GetValAsFloat64()
 	sec = sample.GetSecondsintoyear()
 	nano = sample.GetNano()
+
+	return val, sec, nano, nil
+}
+
+func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error) {
+	message := &pb.ScalarString{}
+
+	if err := proto.Unmarshal(line, message); err != nil {
+		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		return "", 0, 0, errIllegalPayloadType
+	}
+
+	val = message.GetVal()
+	sec = message.GetSecondsintoyear()
+	nano = message.GetNano()
 
 	return val, sec, nano, nil
 }

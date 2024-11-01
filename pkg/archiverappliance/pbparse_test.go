@@ -191,7 +191,75 @@ func TestParseMultipleScalarData(t *testing.T) {
 
 		})
 	}
+}
 
+func TestParseSingleStringData(t *testing.T) {
+	var tests = []struct {
+		name     string
+		firstVal string
+		lastVal  string
+	}{
+		{
+			name:     "SCALAR_STRING_sampledata",
+			firstVal: "0",
+			lastVal:  "365",
+		},
+	}
+
+	length := 366
+	firstDate := time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC)
+	lastDate := time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC)
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			f, err := os.Open("../test_data/pb/" + testCase.name)
+
+			if err != nil {
+				t.Fatalf("Failed to load test data: %v", err)
+			}
+
+			defer f.Close()
+
+			sD, err := archiverPBSingleQueryParser(f)
+			if err != nil {
+				t.Fatalf("Failed to parse the data: %v", err)
+			}
+
+			if sD.Name != testCase.name {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
+			}
+
+			if sD.PVname != testCase.name {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
+			}
+
+			switch v := sD.Values.(type) {
+			case *models.Strings:
+				resultLength := len(v.Times)
+				if resultLength != length {
+					t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
+				}
+
+				if v.Values[0] != testCase.firstVal {
+					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
+				}
+
+				if !v.Times[0].Equal(firstDate) {
+					t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
+				}
+
+				lastIndex := resultLength - 1
+				if v.Values[lastIndex] != testCase.lastVal {
+					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
+				}
+
+				if !v.Times[lastIndex].Equal(lastDate) {
+					t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
+				}
+			}
+
+		})
+	}
 }
 
 func TestParseArrayData(t *testing.T) {
