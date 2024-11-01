@@ -142,6 +142,22 @@ func TestParseMultipleScalarData(t *testing.T) {
 			lastVal:   365,
 			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
 		},
+		{
+			name:      "onedaysdbrdouble",
+			length:    86400,
+			firstVal:  0.0,
+			firstDate: time.Date(2011, 2, 1, 0, 0, 0, 0, time.UTC),
+			lastVal:   86399.0,
+			lastDate:  time.Date(2011, 2, 1, 23, 59, 59, 0, time.UTC),
+		},
+		{
+			name:      "singleFileWithWellKnownPoints",
+			length:    366,
+			firstVal:  0.0,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastVal:   365,
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
 	}
 
 	for _, testCase := range tests {
