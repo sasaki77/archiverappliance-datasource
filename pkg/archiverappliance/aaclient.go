@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -52,10 +53,17 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
 	queryResponse, _ := archiverSingleQuery(queryUrl)
-	parsedResponse, err := archiverSingleQueryParser(queryResponse)
+
+	defer queryResponse.Close()
+
+	parsedResponse, err := archiverPBSingleQueryParser(queryResponse)
 	if err != nil {
 		err = fmt.Errorf("target = %q: %w", target, err)
 	}
+
+	parsedResponse.Name = target
+	parsedResponse.PVname = target
+
 	return parsedResponse, err
 }
 
@@ -63,7 +71,7 @@ func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) 
 	// Build the URL to query the archiver built from Grafana's configuration
 	// Set some constants
 	const TIME_FORMAT = "2006-01-02T15:04:05.000-07:00"
-	const JSON_DATA_URL = "data/getData.qw"
+	const RAW_DATA_URL = "data/getData.raw"
 
 	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
 	u, err := url.Parse(baseURL)
@@ -97,7 +105,7 @@ func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) 
 	var pathBuilder strings.Builder
 	pathBuilder.WriteString(u.Path)
 	pathBuilder.WriteString("/")
-	pathBuilder.WriteString(JSON_DATA_URL)
+	pathBuilder.WriteString(RAW_DATA_URL)
 	u.Path = pathBuilder.String()
 
 	// from should be same as to in last operator mode
@@ -120,72 +128,15 @@ func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) 
 	return u.String()
 }
 
-func archiverSingleQuery(queryUrl string) ([]byte, error) {
-	// Take the unformatted response from the http GET request and turn it into rows of timeseries data
-	var jsonAsBytes []byte
-
+func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
 	// Make the GET request
 	httpResponse, getErr := http.Get(queryUrl)
 	if getErr != nil {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
-		return jsonAsBytes, getErr
+		return nil, getErr
 	}
 
-	// Convert get request response to variable and close the file
-	jsonAsBytes, ioErr := ioutil.ReadAll(httpResponse.Body)
-	httpResponse.Body.Close()
-	if ioErr != nil {
-		log.DefaultLogger.Warn("Parsing of incoming data has failed", "Error", ioErr)
-		return jsonAsBytes, ioErr
-	}
-
-	return jsonAsBytes, nil
-}
-
-func archiverSingleQueryParser(jsonAsBytes []byte) (models.SingleData, error) {
-	// Convert received data to JSON
-	var sD models.SingleData
-	var response []models.ArchiverResponseModel
-
-	jsonErr := json.Unmarshal(jsonAsBytes, &response)
-	if jsonErr != nil {
-		log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", jsonErr)
-		err := fmt.Errorf("response parse error. the response might have invalid data, e.g. infinity or null: %w", jsonErr)
-		return sD, err
-	}
-
-	if len(response) < 1 {
-		log.DefaultLogger.Warn("Response is empty")
-		return sD, errEmptyResponse
-	}
-
-	var d models.DataResponse
-	if response[0].Meta.Waveform {
-		d = &models.ArrayResponseModel{}
-	} else {
-		d = &models.ScalarResponseModel{}
-	}
-
-	jsonErr = json.Unmarshal(response[0].Data, d)
-
-	// If unmarshal is failed, response data might be string data
-	if jsonErr != nil {
-		d = &models.StringResponseModel{}
-		err := json.Unmarshal(response[0].Data, d)
-
-		// If unmarshal is failed again, response data is not supported data type
-		if err != nil {
-			log.DefaultLogger.Warn("Conversion of incoming data to JSON has failed", "Error", err)
-			return sD, err
-		}
-	}
-
-	// Obtain PV name
-	sD.Name = response[0].Meta.Name
-	sD.PVname = response[0].Meta.Name
-	sD.Values, _ = d.ToSingleDataValues()
-
-	return sD, nil
+	return httpResponse.Body, nil
 }
 
 func buildRegexUrl(regex string, baseURL string, limit int) string {
