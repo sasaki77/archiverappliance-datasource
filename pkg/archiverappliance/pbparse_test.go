@@ -9,106 +9,7 @@ import (
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
-func TestParseSingleScalarData(t *testing.T) {
-	ARCHIVER_FLOAT_PRECISION := 1e-18
-	var tests = []struct {
-		name     string
-		firstVal float64
-		lastVal  float64
-	}{
-		{
-			name:     "SCALAR_BYTE_sampledata",
-			firstVal: 0.0,
-			lastVal:  110,
-		},
-		{
-			name:     "SCALAR_SHORT_sampledata",
-			firstVal: -32768,
-			lastVal:  -32403,
-		},
-		{
-			name:     "SCALAR_INT_sampledata",
-			firstVal: -2147483648,
-			lastVal:  -2147483283,
-		},
-		{
-			name:     "SCALAR_ENUM_sampledata",
-			firstVal: 0,
-			lastVal:  365,
-		},
-		{
-			name:     "SCALAR_FLOAT_sampledata",
-			firstVal: 0.0,
-			lastVal:  365,
-		},
-		{
-			name:     "SCALAR_DOUBLE_sampledata",
-			firstVal: 0.0,
-			lastVal:  365,
-		},
-	}
-
-	length := 366
-	firstDate := time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC)
-	lastDate := time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC)
-
-	for _, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			f, err := os.Open("../test_data/pb/" + testCase.name)
-
-			if err != nil {
-				t.Fatalf("Failed to load test data: %v", err)
-			}
-
-			defer f.Close()
-
-			sD, err := archiverPBSingleQueryParser(f)
-			if err != nil {
-				t.Fatalf("Failed to parse the data: %v", err)
-			}
-
-			if sD.Name != testCase.name {
-				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
-			}
-
-			if sD.PVname != testCase.name {
-				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
-			}
-
-			v, ok := sD.Values.(*models.Scalars)
-
-			if !ok {
-				t.Fatalf("Single data type is diffrent")
-			}
-
-			resultLength := len(v.Times)
-			if resultLength != length {
-				t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
-			}
-
-			if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
-			}
-
-			if !v.Times[0].Equal(firstDate) {
-				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
-			}
-
-			lastIndex := resultLength - 1
-			if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
-				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
-			}
-
-			if !v.Times[lastIndex].Equal(lastDate) {
-				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
-			}
-
-		})
-	}
-
-}
-
-func TestParseMultipleScalarData(t *testing.T) {
+func TestParseScalarData(t *testing.T) {
 	ARCHIVER_FLOAT_PRECISION := 1e-18
 	var tests = []struct {
 		name      string
@@ -118,6 +19,54 @@ func TestParseMultipleScalarData(t *testing.T) {
 		lastVal   float64
 		lastDate  time.Time
 	}{
+		{
+			name:      "SCALAR_BYTE_sampledata",
+			length:    366,
+			firstVal:  0.0,
+			lastVal:   110,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_SHORT_sampledata",
+			length:    366,
+			firstVal:  -32768,
+			lastVal:   -32403,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_INT_sampledata",
+			length:    366,
+			firstVal:  -2147483648,
+			lastVal:   -2147483283,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_ENUM_sampledata",
+			length:    366,
+			firstVal:  0,
+			lastVal:   365,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_FLOAT_sampledata",
+			length:    366,
+			firstVal:  0.0,
+			lastVal:   365,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_DOUBLE_sampledata",
+			length:    366,
+			firstVal:  0.0,
+			lastVal:   365,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
 		{
 			name:      "multipleChunksInMultipleYears",
 			length:    730000,
