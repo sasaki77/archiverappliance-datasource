@@ -75,29 +75,32 @@ func TestParseSingleScalarData(t *testing.T) {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
 			}
 
-			switch v := sD.Values.(type) {
-			case *models.Scalars:
-				resultLength := len(v.Times)
-				if resultLength != length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
-				}
+			v, ok := sD.Values.(*models.Scalars)
 
-				if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
-				}
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
+			}
 
-				if !v.Times[0].Equal(firstDate) {
-					t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
-				}
+			resultLength := len(v.Times)
+			if resultLength != length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
+			}
 
-				lastIndex := resultLength - 1
-				if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
-				}
+			if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
+			}
 
-				if !v.Times[lastIndex].Equal(lastDate) {
-					t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
-				}
+			if !v.Times[0].Equal(firstDate) {
+				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
+			}
+
+			lastIndex := resultLength - 1
+			if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
+			}
+
+			if !v.Times[lastIndex].Equal(lastDate) {
+				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
 			}
 
 		})
@@ -164,31 +167,33 @@ func TestParseMultipleScalarData(t *testing.T) {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
 			}
 
-			switch v := sD.Values.(type) {
-			case *models.Scalars:
-				resultLength := len(v.Times)
-				if resultLength != testCase.length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
-				}
+			v, ok := sD.Values.(*models.Scalars)
 
-				if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
-				}
-
-				if !v.Times[0].Equal(testCase.firstDate) {
-					t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], testCase.firstDate)
-				}
-
-				lastIndex := resultLength - 1
-				if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
-				}
-
-				if !v.Times[lastIndex].Equal(testCase.lastDate) {
-					t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], testCase.lastDate)
-				}
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
 			}
 
+			resultLength := len(v.Times)
+			if resultLength != testCase.length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
+			}
+
+			if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
+			}
+
+			if !v.Times[0].Equal(testCase.firstDate) {
+				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], testCase.firstDate)
+			}
+
+			lastIndex := resultLength - 1
+			if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
+			}
+
+			if !v.Times[lastIndex].Equal(testCase.lastDate) {
+				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], testCase.lastDate)
+			}
 		})
 	}
 }
@@ -233,31 +238,33 @@ func TestParseSingleStringData(t *testing.T) {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
 			}
 
-			switch v := sD.Values.(type) {
-			case *models.Strings:
-				resultLength := len(v.Times)
-				if resultLength != length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
-				}
+			v, ok := sD.Values.(*models.Strings)
 
-				if v.Values[0] != testCase.firstVal {
-					t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
-				}
-
-				if !v.Times[0].Equal(firstDate) {
-					t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
-				}
-
-				lastIndex := resultLength - 1
-				if v.Values[lastIndex] != testCase.lastVal {
-					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
-				}
-
-				if !v.Times[lastIndex].Equal(lastDate) {
-					t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
-				}
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
 			}
 
+			resultLength := len(v.Times)
+			if resultLength != length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", length, resultLength)
+			}
+
+			if v.Values[0] != testCase.firstVal {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
+			}
+
+			if !v.Times[0].Equal(firstDate) {
+				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], firstDate)
+			}
+
+			lastIndex := resultLength - 1
+			if v.Values[lastIndex] != testCase.lastVal {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
+			}
+
+			if !v.Times[lastIndex].Equal(lastDate) {
+				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], lastDate)
+			}
 		})
 	}
 }
@@ -336,40 +343,42 @@ func TestParseArrayData(t *testing.T) {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
 			}
 
-			switch v := sD.Values.(type) {
-			case *models.Arrays:
-				resultLength := len(v.Times)
-				if resultLength != testCase.length {
-					t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
-				}
+			v, ok := sD.Values.(*models.Arrays)
 
-				if len(v.Values[0]) != testCase.firstData.length {
-					t.Fatalf("First Data Lengths differ - Wanted: %v Got: %v", testCase.firstData.length, len(v.Values[0]))
-				}
-
-				if testCase.firstData.length > 0 && math.Abs(v.Values[0][0]-testCase.firstData.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.firstData.firstVal, v.Values[0][0])
-				}
-
-				if !v.Times[0].Equal(testCase.firstData.date) {
-					t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], testCase.firstData.date)
-				}
-
-				lastIndex := resultLength - 1
-
-				if len(v.Values[lastIndex]) != testCase.lastData.length {
-					t.Fatalf("Last Data Lengths differ - Wanted: %v Got: %v", testCase.lastData.length, len(v.Values[lastIndex]))
-				}
-
-				if math.Abs(v.Values[lastIndex][0]-testCase.lastData.firstVal) > ARCHIVER_FLOAT_PRECISION {
-					t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastData.firstVal, v.Values[lastIndex][0])
-				}
-
-				if !v.Times[lastIndex].Equal(testCase.lastData.date) {
-					t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], testCase.lastData.date)
-				}
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
 			}
 
+			resultLength := len(v.Times)
+			if resultLength != testCase.length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
+			}
+
+			if len(v.Values[0]) != testCase.firstData.length {
+				t.Fatalf("First Data Lengths differ - Wanted: %v Got: %v", testCase.firstData.length, len(v.Values[0]))
+			}
+
+			if testCase.firstData.length > 0 && math.Abs(v.Values[0][0]-testCase.firstData.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.firstData.firstVal, v.Values[0][0])
+			}
+
+			if !v.Times[0].Equal(testCase.firstData.date) {
+				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], testCase.firstData.date)
+			}
+
+			lastIndex := resultLength - 1
+
+			if len(v.Values[lastIndex]) != testCase.lastData.length {
+				t.Fatalf("Last Data Lengths differ - Wanted: %v Got: %v", testCase.lastData.length, len(v.Values[lastIndex]))
+			}
+
+			if math.Abs(v.Values[lastIndex][0]-testCase.lastData.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastData.firstVal, v.Values[lastIndex][0])
+			}
+
+			if !v.Times[lastIndex].Equal(testCase.lastData.date) {
+				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], testCase.lastData.date)
+			}
 		})
 	}
 
