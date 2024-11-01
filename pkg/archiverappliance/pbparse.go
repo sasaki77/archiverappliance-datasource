@@ -112,7 +112,7 @@ func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
 }
 
 func unescapeLine(line []byte) []byte {
-	var buf []byte
+	buf := make([]byte, 0, len(line))
 	escaped := false
 
 	for _, b := range line {
