@@ -45,6 +45,7 @@ type ArchiverQueryModel struct {
 	TimeRange       backend.TimeRange `json:"-"`
 	Interval        int               `json:"-"`
 	BackendQuery    bool              `json:"-"`
+	FieldName       string            `json:"-"`
 	LiveOnly        bool              `json:"-"`
 	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
@@ -228,6 +229,7 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	model.DisableAutoRaw, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEAUTORAW), false)
 	model.DisableExtrapol, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_DISABLEEXTRAPOL), false)
 	model.LiveOnly, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_LIVEONLY), false)
+	model.FieldName, _ = model.LoadStrOption(FunctionOption(FUNC_OPTION_FIELDNAME), "VAL")
 	model.IgnoreEmptyErr, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_IGNOREEMPTYERR), false)
 
 	f, _ := model.LoadStrOption(FUNC_OPTION_ARRAY_FORMAT, string(FORMAT_TIMESERIES))

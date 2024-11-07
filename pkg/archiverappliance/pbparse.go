@@ -30,7 +30,7 @@ const (
 	MessageType_Array   MessageType = 2
 )
 
-func archiverPBSingleQueryParser(in io.Reader, initialCapacity int) (models.SingleData, error) {
+func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCapacity int) (models.SingleData, error) {
 	var sD models.SingleData
 	info := &pb.PayloadInfo{}
 	inChunk := false
@@ -71,7 +71,7 @@ func archiverPBSingleQueryParser(in io.Reader, initialCapacity int) (models.Sing
 			dataType = *info.Type
 			year = *info.Year
 
-			messageType, _ := getMessageType(dataType)
+			messageType, _ := getMessageType(dataType, field)
 
 			// values is already initialized
 			if values != nil {
@@ -94,7 +94,16 @@ func archiverPBSingleQueryParser(in io.Reader, initialCapacity int) (models.Sing
 		// Handle chunk data
 		switch v := values.(type) {
 		case *models.Scalars:
-			value, sec, nano, err := getNumericValue(escapedLine, dataType)
+			var value float64
+			var sec, nano uint32
+			var err error
+
+			if field == models.FIELD_NAME_VAL {
+				value, sec, nano, err = getNumericValue(escapedLine, dataType)
+			} else {
+				value, sec, nano, err = getMetaValue(escapedLine, dataType, field)
+			}
+
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
@@ -160,6 +169,39 @@ func unescapeLine(line []byte) []byte {
 	}
 
 	return buf
+}
+
+func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) (val float64, sec uint32, nano uint32, err error) {
+	message := initPBMessage(dataType)
+
+	if message == nil {
+		return 0, 0, 0, errIllegalPayloadType
+	}
+
+	if err := proto.Unmarshal(line, *message); err != nil {
+		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		return 0, 0, 0, errIllegalPayloadType
+	}
+
+	sample, ok := (*message).(pb.MetaFieldData)
+
+	if !ok {
+		return 0, 0, 0, errIllegalPayloadType
+	}
+
+	switch field {
+	case models.FIELD_NAME_SEVR:
+		val = float64(sample.GetSeverity())
+	case models.FIELD_NAME_STAT:
+		val = float64(sample.GetStatus())
+	default:
+		return 0, 0, 0, errIllegalFieldName
+	}
+
+	sec = sample.GetSecondsintoyear()
+	nano = sample.GetNano()
+
+	return val, sec, nano, nil
 }
 
 func getNumericValue(line []byte, dataType pb.PayloadType) (val float64, sec uint32, nano uint32, err error) {
@@ -231,6 +273,8 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 	var m proto.Message
 
 	switch dataType {
+	case pb.PayloadType_SCALAR_STRING:
+		m = &pb.ScalarString{}
 	case pb.PayloadType_SCALAR_BYTE:
 		m = &pb.ScalarByte{}
 	case pb.PayloadType_SCALAR_SHORT:
@@ -243,6 +287,8 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 		m = &pb.ScalarFloat{}
 	case pb.PayloadType_SCALAR_DOUBLE:
 		m = &pb.ScalarDouble{}
+	case pb.PayloadType_WAVEFORM_STRING:
+		m = &pb.VectorString{}
 	case pb.PayloadType_WAVEFORM_BYTE:
 		m = &pb.VectorChar{}
 	case pb.PayloadType_WAVEFORM_SHORT:
@@ -262,7 +308,11 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 	return &m
 }
 
-func getMessageType(dataType pb.PayloadType) (MessageType, error) {
+func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageType, error) {
+	if field != models.FIELD_NAME_VAL {
+		return MessageType_Numeric, nil
+	}
+
 	switch dataType {
 	case pb.PayloadType_SCALAR_BYTE,
 		pb.PayloadType_SCALAR_SHORT,

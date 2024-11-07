@@ -226,6 +226,13 @@ addFuncDef({
 // Options
 
 addFuncDef({
+  name: 'fieldName',
+  category: 'Options',
+  params: [{ name: 'name', type: 'string', options: ['VAL', 'SEVR', 'STAT'] }],
+  defaultParams: ['SEVR'],
+});
+
+addFuncDef({
   name: 'maxNumPVs',
   category: 'Options',
   params: [{ name: 'number', type: 'int' }],

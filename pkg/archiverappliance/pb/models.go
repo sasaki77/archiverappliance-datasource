@@ -1,9 +1,19 @@
 package pb
 
+// Meta Field Data
+type MetaFieldData interface {
+	GetSecondsintoyear() uint32
+	GetNano() uint32
+	GetSeverity() int32
+	GetStatus() int32
+}
+
 // Scalar Data
 type NumericSamepleData interface {
 	GetSecondsintoyear() uint32
 	GetNano() uint32
+	GetSeverity() int32
+	GetStatus() int32
 	GetValAsFloat64() float64
 }
 
