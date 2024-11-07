@@ -9,6 +9,9 @@ import { AAclient } from 'aaclient';
 import { responseParse } from 'responseParse';
 import { applyFunctions, setAlias } from 'query';
 
+export const STREAM_FROM_MARGIN_MS = 2000;
+export const STREAM_TO_MARGIN_MS = 500;
+
 export class StreamQuery {
   aaclient: AAclient;
   timerIDs: { [key: string]: any };
@@ -21,26 +24,16 @@ export class StreamQuery {
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
     return new Observable<DataQueryResponse>((subscriber) => {
       // Create new targets to disable auto Extrapolation
-      const t = _.map(targets, (target) => {
-        return {
-          ...target,
-          options: {
-            ...target.options,
-            disableExtrapol: 'true',
-          },
-        };
-      });
-
       const id = uuidv4();
       const cirFrames: { [key: string]: CircularDataFrame<any> } = {};
 
-      doQueryStream(this.aaclient, t, cirFrames).then((data) => {
+      doQueryStream(this.aaclient, targets, cirFrames).then((data) => {
         subscriber.next(data);
 
         const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt)) || intervalMs;
 
         // Create new targets to update interval time
-        const new_t = _.map(t, (target) => {
+        const new_t = _.map(targets, (target) => {
           const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
           const int = interval >= 1000 ? t_int : '';
 
@@ -99,7 +92,7 @@ function doQueryStream(
     // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
     const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
       return Promise.all(responsePromises)
-        .then((responses) => responseParse(responses, targets[i]))
+        .then((responses) => responseParse(responses, targets[i], true))
         .then((dataFrames) => mergeResToCirFrames(dataFrames, frames, targets[i]))
         .then((dataFrames) => setAlias(dataFrames, targets[i]))
         .then((dataFrames) => applyFunctions(dataFrames, targets[i]));
@@ -122,8 +115,8 @@ function updateTargetDate(targets: TargetQuery[]) {
   return _.map(targets, (target) => {
     // AA should probably not able to return latest data near the "now".
     // So, the time range is set from 2 secs ago from last update date and to 500 msecs ago from "now".
-    target.from = new Date(target.to.getTime() - 2000);
-    target.to = new Date(Date.now() - 500);
+    target.from = new Date(target.to.getTime() - STREAM_FROM_MARGIN_MS);
+    target.to = new Date(Date.now() - STREAM_TO_MARGIN_MS);
     return target;
   });
 }

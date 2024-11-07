@@ -1162,6 +1162,47 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
+    it('should return stream data with extrapolation for raw operator', (done) => {
+      fetchMock.mockImplementation((request) => {
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [{ millis: 0, val: 0 }],
+              },
+            ],
+          },
+        ]);
+      });
+
+      const now = Date.now();
+      const query = {
+        targets: [{ target: 'PV', refId: 'A', operator: 'raw', stream: true, strmInt: '', strmCap: '9' }],
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(take(3), toArray());
+
+      d.subscribe((results: any[]) => {
+        expect(results).toHaveLength(3);
+        const result = results[2];
+        expect(result.data).toHaveLength(1);
+        expect(result.state).toEqual(LoadingState.Streaming);
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values;
+        const valArray = dataFrame.fields[1].values.toArray();
+
+        expect(valArray).toEqual([0, 0, 0, 0]);
+        expect(timesArray).toHaveLength(4);
+
+        done();
+      });
+    });
+
     it('should return stream data with strmInt while without strmCap', (done) => {
       fetchMock.mockImplementation((request) => {
         const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);

@@ -4,7 +4,9 @@ import { createDataFrame, DataFrame, FieldType, addRow } from '@grafana/data';
 import { getToScalarFuncs } from './aafunc';
 import { TargetQuery, AADataQueryData, AADataQueryResponse, isNumberArray } from './types';
 
-export function responseParse(responses: AADataQueryResponse[], target: TargetQuery) {
+import { STREAM_FROM_MARGIN_MS } from './streamQuery';
+
+export function responseParse(responses: AADataQueryResponse[], target: TargetQuery, stream: boolean = false) {
   const dataFramesArray = _.map(responses, (response) => {
     const dataFrames = _.map(response.data, (targetRes) => {
       if (targetRes.meta.waveform) {
@@ -41,8 +43,20 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
     for (const field of dataframe.fields) {
       newRow.push(field.values[lastindex]);
     }
-    // first field is time field
-    newRow[0] = to_msec;
+
+    // first field of newRow is time field
+    if (stream) {
+      // for stream query
+      // extrapolation is performed if there is no sample point in the margin
+      const stream_last_time = to_msec - STREAM_FROM_MARGIN_MS - 1;
+      if (newRow[0] > stream_last_time) {
+        return dataframe;
+      }
+      newRow[0] = stream_last_time;
+    } else {
+      // for normal query
+      newRow[0] = to_msec;
+    }
 
     addRow(dataframe, newRow);
 
