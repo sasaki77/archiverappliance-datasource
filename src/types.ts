@@ -44,6 +44,7 @@ export interface TargetQuery {
   from: Date;
   to: Date;
   interval: string;
+  maxDataPoints: number;
 }
 
 export interface AADataQueryData {

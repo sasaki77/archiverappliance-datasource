@@ -48,11 +48,11 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
     if (stream) {
       // for stream query
       // extrapolation is performed if there is no sample point in the margin
-      const stream_last_time = to_msec - STREAM_FROM_MARGIN_MS - 1;
-      if (newRow[0] > stream_last_time) {
+      const streamLastTime = to_msec - STREAM_FROM_MARGIN_MS - 1;
+      if (newRow[0] > streamLastTime) {
         return dataframe;
       }
-      newRow[0] = stream_last_time;
+      newRow[0] = streamLastTime;
     } else {
       // for normal query
       newRow[0] = to_msec;
