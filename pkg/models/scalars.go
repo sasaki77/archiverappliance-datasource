@@ -14,6 +14,13 @@ type Scalars struct {
 	Values []float64
 }
 
+func NewSclars(length int) *Scalars {
+	return &Scalars{
+		Times:  make([]time.Time, 0, length),
+		Values: make([]float64, 0, length),
+	}
+}
+
 func (v *Scalars) Append(val float64, t time.Time) {
 	v.Values = append(v.Values, val)
 	v.Times = append(v.Times, t)

@@ -119,7 +119,7 @@ func TestParseScalarData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f)
+			sD, err := archiverPBSingleQueryParser(f, 1000)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -190,7 +190,7 @@ func TestParseSingleStringData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f)
+			sD, err := archiverPBSingleQueryParser(f, 1000)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -295,7 +295,7 @@ func TestParseArrayData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f)
+			sD, err := archiverPBSingleQueryParser(f, 1000)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -347,4 +347,16 @@ func TestParseArrayData(t *testing.T) {
 		})
 	}
 
+}
+
+func BenchmarkPBparseOneday(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		f, err := os.Open("../test_data/pb/onedaysdbrdouble")
+		if err != nil {
+			return
+		}
+		defer f.Close()
+		_, _ = archiverPBSingleQueryParser(f, 1000)
+	}
 }

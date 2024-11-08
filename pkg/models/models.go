@@ -40,10 +40,11 @@ type ArchiverQueryModel struct {
 	*/
 
 	// Parameters from DataQuery
-	RefId     string  `json:"refId"`
-	Hide      *bool   `json:"hide"`
-	Key       *string `json:"string"`
-	QueryType *string `json:"queryType"`
+	RefId         string  `json:"refId"`
+	Hide          *bool   `json:"hide"`
+	Key           *string `json:"string"`
+	QueryType     *string `json:"queryType"`
+	MaxDataPoints int     `json:"maxDataPoints"`
 
 	// Not from JSON
 	TimeRange       backend.TimeRange `json:"-"`

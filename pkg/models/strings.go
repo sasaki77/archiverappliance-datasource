@@ -11,6 +11,13 @@ type Strings struct {
 	Values []string
 }
 
+func NewStrings(length int) *Strings {
+	return &Strings{
+		Times:  make([]time.Time, 0, length),
+		Values: make([]string, 0, length),
+	}
+}
+
 func (v *Strings) Append(val string, t time.Time) {
 	v.Values = append(v.Values, val)
 	v.Times = append(v.Times, t)
