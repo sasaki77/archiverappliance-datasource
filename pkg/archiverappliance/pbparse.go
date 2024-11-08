@@ -30,7 +30,7 @@ const (
 	MessageType_Array   MessageType = 2
 )
 
-func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
+func archiverPBSingleQueryParser(in io.Reader, initialCapacity int) (models.SingleData, error) {
 	var sD models.SingleData
 	info := &pb.PayloadInfo{}
 	inChunk := false
@@ -81,11 +81,11 @@ func archiverPBSingleQueryParser(in io.Reader) (models.SingleData, error) {
 			// Inialialize values
 			switch messageType {
 			case MessageType_Numeric:
-				values = &models.Scalars{}
+				values = models.NewSclars(initialCapacity)
 			case MessageType_String:
-				values = &models.Strings{}
+				values = models.NewStrings(initialCapacity)
 			case MessageType_Array:
-				values = &models.Arrays{}
+				values = models.NewArrays(initialCapacity)
 			}
 
 			continue

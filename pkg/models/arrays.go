@@ -12,6 +12,13 @@ type Arrays struct {
 	Values [][]float64
 }
 
+func NewArrays(length int) *Arrays {
+	return &Arrays{
+		Times:  make([]time.Time, 0, length),
+		Values: make([][]float64, 0, length),
+	}
+}
+
 func (v *Arrays) Append(val []float64, t time.Time) {
 	v.Values = append(v.Values, val)
 	v.Times = append(v.Times, t)
