@@ -162,7 +162,8 @@ function mergeResToCirFrames(
 
 function createStreamFrame(target: TargetQuery, dataFrame: DataFrame) {
   const c = parseInt(target.strmCap, 10);
-  const cap = dataFrame.refId ? c || dataFrame.length : dataFrame.length;
+  const defaultCap = target.maxDataPoints > dataFrame.length ? target.maxDataPoints : dataFrame.length;
+  const cap = dataFrame.refId ? c || defaultCap : defaultCap;
 
   const new_frame = new CircularDataFrame({
     append: 'tail',

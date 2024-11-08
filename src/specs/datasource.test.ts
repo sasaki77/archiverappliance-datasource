@@ -1246,6 +1246,60 @@ describe('Archiverappliance Datasource', () => {
         const timesArray = dataFrame.fields[0].values.toArray();
         const valArray = dataFrame.fields[1].values.toArray();
 
+        expect(valArray).toEqual([0, 1, 2, 1, 2, 1, 2]);
+        expect(timesArray).toHaveLength(7);
+
+        const diff = timesArray[6] - timesArray[4];
+        expect(diff).toBeGreaterThanOrEqual(2000);
+        expect(diff).toBeLessThan(4000);
+
+        done();
+      });
+    }, 10000);
+
+    it('should return stream data with strmInt while without strmCap but maxDatapoints is less than initial datapoints', (done) => {
+      fetchMock.mockImplementation((request) => {
+        const from_str = unescape(split(request.url, /from=(.*Z)&to/)[1]);
+        const to_str = unescape(split(request.url, /to=(.*Z)/)[1]);
+
+        const from_ms = new Date(from_str).getTime();
+        const to_ms = new Date(to_str).getTime();
+
+        return from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0' },
+                data: [
+                  { millis: from_ms - 1, val: 0 },
+                  { millis: Math.floor((from_ms + to_ms) / 2), val: 1 },
+                  { millis: to_ms, val: 2 },
+                ],
+              },
+            ],
+          },
+        ]);
+      });
+
+      const now = Date.now();
+      const query = {
+        targets: [{ target: 'PV', refId: 'A', stream: true, strmInt: '3000' }],
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1,
+        intervalMs: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const d = ds.query(query).pipe(take(3), toArray());
+
+      d.subscribe((results: any[]) => {
+        expect(results).toHaveLength(3);
+        const result = results[2];
+        expect(result.data).toHaveLength(1);
+        const dataFrame: DataFrame = result.data[0];
+        const timesArray = dataFrame.fields[0].values.toArray();
+        const valArray = dataFrame.fields[1].values.toArray();
+
         expect(valArray).toEqual([2, 1, 2]);
         expect(timesArray).toHaveLength(3);
 
@@ -1300,10 +1354,10 @@ describe('Archiverappliance Datasource', () => {
         const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
-        expect(valArray).toEqual([2, 1, 2]);
-        expect(timesArray).toHaveLength(3);
+        expect(valArray).toEqual([0, 1, 2, 1, 2, 1, 2]);
+        expect(timesArray).toHaveLength(7);
 
-        const diff = timesArray[2] - timesArray[0];
+        const diff = timesArray[6] - timesArray[4];
         expect(diff).toBeGreaterThanOrEqual(2000);
         expect(diff).toBeLessThan(4000);
 

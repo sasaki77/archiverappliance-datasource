@@ -171,6 +171,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
         from,
         to,
         interval,
+        maxDataPoints,
       };
     });
 
