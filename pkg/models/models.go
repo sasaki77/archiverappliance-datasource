@@ -10,11 +10,6 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
-type QueryMgr struct {
-	Res    backend.DataResponse
-	QRefID string
-}
-
 type ArchiverQueryModel struct {
 	// It's not apparent to me where these two originate from but they do appear to be necessary
 	Format    string      `json:"format"`
@@ -241,17 +236,17 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	return model, nil
 }
 
-func LoadSettings(ctx backend.PluginContext) (DatasourceSettings, error) {
+func LoadSettings(settings backend.DataSourceInstanceSettings) (DatasourceSettings, error) {
 	model := DatasourceSettings{}
 
-	err := json.Unmarshal(ctx.DataSourceInstanceSettings.JSONData, &model)
+	err := json.Unmarshal(settings.JSONData, &model)
 
 	if err != nil {
 		return model, fmt.Errorf("error reading datasource instance settings: %s", err.Error())
 	}
 
-	model.URL = ctx.DataSourceInstanceSettings.URL
-	model.UID = ctx.DataSourceInstanceSettings.UID
+	model.URL = settings.URL
+	model.UID = settings.UID
 
 	return model, nil
 }

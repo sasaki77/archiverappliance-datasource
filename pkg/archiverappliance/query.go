@@ -18,47 +18,18 @@ import (
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
-func Query(ctx context.Context, c client, req *backend.QueryDataRequest, config models.DatasourceSettings) *backend.QueryDataResponse {
-	// create response struct
-	response := backend.NewQueryDataResponse()
-	responsePipe := make(chan models.QueryMgr)
+func Query(ctx context.Context, q backend.DataQuery, c Client, config models.DatasourceSettings) backend.DataResponse {
+	res := backend.DataResponse{}
+	qm, err := models.ReadQueryModel(q, config)
 
-	for _, q := range req.Queries {
-		go func(ctx context.Context, q backend.DataQuery, client client, config models.DatasourceSettings, responsePipe chan models.QueryMgr) {
-			res := backend.DataResponse{}
-			qm, err := models.ReadQueryModel(q, config)
-
-			if err != nil {
-				res.Error = err
-			} else {
-				res = singleQuery(ctx, qm, c, config)
-			}
-
-			responsePipe <- models.QueryMgr{
-				Res:    res,
-				QRefID: q.RefID,
-			}
-		}(ctx, q, c, config, responsePipe)
+	if err != nil {
+		res.Error = err
+		return res
 	}
 
-	timeoutDurationSeconds := 30 // units are seconds
-	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
-	timeoutPipe := time.After(timeoutDuration)
+	res = singleQuery(ctx, qm, c, config)
 
-queryCollector:
-	for range req.Queries {
-		// save the response in a hashmap
-		// based on with RefID as identifier
-		select {
-		case rtn := <-responsePipe:
-			response.Responses[rtn.QRefID] = rtn.Res
-		case <-timeoutPipe:
-			log.DefaultLogger.Warn("Timeout limit for QueryData has been reached")
-			break queryCollector
-		}
-	}
-
-	return response
+	return res
 }
 
 type queryResponse struct {
@@ -66,7 +37,7 @@ type queryResponse struct {
 	err      error
 }
 
-func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client client, config models.DatasourceSettings) backend.DataResponse {
+func singleQuery(_ context.Context, qm models.ArchiverQueryModel, client Client, config models.DatasourceSettings) backend.DataResponse {
 
 	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
@@ -188,7 +159,7 @@ func dataExtrapol(singleResponse *models.SingleData, qm models.ArchiverQueryMode
 	return newResponse
 }
 
-func makeTargetPVList(client client, target string, regex bool, maxNum int) []string {
+func makeTargetPVList(client Client, target string, regex bool, maxNum int) []string {
 	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
 	// That's because AA sever doesn't support full regular expression.
 	isolatedPvList := isolateBasicQuery(target)
@@ -221,7 +192,7 @@ func makeTargetPVList(client client, target string, regex bool, maxNum int) []st
 	return uniqPVList
 }
 
-func createLiveChannel(pvname string, frame *data.Frame, uuid string) (*data.FrameMeta, error) {
+func createLiveChannel(pvname string, _ *data.Frame, uuid string) (*data.FrameMeta, error) {
 	//pvname := frame.Fields[1].Config.DisplayName
 	valid := aalive.IsPVnameValid(pvname)
 

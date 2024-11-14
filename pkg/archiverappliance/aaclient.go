@@ -15,7 +15,7 @@ import (
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
-type client interface {
+type Client interface {
 	FetchRegexTargetPVs(regex string, limit int) ([]string, error)
 	ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error)
 }

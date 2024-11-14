@@ -62,17 +62,15 @@ func TestQuery(t *testing.T) {
 	var tests = []struct {
 		name   string
 		ctx    context.Context
-		req    *backend.QueryDataRequest
+		req    backend.DataQuery
 		config models.DatasourceSettings
 		out    *backend.QueryDataResponse
 	}{
 		{
 			name: "test",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "$2:$1",
                     		"aliasPattern": "(.*):(.*)",
                     		"constant":6.5,
@@ -106,14 +104,12 @@ func TestQuery(t *testing.T) {
 								}
 							]
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -169,11 +165,9 @@ func TestQuery(t *testing.T) {
 		},
 		{
 			name: "test without sour function",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "$2:$1",
                     		"aliasPattern": "(.*):(.*)",
                     		"constant":6.5,
@@ -184,14 +178,12 @@ func TestQuery(t *testing.T) {
                     		"regex":true ,
                     		"target":".*(1|2)"
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -247,11 +239,9 @@ func TestQuery(t *testing.T) {
 		},
 		{
 			name: "test string response",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
                     		"constant":6.5,
@@ -262,14 +252,12 @@ func TestQuery(t *testing.T) {
                     		"regex":false ,
                     		"target":"string"
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -305,11 +293,12 @@ func TestQuery(t *testing.T) {
 			},
 		},
 	}
+
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req, testCase.config)
-			for i, frame := range result.Responses["A"].Frames {
+			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			for i, frame := range result.Frames {
 				out := testCase.out.Responses["A"].Frames[i]
 
 				if frame.Name != out.Name {
@@ -351,16 +340,14 @@ func TestLiveQuery(t *testing.T) {
 	var tests = []struct {
 		name   string
 		ctx    context.Context
-		req    *backend.QueryDataRequest
+		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
 		{
 			name: "Live Test",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
                     		"constant":6.5,
@@ -373,14 +360,12 @@ func TestLiveQuery(t *testing.T) {
 							"functions":[
 							]
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -391,11 +376,12 @@ func TestLiveQuery(t *testing.T) {
 			},
 		},
 	}
+
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req, testCase.config)
-			for _, frame := range result.Responses["A"].Frames {
+			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			for _, frame := range result.Frames {
 				path := "ds/uuid/PV=NAME1"
 				if frame.Meta.Channel != path {
 					t.Errorf("got %v, want %v", frame.Meta.Channel, path)
@@ -410,16 +396,14 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 	var tests = []struct {
 		name   string
 		ctx    context.Context
-		req    *backend.QueryDataRequest
+		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
 		{
 			name: "invalid response",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
                     		"constant":6.5,
@@ -432,14 +416,12 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 							"functions":[
 							]
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -448,19 +430,19 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 			},
 		},
 	}
+
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req, testCase.config)
-			res := result.Responses["A"]
-			if res.Error == nil {
+			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			if result.Error == nil {
 				t.Errorf("An unexpected error has occurred")
 			}
-			if len(res.Frames) != 1 {
+			if len(result.Frames) != 1 {
 				t.Errorf("resposne length sould be 1")
 			}
-			if res.Frames[0].Name != "PV:NAME1" {
-				t.Errorf("got %v, want PV:NAME1", res.Frames[0].Name)
+			if result.Frames[0].Name != "PV:NAME1" {
+				t.Errorf("got %v, want PV:NAME1", result.Frames[0].Name)
 			}
 		})
 	}
@@ -471,16 +453,14 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 	var tests = []struct {
 		name   string
 		ctx    context.Context
-		req    *backend.QueryDataRequest
+		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
 		{
 			name: "invalid response",
-			req: &backend.QueryDataRequest{
-				Queries: []backend.DataQuery{
-					{
-						Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
-						JSON: json.RawMessage(`{
+			req: backend.DataQuery{
+				Interval: testhelper.MultiReturnHelperParseDuration(time.ParseDuration("0s")),
+				JSON: json.RawMessage(`{
                     		"alias": "",
                     		"aliasPattern": "",
                     		"constant":6.5,
@@ -513,14 +493,12 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 								}
 							]
 						}`),
-						MaxDataPoints: 1000,
-						QueryType:     "",
-						RefID:         "A",
-						TimeRange: backend.TimeRange{
-							From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
-							To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
-						},
-					},
+				MaxDataPoints: 1000,
+				QueryType:     "",
+				RefID:         "A",
+				TimeRange: backend.TimeRange{
+					From: testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-27T14:30:41.678-08:00")),
+					To:   testhelper.MultiReturnHelperParse(time.Parse(TIME_FORMAT, "2021-01-28T14:30:41.678-08:00")),
 				},
 			},
 			config: models.DatasourceSettings{
@@ -529,19 +507,19 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 			},
 		},
 	}
+
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, f, testCase.req, testCase.config)
-			res := result.Responses["A"]
-			if !errors.Is(res.Error, errEmptyResponse) {
+			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			if !errors.Is(result.Error, errEmptyResponse) {
 				t.Errorf("An unexpected error has occurred")
 			}
-			if len(res.Frames) != 1 {
+			if len(result.Frames) != 1 {
 				t.Errorf("resposne length sould be 1")
 			}
-			if res.Frames[0].Name != "PV:NAME1" {
-				t.Errorf("got %v, want PV:NAME1", res.Frames[0].Name)
+			if result.Frames[0].Name != "PV:NAME1" {
+				t.Errorf("got %v, want PV:NAME1", result.Frames[0].Name)
 			}
 		})
 	}
