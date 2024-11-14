@@ -21,6 +21,7 @@ const (
 type FunctionOption string
 
 const (
+	FUNC_OPTION_FIELDNAME       = FunctionOption("fieldName")
 	FUNC_OPTION_LIVEONLY        = FunctionOption("liveOnly")
 	FUNC_OPTION_MAXNUMPVS       = FunctionOption("maxNumPVs")
 	FUNC_OPTION_DISABLEAUTORAW  = FunctionOption("disableAutoRaw")
@@ -28,6 +29,14 @@ const (
 	FUNC_OPTION_BININTERVAL     = FunctionOption("binInterval")
 	FUNC_OPTION_ARRAY_FORMAT    = FunctionOption("arrayFormat")
 	FUNC_OPTION_IGNOREEMPTYERR  = FunctionOption("ignoreEmptyErr")
+)
+
+type FieldName string
+
+const (
+	FIELD_NAME_VAL  FieldName = "VAL"
+	FIELD_NAME_SEVR FieldName = "SEVR"
+	FIELD_NAME_STAT FieldName = "STAT"
 )
 
 func (qm ArchiverQueryModel) PickFuncsByCategories(categories []FunctionCategory) []FunctionDescriptorQueryModel {
