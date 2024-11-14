@@ -903,7 +903,7 @@ func TestExtractParamInt(t *testing.T) {
 				t.Errorf("Error received")
 			}
 			if result != testCase.output {
-				t.Errorf(fmt.Sprintf("Got %v, wanted %v", result, testCase.output))
+				t.Errorf("Got %v, wanted %v", result, testCase.output)
 			}
 		})
 	}
@@ -944,7 +944,7 @@ func TestExtractParamFloat64(t *testing.T) {
 				t.Errorf("Error received")
 			}
 			if result != testCase.output {
-				t.Errorf(fmt.Sprintf("Got %v, wanted %v", result, testCase.output))
+				t.Errorf("Got %v, wanted %v", result, testCase.output)
 			}
 		})
 	}
@@ -990,7 +990,7 @@ func TestExtractParamString(t *testing.T) {
 				t.Errorf("Error received")
 			}
 			if result != testCase.output {
-				t.Errorf(fmt.Sprintf("Got %v, wanted %v", result, testCase.output))
+				t.Errorf("Got %v, wanted %v", result, testCase.output)
 			}
 		})
 	}
