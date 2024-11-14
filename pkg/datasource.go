@@ -54,7 +54,7 @@ func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.Chec
 }
 
 func (td *ArchiverDatasource) SubscribeStream(_ context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
-	log.DefaultLogger.Info("SubscribeStream called", "request", req)
+	log.DefaultLogger.Debug("SubscribeStream called", "request", req)
 
 	status := backend.SubscribeStreamStatusPermissionDenied
 	// Allow subscribing only on expected path.
@@ -67,7 +67,7 @@ func (td *ArchiverDatasource) SubscribeStream(_ context.Context, req *backend.Su
 }
 
 func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender) error {
-	log.DefaultLogger.Info("RunStream called", "request", req)
+	log.DefaultLogger.Debug("RunStream called", "request", req)
 
 	pvname := aalive.ConvURL2PV(req.Path)
 
@@ -86,20 +86,20 @@ func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStr
 	select {
 	case <-ctx.Done():
 		wsDataProxy.Done <- true
-		log.DefaultLogger.Info("Closing Channel", "channel", req.Path)
+		log.DefaultLogger.Debug("Closing Channel", "channel", req.Path)
 		return nil
 	case rError := <-wsDataProxy.ReadingErrors:
 		log.DefaultLogger.Error("Error reading the websocket", "error", err)
 		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", "Error reading the websocket", err), sender)
 
-		log.DefaultLogger.Info("Closing Channel due an error to read websocket", "channel", req.Path)
+		log.DefaultLogger.Debug("Closing Channel due an error to read websocket", "channel", req.Path)
 
 		return rError
 	}
 }
 
 func (td *ArchiverDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
-	log.DefaultLogger.Info("PublishStream called", "request", req)
+	log.DefaultLogger.Debug("PublishStream called", "request", req)
 
 	// Do not allow publishing at all.
 	return &backend.PublishStreamResponse{

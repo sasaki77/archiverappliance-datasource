@@ -36,7 +36,7 @@ func NewWsDataProxy(ctx context.Context, sender *backend.StreamSender, pvname st
 		return nil, fmt.Errorf("encode URL Error: %s", err.Error())
 	}
 	wsDataProxy.wsUrl = url
-	log.DefaultLogger.Info(url)
+	log.DefaultLogger.Debug(url)
 
 	c, err := wsDataProxy.wsConnect(ctx)
 	if err != nil {
@@ -51,7 +51,7 @@ func (wsdp *wsDataProxy) ReadMessage() {
 	defer func() {
 		wsdp.wsConn.Close(websocket.StatusNormalClosure, "")
 		close(wsdp.msgRead)
-		log.DefaultLogger.Info("Read Message routine", "detail", "closing websocket connection and msgRead channel")
+		log.DefaultLogger.Debug("Read Message routine", "detail", "closing websocket connection and msgRead channel")
 	}()
 
 	ctx := context.Background()
@@ -77,7 +77,7 @@ func (wsdp *wsDataProxy) ReadMessage() {
 	}()
 
 	<-wsdp.Done
-	log.DefaultLogger.Info("ReadMessage closed")
+	log.DefaultLogger.Debug("ReadMessage closed")
 }
 
 type messageModel struct {
@@ -100,7 +100,7 @@ func (wsdp *wsDataProxy) ProxyMessage() {
 		message, ok := <-wsdp.msgRead
 		// if channel was closed
 		if !ok {
-			log.DefaultLogger.Info("ProxyMessage closed")
+			log.DefaultLogger.Debug("ProxyMessage closed")
 			return
 		}
 
@@ -124,13 +124,13 @@ func (wsdp *wsDataProxy) encodeURL(uri string) (string, error) {
 }
 
 func (wsdp *wsDataProxy) wsConnect(ctx context.Context) (*websocket.Conn, error) {
-	log.DefaultLogger.Info("Ws Connect", "connecting to", wsdp.wsUrl)
+	log.DefaultLogger.Debug("Ws Connect", "connecting to", wsdp.wsUrl)
 
 	c, _, err := websocket.Dial(ctx, wsdp.wsUrl, nil)
 	if err != nil {
 		return nil, err
 	}
-	log.DefaultLogger.Info("Ws Connect", "connected to", wsdp.wsUrl)
+	log.DefaultLogger.Debug("Ws Connect", "connected to", wsdp.wsUrl)
 
 	return c, nil
 }
