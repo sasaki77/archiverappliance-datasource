@@ -31,7 +31,7 @@ func (v *Arrays) ToFields(pvname string, name string, format FormatOption) []*da
 	}
 
 	if format == FormatOption(FORMAT_INDEX) {
-		fields := v.makeIndexFields(pvname, name)
+		fields := v.makeIndexFields(pvname)
 		return fields
 	}
 
@@ -76,7 +76,7 @@ func (v *Arrays) makeDtSpaceFields(pvname string, name string) []*data.Field {
 	return fields
 }
 
-func (v *Arrays) makeIndexFields(pvname string, name string) []*data.Field {
+func (v *Arrays) makeIndexFields(pvname string) []*data.Field {
 	var fields []*data.Field
 
 	//add the index field
