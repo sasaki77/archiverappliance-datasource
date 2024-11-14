@@ -7,6 +7,7 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
+	"github.com/grafana/grafana-plugin-sdk-go/experimental/concurrent"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/aalive"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/archiverappliance"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
@@ -15,16 +16,12 @@ import (
 type ArchiverDatasource struct {
 	// Structure defined by grafana-plugin-sdk-go. Implements QueryData and CheckHealth.
 	//im instancemgmt.InstanceManager
+	config models.DatasourceSettings
+	client archiverappliance.Client
 }
 
-func newArchiverDataSource(_ context.Context, _ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	return &ArchiverDatasource{}, nil
-}
-
-func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
-	// Structure defined by grafana-plugin-sdk-go. QueryData should unpack the req argument into individual queries.
-
-	config, err := models.LoadSettings(req.PluginContext)
+func newArchiverDataSource(ctx context.Context, settings backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
+	config, err := models.LoadSettings(settings)
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +31,15 @@ func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryD
 		return nil, err
 	}
 
-	response := archiverappliance.Query(ctx, client, req, config)
+	return &ArchiverDatasource{config: config, client: client}, nil
+}
 
-	return response, nil
+func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
+	return concurrent.QueryData(ctx, req, td.handleSingleQueryData, 10)
+}
+
+func (td *ArchiverDatasource) handleSingleQueryData(ctx context.Context, q concurrent.Query) (res backend.DataResponse) {
+	return archiverappliance.Query(ctx, q.DataQuery, td.client, td.config)
 }
 
 func (td *ArchiverDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
@@ -67,12 +70,8 @@ func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStr
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
 	pvname := aalive.ConvURL2PV(req.Path)
-	config, err := models.LoadSettings(req.PluginContext)
-	if err != nil {
-		return err
-	}
 
-	wsDataProxy, err := aalive.NewWsDataProxy(ctx, sender, pvname, config.LiveUpdateURI)
+	wsDataProxy, err := aalive.NewWsDataProxy(ctx, sender, pvname, td.config.LiveUpdateURI)
 	if err != nil {
 		errCtx := "Starting WebSocket"
 		log.DefaultLogger.Error(errCtx, "error", err.Error())
@@ -90,8 +89,8 @@ func (td *ArchiverDatasource) RunStream(ctx context.Context, req *backend.RunStr
 		log.DefaultLogger.Info("Closing Channel", "channel", req.Path)
 		return nil
 	case rError := <-wsDataProxy.ReadingErrors:
-		log.DefaultLogger.Error("Error reading the websocket", "error", err.Error())
-		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", "Error reading the websocket", err.Error()), sender)
+		log.DefaultLogger.Error("Error reading the websocket", "error", err)
+		aalive.SendErrorFrame(fmt.Sprintf("%s: %s", "Error reading the websocket", err), sender)
 
 		log.DefaultLogger.Info("Closing Channel due an error to read websocket", "channel", req.Path)
 
