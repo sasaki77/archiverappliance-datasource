@@ -93,7 +93,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   };
 
   const onKeydownEnter = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter') {
       event.currentTarget.blur();
     }
   };
