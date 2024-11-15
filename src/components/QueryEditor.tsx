@@ -2,10 +2,10 @@ import defaults from 'lodash/defaults';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { components } from 'react-select';
-import { InlineFormLabel, InlineSwitch, Select, AsyncSelect, InputActionMeta } from '@grafana/ui';
+import { InlineSwitch, Select, AsyncSelect, InputActionMeta, Input, InlineField } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
 import { GrafanaTheme2 } from '@grafana/data';
-import { useStyles2 } from '@grafana/ui';
+import { InlineFieldRow, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
@@ -18,7 +18,7 @@ type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
 const colorYellow = '#d69e2e';
 const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
-const Input = (props: any) => <components.Input {...props} isHidden={false} />;
+const SelectInput = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
   const defaultPvOption = query.target ? toOption(query.target) : undefined;
@@ -141,10 +141,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
 
   return (
     <>
-      <div className="gf-form-inline">
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+      <InlineFieldRow label="PV select">
+        <InlineField
+          labelWidth={12}
+          label={'PV'}
+          interactive={true}
           tooltip={
             <p>
               Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation
@@ -152,10 +153,8 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          PV
-        </InlineFormLabel>
-        <div className="max-width-30 gf-form-spacing">
           <AsyncSelect
+            width={56}
             value={pvOptionValue}
             inputValue={pvInputValue}
             defaultOptions
@@ -163,7 +162,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             isClearable
             createOptionPosition="first"
             components={{
-              Input,
+              Input: SelectInput,
             }}
             onInputChange={onPVInputChange}
             loadOptions={debounceLoadSuggestions}
@@ -172,28 +171,26 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             key={JSON.stringify(pvOptionValue)}
             className={query.regex ? customStyles.regexinput : ''}
           />
-        </div>
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+        </InlineField>
+        <InlineField
+          labelWidth={12}
+          label={'Regex'}
+          interactive={true}
           tooltip={<p>Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.</p>}
         >
-          Regex
-        </InlineFormLabel>
-        <InlineSwitch value={query.regex} onChange={onRegexChange} className="gf-form-spacing" />
+          <InlineSwitch value={query.regex} onChange={onRegexChange} />
+        </InlineField>
         {useLiveUpdate === true && (
-          <div className="gf-form-inline">
-            <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Enable/Disable Live mode.</p>}>
-              Live
-            </InlineFormLabel>
+          <InlineField labelWidth={12} label={'Live'} interactive={true} tooltip={<p>Enable/Disable Live mode.</p>}>
             <InlineSwitch value={query.live} onChange={onLiveChange} />
-          </div>
+          </InlineField>
         )}
-      </div>
-      <div className="gf-form-inline">
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+      </InlineFieldRow>
+      <InlineFieldRow label="Retrieval settings">
+        <InlineField
+          labelWidth={12}
+          label={'Operator'}
+          interactive={true}
           tooltip={
             <p>
               Controls processing of data during data retrieval. Refer{' '}
@@ -210,10 +207,8 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          Operator
-        </InlineFormLabel>
-        <div className="max-width-30 gf-form-spacing">
           <Select
+            width={56}
             value={operatorOptionValue}
             inputValue={operatorInputValue}
             options={operatorOptions}
@@ -223,14 +218,15 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             isClearable
             createOptionPosition="first"
             components={{
-              Input,
+              Input: SelectInput,
             }}
             placeholder={defaultOperator}
           />
-        </div>
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+        </InlineField>
+        <InlineField
+          labelWidth={12}
+          label={'Stream'}
+          interactive={true}
           tooltip={
             <p>
               Stream allows to periodically update the data without refreshing the dashboard. The difference data from
@@ -238,12 +234,12 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          Stream
-        </InlineFormLabel>
-        <InlineSwitch value={query.stream} onChange={onStreamChange} className="gf-form-spacing" />
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+          <InlineSwitch value={query.stream} onChange={onStreamChange} />
+        </InlineField>
+        <InlineField
+          labelWidth={12}
+          label={'Interval'}
+          interactive={true}
           tooltip={
             <p>
               Streaming interval in milliseconds. You can also use a number with unit. e.g. <code>1s</code>,{' '}
@@ -251,20 +247,19 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          Interval
-        </InlineFormLabel>
-        <input
-          type="text"
-          value={query.strmInt}
-          className="gf-form-input max-width-7"
-          placeholder="auto"
-          onChange={onStrmIntChange}
-          onBlur={onRunQuery}
-          onKeyDown={onKeydownEnter}
-        />
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+          <Input
+            width={10}
+            value={query.strmInt}
+            placeholder="auto"
+            onChange={onStrmIntChange}
+            onBlur={onRunQuery}
+            onKeyDown={onKeydownEnter}
+          />
+        </InlineField>
+        <InlineField
+          labelWidth={12}
+          label={'Capacity'}
+          interactive={true}
           tooltip={
             <p>
               The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is
@@ -272,35 +267,32 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          Capacity
-        </InlineFormLabel>
-        <input
-          type="text"
-          value={query.strmCap}
-          className="gf-form-input max-width-7"
-          placeholder="auto"
-          onChange={onStrmCapChange}
-          onBlur={onRunQuery}
-          onKeyDown={onKeydownEnter}
-        />
-      </div>
-      <div className="gf-form">
-        <InlineFormLabel width={6} className="query-keyword" tooltip={<p>Set alias for the legend.</p>}>
-          Alias
-        </InlineFormLabel>
-        <input
-          type="text"
-          value={query.alias}
-          className="gf-form-input max-width-30"
-          placeholder="Alias"
-          style={aliasInputStyle}
-          onChange={onAliasChange}
-          onBlur={onRunQuery}
-          onKeyDown={onKeydownEnter}
-        />
-        <InlineFormLabel
-          width={6}
-          className="query-keyword"
+          <Input
+            width={10}
+            value={query.strmCap}
+            placeholder="auto"
+            onChange={onStrmCapChange}
+            onBlur={onRunQuery}
+            onKeyDown={onKeydownEnter}
+          />
+        </InlineField>
+      </InlineFieldRow>
+      <InlineFieldRow label="Alias">
+        <InlineField labelWidth={12} label={'Alias'} interactive={true} tooltip={<p>Set alias for the legend.</p>}>
+          <Input
+            value={query.alias}
+            width={56}
+            placeholder="Alias"
+            style={aliasInputStyle}
+            onChange={onAliasChange}
+            onBlur={onRunQuery}
+            onKeyDown={onKeydownEnter}
+          />
+        </InlineField>
+        <InlineField
+          labelWidth={12}
+          label={'Pattern'}
+          interactive={true}
           tooltip={
             <p>
               Set regular expressoin pattern to use PV name for legend alias. Alias pattern is used to match PV name.
@@ -317,19 +309,17 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          Pattern
-        </InlineFormLabel>
-        <input
-          type="text"
-          value={query.aliasPattern}
-          className="gf-form-input max-width-30"
-          placeholder="Alias regex pattern"
-          style={{ color: colorYellow }}
-          onChange={onAliaspatternChange}
-          onBlur={onRunQuery}
-          onKeyDown={onKeydownEnter}
-        />
-      </div>
+          <Input
+            value={query.aliasPattern}
+            width={52}
+            placeholder="Alias regex pattern"
+            style={{ color: colorYellow }}
+            onChange={onAliaspatternChange}
+            onBlur={onRunQuery}
+            onKeyDown={onKeydownEnter}
+          />
+        </InlineField>
+      </InlineFieldRow>
       <Functions funcs={query.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
     </>
   );

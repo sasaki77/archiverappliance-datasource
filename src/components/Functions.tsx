@@ -1,5 +1,5 @@
 import React from 'react';
-import { InlineFormLabel } from '@grafana/ui';
+import { InlineFieldRow, InlineLabel } from '@grafana/ui';
 import { createFuncDescriptor } from '../aafunc';
 import { FuncDef, FunctionDescriptor } from '../types';
 
@@ -77,44 +77,36 @@ class Functions extends React.PureComponent<FunctionsProps> {
   render() {
     const { funcs, onRunQuery } = this.props;
     return (
-      <div className="gf-form-inline">
-        <div className="gf-form">
-          <InlineFormLabel
-            width={6}
-            className="query-keyword"
-            tooltip={
-              <p>
-                Functions are used to apply post processing to the data. You can add, move and remove functions. Select
-                preffered functions from categoires. Some functions require parameters. You can edit parameters after
-                adding the function. Functions are applied from left to right.
-              </p>
-            }
-          >
-            Functions
-          </InlineFormLabel>
-        </div>
-        <div className="gf-form">
-          {funcs &&
-            funcs.map((func, index) => (
-              <FunctionElem
-                key={index}
-                index={index}
-                func={func}
-                onMoveLeft={this.handleMoveLeft}
-                onMoveRight={this.handleMoveRight}
-                onRemove={this.handleRemoveFunction}
-                onChange={this.onFuncChange}
-                onRunQuery={onRunQuery}
-              />
-            ))}
-        </div>
-        <div className="gf-form">
-          <FunctionAdd addFunc={this.addFunction} />
-        </div>
-        <div className="gf-form gf-form--grow">
-          <div className="gf-form-label gf-form-label--grow"></div>
-        </div>
-      </div>
+      <InlineFieldRow>
+        <InlineLabel
+          width={12}
+          interactive={true}
+          tooltip={
+            <p>
+              Functions are used to apply post processing to the data. You can add, move and remove functions. Select
+              preffered functions from categoires. Some functions require parameters. You can edit parameters after
+              adding the function. Functions are applied from left to right.
+            </p>
+          }
+        >
+          Functions
+        </InlineLabel>
+        {funcs &&
+          funcs.map((func, index) => (
+            <FunctionElem
+              key={index}
+              index={index}
+              func={func}
+              onMoveLeft={this.handleMoveLeft}
+              onMoveRight={this.handleMoveRight}
+              onRemove={this.handleRemoveFunction}
+              onChange={this.onFuncChange}
+              onRunQuery={onRunQuery}
+            />
+          ))}
+        <FunctionAdd addFunc={this.addFunction} />
+        <div className="gf-form-label gf-form-label--grow"></div>
+      </InlineFieldRow>
     );
   }
 }
