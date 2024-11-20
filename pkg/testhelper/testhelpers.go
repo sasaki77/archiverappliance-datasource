@@ -28,6 +28,14 @@ func InitIntPointer(value int) *int {
 	return &new_int
 }
 
+func InitFloat64SlicePointer(v []float64) []*float64 {
+	n := make([]*float64, len(v))
+	for idx, v := range v {
+		n[idx] = &v
+	}
+	return n
+}
+
 func TimeHelper(minutes int) time.Time {
 	// Shortcut for generating consistent timestamps using only a single int
 	return time.Date(2021, time.January, 10, 1, minutes, 0, 0, time.UTC)

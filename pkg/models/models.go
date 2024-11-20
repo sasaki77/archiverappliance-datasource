@@ -124,7 +124,7 @@ func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
 
 	// initialize the slices with their final size so append operations are not necessary
 	times := make([]time.Time, dataSize)
-	values := make([]float64, dataSize)
+	values := make([]*float64, dataSize)
 
 	for idx, dataPt := range response {
 		times[idx] = convertNanosec(dataPt.Millis)
@@ -133,10 +133,10 @@ func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
 		if valErr != nil {
 			log.DefaultLogger.Warn("Conversion of val to float64 has failed", "Error", valErr)
 		}
-		values[idx] = valCache
+		values[idx] = &valCache
 	}
 
-	return &Scalars{Times: times, Values: values}, nil
+	return NewSclarsWithValues(times, values), nil
 }
 
 func (response StringResponseModel) ToSingleDataValues() (Values, error) {

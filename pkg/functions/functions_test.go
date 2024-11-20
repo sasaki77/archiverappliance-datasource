@@ -3,6 +3,7 @@ package functions
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
@@ -24,7 +25,7 @@ func TestScale(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -34,7 +35,28 @@ func TestScale(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{2, 2, 4, 6, 10, 16},
+						Values: testhelper.InitFloat64SlicePointer([]float64{2, 2, 4, 6, 10, 16}),
+					},
+				},
+			},
+		},
+		{
+			inputSd: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1})...),
+					},
+				},
+			},
+			delta: 2,
+			output: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{2})...),
 					},
 				},
 			},
@@ -61,7 +83,7 @@ func TestOffset(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -71,7 +93,28 @@ func TestOffset(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{3, 3, 4, 5, 7, 10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 3, 4, 5, 7, 10}),
+					},
+				},
+			},
+		},
+		{
+			inputSd: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1})...),
+					},
+				},
+			},
+			delta: 2,
+			output: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 6),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{3})...),
 					},
 				},
 			},
@@ -97,7 +140,7 @@ func TestDelta(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -106,7 +149,7 @@ func TestDelta(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(1, 6),
-						Values: []float64{0, 1, 1, 2, 3},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0, 1, 1, 2, 3}),
 					},
 				},
 			},
@@ -117,7 +160,7 @@ func TestDelta(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 1),
-						Values: []float64{2},
+						Values: testhelper.InitFloat64SlicePointer([]float64{2}),
 					},
 				},
 			},
@@ -126,7 +169,27 @@ func TestDelta(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 1),
-						Values: []float64{0},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0}),
+					},
+				},
+			},
+		},
+		{
+			inputSd: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1})...),
+					},
+				},
+			},
+			output: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  []time.Time{testhelper.TimeHelper(2)},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0}),
 					},
 				},
 			},
@@ -152,7 +215,7 @@ func TestFluctuation(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -161,7 +224,7 @@ func TestFluctuation(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{0, 0, 1, 2, 4, 7},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0, 0, 1, 2, 4, 7}),
 					},
 				},
 			},
@@ -172,7 +235,7 @@ func TestFluctuation(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 1),
-						Values: []float64{1},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 					},
 				},
 			},
@@ -181,7 +244,27 @@ func TestFluctuation(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 1),
-						Values: []float64{0},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0}),
+					},
+				},
+			},
+		},
+		{
+			inputSd: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 2),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1})...),
+					},
+				},
+			},
+			output: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 2),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{0})...),
 					},
 				},
 			},
@@ -208,7 +291,7 @@ func TestMovingAverage(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{3, 9, 6, 3, 3, 6},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 9, 6, 3, 3, 6}),
 					},
 				},
 			},
@@ -218,7 +301,28 @@ func TestMovingAverage(t *testing.T) {
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{3, 6, 6, 6, 4, 4},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 6, 6, 6, 4, 4}),
+					},
+				},
+			},
+		},
+		{
+			inputSd: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{3, 9, 6, 3, 3, 6})...),
+					},
+				},
+			},
+			windowSize: 3,
+			output: []*models.SingleData{
+				{
+					Name: "TEST:PV:NAME",
+					Values: &models.Scalars{
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{3, 6, 6, 6, 4, 4})...),
 					},
 				},
 			},
@@ -274,14 +378,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -292,7 +396,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -303,14 +407,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -321,7 +425,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -332,14 +436,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -350,7 +454,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81}),
 					},
 				},
 			},
@@ -361,14 +465,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{0, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -379,7 +483,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -390,14 +494,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -408,7 +512,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -419,14 +523,14 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10}),
 					},
 				},
 			},
@@ -437,7 +541,7 @@ func TestTop(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -468,14 +572,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -486,7 +590,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -497,14 +601,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -515,7 +619,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -526,14 +630,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -544,7 +648,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -555,14 +659,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{0, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -573,7 +677,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{0, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{0, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -584,14 +688,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -602,7 +706,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -613,14 +717,14 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME1",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10}),
 					},
 				},
 			},
@@ -631,7 +735,7 @@ func TestBottom(t *testing.T) {
 					Name: "TEST:PV:NAME2",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10}),
 					},
 				},
 			},
@@ -771,14 +875,15 @@ func TestSortByAvg(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times: testhelper.TimeArrayHelper(0, 7),
+
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 			},
@@ -786,14 +891,14 @@ func TestSortByAvg(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 			},
@@ -803,13 +908,13 @@ func TestSortByAvg(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -818,13 +923,13 @@ func TestSortByAvg(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -852,14 +957,14 @@ func TestSortByMax(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81})...),
 					},
 				},
 			},
@@ -867,14 +972,14 @@ func TestSortByMax(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 			},
@@ -884,13 +989,13 @@ func TestSortByMax(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -899,13 +1004,13 @@ func TestSortByMax(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 81},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 81}),
 					},
 				},
 			},
@@ -933,14 +1038,14 @@ func TestSortByMin(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-100, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-100, 1, 2, 3, 5, 8})...),
 					},
 				},
 			},
@@ -948,14 +1053,14 @@ func TestSortByMin(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-100, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-100, 1, 2, 3, 5, 8})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 			},
@@ -965,13 +1070,13 @@ func TestSortByMin(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-100, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-100, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -980,13 +1085,13 @@ func TestSortByMin(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-100, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-100, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -1014,14 +1119,14 @@ func TestSortBySum(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8000},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8000})...),
 					},
 				},
 			},
@@ -1029,14 +1134,14 @@ func TestSortBySum(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8000},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8000})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80})...),
 					},
 				},
 			},
@@ -1046,13 +1151,13 @@ func TestSortBySum(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8000},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8000}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -1061,13 +1166,13 @@ func TestSortBySum(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{10, 10, 20, 30, 50, 80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8000},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8000}),
 					},
 				},
 			},
@@ -1095,14 +1200,14 @@ func TestSortByAbsMax(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, -10, -20, -30, -50, -80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-10, -10, -20, -30, -50, -80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 			},
@@ -1110,14 +1215,14 @@ func TestSortByAbsMax(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, -10, -20, -30, -50, -80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-10, -10, -20, -30, -50, -80})...),
 					},
 				},
 			},
@@ -1127,13 +1232,13 @@ func TestSortByAbsMax(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, -10, -20, -30, -50, -80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-10, -10, -20, -30, -50, -80}),
 					},
 				},
 			},
@@ -1142,13 +1247,13 @@ func TestSortByAbsMax(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, -10, -20, -30, -50, -80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-10, -10, -20, -30, -50, -80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -1176,14 +1281,14 @@ func TestSorByAbsMin(t *testing.T) {
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-10, 10, 20, 30, 50, 80})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 			},
@@ -1191,14 +1296,14 @@ func TestSorByAbsMin(t *testing.T) {
 			output: []*models.SingleData{
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8})...),
 					},
 				},
 				{
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, 10, 20, 30, 50, 80},
+						Times:  testhelper.TimeArrayHelper(0, 7),
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{-10, 10, 20, 30, 50, 80})...),
 					},
 				},
 			},
@@ -1208,13 +1313,13 @@ func TestSorByAbsMin(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-10, 10, 20, 30, 50, 80}),
 					},
 				},
 			},
@@ -1223,13 +1328,13 @@ func TestSorByAbsMin(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{-10, 10, 20, 30, 50, 80},
+						Values: testhelper.InitFloat64SlicePointer([]float64{-10, 10, 20, 30, 50, 80}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},

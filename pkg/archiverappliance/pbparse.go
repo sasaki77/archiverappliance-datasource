@@ -108,7 +108,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 				return sD, errFailedToParsePBFormat
 			}
 			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
-			v.Append(value, t)
+			v.AppendConcrete(value, t)
 		case *models.Arrays:
 			value, sec, nano, err := getArrayValue(escapedLine, dataType)
 			if err != nil {

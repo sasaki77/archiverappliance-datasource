@@ -143,7 +143,7 @@ func TestParseScalarData(t *testing.T) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
 			}
 
-			if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+			if math.Abs(*v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
 				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
 			}
 
@@ -152,7 +152,7 @@ func TestParseScalarData(t *testing.T) {
 			}
 
 			lastIndex := resultLength - 1
-			if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+			if math.Abs(*v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
 				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
 			}
 
@@ -413,7 +413,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
 			}
 
-			if math.Abs(v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+			if math.Abs(*v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
 				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
 			}
 
@@ -422,7 +422,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 			}
 
 			lastIndex := resultLength - 1
-			if math.Abs(v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+			if math.Abs(*v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
 				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
 			}
 
