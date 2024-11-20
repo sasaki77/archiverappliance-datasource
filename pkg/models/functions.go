@@ -29,6 +29,7 @@ const (
 	FUNC_OPTION_BININTERVAL     = FunctionOption("binInterval")
 	FUNC_OPTION_ARRAY_FORMAT    = FunctionOption("arrayFormat")
 	FUNC_OPTION_IGNOREEMPTYERR  = FunctionOption("ignoreEmptyErr")
+	FUNC_OPTION_HIDEINVALID     = FunctionOption("hideInvalid")
 )
 
 type FieldName string

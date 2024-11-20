@@ -50,6 +50,7 @@ type ArchiverQueryModel struct {
 	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
+	HideInvalid     bool              `json:"-"`
 	FormatOption    FormatOption      `json:"-"`
 	IgnoreEmptyErr  bool              `json:"-"`
 }
@@ -187,9 +188,10 @@ func convertNanosec(number *json.Number) time.Time {
 }
 
 type DatasourceSettings struct {
-	DefaultOperator string `json:"defaultOperator"`
-	UseLiveUpdate   bool   `json:"useLiveUpdate"`
-	LiveUpdateURI   string `json:"liveUpdateURI"`
+	DefaultOperator    string `json:"defaultOperator"`
+	DefaultHideInvalid bool   `json:"hideInvalid"`
+	UseLiveUpdate      bool   `json:"useLiveUpdate"`
+	LiveUpdateURI      string `json:"liveUpdateURI"`
 
 	URL string `json:"-"`
 	UID string `json:"-"`
@@ -231,6 +233,7 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	model.LiveOnly, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_LIVEONLY), false)
 	model.FieldName, _ = model.LoadStrOption(FunctionOption(FUNC_OPTION_FIELDNAME), "VAL")
 	model.IgnoreEmptyErr, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_IGNOREEMPTYERR), false)
+	model.HideInvalid, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_HIDEINVALID), config.DefaultHideInvalid)
 
 	f, _ := model.LoadStrOption(FUNC_OPTION_ARRAY_FORMAT, string(FORMAT_TIMESERIES))
 	model.FormatOption = FormatOption(f)

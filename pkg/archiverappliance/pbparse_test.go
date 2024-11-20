@@ -119,7 +119,7 @@ func TestParseScalarData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000)
+			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, false)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -190,7 +190,7 @@ func TestParseSingleStringData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000)
+			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, false)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -295,7 +295,7 @@ func TestParseArrayData(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000)
+			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, false)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -389,7 +389,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 
 			defer f.Close()
 
-			sD, err := archiverPBSingleQueryParser(f, testCase.field, 1000)
+			sD, err := archiverPBSingleQueryParser(f, testCase.field, 1000, false)
 			if err != nil {
 				t.Fatalf("Failed to parse the data: %v", err)
 			}
@@ -433,6 +433,68 @@ func TestParseDataWithSeverity(t *testing.T) {
 	}
 }
 
+func TestParseSevInvalidData(t *testing.T) {
+	var tests = []struct {
+		name   string
+		pvname string
+		length int
+	}{
+		{
+			name:   "DOUBLE_INVALID",
+			pvname: "DOUBLE_INVALIDX",
+			length: 3,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			f, err := os.Open("../test_data/pb/" + testCase.name)
+
+			if err != nil {
+				t.Fatalf("Failed to load test data: %v", err)
+			}
+
+			defer f.Close()
+
+			sD, err := archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, true)
+			if err != nil {
+				t.Fatalf("Failed to parse the data: %v", err)
+			}
+
+			if sD.Name != testCase.pvname {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.pvname, sD.Name)
+			}
+
+			if sD.PVname != testCase.pvname {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.pvname, sD.Name)
+			}
+
+			v, ok := sD.Values.(*models.Scalars)
+
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
+			}
+
+			resultLength := len(v.Times)
+			if resultLength != testCase.length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
+			}
+
+			if v.Values[0] == nil {
+				t.Fatalf("First value should be not nil")
+			}
+
+			if v.Values[1] != nil {
+				t.Fatalf("Second value should be nil")
+			}
+
+			if v.Values[2] == nil {
+				t.Fatalf("Third value should be not nil")
+			}
+		})
+	}
+}
+
 func BenchmarkPBparseOneday(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -441,6 +503,6 @@ func BenchmarkPBparseOneday(b *testing.B) {
 			return
 		}
 		defer f.Close()
-		_, _ = archiverPBSingleQueryParser(f, "pvname", 1000)
+		_, _ = archiverPBSingleQueryParser(f, "pvname", 1000, false)
 	}
 }

@@ -56,7 +56,7 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 
 	defer queryResponse.Close()
 
-	parsedResponse, err := archiverPBSingleQueryParser(queryResponse, models.FieldName(qm.FieldName), qm.MaxDataPoints)
+	parsedResponse, err := archiverPBSingleQueryParser(queryResponse, models.FieldName(qm.FieldName), qm.MaxDataPoints, qm.HideInvalid)
 	if err != nil {
 		err = fmt.Errorf("target = %q: %w", target, err)
 	}

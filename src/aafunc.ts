@@ -261,6 +261,13 @@ addFuncDef({
 });
 
 addFuncDef({
+  name: 'hideInvalid',
+  category: 'Options',
+  params: [{ name: 'boolean', type: 'string', options: ['true', 'false'] }],
+  defaultParams: ['true'],
+});
+
+addFuncDef({
   name: 'arrayFormat',
   category: 'Options',
   params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
