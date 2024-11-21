@@ -30,7 +30,16 @@ const (
 	MessageType_Array   MessageType = 2
 )
 
-func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCapacity int) (models.SingleData, error) {
+type EPICSSeverity int
+
+const (
+	EPICSSeverity_NO_ALARM EPICSSeverity = 0
+	EPICSSeverity_MINOR    EPICSSeverity = 1
+	EPICSSeverity_MAJOR    EPICSSeverity = 2
+	EPICSSeverity_INVALID  EPICSSeverity = 3
+)
+
+func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCapacity int, hideInvalid bool) (models.SingleData, error) {
 	var sD models.SingleData
 	info := &pb.PayloadInfo{}
 	inChunk := false
@@ -94,12 +103,12 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		// Handle chunk data
 		switch v := values.(type) {
 		case *models.Scalars:
-			var value float64
+			var value *float64
 			var sec, nano uint32
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, sec, nano, err = getNumericValue(escapedLine, dataType)
+				value, sec, nano, err = getNumericValue(escapedLine, dataType, hideInvalid)
 			} else {
 				value, sec, nano, err = getMetaValue(escapedLine, dataType, field)
 			}
@@ -171,60 +180,70 @@ func unescapeLine(line []byte) []byte {
 	return buf
 }
 
-func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) (val float64, sec uint32, nano uint32, err error) {
+func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
 	message := initPBMessage(dataType)
 
 	if message == nil {
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
 	if err := proto.Unmarshal(line, *message); err != nil {
 		log.DefaultLogger.Error("Failed to parse paylod data:", err)
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
 	sample, ok := (*message).(pb.MetaFieldData)
 
 	if !ok {
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
+	var v float64
 	switch field {
 	case models.FIELD_NAME_SEVR:
-		val = float64(sample.GetSeverity())
+		v = float64(sample.GetSeverity())
 	case models.FIELD_NAME_STAT:
-		val = float64(sample.GetStatus())
+		v = float64(sample.GetStatus())
 	default:
-		return 0, 0, 0, errIllegalFieldName
+		return nil, 0, 0, errIllegalFieldName
 	}
 
+	val = &v
 	sec = sample.GetSecondsintoyear()
 	nano = sample.GetNano()
 
 	return val, sec, nano, nil
 }
 
-func getNumericValue(line []byte, dataType pb.PayloadType) (val float64, sec uint32, nano uint32, err error) {
+func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
 	message := initPBMessage(dataType)
 
 	if message == nil {
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
 	if err := proto.Unmarshal(line, *message); err != nil {
 		log.DefaultLogger.Error("Failed to parse paylod data:", err)
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
 	sample, ok := (*message).(pb.NumericSamepleData)
 
 	if !ok {
-		return 0, 0, 0, errIllegalPayloadType
+		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	val = sample.GetValAsFloat64()
 	sec = sample.GetSecondsintoyear()
 	nano = sample.GetNano()
+
+	if hideInvalid {
+		sev := EPICSSeverity(sample.GetSeverity())
+		if sev == EPICSSeverity_INVALID {
+			return nil, sec, nano, nil
+		}
+	}
+	v := sample.GetValAsFloat64()
+	val = &v
 
 	return val, sec, nano, nil
 }

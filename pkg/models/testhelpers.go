@@ -30,8 +30,14 @@ func SingleDataCompareHelper(result []*SingleData, wanted []*SingleData, t *test
 				if resultv.Times[idx] != wantedv.Times[idx] {
 					t.Errorf("Times at index %v do not match, Wanted %v, got %v", idx, wantedv.Times[idx], resultv.Times[idx])
 				}
-				if resultv.Values[idx] != wantedv.Values[idx] {
-					t.Errorf("Values at index %v do not match, Wanted %v, got %v", idx, wantedv.Values[idx], resultv.Values[idx])
+				if wantedv.Values[idx] == nil {
+					if resultv.Values[idx] != nil {
+						t.Errorf("Values at index %v do not match, Wanted nil", idx)
+					}
+					continue
+				}
+				if *resultv.Values[idx] != *wantedv.Values[idx] {
+					t.Errorf("Values at index %v do not match, Wanted %v, got %v", idx, *wantedv.Values[idx], *resultv.Values[idx])
 				}
 			}
 		case *Arrays:

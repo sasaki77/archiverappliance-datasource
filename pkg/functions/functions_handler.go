@@ -94,13 +94,14 @@ func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.Functi
 			continue
 		}
 
-		var vs []float64
+		var vs []*float64
 		for _, val := range values.Values {
 			v, _ := f(val)
-			vs = append(vs, v)
+			vs = append(vs, &v)
 		}
 
-		newValues := &models.Scalars{Times: values.Times, Values: vs}
+		//newValues := models.Scalars{Times: values.Times, Values: vs}
+		newValues := models.NewSclarsWithValues(values.Times, vs)
 
 		var d models.SingleData
 		d.PVname = oneData.PVname

@@ -45,7 +45,8 @@ func TestReadQueryModel(t *testing.T) {
 				},
 			},
 			config: DatasourceSettings{
-				DefaultOperator: "mean",
+				DefaultOperator:    "mean",
+				DefaultHideInvalid: true,
 			},
 			output: ArchiverQueryModel{
 				Target:        ".*(1|2)",
@@ -66,6 +67,7 @@ func TestReadQueryModel(t *testing.T) {
 				MaxNumPVs:       1000,
 				BackendQuery:    false,
 				DisableExtrapol: false,
+				HideInvalid:     true,
 				FormatOption:    "timeseries",
 			},
 		},
@@ -128,6 +130,22 @@ func TestReadQueryModel(t *testing.T) {
 											}
 										]
 									}
+								},
+								{
+									"params": [
+										"true"
+									],
+									"def": {
+										"category": "Options",
+										"name": "hideInvalid",
+										"params": [
+											{
+												"name": "boolean",
+												"options": ["true", "false"],
+												"type": "string"
+											}
+										]
+									}
 								}
 							]
 						}`),
@@ -140,7 +158,8 @@ func TestReadQueryModel(t *testing.T) {
 				},
 			},
 			config: DatasourceSettings{
-				DefaultOperator: "max",
+				DefaultOperator:    "max",
+				DefaultHideInvalid: false,
 			},
 			output: ArchiverQueryModel{
 				Target:       "PV:TEST",
@@ -190,6 +209,20 @@ func TestReadQueryModel(t *testing.T) {
 							},
 						},
 					},
+					{
+						Params: []string{"true"},
+						Def: FuncDefQueryModel{
+							Category: "Options",
+							Name:     "hideInvalid",
+							Params: []FuncDefParamQueryModel{
+								{
+									Name:    "boolean",
+									Options: &[]string{"true", "false"},
+									Type:    "string",
+								},
+							},
+						},
+					},
 				},
 				IntervalMs:    nil,
 				RefId:         "A",
@@ -204,6 +237,7 @@ func TestReadQueryModel(t *testing.T) {
 				MaxNumPVs:       100,
 				DisableAutoRaw:  true,
 				DisableExtrapol: true,
+				HideInvalid:     true,
 				FormatOption:    "timeseries",
 			},
 		},

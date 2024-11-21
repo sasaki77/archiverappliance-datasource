@@ -42,10 +42,10 @@ func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryMod
 		s := []string{"test1", "test2", "test3"}
 		v = &models.Strings{Times: testhelper.TimeArrayHelper(0, 3), Values: s}
 	case "PV:NAME1":
-		values := []float64{0, 1, 2}
+		values := testhelper.InitFloat64SlicePointer([]float64{0, 1, 2})
 		v = &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
 	default:
-		values := []float64{3, 4, 5}
+		values := testhelper.InitFloat64SlicePointer([]float64{3, 4, 5})
 		v = &models.Scalars{Times: testhelper.TimeArrayHelper(0, 3), Values: values}
 	}
 
@@ -618,7 +618,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDIn: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 			qm: models.ArchiverQueryModel{
@@ -631,7 +631,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDOut: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
-					Values: []float64{1, 1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 1}),
 				},
 			},
 		},
@@ -640,7 +640,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDIn: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 			qm: models.ArchiverQueryModel{
@@ -653,7 +653,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDOut: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 		},
@@ -662,7 +662,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDIn: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 			qm: models.ArchiverQueryModel{
@@ -688,7 +688,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDOut: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
-					Values: []float64{1, 1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 1}),
 				},
 			},
 		},
@@ -697,7 +697,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDIn: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 			qm: models.ArchiverQueryModel{
@@ -725,7 +725,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDOut: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
 				},
 			},
 		},
@@ -734,7 +734,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDIn: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(3)},
-					Values: []float64{1, 2},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 2}),
 				},
 			},
 			qm: models.ArchiverQueryModel{
@@ -748,7 +748,7 @@ func TestDataExtrapol(t *testing.T) {
 			sDOut: models.SingleData{
 				Values: &models.Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(3)},
-					Values: []float64{1, 2},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 2}),
 				},
 			},
 		},

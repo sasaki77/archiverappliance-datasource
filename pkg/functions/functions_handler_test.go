@@ -23,7 +23,7 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -48,7 +48,7 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{3, 3, 4, 5, 7, 10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 3, 4, 5, 7, 10}),
 					},
 				},
 			},
@@ -59,7 +59,7 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -97,7 +97,7 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{9, 9, 12, 15, 21, 30},
+						Values: testhelper.InitFloat64SlicePointer([]float64{9, 9, 12, 15, 21, 30}),
 					},
 				},
 			},
@@ -108,13 +108,13 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{100, 100, 100, 100, 100, 100},
+						Values: testhelper.InitFloat64SlicePointer([]float64{100, 100, 100, 100, 100, 100}),
 					},
 				},
 			},
@@ -173,7 +173,7 @@ func TestApplyFunctions(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{9, 9, 12, 15, 21, 30},
+						Values: testhelper.InitFloat64SlicePointer([]float64{9, 9, 12, 15, 21, 30}),
 					},
 				},
 			},
@@ -222,14 +222,14 @@ func TestApplyFunctions(t *testing.T) {
 					Name: "(avg)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{4, 10, 17},
+						Values: testhelper.InitFloat64SlicePointer([]float64{4, 10, 17}),
 					},
 				},
 				{
 					Name: "(max)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{6, 12, 20},
+						Values: testhelper.InitFloat64SlicePointer([]float64{6, 12, 20}),
 					},
 				},
 			},
@@ -276,7 +276,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(avg)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{2, 5, 8.5},
+						Values: testhelper.InitFloat64SlicePointer([]float64{2, 5, 8.5}),
 					},
 				},
 			},
@@ -302,7 +302,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(max)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{3, 6, 10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 6, 10}),
 					},
 				},
 			},
@@ -328,7 +328,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(min)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{1, 4, 7},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 4, 7}),
 					},
 				},
 			},
@@ -354,7 +354,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(sum)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{6, 15, 34},
+						Values: testhelper.InitFloat64SlicePointer([]float64{6, 15, 34}),
 					},
 				},
 			},
@@ -380,7 +380,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(median)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{2, 5, 8.5},
+						Values: testhelper.InitFloat64SlicePointer([]float64{2, 5, 8.5}),
 					},
 				},
 			},
@@ -406,7 +406,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 					Name: "(std)",
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 3),
-						Values: []float64{5, 2.5},
+						Values: testhelper.InitFloat64SlicePointer([]float64{5, 2.5}),
 					},
 				},
 			},
@@ -435,7 +435,7 @@ func TestFunctionSelector(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{1, 1, 2, 3, 5, 8},
+						Values: testhelper.InitFloat64SlicePointer([]float64{1, 1, 2, 3, 5, 8}),
 					},
 				},
 			},
@@ -456,7 +456,7 @@ func TestFunctionSelector(t *testing.T) {
 				{
 					Values: &models.Scalars{
 						Times:  testhelper.TimeArrayHelper(0, 6),
-						Values: []float64{3, 3, 4, 5, 7, 10},
+						Values: testhelper.InitFloat64SlicePointer([]float64{3, 3, 4, 5, 7, 10}),
 					},
 				},
 			},

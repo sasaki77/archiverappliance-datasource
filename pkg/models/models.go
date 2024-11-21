@@ -50,6 +50,7 @@ type ArchiverQueryModel struct {
 	MaxNumPVs       int               `json:"-"`
 	DisableAutoRaw  bool              `json:"-"`
 	DisableExtrapol bool              `json:"-"`
+	HideInvalid     bool              `json:"-"`
 	FormatOption    FormatOption      `json:"-"`
 	IgnoreEmptyErr  bool              `json:"-"`
 }
@@ -124,7 +125,7 @@ func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
 
 	// initialize the slices with their final size so append operations are not necessary
 	times := make([]time.Time, dataSize)
-	values := make([]float64, dataSize)
+	values := make([]*float64, dataSize)
 
 	for idx, dataPt := range response {
 		times[idx] = convertNanosec(dataPt.Millis)
@@ -133,10 +134,10 @@ func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
 		if valErr != nil {
 			log.DefaultLogger.Warn("Conversion of val to float64 has failed", "Error", valErr)
 		}
-		values[idx] = valCache
+		values[idx] = &valCache
 	}
 
-	return &Scalars{Times: times, Values: values}, nil
+	return NewSclarsWithValues(times, values), nil
 }
 
 func (response StringResponseModel) ToSingleDataValues() (Values, error) {
@@ -187,9 +188,10 @@ func convertNanosec(number *json.Number) time.Time {
 }
 
 type DatasourceSettings struct {
-	DefaultOperator string `json:"defaultOperator"`
-	UseLiveUpdate   bool   `json:"useLiveUpdate"`
-	LiveUpdateURI   string `json:"liveUpdateURI"`
+	DefaultOperator    string `json:"defaultOperator"`
+	DefaultHideInvalid bool   `json:"hideInvalid"`
+	UseLiveUpdate      bool   `json:"useLiveUpdate"`
+	LiveUpdateURI      string `json:"liveUpdateURI"`
 
 	URL string `json:"-"`
 	UID string `json:"-"`
@@ -231,6 +233,7 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	model.LiveOnly, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_LIVEONLY), false)
 	model.FieldName, _ = model.LoadStrOption(FunctionOption(FUNC_OPTION_FIELDNAME), "VAL")
 	model.IgnoreEmptyErr, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_IGNOREEMPTYERR), false)
+	model.HideInvalid, _ = model.LoadBooleanOption(FunctionOption(FUNC_OPTION_HIDEINVALID), config.DefaultHideInvalid)
 
 	f, _ := model.LoadStrOption(FUNC_OPTION_ARRAY_FORMAT, string(FORMAT_TIMESERIES))
 	model.FormatOption = FormatOption(f)

@@ -76,7 +76,7 @@ func TestToFrameScalar(t *testing.T) {
 				PVname: "pvname",
 				Values: &Scalars{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
-					Values: []float64{1, 2, 3},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 2, 3}),
 				},
 			},
 			name:     "testing_name",
@@ -108,8 +108,9 @@ func TestToFrameScalar(t *testing.T) {
 				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
 			}
 			for i := 0; i < result.Fields[1].Len(); i++ {
-				if testCase.values[i] != result.Fields[1].CopyAt(i) {
-					t.Errorf("got %v, want %v", result.Fields[1].CopyAt(i), testCase.values[i])
+				rv, _ := result.Fields[1].ConcreteAt(i)
+				if testCase.values[i] != rv {
+					t.Errorf("got %v, want %v", rv, testCase.values[i])
 				}
 			}
 		})
@@ -451,16 +452,32 @@ func TestExtrapolation(t *testing.T) {
 		{
 			sDIn: SingleData{
 				Values: &Scalars{
-					Times:  []time.Time{testhelper.TimeHelper(0)},
-					Values: []float64{1},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 2, 3}),
 				},
 			},
 			name: "scalars extrapolation",
 			t:    testhelper.TimeHelper(5),
 			sDOut: SingleData{
 				Values: &Scalars{
-					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
-					Values: []float64{1, 1},
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2), testhelper.TimeHelper(5)},
+					Values: testhelper.InitFloat64SlicePointer([]float64{1, 2, 3, 3}),
+				},
+			},
+		},
+		{
+			sDIn: SingleData{
+				Values: &Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1)},
+					Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1})...),
+				},
+			},
+			name: "scalars extrapolation",
+			t:    testhelper.TimeHelper(5),
+			sDOut: SingleData{
+				Values: &Scalars{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(5)},
+					Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{1, 1})...),
 				},
 			},
 		},

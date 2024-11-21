@@ -557,7 +557,7 @@ exports[`Render should render component 1`] = `
             <label
               class="css-11mm3ru"
             >
-              Use live feature (Alpha)
+              Hide Invalid
               <svg
                 data-testid="info-circle"
                 viewBox="0 0 24 24"
@@ -580,6 +580,50 @@ exports[`Render should render component 1`] = `
                   <label
                     aria-label="Toggle switch"
                     for="switch-2"
+                  >
+                    <svg
+                      data-testid="check"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="gf-form-inline"
+        >
+          <div
+            class="css-1uqla6q"
+          >
+            <label
+              class="css-11mm3ru"
+            >
+              Use live feature (Alpha)
+              <svg
+                data-testid="info-circle"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </label>
+            <div
+              class="css-1tu59u4"
+            >
+              <div
+                class="css-77nuzo"
+              >
+                <div
+                  class="css-g9jraf"
+                >
+                  <input
+                    id="switch-3"
+                    type="checkbox"
+                  />
+                  <label
+                    aria-label="Toggle switch"
+                    for="switch-3"
                   >
                     <svg
                       data-testid="check"
@@ -1176,7 +1220,7 @@ exports[`Render should render component 1`] = `
           <label
             class="css-11mm3ru"
           >
-            Use live feature (Alpha)
+            Hide Invalid
             <svg
               data-testid="info-circle"
               viewBox="0 0 24 24"
@@ -1199,6 +1243,50 @@ exports[`Render should render component 1`] = `
                 <label
                   aria-label="Toggle switch"
                   for="switch-2"
+                >
+                  <svg
+                    data-testid="check"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="gf-form-inline"
+      >
+        <div
+          class="css-1uqla6q"
+        >
+          <label
+            class="css-11mm3ru"
+          >
+            Use live feature (Alpha)
+            <svg
+              data-testid="info-circle"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </label>
+          <div
+            class="css-1tu59u4"
+          >
+            <div
+              class="css-77nuzo"
+            >
+              <div
+                class="css-g9jraf"
+              >
+                <input
+                  id="switch-3"
+                  type="checkbox"
+                />
+                <label
+                  aria-label="Toggle switch"
+                  for="switch-3"
                 >
                   <svg
                     data-testid="check"

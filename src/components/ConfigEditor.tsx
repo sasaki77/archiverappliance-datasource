@@ -31,6 +31,15 @@ export class ConfigEditor extends PureComponent<Props> {
     onOptionsChange({ ...options, jsonData });
   };
 
+  onHideInvalidChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData = {
+      ...options.jsonData,
+      hideInvalid: !options.jsonData.hideInvalid,
+    };
+    onOptionsChange({ ...options, jsonData });
+  };
+
   onUseLiveUpdateChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
@@ -98,6 +107,16 @@ export class ConfigEditor extends PureComponent<Props> {
                 onChange={this.onOperatorChange}
                 placeholder="mean"
               />
+            </InlineField>
+          </div>
+          <div className="gf-form-inline">
+            <InlineField
+              label="Hide Invalid"
+              labelWidth={LABEL_WIDTH}
+              interactive={true}
+              tooltip={<p>Hide sample data whose severity is invalid with a null value.</p>}
+            >
+              <InlineSwitch value={options.jsonData.hideInvalid ?? false} onChange={this.onHideInvalidChange} />
             </InlineField>
           </div>
           <div className="gf-form-inline">
