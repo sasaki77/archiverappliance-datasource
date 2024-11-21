@@ -78,6 +78,24 @@ func SingleDataCompareHelper(result []*SingleData, wanted []*SingleData, t *test
 					t.Errorf("Values at index %v do not match, Wanted %v, got %v", idx, wantedv.Values[idx], resultv.Values[idx])
 				}
 			}
+		case *Enums:
+			wantedv := wanted[udx].Values.(*Enums)
+			if len(wantedv.Times) != len(resultv.Times) {
+				t.Errorf("Input and output arrays' times differ in length. Wanted %v, got %v", len(wantedv.Times), len(resultv.Times))
+				return
+			}
+			if len(wantedv.Values) != len(resultv.Values) {
+				t.Errorf("Input and output arrays' values differ in length. Wanted %v, got %v", len(wantedv.Values), len(resultv.Values))
+				return
+			}
+			for idx := range wantedv.Values {
+				if resultv.Times[idx] != wantedv.Times[idx] {
+					t.Errorf("Times at index %v do not match, Wanted %v, got %v", idx, wantedv.Times[idx], resultv.Times[idx])
+				}
+				if resultv.Values[idx] != wantedv.Values[idx] {
+					t.Errorf("Values at index %v do not match, Wanted %v, got %v", idx, wantedv.Values[idx], resultv.Values[idx])
+				}
+			}
 		default:
 			t.Fatalf("Response Values are invalid")
 		}

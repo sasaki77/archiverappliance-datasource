@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
@@ -349,22 +350,21 @@ func TestParseArrayData(t *testing.T) {
 }
 
 func TestParseDataWithSeverity(t *testing.T) {
-	ARCHIVER_FLOAT_PRECISION := 1e-18
 	var tests = []struct {
 		name      string
 		field     models.FieldName
 		length    int
-		firstVal  float64
+		firstVal  data.EnumItemIndex
 		firstDate time.Time
-		lastVal   float64
+		lastVal   data.EnumItemIndex
 		lastDate  time.Time
 	}{
 		{
 			name:      "SCALAR_BYTE_sampledata",
 			field:     models.FIELD_NAME_SEVR,
 			length:    366,
-			firstVal:  0.0,
-			lastVal:   0.0,
+			firstVal:  0,
+			lastVal:   0,
 			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
 			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
 		},
@@ -372,8 +372,8 @@ func TestParseDataWithSeverity(t *testing.T) {
 			name:      "SCALAR_BYTE_sampledata",
 			field:     models.FIELD_NAME_STAT,
 			length:    366,
-			firstVal:  0.0,
-			lastVal:   0.0,
+			firstVal:  0,
+			lastVal:   0,
 			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
 			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
 		},
@@ -402,7 +402,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
 			}
 
-			v, ok := sD.Values.(*models.Scalars)
+			v, ok := sD.Values.(*models.Enums)
 
 			if !ok {
 				t.Fatalf("Single data type is diffrent")
@@ -413,7 +413,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
 			}
 
-			if math.Abs(*v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+			if v.Values[0] != testCase.firstVal {
 				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
 			}
 
@@ -422,7 +422,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 			}
 
 			lastIndex := resultLength - 1
-			if math.Abs(*v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+			if v.Values[lastIndex] != testCase.lastVal {
 				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
 			}
 
