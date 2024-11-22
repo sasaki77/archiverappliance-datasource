@@ -195,7 +195,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             <p>
               Controls processing of data during data retrieval. Refer{' '}
               <a
-                href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html"
+                href="https://epicsarchiver.readthedocs.io/en/latest/user/userguide.html#processing-of-data"
                 target="_blank"
                 rel="noopener noreferrer"
               >
