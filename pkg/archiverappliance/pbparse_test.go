@@ -350,6 +350,91 @@ func TestParseArrayData(t *testing.T) {
 }
 
 func TestParseDataWithSeverity(t *testing.T) {
+	ARCHIVER_FLOAT_PRECISION := 1e-18
+	var tests = []struct {
+		name      string
+		field     models.FieldName
+		length    int
+		firstVal  float64
+		firstDate time.Time
+		lastVal   float64
+		lastDate  time.Time
+	}{
+		{
+			name:      "SCALAR_BYTE_sampledata",
+			field:     models.FIELD_NAME_SEVR,
+			length:    366,
+			firstVal:  0.0,
+			lastVal:   0.0,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+		{
+			name:      "SCALAR_BYTE_sampledata",
+			field:     models.FIELD_NAME_STAT,
+			length:    366,
+			firstVal:  0.0,
+			lastVal:   0.0,
+			firstDate: time.Date(2012, 1, 1, 9, 43, 37, 0, time.UTC),
+			lastDate:  time.Date(2012, 12, 31, 9, 43, 37, 0, time.UTC),
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			f, err := os.Open("../test_data/pb/" + testCase.name)
+
+			if err != nil {
+				t.Fatalf("Failed to load test data: %v", err)
+			}
+
+			defer f.Close()
+
+			sD, err := archiverPBSingleQueryParser(f, testCase.field, 1000, false)
+			if err != nil {
+				t.Fatalf("Failed to parse the data: %v", err)
+			}
+
+			if sD.Name != testCase.name {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
+			}
+
+			if sD.PVname != testCase.name {
+				t.Fatalf("Names differ - Wanted: %v Got: %v", testCase.name, sD.Name)
+			}
+
+			v, ok := sD.Values.(*models.Scalars)
+
+			if !ok {
+				t.Fatalf("Single data type is diffrent")
+			}
+
+			resultLength := len(v.Times)
+			if resultLength != testCase.length {
+				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.length, resultLength)
+			}
+
+			if math.Abs(*v.Values[0]-testCase.firstVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("First values differ - Wanted: %v Got: %v", testCase.firstVal, v.Values[0])
+			}
+			if !v.Times[0].Equal(testCase.firstDate) {
+				t.Fatalf("Fisrt date differ - Wanted: %v Got: %v", v.Times[0], testCase.firstDate)
+			}
+
+			lastIndex := resultLength - 1
+
+			if math.Abs(*v.Values[lastIndex]-testCase.lastVal) > ARCHIVER_FLOAT_PRECISION {
+				t.Fatalf("last values differ - Wanted: %v Got: %v", testCase.lastVal, v.Values[lastIndex])
+			}
+
+			if !v.Times[lastIndex].Equal(testCase.lastDate) {
+				t.Fatalf("Last date differ - Wanted: %v Got: %v", v.Times[lastIndex], testCase.lastDate)
+			}
+		})
+	}
+}
+
+func TestParseDataWithSeverityEnum(t *testing.T) {
 	var tests = []struct {
 		name      string
 		field     models.FieldName
@@ -361,7 +446,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 	}{
 		{
 			name:      "SCALAR_BYTE_sampledata",
-			field:     models.FIELD_NAME_SEVR,
+			field:     models.FIELD_NAME_SEVR_AS_ENUM,
 			length:    366,
 			firstVal:  0,
 			lastVal:   0,
@@ -370,7 +455,7 @@ func TestParseDataWithSeverity(t *testing.T) {
 		},
 		{
 			name:      "SCALAR_BYTE_sampledata",
-			field:     models.FIELD_NAME_STAT,
+			field:     models.FIELD_NAME_STAT_AS_ENUM,
 			length:    366,
 			firstVal:  0,
 			lastVal:   0,

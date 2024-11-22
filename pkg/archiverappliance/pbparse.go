@@ -98,9 +98,9 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 				values = models.NewArrays(initialCapacity)
 			case MessageType_Enum:
 				switch field {
-				case models.FIELD_NAME_SEVR:
+				case models.FIELD_NAME_SEVR_AS_ENUM:
 					values = models.NewSevirityEnums(initialCapacity)
-				case models.FIELD_NAME_STAT:
+				case models.FIELD_NAME_STAT_AS_ENUM:
 					values = models.NewStatusEnums(initialCapacity)
 				default:
 					return sD, errIllegalFieldName
@@ -147,6 +147,9 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
+			}
+			if value == nil {
+				continue
 			}
 			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
 			v.Append(int16(*value), t)
@@ -218,9 +221,11 @@ func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) 
 
 	var v float64
 	switch field {
-	case models.FIELD_NAME_SEVR:
+	case models.FIELD_NAME_SEVR,
+		models.FIELD_NAME_SEVR_AS_ENUM:
 		v = float64(sample.GetSeverity())
-	case models.FIELD_NAME_STAT:
+	case models.FIELD_NAME_STAT,
+		models.FIELD_NAME_STAT_AS_ENUM:
 		v = float64(sample.GetStatus())
 	default:
 		return nil, 0, 0, errIllegalFieldName
@@ -346,8 +351,13 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 }
 
 func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageType, error) {
-	if field != models.FIELD_NAME_VAL {
+	switch field {
+	case models.FIELD_NAME_SEVR_AS_ENUM,
+		models.FIELD_NAME_STAT_AS_ENUM:
 		return MessageType_Enum, nil
+	case models.FIELD_NAME_SEVR,
+		models.FIELD_NAME_STAT:
+		return MessageType_Numeric, nil
 	}
 
 	switch dataType {
