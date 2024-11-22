@@ -28,6 +28,7 @@ const (
 	MessageType_Numeric MessageType = 0
 	MessageType_String  MessageType = 1
 	MessageType_Array   MessageType = 2
+	MessageType_Enum    MessageType = 3
 )
 
 type EPICSSeverity int
@@ -95,6 +96,15 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 				values = models.NewStrings(initialCapacity)
 			case MessageType_Array:
 				values = models.NewArrays(initialCapacity)
+			case MessageType_Enum:
+				switch field {
+				case models.FIELD_NAME_SEVR_AS_ENUM:
+					values = models.NewSevirityEnums(initialCapacity)
+				case models.FIELD_NAME_STAT_AS_ENUM:
+					values = models.NewStatusEnums(initialCapacity)
+				default:
+					return sD, errIllegalFieldName
+				}
 			}
 
 			continue
@@ -132,6 +142,17 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			}
 			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
 			v.Append(value, t)
+		case *models.Enums:
+			value, sec, nano, err := getMetaValue(escapedLine, dataType, field)
+
+			if err != nil {
+				return sD, errFailedToParsePBFormat
+			}
+			if value == nil {
+				continue
+			}
+			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			v.Append(int16(*value), t)
 		default:
 			return sD, errIllegalPayloadType
 		}
@@ -200,9 +221,11 @@ func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) 
 
 	var v float64
 	switch field {
-	case models.FIELD_NAME_SEVR:
+	case models.FIELD_NAME_SEVR,
+		models.FIELD_NAME_SEVR_AS_ENUM:
 		v = float64(sample.GetSeverity())
-	case models.FIELD_NAME_STAT:
+	case models.FIELD_NAME_STAT,
+		models.FIELD_NAME_STAT_AS_ENUM:
 		v = float64(sample.GetStatus())
 	default:
 		return nil, 0, 0, errIllegalFieldName
@@ -328,7 +351,12 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 }
 
 func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageType, error) {
-	if field != models.FIELD_NAME_VAL {
+	switch field {
+	case models.FIELD_NAME_SEVR_AS_ENUM,
+		models.FIELD_NAME_STAT_AS_ENUM:
+		return MessageType_Enum, nil
+	case models.FIELD_NAME_SEVR,
+		models.FIELD_NAME_STAT:
 		return MessageType_Numeric, nil
 	}
 

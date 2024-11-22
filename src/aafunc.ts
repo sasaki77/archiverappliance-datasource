@@ -228,7 +228,7 @@ addFuncDef({
 addFuncDef({
   name: 'fieldName',
   category: 'Options',
-  params: [{ name: 'name', type: 'string', options: ['VAL', 'SEVR', 'STAT'] }],
+  params: [{ name: 'name', type: 'string', options: ['VAL', 'SEVR', 'STAT', 'SEVR as Enum', 'STAT as Enum'] }],
   defaultParams: ['SEVR'],
 });
 

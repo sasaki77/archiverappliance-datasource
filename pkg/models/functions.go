@@ -35,9 +35,11 @@ const (
 type FieldName string
 
 const (
-	FIELD_NAME_VAL  FieldName = "VAL"
-	FIELD_NAME_SEVR FieldName = "SEVR"
-	FIELD_NAME_STAT FieldName = "STAT"
+	FIELD_NAME_VAL          FieldName = "VAL"
+	FIELD_NAME_SEVR         FieldName = "SEVR"
+	FIELD_NAME_STAT         FieldName = "STAT"
+	FIELD_NAME_SEVR_AS_ENUM FieldName = "SEVR as Enum"
+	FIELD_NAME_STAT_AS_ENUM FieldName = "STAT as Enum"
 )
 
 func (qm ArchiverQueryModel) PickFuncsByCategories(categories []FunctionCategory) []FunctionDescriptorQueryModel {

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
 
@@ -442,6 +443,70 @@ func TestToFrameIndexArrayInJST(t *testing.T) {
 	}
 }
 
+func TestToFrameEnum(t *testing.T) {
+	var tests = []struct {
+		sD       SingleData
+		name     string
+		pvname   string
+		values   []data.EnumItemIndex
+		dataSize int
+	}{
+		{
+			sD: SingleData{
+				Name:   "testing_name",
+				PVname: "pvname",
+				Values: &Enums{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
+					Values: []data.EnumItemIndex{1, 2, 3},
+					EnumConfig: data.EnumFieldConfig{
+						Text:  []string{"NO_ALARM", "MINOR"},
+						Color: []string{"rgb(86, 166, 75)", "rgb(255, 120, 10)"},
+					},
+				},
+			},
+			name:     "testing_name",
+			pvname:   "pvname",
+			values:   []data.EnumItemIndex{1, 2, 3},
+			dataSize: 3,
+		},
+	}
+	for idx, testCase := range tests {
+		testName := fmt.Sprintf("%d: %s", idx, testCase.name)
+		t.Run(testName, func(t *testing.T) {
+			result := testCase.sD.ToFrame(FormatOption(FORMAT_TIMESERIES))
+			if testCase.name != result.Name {
+				t.Errorf("got %v, want %v", result.Name, testCase.name)
+			}
+			if result.Fields[0].Name != "time" {
+				t.Errorf("got %v, want time", result.Fields[0].Name)
+			}
+			if result.Fields[0].Len() != testCase.dataSize {
+				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
+			}
+			if testCase.name != result.Fields[1].Config.DisplayName {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			}
+			if testCase.pvname != result.Fields[1].Labels["pvname"] {
+				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
+			}
+			if testCase.name != result.Fields[1].Name {
+				t.Errorf("got %v, want %v", result.Fields[1].Name, testCase.name)
+			}
+			for i := 0; i < result.Fields[1].Len(); i++ {
+				if testCase.values[i] != result.Fields[1].CopyAt(i) {
+					t.Errorf("got %v, want %v", result.Fields[1].CopyAt(i), testCase.values[i])
+				}
+			}
+			if result.Fields[1].Config.TypeConfig.Enum.Text[0] != "NO_ALARM" {
+				t.Errorf("got %v, want NO_ALARM", result.Fields[1].Config.TypeConfig.Enum.Text[0])
+			}
+			if result.Fields[1].Config.TypeConfig.Enum.Color[1] != "rgb(255, 120, 10)" {
+				t.Errorf("got %v, want rgb(255, 120, 10)", result.Fields[1].Config.TypeConfig.Enum.Color[1])
+			}
+		})
+	}
+}
+
 func TestExtrapolation(t *testing.T) {
 	var tests = []struct {
 		sDIn  SingleData
@@ -510,6 +575,22 @@ func TestExtrapolation(t *testing.T) {
 				Values: &Arrays{
 					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
 					Values: [][]float64{{1, 1}, {1, 1}},
+				},
+			},
+		},
+		{
+			sDIn: SingleData{
+				Values: &Enums{
+					Times:  []time.Time{testhelper.TimeHelper(0)},
+					Values: []data.EnumItemIndex{1},
+				},
+			},
+			name: "enums extrapolation",
+			t:    testhelper.TimeHelper(5),
+			sDOut: SingleData{
+				Values: &Enums{
+					Times:  []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(5)},
+					Values: []data.EnumItemIndex{1, 1},
 				},
 			},
 		},
