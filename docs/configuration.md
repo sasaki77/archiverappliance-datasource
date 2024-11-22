@@ -17,14 +17,16 @@ more information.
 ![Datasrouce settings](./img/aa-configuration-datasource-settings.png)
 
 ### HTTP
-- **URL:** set `retrieval url` end with retrieval.
-- **Access:** controls how requests to the data source will be handled. Only `Server` mode is tested in this plugin.
-  - **Server:** Grafana backend/server forwards the requests to the Archiver Appliance server.
-  - **Browser:** directly access to the Archiver Appliance server from the browser.
-- **Whitelisted Cookies:** no need to configure.
+- **URL:** sets `retrieval url` end with retrieval.
+- **Allowed Cookies:** no need to configure.
+- **Timeout:** sets HTTP request timeout in seconds if you need.
 
 ### Auth
 Basically, no need to configure.
 
 ### Misc
-- **Use Backend:** enable GO backend to retrieve the archive data for visualization. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client.
+- **Use Backend:** enables GO backend to retrieve the archive data for visualization. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client.
+- **Default Operator:** controls the default operator for processing of data during data retrieval.
+- **Hide Invalid:** hides the sample data whose severity is invalid with a null value. This feature is only effective if you are using the backend data retrieval.
+- **Use live feature:** enables live updating with PVWS WebSocket server.
+- **PVWS URI:** sets the URI for the PVWS WebSocket server.

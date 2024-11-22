@@ -3,17 +3,17 @@
 ## Overview
 ![Query Overview](./img/aa-query-overview.png)
 
-| Configuration | Description |
-|---------------|-------------|
-| **PV** | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`). |
-| **Regex** | Enable/Disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex). |
-| **Operator** | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://slacmshankar.github.io/epicsarchiver_docs/userguide.html) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
-| **Stream** | Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.|
-| **Interval** | Streaming interval in milliseconds. You can also use a number with unit. e.g. `1s`, `1m`, `1h`. The default is determined by a width of panel and time range. |
-| **Capacity** | The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size. | 
-| **Alias** | Set alias for legend. |
-| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern) |
-| **Function** | Apply processing function for retrieved data. Refer [Apply Processing Functions](#apply-processing-functions) |
+| Configuration     | Description                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **PV**            | Set PV name to be visualized. It is allowed to set multiple PVs by using Regular Expressoins alternation pattern (e.g. `(PV:1\|PV:2)`).                                                                                                                                                                                                                                                                      |
+| **Regex**         | Enable/Disable Regex mode. Refer [Select Multiple PVs by Regex](#select-multiple-pvs-by-regex).                                                                                                                                                                                                                                                                                                              |
+| **Operator**      | Controls processing of data during data retrieval (Default: `mean`). Refer [Archiver Appliance User Guide](https://epicsarchiver.readthedocs.io/en/latest/user/userguide.html#processing-of-data) about processing of data. Special operator `raw` and `last` are also available. `raw` allows to retrieve the data without processing. `last` allows to retrieve the last data in the specified time range. |
+| **Stream**        | Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. Only the updated data from the last updat time will be retrieved.                                                                                                                                                                                                                                |
+| **Interval**      | Streaming interval in milliseconds. You can also use a number with unit. e.g. `1s`, `1m`, `1h`. The default is determined by a width of panel and time range.                                                                                                                                                                                                                                                |
+| **Capacity**      | The stream data is stored in a circular buffer. Capacity determines the buffer size. The default is detemined by a initial data size.                                                                                                                                                                                                                                                                        |
+| **Alias**         | Set alias for legend.                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Alias pattern** | Set regular expressoin pattern to use PV name for legend alias. Refer [Legend Alias with Regex Pattern](#legend-alias-with-regex-pattern)                                                                                                                                                                                                                                                                    |
+| **Function**      | Apply processing function for retrieved data. Refer [Apply Processing Functions](#apply-processing-functions)                                                                                                                                                                                                                                                                                                |
 
 ## PV Name Completion
 ![Name completion](./img/aa-query-name-completion.png)
@@ -32,7 +32,7 @@ To enable Regex mode, click `Regex` button next to `PV` text input.
 The plugin supports only **wildcard pattern** and **alternation pattern**.
 
 ```{note}
-Maximum number of PVs you can select on Regex mode is **100** in default.  [maxNumPVs](functions.md#maxNumPVs) function is available to change maximum number.
+Maximum number of PVs you can select on Regex mode is **100** in default.  [maxNumPVs](functions.md#maxnumpvs) function is available to change maximum number.
 ```
 
 ### Wildcard Pattern

@@ -17,11 +17,11 @@
 # -- Project information -----------------------------------------------------
 
 project = "Archiver Appliance Datasource"
-copyright = "2019-2022, Shinya Sasaki"
+copyright = "2019-2024, Shinya Sasaki"
 author = "Shinya Sasaki"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.0"
+release = "2.0.0"
 
 
 # -- General configuration ---------------------------------------------------

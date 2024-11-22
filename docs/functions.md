@@ -241,6 +241,22 @@ sortByAbsMin(asc)
 ```
 
 ## Options Functions
+### _fieldName_
+```{eval-rst}
+.. function:: fieldName(name)
+```
+
+Set the field name to be retrieved. `VAL`, `SEVR` and `STAT` are currently supported. `SEVR` and `STAT` can be retrieved as Enum data by setting `SEVR as Enum` or `STAT as Enum`.
+This function is only effective if you are using the backend data retrieval.
+
+Examples:
+
+```js
+fieldName(VAL)
+fieldName(SEVR)
+fieldName(SEVR as Enum)
+```
+
 ### _maxNumPVs_
 ```{eval-rst}
 .. function:: maxNumPVs(number)
@@ -294,6 +310,22 @@ Examples:
 ```js
 disableExtrapol(true)
 disableExtrapol(false)
+```
+
+### _hideInvalid_
+```{eval-rst}
+.. function:: hidInvalid(boolean)
+```
+
+Hide the sample data whose severity is invalid with a null value.
+[Default setting](configuration.md#misc) can be overwritten by this function.
+This function is only effective if you are using the backend data retrieval and data is not string or array.
+
+Examples:
+
+```js
+hideInvalid(true)
+hideInvalid(false)
 ```
 
 ### _arrayFormat_
