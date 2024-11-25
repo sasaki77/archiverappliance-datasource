@@ -133,7 +133,7 @@ func TestQuery(t *testing.T) {
 											"pvname": "PV:NAME2",
 										},
 										Config: &data.FieldConfig{
-											DisplayName: "NAME2:PV",
+											DisplayNameFromDS: "NAME2:PV",
 										},
 									},
 								},
@@ -152,7 +152,7 @@ func TestQuery(t *testing.T) {
 											"pvname": "PV:NAME1",
 										},
 										Config: &data.FieldConfig{
-											DisplayName: "NAME1:PV",
+											DisplayNameFromDS: "NAME1:PV",
 										},
 									},
 								},
@@ -207,7 +207,7 @@ func TestQuery(t *testing.T) {
 											"pvname": "PV:NAME1",
 										},
 										Config: &data.FieldConfig{
-											DisplayName: "NAME1:PV",
+											DisplayNameFromDS: "NAME1:PV",
 										},
 									},
 								},
@@ -226,7 +226,7 @@ func TestQuery(t *testing.T) {
 											"pvname": "PV:NAME2",
 										},
 										Config: &data.FieldConfig{
-											DisplayName: "NAME2:PV",
+											DisplayNameFromDS: "NAME2:PV",
 										},
 									},
 								},
@@ -281,7 +281,7 @@ func TestQuery(t *testing.T) {
 											"pvname": "string",
 										},
 										Config: &data.FieldConfig{
-											DisplayName: "string",
+											DisplayNameFromDS: "string",
 										},
 									},
 								},
@@ -324,8 +324,8 @@ func TestQuery(t *testing.T) {
 				if vf.Labels["pvname"] != outvf.Labels["pvname"] {
 					t.Errorf("got %v, want %v", vf.Labels["pvname"], outvf.Labels["pvname"])
 				}
-				if vf.Config.DisplayName != outvf.Config.DisplayName {
-					t.Errorf("got %v, want %v", vf.Config.DisplayName, outvf.Config.DisplayName)
+				if vf.Config.DisplayNameFromDS != outvf.Config.DisplayNameFromDS {
+					t.Errorf("got %v, want %v", vf.Config.DisplayNameFromDS, outvf.Config.DisplayNameFromDS)
 				}
 				if vf.Len() != 3 {
 					t.Errorf("got %v, want %v", vf.Len(), 3)
