@@ -7,12 +7,12 @@ For example if width of panel is 300 px and time range is 1 hour (= 3600 seconds
 
 ## Auto raw operation
 When a binning interval is less than 1 second, raw data is retrieved even if other operator is set.
-To disable auto raw operation, [disableAutoRaw](functions.md#disableAutoRaw) function is available.
+To disable auto raw operation, [disableAutoRaw](functions.md#disableautoraw) function is available.
 
 ## Extrapolation for raw operation
-In raw operator mode, the retrieved data is extrapolated by last data value. 
+In raw operator mode, the retrieved data is extrapolated by last data value.
 This feature prevents a graph from cutting of or not being desplayed.
-To disable the extrapolation, [disableExtrapol](functions.md#disableExtrapol) function is available.
+To disable the extrapolation, [disableExtrapol](functions.md#disableextrapol) function is available.
 
 ## Array data support
 The plugin supports array data from version 1.2.0.

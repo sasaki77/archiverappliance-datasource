@@ -1,24 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Query Edit &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
+  <title>Query Edit &mdash; Archiver Appliance Datasource 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5f1687b9" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=af2ce170"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=73cda6fb"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -111,10 +109,10 @@
 <td><p>Enable/Disable Regex mode. Refer <a class="reference internal" href="#select-multiple-pvs-by-regex">Select Multiple PVs by Regex</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Operator</strong></p></td>
-<td><p>Controls processing of data during data retrieval (Default: <code class="docutils literal notranslate"><span class="pre">mean</span></code>). Refer <a class="reference external" href="https://slacmshankar.github.io/epicsarchiver_docs/userguide.html">Archiver Appliance User Guide</a> about processing of data. Special operator <code class="docutils literal notranslate"><span class="pre">raw</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> are also available. <code class="docutils literal notranslate"><span class="pre">raw</span></code> allows to retrieve the data without processing. <code class="docutils literal notranslate"><span class="pre">last</span></code> allows to retrieve the last data in the specified time range.</p></td>
+<td><p>Controls processing of data during data retrieval (Default: <code class="docutils literal notranslate"><span class="pre">mean</span></code>). Refer <a class="reference external" href="https://epicsarchiver.readthedocs.io/en/latest/user/userguide.html#processing-of-data">Archiver Appliance User Guide</a> about processing of data. Special operator <code class="docutils literal notranslate"><span class="pre">raw</span></code> and <code class="docutils literal notranslate"><span class="pre">last</span></code> are also available. <code class="docutils literal notranslate"><span class="pre">raw</span></code> allows to retrieve the data without processing. <code class="docutils literal notranslate"><span class="pre">last</span></code> allows to retrieve the last data in the specified time range.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Stream</strong></p></td>
-<td><p>Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. The difference data from the last updated values is only retrieved.</p></td>
+<td><p>Enable/Disable Stream mode. Stream allows to periodically update the data without refreshing the dashboard. Only the updated data from the last updat time will be retrieved.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Interval</strong></p></td>
 <td><p>Streaming interval in milliseconds. You can also use a number with unit. e.g. <code class="docutils literal notranslate"><span class="pre">1s</span></code>, <code class="docutils literal notranslate"><span class="pre">1m</span></code>, <code class="docutils literal notranslate"><span class="pre">1h</span></code>. The default is determined by a width of panel and time range.</p></td>
@@ -150,7 +148,7 @@ To enable Regex mode, click <code class="docutils literal notranslate"><span cla
 <p>The plugin supports only <strong>wildcard pattern</strong> and <strong>alternation pattern</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Maximum number of PVs you can select on Regex mode is <strong>100</strong> in default.  <a class="reference internal" href="functions.html#maxNumPVs"><span class="std std-ref">maxNumPVs</span></a> function is available to change maximum number.</p>
+<p>Maximum number of PVs you can select on Regex mode is <strong>100</strong> in default.  <a class="reference internal" href="functions.html#maxnumpvs"><span class="std std-ref">maxNumPVs</span></a> function is available to change maximum number.</p>
 </div>
 <section id="wildcard-pattern">
 <h3>Wildcard Pattern<a class="headerlink" href="#wildcard-pattern" title="Permalink to this heading"></a></h3>
@@ -218,7 +216,7 @@ You can create alerts on <code class="docutils literal notranslate"><span class=
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2019-2022, Shinya Sasaki.</p>
+    <p>&#169; Copyright 2019-2024, Shinya Sasaki.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

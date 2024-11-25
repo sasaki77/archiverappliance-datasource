@@ -1,24 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Functions &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
+  <title>Functions &mdash; Archiver Appliance Datasource 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5f1687b9" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=af2ce170"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=73cda6fb"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -145,6 +143,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#options-functions">Options Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fieldname"><em>fieldName</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fieldName"><code class="docutils literal notranslate"><span class="pre">fieldName()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#maxnumpvs"><em>maxNumPVs</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#maxNumPVs"><code class="docutils literal notranslate"><span class="pre">maxNumPVs()</span></code></a></li>
 </ul>
@@ -159,6 +161,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#disableextrapol"><em>disableExtrapol</em></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#disableExtrapol"><code class="docutils literal notranslate"><span class="pre">disableExtrapol()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#hideinvalid"><em>hideInvalid</em></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hidInvalid"><code class="docutils literal notranslate"><span class="pre">hidInvalid()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#arrayformat"><em>arrayFormat</em></a><ul>
@@ -473,6 +479,22 @@ Available <em>value</em> is as following: <em>avg</em>, <em>min</em>, <em>max</e
 </section>
 <section id="options-functions">
 <h2>Options Functions<a class="headerlink" href="#options-functions" title="Permalink to this heading"></a></h2>
+<section id="fieldname">
+<h3><em>fieldName</em><a class="headerlink" href="#fieldname" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="fieldName">
+<span class="sig-name descname"><span class="pre">fieldName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fieldName" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>Set the field name to be retrieved. <code class="docutils literal notranslate"><span class="pre">VAL</span></code>, <code class="docutils literal notranslate"><span class="pre">SEVR</span></code> and <code class="docutils literal notranslate"><span class="pre">STAT</span></code> are currently supported. <code class="docutils literal notranslate"><span class="pre">SEVR</span></code> and <code class="docutils literal notranslate"><span class="pre">STAT</span></code> can be retrieved as Enum data by setting <code class="docutils literal notranslate"><span class="pre">SEVR</span> <span class="pre">as</span> <span class="pre">Enum</span></code> or <code class="docutils literal notranslate"><span class="pre">STAT</span> <span class="pre">as</span> <span class="pre">Enum</span></code>.
+This function is only effective if you are using the backend data retrieval.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">fieldName</span><span class="p">(</span><span class="nx">VAL</span><span class="p">)</span>
+<span class="nx">fieldName</span><span class="p">(</span><span class="nx">SEVR</span><span class="p">)</span>
+<span class="nx">fieldName</span><span class="p">(</span><span class="nx">SEVR</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Enum</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="maxnumpvs">
 <h3><em>maxNumPVs</em><a class="headerlink" href="#maxnumpvs" title="Permalink to this heading"></a></h3>
 <dl class="py function">
@@ -525,6 +547,22 @@ For example, if binInterval is set 100 and operator in query is set mean then re
 <p>Examples:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
 <span class="nx">disableExtrapol</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="hideinvalid">
+<h3><em>hideInvalid</em><a class="headerlink" href="#hideinvalid" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="hidInvalid">
+<span class="sig-name descname"><span class="pre">hidInvalid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#hidInvalid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>Hide the sample data whose severity is invalid with a null value.
+<a class="reference internal" href="configuration.html#misc"><span class="std std-ref">Default setting</span></a> can be overwritten by this function.
+This function is only effective if you are using the backend data retrieval and data is not string or array.</p>
+<p>Examples:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">hideInvalid</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="nx">hideInvalid</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -679,7 +717,7 @@ This function ignores such errors.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2019-2022, Shinya Sasaki.</p>
+    <p>&#169; Copyright 2019-2024, Shinya Sasaki.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

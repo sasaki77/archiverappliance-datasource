@@ -1,24 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configuration &mdash; Archiver Appliance Datasource 1.0.0 documentation</title>
+  <title>Configuration &mdash; Archiver Appliance Datasource 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5f1687b9" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=af2ce170"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=73cda6fb"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -110,14 +108,9 @@ more information.</p>
 <section id="http">
 <h3>HTTP<a class="headerlink" href="#http" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>URL:</strong> set <code class="docutils literal notranslate"><span class="pre">retrieval</span> <span class="pre">url</span></code> end with retrieval.</p></li>
-<li><p><strong>Access:</strong> controls how requests to the data source will be handled. Only <code class="docutils literal notranslate"><span class="pre">Server</span></code> mode is tested in this plugin.</p>
-<ul>
-<li><p><strong>Server:</strong> Grafana backend/server forwards the requests to the Archiver Appliance server.</p></li>
-<li><p><strong>Browser:</strong> directly access to the Archiver Appliance server from the browser.</p></li>
-</ul>
-</li>
-<li><p><strong>Whitelisted Cookies:</strong> no need to configure.</p></li>
+<li><p><strong>URL:</strong> sets <code class="docutils literal notranslate"><span class="pre">retrieval</span> <span class="pre">url</span></code> end with retrieval.</p></li>
+<li><p><strong>Allowed Cookies:</strong> no need to configure.</p></li>
+<li><p><strong>Timeout:</strong> sets HTTP request timeout in seconds if you need.</p></li>
 </ul>
 </section>
 <section id="auth">
@@ -127,7 +120,11 @@ more information.</p>
 <section id="misc">
 <h3>Misc<a class="headerlink" href="#misc" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Use Backend:</strong> enable GO backend to retrieve the archive data for visualization. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client.</p></li>
+<li><p><strong>Use Backend:</strong> enables GO backend to retrieve the archive data for visualization. The archived data is retrieved and processed on Grafana server, then the data is sent to Grafana client.</p></li>
+<li><p><strong>Default Operator:</strong> controls the default operator for processing of data during data retrieval.</p></li>
+<li><p><strong>Hide Invalid:</strong> hides the sample data whose severity is invalid with a null value. This feature is only effective if you are using the backend data retrieval.</p></li>
+<li><p><strong>Use live feature:</strong> enables live updating with PVWS WebSocket server.</p></li>
+<li><p><strong>PVWS URI:</strong> sets the URI for the PVWS WebSocket server.</p></li>
 </ul>
 </section>
 </section>
@@ -144,7 +141,7 @@ more information.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2019-2022, Shinya Sasaki.</p>
+    <p>&#169; Copyright 2019-2024, Shinya Sasaki.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
