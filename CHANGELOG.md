@@ -1,5 +1,5 @@
 # Change Log
-## 2.0.0 (2024-12-xx)
+## 2.0.0 (2024-11-25)
 
 ### Enhancements
 - **Backend**: Migrate retrieval format from qw JSON to PB raw
