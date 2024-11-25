@@ -99,8 +99,8 @@ func TestToFrameScalar(t *testing.T) {
 			if result.Fields[0].Len() != testCase.dataSize {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
-			if testCase.name != result.Fields[1].Config.DisplayName {
-				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			if testCase.name != result.Fields[1].Config.DisplayNameFromDS {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayNameFromDS, testCase.name)
 			}
 			if testCase.pvname != result.Fields[1].Labels["pvname"] {
 				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
@@ -154,8 +154,8 @@ func TestToFrameString(t *testing.T) {
 			if result.Fields[0].Len() != testCase.dataSize {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
-			if testCase.name != result.Fields[1].Config.DisplayName {
-				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			if testCase.name != result.Fields[1].Config.DisplayNameFromDS {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayNameFromDS, testCase.name)
 			}
 			if testCase.pvname != result.Fields[1].Labels["pvname"] {
 				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)
@@ -216,8 +216,8 @@ func TestToFrameArray(t *testing.T) {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
 			for idx, v := range result.Fields[1:] {
-				if testCase.fieldNames[idx] != v.Config.DisplayName {
-					t.Errorf("got %v, want %v", v.Config.DisplayName, testCase.fieldNames[idx])
+				if testCase.fieldNames[idx] != v.Config.DisplayNameFromDS {
+					t.Errorf("got %v, want %v", v.Config.DisplayNameFromDS, testCase.fieldNames[idx])
 				}
 				if testCase.pvname != v.Labels["pvname"] {
 					t.Errorf("got %v, want %v", v.Labels["pvname"], testCase.pvname)
@@ -287,8 +287,8 @@ func TestToFrameDtSpaceArray(t *testing.T) {
 				}
 			}
 			for idx, v := range result.Fields[1:] {
-				if testCase.fieldNames[idx] != v.Config.DisplayName {
-					t.Errorf("got %v, want %v", v.Config.DisplayName, testCase.fieldNames[idx])
+				if testCase.fieldNames[idx] != v.Config.DisplayNameFromDS {
+					t.Errorf("got %v, want %v", v.Config.DisplayNameFromDS, testCase.fieldNames[idx])
 				}
 				if testCase.pvname != v.Labels["pvname"] {
 					t.Errorf("got %v, want %v", v.Labels["pvname"], testCase.pvname)
@@ -354,8 +354,8 @@ func TestToFrameIndexArray(t *testing.T) {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
 			for idx, v := range result.Fields[1:] {
-				if testCase.fieldNames[idx] != v.Config.DisplayName {
-					t.Errorf("got %v, want %v", v.Config.DisplayName, testCase.fieldNames[idx])
+				if testCase.fieldNames[idx] != v.Config.DisplayNameFromDS {
+					t.Errorf("got %v, want %v", v.Config.DisplayNameFromDS, testCase.fieldNames[idx])
 				}
 				if testCase.pvname != v.Labels["pvname"] {
 					t.Errorf("got %v, want %v", v.Labels["pvname"], testCase.pvname)
@@ -421,8 +421,8 @@ func TestToFrameIndexArrayInJST(t *testing.T) {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
 			for idx, v := range result.Fields[1:] {
-				if testCase.fieldNames[idx] != v.Config.DisplayName {
-					t.Errorf("got %v, want %v", v.Config.DisplayName, testCase.fieldNames[idx])
+				if testCase.fieldNames[idx] != v.Config.DisplayNameFromDS {
+					t.Errorf("got %v, want %v", v.Config.DisplayNameFromDS, testCase.fieldNames[idx])
 				}
 				if testCase.pvname != v.Labels["pvname"] {
 					t.Errorf("got %v, want %v", v.Labels["pvname"], testCase.pvname)
@@ -483,8 +483,8 @@ func TestToFrameEnum(t *testing.T) {
 			if result.Fields[0].Len() != testCase.dataSize {
 				t.Errorf("got %d, want %d", result.Fields[0].Len(), testCase.dataSize)
 			}
-			if testCase.name != result.Fields[1].Config.DisplayName {
-				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayName, testCase.name)
+			if testCase.name != result.Fields[1].Config.DisplayNameFromDS {
+				t.Errorf("got %v, want %v", result.Fields[1].Config.DisplayNameFromDS, testCase.name)
 			}
 			if testCase.pvname != result.Fields[1].Labels["pvname"] {
 				t.Errorf("got %v, want %v", result.Fields[1].Labels["pvname"], testCase.pvname)

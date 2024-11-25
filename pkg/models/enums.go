@@ -63,7 +63,7 @@ func (v *Enums) ToFields(pvname string, name string, format FormatOption) []*dat
 
 	valueField := data.NewField(name, labels, v.Values)
 	tc := &data.FieldTypeConfig{Enum: &v.EnumConfig}
-	valueField.Config = &data.FieldConfig{DisplayName: name, TypeConfig: tc}
+	valueField.Config = &data.FieldConfig{DisplayNameFromDS: name, TypeConfig: tc}
 	fields = append(fields, valueField)
 
 	return fields

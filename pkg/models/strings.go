@@ -36,7 +36,7 @@ func (v *Strings) ToFields(pvname string, name string, format FormatOption) []*d
 	labels["pvname"] = pvname
 
 	valueField := data.NewField(name, labels, v.Values)
-	valueField.Config = &data.FieldConfig{DisplayName: name}
+	valueField.Config = &data.FieldConfig{DisplayNameFromDS: name}
 	fields = append(fields, valueField)
 
 	return fields

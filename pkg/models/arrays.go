@@ -70,7 +70,7 @@ func (v *Arrays) makeDtSpaceFields(pvname string, name string) []*data.Field {
 	labels["pvname"] = pvname
 
 	valueField := data.NewField(name, labels, vals)
-	valueField.Config = &data.FieldConfig{DisplayName: name}
+	valueField.Config = &data.FieldConfig{DisplayNameFromDS: name}
 	fields = append(fields, valueField)
 
 	return fields
@@ -94,7 +94,7 @@ func (v *Arrays) makeIndexFields(pvname string) []*data.Field {
 
 		n := v.Times[idx].Local().Format("2006-01-02T15:04:05.000Z07:00")
 		valueField := data.NewField(n, labels, datapoint[0:dataLen])
-		valueField.Config = &data.FieldConfig{DisplayName: n}
+		valueField.Config = &data.FieldConfig{DisplayNameFromDS: n}
 		fields = append(fields, valueField)
 	}
 
@@ -115,7 +115,7 @@ func (v *Arrays) makeTimeseriesFields(pvname string, name string) []*data.Field 
 
 		n := fmt.Sprintf("%s[%d]", name, idx)
 		valueField := data.NewField(n, labels, datapoint)
-		valueField.Config = &data.FieldConfig{DisplayName: n}
+		valueField.Config = &data.FieldConfig{DisplayNameFromDS: n}
 		fields = append(fields, valueField)
 	}
 
