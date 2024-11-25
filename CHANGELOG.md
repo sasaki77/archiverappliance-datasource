@@ -1,4 +1,16 @@
 # Change Log
+## 2.0.0 (2024-12-xx)
+
+### Enhancements
+- **Backend**: Migrate retrieval format from qw JSON to PB raw
+- **Backend**: Add the `fieldName` function to handle the severity of PV
+- **Backend**: Add the `hideInvalid` feature to hide data with invalid level severity
+- **Frontend**:Remove gf-form appearances in QueryEditor
+
+### Bug fixes
+- **Frontend**: Fix extrapolation for stream with raw operation
+
+
 ## 1.6.1 (2024-01-22)
 
 ### Enhancements
