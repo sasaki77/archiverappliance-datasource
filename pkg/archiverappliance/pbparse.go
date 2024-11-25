@@ -69,11 +69,11 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			continue
 		}
 
-		escapedLine := unescapeLine(line)
+		unescapedLine := unescapeLine(line)
 
 		// Find a chunk
 		if !inChunk {
-			if err := proto.Unmarshal(escapedLine, info); err != nil {
+			if err := proto.Unmarshal(unescapedLine, info); err != nil {
 				log.DefaultLogger.Error("Failed to parse paylod info:", err)
 			}
 
@@ -89,22 +89,9 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			}
 
 			// Inialialize values
-			switch messageType {
-			case MessageType_Numeric:
-				values = models.NewSclars(initialCapacity)
-			case MessageType_String:
-				values = models.NewStrings(initialCapacity)
-			case MessageType_Array:
-				values = models.NewArrays(initialCapacity)
-			case MessageType_Enum:
-				switch field {
-				case models.FIELD_NAME_SEVR_AS_ENUM:
-					values = models.NewSevirityEnums(initialCapacity)
-				case models.FIELD_NAME_STAT_AS_ENUM:
-					values = models.NewStatusEnums(initialCapacity)
-				default:
-					return sD, errIllegalFieldName
-				}
+			values, err = getInitializedValues(messageType, field, initialCapacity)
+			if err != nil {
+				return sD, err
 			}
 
 			continue
@@ -118,32 +105,32 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, sec, nano, err = getNumericValue(escapedLine, dataType, hideInvalid)
+				value, sec, nano, err = getNumericValue(unescapedLine, dataType, hideInvalid)
 			} else {
-				value, sec, nano, err = getMetaValue(escapedLine, dataType, field)
+				value, sec, nano, err = getMetaValue(unescapedLine, dataType, field)
 			}
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Arrays:
-			value, sec, nano, err := getArrayValue(escapedLine, dataType)
+			value, sec, nano, err := getArrayValue(unescapedLine, dataType)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Strings:
-			value, sec, nano, err := getStringValue(escapedLine)
+			value, sec, nano, err := getStringValue(unescapedLine)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
-			value, sec, nano, err := getMetaValue(escapedLine, dataType, field)
+			value, sec, nano, err := getMetaValue(unescapedLine, dataType, field)
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
@@ -151,7 +138,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			if value == nil {
 				continue
 			}
-			t := time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+			t := calcTime(year, sec, nano)
 			v.Append(int16(*value), t)
 		default:
 			return sD, errIllegalPayloadType
@@ -386,4 +373,30 @@ func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageTyp
 	}
 
 	return -1, errIllegalPayloadType
+}
+
+func getInitializedValues(mtype MessageType, field models.FieldName, capacity int) (values models.Values, err error) {
+	switch mtype {
+	case MessageType_Numeric:
+		values = models.NewSclars(capacity)
+	case MessageType_String:
+		values = models.NewStrings(capacity)
+	case MessageType_Array:
+		values = models.NewArrays(capacity)
+	case MessageType_Enum:
+		switch field {
+		case models.FIELD_NAME_SEVR_AS_ENUM:
+			values = models.NewSevirityEnums(capacity)
+		case models.FIELD_NAME_STAT_AS_ENUM:
+			values = models.NewStatusEnums(capacity)
+		default:
+			return nil, errIllegalFieldName
+		}
+	}
+
+	return values, nil
+}
+
+func calcTime(year int32, sec uint32, nano uint32) time.Time {
+	return time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -178,7 +177,7 @@ func archiverRegexQuery(queryUrl string) ([]byte, error) {
 	}
 
 	// Convert get request response to variable and close the file
-	jsonAsBytes, ioErr := ioutil.ReadAll(httpResponse.Body)
+	jsonAsBytes, ioErr := io.ReadAll(httpResponse.Body)
 	httpResponse.Body.Close()
 	if ioErr != nil {
 		log.DefaultLogger.Warn("Parsing of incoming data has failed", "Error", ioErr)
