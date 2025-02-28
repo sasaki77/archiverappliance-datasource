@@ -36,19 +36,19 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
 
   // Called from Grafana panels to get data
   query(options: DataQueryRequest<AAQuery>): Observable<DataQueryResponse> {
-    // Remove hidden target from query
     const query = { ...options };
-    query.targets = _.filter(query.targets, (t) => !t.hide);
 
     const query_replaced = this.replaceVariables(query);
-    const targets = this.buildQueryParameters(query_replaced);
+    query_replaced.targets = this.filterTargets(query_replaced.targets);
 
     // There're no target query
-    if (targets.length <= 0) {
+    if (query_replaced.targets.length <= 0) {
       return new Observable<DataQueryResponse>((subscriber) => {
         subscriber.next({ data: [] });
       });
     }
+
+    const targets = this.buildQueryParameters(query_replaced);
 
     const stream = _.filter(targets, (t) => t.stream);
 
@@ -128,11 +128,16 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     return query;
   }
 
+  filterTargets(targets: AAQuery[]): AAQuery[] {
+    // Remove unnecessary targets
+    // 1) hidden target
+    // 2) placeholder target
+    // 3) undefined target
+    return _.filter(targets, (t) => !t.hide && t.target !== '' && typeof t.target !== 'undefined');
+  }
+
   buildQueryParameters(options: DataQueryRequest<AAQuery>) {
     const query = { ...options };
-
-    // remove placeholder targets and undefined targets
-    query.targets = _.filter(query.targets, (target) => target.target !== '' && typeof target.target !== 'undefined');
 
     if (query.targets.length <= 0) {
       return [];
