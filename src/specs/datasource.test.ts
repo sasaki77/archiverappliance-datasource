@@ -300,6 +300,22 @@ describe('Archiverappliance Datasource', () => {
     });
   });
 
+  describe('Filter targets tests', () => {
+    it('should return filtered array when target is empty or undefined', (done) => {
+      const t = [
+        { target: 'PV', refId: 'A' },
+        { target: '', refId: 'B' },
+        { target: undefined, refId: 'C' },
+        { target: 'PV', refId: 'C', hide: true },
+      ] as unknown as AAQuery[];
+
+      const targets = ds.filterTargets(t);
+
+      expect(targets).toHaveLength(1);
+      done();
+    });
+  });
+
   describe('Build query parameters tests', () => {
     it('should return valid interval time in integer', (done) => {
       const options = {
@@ -326,23 +342,6 @@ describe('Archiverappliance Datasource', () => {
 
       expect(targets).toHaveLength(1);
       expect(targets[0].interval).toBe('');
-      done();
-    });
-
-    it('should return filtered array when target is empty or undefined', (done) => {
-      const options = {
-        targets: [
-          { target: 'PV', refId: 'A' },
-          { target: '', refId: 'B' },
-          { target: undefined, refId: 'C' },
-        ],
-        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:30.000Z') },
-        maxDataPoints: 1000,
-      } as unknown as DataQueryRequest<AAQuery>;
-
-      const targets = ds.buildQueryParameters(options);
-
-      expect(targets).toHaveLength(1);
       done();
     });
 
