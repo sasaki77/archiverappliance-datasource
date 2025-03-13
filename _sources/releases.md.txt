@@ -1,4 +1,12 @@
 # Release Notes
+## 2.0.1
+
+**2025-03-14**
+
+### Bug fixes
+- **Frontend**: Pass filtered queries to Go backend
+- **Backend**: Fix to return error if a http status code is not 200
+
 ## 2.0.0
 
 **2024-11-25**
