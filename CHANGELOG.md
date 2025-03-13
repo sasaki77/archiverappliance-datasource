@@ -1,4 +1,10 @@
 # Change Log
+## 2.0.1 (2025-03-14)
+
+### Bug fixes
+- **Frontend**: Pass filtered queries to Go backend
+- **Backend**: Fix to return error if a http status code is not 200
+
 ## 2.0.0 (2024-11-25)
 
 ### Enhancements
@@ -9,7 +15,6 @@
 
 ### Bug fixes
 - **Frontend**: Fix extrapolation for stream with raw operation
-
 
 ## 1.6.1 (2024-01-22)
 
