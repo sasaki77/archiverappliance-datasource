@@ -51,13 +51,19 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 	}
 
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
-	queryResponse, _ := archiverSingleQuery(queryUrl)
+	queryResponse, err := archiverSingleQuery(queryUrl)
+
+	if err != nil {
+		err = fmt.Errorf("url = %q: %w", queryUrl, err)
+		return models.SingleData{}, err
+	}
 
 	defer queryResponse.Close()
 
 	parsedResponse, err := archiverPBSingleQueryParser(queryResponse, models.FieldName(qm.FieldName), qm.MaxDataPoints, qm.HideInvalid)
 	if err != nil {
 		err = fmt.Errorf("target = %q: %w", target, err)
+		return parsedResponse, err
 	}
 
 	parsedResponse.Name = target
@@ -133,6 +139,11 @@ func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
 	if getErr != nil {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
 		return nil, getErr
+	}
+
+	if httpResponse.StatusCode != http.StatusOK {
+		err := fmt.Errorf("required=200, received=%d: %w", httpResponse.StatusCode, errResponseStatusCode)
+		return nil, err
 	}
 
 	return httpResponse.Body, nil

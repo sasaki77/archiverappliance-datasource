@@ -3,6 +3,8 @@ package archiverappliance
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -205,6 +207,20 @@ func TestArchiverRegexQueryParser(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestSingleQueryWithout200StatusCode(t *testing.T) {
+	mockServer := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		},
+	))
+	defer mockServer.Close()
+	_, err := archiverSingleQuery(mockServer.URL)
+
+	if err == nil {
+		t.Errorf("archiverSingleQuery should return error for error status code")
 	}
 }
 
