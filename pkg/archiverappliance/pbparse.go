@@ -50,6 +50,17 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	// Use ReadBytes insetead of bufioc.Scanner to handle large size array
 	reader := bufio.NewReader(in)
 
+	// Check if response data is valid
+	_, err := reader.Peek(1)
+	if err != nil {
+		// Peek(1) returns EOF error if its size is 0
+		if err == io.EOF {
+			return sD, errEmptyResponse
+		}
+		// Other errors should be handled as parse errors
+		return sD, errFailedToParsePBFormat
+	}
+
 	var values models.Values
 	for {
 		lineWithDelim, err := reader.ReadBytes('\n')
@@ -145,8 +156,13 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		}
 	}
 
-	sD.Name = *info.Pvname
-	sD.PVname = *info.Pvname
+	pvname := info.GetPvname()
+	if pvname == "" {
+		return sD, errFailedToParsePBFormat
+	}
+
+	sD.Name = pvname
+	sD.PVname = pvname
 	sD.Values = values
 
 	return sD, nil
