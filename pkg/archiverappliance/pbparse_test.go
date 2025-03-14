@@ -580,6 +580,21 @@ func TestParseSevInvalidData(t *testing.T) {
 	}
 }
 
+func TestParseEmptyData(t *testing.T) {
+	f, err := os.Open("../test_data/pb/empty_data")
+
+	if err != nil {
+		t.Fatalf("Failed to load test data: %v", err)
+	}
+
+	defer f.Close()
+
+	_, err = archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, false)
+	if err != errEmptyResponse {
+		t.Fatalf("parser should return response empty error: %v", err)
+	}
+}
+
 func BenchmarkPBparseOneday(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
