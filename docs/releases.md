@@ -1,4 +1,11 @@
 # Release Notes
+## 2.0.2
+
+**2025-03-17**
+
+### Bug fixes
+- **Backend**: Fix to handle an empty response in pb parser
+
 ## 2.0.1
 
 **2025-03-14**
