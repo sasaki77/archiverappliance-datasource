@@ -99,25 +99,25 @@ Node version v12.x is recommended. If you're new to the Node.js ecosystem, [Node
 [grafana-toolkit](https://github.com/grafana/grafana/tree/master/packages/grafana-toolkit) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
 
 1. Begin by installing Yarn (https://yarnpkg.com/)
-```BASH
+```bash
 npm install -g yarn
 ```
 
 2. Install dependencies
-```BASH
+```bash
 yarn install
 ```
 
 3. Build plugin in development mode or run in watch mode
-```BASH
+```bash
 yarn dev
 ```
 or
-```BASH
+```bash
 yarn watch
 ```
 4. Build plugin in production mode
-```BASH
+```bash
 yarn build
 ```
 
@@ -132,23 +132,48 @@ go get -u github.com/grafana/grafana-plugin-sdk-go
 ```
 
 2. Build backend plugin binaries for Linux, Windows and Darwin:
-```BASH
+```bash
 mage -v
 ```
 
 3. List all available Mage targets for additional commands:
-```BASH
+```bash
 mage -l
 ```
 
 ## Build documentation
 
-```
+```bash
 python -m venv env
 source env/bin/activate
 pip install sphinx myst-parser sphinx_rtd_theme
+cd docs
 make html
 ```
+
+## Development Environment
+
+[Development Containers](https://containers.dev/) is available for development.
+You can launch a development container directly from Visual Studio Code.
+
+The repository also includes a `docker-compose.yaml` file for the test environment.
+The compose file defines the following four containers:
+
+- `grafana`
+- `mariadb`
+- `archappl`
+- `ioc`
+
+The `ioc` container automatically runs softIoc.
+
+The Archiver Appliance also starts automatically in the `archappl` container.
+However, no PVs are registered by default. You need to register PVs manually for archiving.
+
+The Grafana server runs in the `grafana` container.
+To retrieve data from `archappl`, you need to add a new data source using this plugin.
+Use the following URL to access data from `archappl`:
+`http://archappl:8080/retrieval`
+
 
 ## Build Status
 

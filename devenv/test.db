@@ -1,0 +1,56 @@
+record(calc, "TEST:PV1") {
+    field(SCAN, "1 second")
+    field(CALC, "VAL>9?0:VAL+1")
+    field(HIHI, "9")
+    field(HIGH, "7")
+    field(LOW,  "2")
+    field(LOLO, "4")
+    field(HHSV, "MAJOR")
+    field(HSV,  "MINOR")
+    field(LSV,  "MINOR")
+    field(LLSV, "MAJOR")
+}
+
+record(calc, "TEST:PV2") {
+    field(SCAN, "1 second")
+    field(CALC, "VAL>9?0:VAL+1")
+    field(HIHI, "9")
+    field(HIGH, "7")
+    field(LOW,  "2")
+    field(LOLO, "4")
+    field(HHSV, "MAJOR")
+    field(HSV,  "MINOR")
+    field(LSV,  "MINOR")
+    field(LLSV, "MAJOR")
+}
+
+record(bo, "TEST:BO") {
+    field(ZNAM, "Zero")
+    field(ZSV,  "NO_ALARM")
+    field(ONAM, "One")
+    field(OSV,  "MAJOR")
+}
+
+record(mbbo, "TEST:MBBO") {
+    field(ZRST, "zero")
+    field(ONST, "one")
+    field(TWST, "two")
+    field(THST, "three")
+    field(FRST, "four")
+    field(FVST, "five")
+    field(SXST, "six")
+    field(SVST, "seven")
+    field(EIST, "height")
+    field(NIST, "nine")
+    field(TEST, "ten")
+    field(ELST, "eleven")
+    field(TVST, "twelve")
+    field(TTST, "thirteen")
+    field(FTST, "fourteen")
+    field(FFST, "fifteen")
+}
+
+record(waveform, "TEST:WF") {
+    field(NELM, "10")
+    field(FTVL, "FLOAT")
+}

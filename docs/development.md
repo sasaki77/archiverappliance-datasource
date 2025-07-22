@@ -56,9 +56,33 @@ If the Mage build tool is not already installed, you may install it using the in
 ## Build documentation
 This documentation is build by Sphinx. Follow below steps to build documentation.
 
-```
+```bash
 python -m venv env
 source env/bin/activate
 pip install sphinx myst-parser sphinx_rtd_theme
+cd docs
 make html
 ```
+
+## Development Environment
+
+[Development Containers](https://containers.dev/) is available for development.
+You can launch a development container directly from Visual Studio Code.
+
+The repository also includes a `docker-compose.yaml` file for the test environment.
+The compose file defines the following four containers:
+
+- `grafana`
+- `mariadb`
+- `archappl`
+- `ioc`
+
+The `ioc` container automatically runs softIoc.
+
+The Archiver Appliance also starts automatically in the `archappl` container.
+However, no PVs are registered by default. You need to register PVs manually for archiving.
+
+The Grafana server runs in the `grafana` container.
+To retrieve data from `archappl`, you need to add a new data source using this plugin.
+Use the following URL to access data from `archappl`:
+`http://archappl:8080/retrieval`

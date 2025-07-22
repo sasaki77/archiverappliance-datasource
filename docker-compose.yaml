@@ -6,9 +6,56 @@ services:
     build:
       context: ./.config
       args:
-        grafana_version: ${GRAFANA_VERSION:-9.3.8}
+        grafana_image: ${GRAFANA_IMAGE:-grafana}
+    networks:
+      - archapplnet
     ports:
       - 3000:3000/tcp
     volumes:
       - ./dist:/var/lib/grafana/plugins/sasaki77-archiverappliance-datasource
-      - ./provisioning:/etc/grafana/provisioning
+
+  mariadb:
+    hostname: mariadb
+    image: mariadb
+    networks:
+      - archapplnet
+    environment:
+      MYSQL_ROOT_PASSWORD: archappl
+      MYSQL_DATABASE: archappl
+      MYSQL_USER: archappl
+      MYSQL_PASSWORD: archappl
+    volumes:
+      - aad-db:/var/lib/mysql
+      - ./devenv/sql:/docker-entrypoint-initdb.d
+
+  archappl:
+    hostname: archappl
+    image: ghcr.io/archiver-appliance/epicsarchiverap:singletomcat-a81b5e4
+    depends_on:
+      - mariadb
+    networks:
+      - archapplnet
+    ports:
+      - 8080:8080
+    environment:
+      ARCHAPPL_APPLIANCES: /usr/local/tomcat/archappl_conf/singleappliances.xml
+    volumes:
+      - ./devenv:/usr/local/tomcat/archappl_conf
+      - aad-storage:/usr/local/tomcat/storage/
+
+  ioc:
+    image: ghcr.io/epics-containers/epics-base-developer:7.0.8ad3
+    networks:
+      - archapplnet
+    volumes:
+      - ./devenv:/home
+    stdin_open: true
+    tty: true
+    command: ["softIocPVA", "-d", "/home/test.db"]
+
+networks:
+  archapplnet:
+
+volumes:
+  aad-storage:
+  aad-db:
