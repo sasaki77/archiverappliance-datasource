@@ -1052,7 +1052,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
+        expect(result).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values;
@@ -1093,7 +1093,7 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(query).subscribe((result: any) => {
         expect(result.data).toHaveLength(1);
-        expect(result.state).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
+        expect(result).toEqual(expect.not.objectContaining({ state: LoadingState.Streaming }));
         const dataFrame: DataFrame = result.data[0];
         const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values;
