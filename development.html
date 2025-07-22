@@ -57,6 +57,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#build-documentation">Build documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-environment">Development Environment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releases.html">Release Notes</a></li>
@@ -147,12 +148,33 @@
 <section id="build-documentation">
 <h2>Build documentation<a class="headerlink" href="#build-documentation" title="Permalink to this heading"></a></h2>
 <p>This documentation is build by Sphinx. Follow below steps to build documentation.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">env</span>
-<span class="n">source</span> <span class="n">env</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span> <span class="n">myst</span><span class="o">-</span><span class="n">parser</span> <span class="n">sphinx_rtd_theme</span>
-<span class="n">make</span> <span class="n">html</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>env
+<span class="nb">source</span><span class="w"> </span>env/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>sphinx<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
+<span class="nb">cd</span><span class="w"> </span>docs
+make<span class="w"> </span>html
 </pre></div>
 </div>
+</section>
+<section id="development-environment">
+<h2>Development Environment<a class="headerlink" href="#development-environment" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="https://containers.dev/">Development Containers</a> is available for development.
+You can launch a development container directly from Visual Studio Code.</p>
+<p>The repository also includes a <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code> file for the test environment.
+The compose file defines the following four containers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">grafana</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mariadb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">archappl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ioc</span></code></p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">ioc</span></code> container automatically runs softIoc.</p>
+<p>The Archiver Appliance also starts automatically in the <code class="docutils literal notranslate"><span class="pre">archappl</span></code> container.
+However, no PVs are registered by default. You need to register PVs manually for archiving.</p>
+<p>The Grafana server runs in the <code class="docutils literal notranslate"><span class="pre">grafana</span></code> container.
+To retrieve data from <code class="docutils literal notranslate"><span class="pre">archappl</span></code>, you need to add a new data source using this plugin.
+Use the following URL to access data from <code class="docutils literal notranslate"><span class="pre">archappl</span></code>:
+<code class="docutils literal notranslate"><span class="pre">http://archappl:8080/retrieval</span></code></p>
 </section>
 </section>
 
