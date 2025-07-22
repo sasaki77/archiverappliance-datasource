@@ -197,7 +197,7 @@ function makeTimeseriesArrayFields(targetRes: AADataQueryData) {
   const columnValues = _.map(targetRes.data, (datapoint) => datapoint.val);
 
   const rowValues = _.unzip(columnValues);
-  const times = _.map(targetRes.data, (datapoint) => datapoint.millis);
+  const times: number[] = _.map(targetRes.data, (datapoint) => datapoint.millis);
   const fields = [{ name: 'time', type: FieldType.time, values: times }];
 
   // Add fields for each waveform elements

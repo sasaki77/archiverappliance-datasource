@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import ms from 'ms';
+import ms, { StringValue } from 'ms';
 import { CircularDataFrame, DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
@@ -30,7 +30,7 @@ export class StreamQuery {
       doQueryStream(this.aaclient, targets, cirFrames).then((data) => {
         subscriber.next(data);
 
-        const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt)) || intervalMs;
+        const interval = streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue) || intervalMs;
 
         // Create new targets to update interval time
         const new_t = _.map(targets, (target) => {
