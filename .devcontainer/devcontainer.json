@@ -6,12 +6,18 @@
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/devcontainers/features/node:1": {}
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/python:1": {}
 	},
 	"mounts": [
 		{
 			"source": "aad-node-modules",
 			"target": "/workspaces/archiverappliance-datasource/node_modules",
+			"type": "volume"
+		},
+		{
+			"source": "aad-python-env",
+			"target": "/workspaces/archiverappliance-datasource/env",
 			"type": "volume"
 		}
 	],
