@@ -15,10 +15,13 @@
       "name": "Shinya Sasaki",
       "url": "http://www-acc.kek.jp/WWW-ACC-exp/KEKB/control/KEKB-Control-home.html"
     },
-    "keywords": ["EPICS", "Archiver Appliance"],
+    "keywords": [
+      "EPICS",
+      "Archiver Appliance"
+    ],
     "logos": {
-      "small": "img/EPICS_Logo.png",
-      "large": "img/EPICS_Logo.png"
+      "small": "img/EPICS_Logo.svg",
+      "large": "img/EPICS_Logo.svg"
     },
     "links": [
       {
