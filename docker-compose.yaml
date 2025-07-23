@@ -7,12 +7,27 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
+        grafana_version: ${GRAFANA_VERSION:-12.0.2}
+        development: ${DEVELOPMENT:-false}
+        anonymous_auth_enabled: ${ANONYMOUS_AUTH_ENABLED:-true}
     networks:
       - archapplnet
     ports:
       - 3000:3000/tcp
+    security_opt:
+      - 'apparmor:unconfined'
+      - 'seccomp:unconfined'
+    cap_add:
+      - SYS_PTRACE
     volumes:
       - ./dist:/var/lib/grafana/plugins/sasaki77-archiverappliance-datasource
+      - grafana-storage:/var/lib/grafana
+    environment:
+      NODE_ENV: development
+      GF_LOG_FILTERS: plugin.sasaki77-archiverappliance-datasource:debug
+      GF_LOG_LEVEL: debug
+      GF_DATAPROXY_LOGGING: 1
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: sasaki77-archiverappliance-datasource
 
   mariadb:
     hostname: mariadb
@@ -59,3 +74,4 @@ networks:
 volumes:
   aad-storage:
   aad-db:
+  grafana-storage:

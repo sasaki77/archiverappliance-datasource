@@ -13,7 +13,7 @@ export interface FunctionParamProps {
   onRunQuery: () => void;
 }
 
-export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: FunctionParamProps): JSX.Element => {
+export const FunctionParam = ({ param, paramDef, index, onChange, onRunQuery }: FunctionParamProps): React.JSX.Element => {
   const onInputChange = (paramIndex: number, value: any) => {
     onChange(paramIndex, String(value));
     onRunQuery();
