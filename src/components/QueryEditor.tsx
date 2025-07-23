@@ -20,7 +20,7 @@ const colorYellow = '#d69e2e';
 const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
 const SelectInput = (props: any) => <components.Input {...props} isHidden={false} />;
 
-export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): JSX.Element => {
+export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
   const defaultPvOption = query.target ? toOption(query.target) : undefined;
   const defaultOperatorOption = query.operator && query.operator != '' ? toOption(query.operator) : undefined;
 
