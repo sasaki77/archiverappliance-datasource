@@ -2,7 +2,7 @@
 
 Visualize EPICS Archiver Appliance on Grafana.
 
-![Screenshot](https://sasaki77.github.io/archiverappliance-datasource/_images/aa-query-overview.png)
+![Screenshot](https://sasaki77.github.io/archiverappliance-datasource/master/_images/aa-query-overview.png)
 
 
 See [Archiver Appliance site](https://epicsarchiver.readthedocs.io) for more information about Archiver Appliance.
