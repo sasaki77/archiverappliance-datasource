@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.githubpages",
     "sphinx_rtd_theme",
+    "sphinx_multiversion",
     "myst_parser",
 ]
 
@@ -82,7 +83,7 @@ def setup(app):
     app.add_config_value(
         "recommonmark_config",
         {
-            #'url_resolver': lambda url: github_doc_root + url,
+            # 'url_resolver': lambda url: github_doc_root + url,
             "auto_toc_tree_section": "Contents",
             "enable_math": False,
             "enable_inline_math": False,
@@ -94,3 +95,7 @@ def setup(app):
 
 
 autosectionlabel_prefix_document = True
+
+# sphinx-multiversion settings
+smv_tag_whitelist = r'^\d+\.\d+.*$'
+smv_branch_whitelist = 'master'
