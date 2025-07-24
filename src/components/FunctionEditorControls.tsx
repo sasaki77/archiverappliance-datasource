@@ -2,6 +2,8 @@ import React from 'react';
 import { Icon } from '@grafana/ui';
 import { FunctionDescriptor } from '../types';
 
+declare const __VERSION__: string;
+
 export interface FunctionEditorControlsProps {
   onMoveLeft: (func: FunctionDescriptor, index: number) => void;
   onMoveRight: (func: FunctionDescriptor, index: number) => void;
@@ -22,7 +24,10 @@ const FunctionHelpButton = (props: {
       className="pointer"
       name="question-circle"
       onClick={() => {
-        window.open(`https://sasaki77.github.io/archiverappliance-datasource/functions.html#${props.name}`, '_blank');
+        window.open(
+          `https://sasaki77.github.io/archiverappliance-datasource/${__VERSION__}/functions.html#${props.name}`,
+          '_blank'
+        );
       }}
     />
   );
