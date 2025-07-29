@@ -46,7 +46,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
 
   const onOperatorChange = (option: ComboboxOption | null) => {
     if (option === null) {
-      onChange({ ...query, operator: defaultOperator });
+      onChange({ ...query, operator: '' });
       setOperatorOptionValue(undefined);
     } else {
       onChange({ ...query, operator: option.value });
