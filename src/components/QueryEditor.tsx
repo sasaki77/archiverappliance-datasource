@@ -104,7 +104,10 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const useLiveUpdate = datasource.useLiveUpdate || false;
   const customStyles = useStyles2(getStyles);
 
-  const inputClass = cx({
+  const pvInputClass = cx({
+    [customStyles.inputRegexp]: query_.regex,
+  });
+  const aliasInputClass = cx({
     [customStyles.inputRegexp]: Boolean(query_.aliasPattern),
   });
 
@@ -122,15 +125,17 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <Combobox
-            width={56}
-            value={pvOptionValue}
-            options={debounceLoadSuggestions}
-            createCustomValue
-            isClearable
-            onChange={onPVChange}
-            placeholder="PV name"
-          />
+          <div className={pvInputClass}>
+            <Combobox
+              width={56}
+              value={pvOptionValue}
+              options={debounceLoadSuggestions}
+              createCustomValue
+              isClearable
+              onChange={onPVChange}
+              placeholder="PV name"
+            />
+          </div>
         </InlineField>
         <InlineField
           labelWidth={12}
@@ -240,7 +245,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             onChange={onAliasChange}
             onBlur={onRunQuery}
             onKeyDown={onKeydownEnter}
-            className={inputClass}
+            className={aliasInputClass}
           />
         </InlineField>
         <InlineField
