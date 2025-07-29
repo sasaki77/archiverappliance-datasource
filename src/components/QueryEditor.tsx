@@ -2,7 +2,7 @@ import defaults from 'lodash/defaults';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { components } from 'react-select';
-import { InlineSwitch, Select, AsyncSelect, InputActionMeta, Input, InlineField } from '@grafana/ui';
+import { InlineSwitch, AsyncSelect, InputActionMeta, Input, InlineField, Combobox, ComboboxOption } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
 import { GrafanaTheme2 } from '@grafana/data';
 import { InlineFieldRow, useStyles2 } from '@grafana/ui';
@@ -13,16 +13,17 @@ import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescr
 
 import { Functions } from './Functions';
 import { toSelectableValue } from './toSelectableValue';
+import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
 const colorYellow = '#d69e2e';
-const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
+const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 const SelectInput = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
   const defaultPvOption = query.target ? toOption(query.target) : undefined;
-  const defaultOperatorOption = query.operator && query.operator != '' ? toOption(query.operator) : undefined;
+  const defaultOperatorOption = query.operator && query.operator != '' ? toComboboxOption(query.operator) : undefined;
 
   // These states are used to control PV name suggestions with AsyncSelect.
   // The following web pages were consulted.
@@ -31,7 +32,6 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const [pvOptionValue, setPVOptionValue] = useState(defaultPvOption);
   const [pvInputValue, setPVInputValue] = useState(query.target);
   const [operatorOptionValue, setOperatorOptionValue] = useState(defaultOperatorOption);
-  const [operatorInputValue, setOperatorInputValue] = useState(query.operator);
 
   const customStyles = useStyles2(getStyles);
 
@@ -56,15 +56,16 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     onRunQuery();
   };
 
-  const onOperatorChange = (option: SelectableValue) => {
-    const changedOpertor = option && option.value != '' ? option.value : undefined;
-    onChange({ ...query, operator: changedOpertor });
-    setOperatorInputValue(changedOpertor);
-    setOperatorOptionValue(option);
-
-    if (option && option.value !== null) {
-      onRunQuery();
+  const onOperatorChange = (option: ComboboxOption | null) => {
+    if (option === null) {
+      onChange({ ...query, operator: defaultOperator });
+      setOperatorOptionValue(undefined);
+    } else {
+      onChange({ ...query, operator: option.value });
+      setOperatorOptionValue(option);
     }
+
+    onRunQuery();
   };
 
   const onAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -107,18 +108,6 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     // onInputChange => update inputValue
     if (action === 'input-change') {
       setPVInputValue(inputValue);
-    }
-  };
-
-  const onOperatorInputChange = (inputValue: string, { action }: InputActionMeta) => {
-    // onBlur => issue onPVChange with a current input value
-    if (action === 'input-blur') {
-      onOperatorChange(toOption(operatorInputValue));
-    }
-
-    // onInputChange => update inputValue
-    if (action === 'input-change') {
-      setOperatorInputValue(inputValue);
     }
   };
 
@@ -207,19 +196,13 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <Select
+          <Combobox
             width={56}
             value={operatorOptionValue}
-            inputValue={operatorInputValue}
             options={operatorOptions}
             onChange={onOperatorChange}
-            onInputChange={onOperatorInputChange}
-            allowCustomValue
+            createCustomValue
             isClearable
-            createOptionPosition="first"
-            components={{
-              Input: SelectInput,
-            }}
             placeholder={defaultOperator}
           />
         </InlineField>
