@@ -1,49 +1,37 @@
 import defaults from 'lodash/defaults';
+import { css, cx } from '@emotion/css';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { components } from 'react-select';
-import { InlineSwitch, Select, AsyncSelect, InputActionMeta, Input, InlineField } from '@grafana/ui';
-import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
-import { GrafanaTheme2 } from '@grafana/data';
-import { InlineFieldRow, useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
+import { InlineFieldRow, InlineSwitch, Input, InlineField, Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
+import { QueryEditorProps, GrafanaTheme2 } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescriptor } from '../types';
 
 import { Functions } from './Functions';
-import { toSelectableValue } from './toSelectableValue';
+import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
-const colorYellow = '#d69e2e';
-const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
-const SelectInput = (props: any) => <components.Input {...props} isHidden={false} />;
+const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
-  const defaultPvOption = query.target ? toOption(query.target) : undefined;
-  const defaultOperatorOption = query.operator && query.operator != '' ? toOption(query.operator) : undefined;
+  const defaultPvOption = query.target ? toComboboxOption(query.target) : undefined;
+  const defaultOperatorOption = query.operator && query.operator != '' ? toComboboxOption(query.operator) : undefined;
 
-  // These states are used to control PV name suggestions with AsyncSelect.
-  // The following web pages were consulted.
-  // How to set current value or how to enable edit of the selected tag? · Issue #1558 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1558
-  // How to force reload of options? · Issue #1581 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1581
   const [pvOptionValue, setPVOptionValue] = useState(defaultPvOption);
-  const [pvInputValue, setPVInputValue] = useState(query.target);
   const [operatorOptionValue, setOperatorOptionValue] = useState(defaultOperatorOption);
-  const [operatorInputValue, setOperatorInputValue] = useState(query.operator);
 
-  const customStyles = useStyles2(getStyles);
-
-  const onPVChange = (option: SelectableValue) => {
-    const changedTarget = option ? option.value : '';
-    onChange({ ...query, target: changedTarget });
-    setPVInputValue(changedTarget);
-    setPVOptionValue(option);
-
-    if (option && option.value !== null) {
-      onRunQuery();
+  const onPVChange = (option: ComboboxOption | null) => {
+    if (option === null) {
+      onChange({ ...query, target: '' });
+      setPVOptionValue(undefined);
+    } else {
+      onChange({ ...query, target: option.value });
+      setPVOptionValue(option);
     }
+
+    onRunQuery();
   };
 
   const onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -56,15 +44,16 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     onRunQuery();
   };
 
-  const onOperatorChange = (option: SelectableValue) => {
-    const changedOpertor = option && option.value != '' ? option.value : undefined;
-    onChange({ ...query, operator: changedOpertor });
-    setOperatorInputValue(changedOpertor);
-    setOperatorOptionValue(option);
-
-    if (option && option.value !== null) {
-      onRunQuery();
+  const onOperatorChange = (option: ComboboxOption | null) => {
+    if (option === null) {
+      onChange({ ...query, operator: '' });
+      setOperatorOptionValue(undefined);
+    } else {
+      onChange({ ...query, operator: option.value });
+      setOperatorOptionValue(option);
     }
+
+    onRunQuery();
   };
 
   const onAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -98,37 +87,13 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     }
   };
 
-  const onPVInputChange = (inputValue: string, { action }: InputActionMeta) => {
-    // onBlur => issue onPVChange with a current input value
-    if (action === 'input-blur') {
-      onPVChange(toOption(pvInputValue));
-    }
-
-    // onInputChange => update inputValue
-    if (action === 'input-change') {
-      setPVInputValue(inputValue);
-    }
-  };
-
-  const onOperatorInputChange = (inputValue: string, { action }: InputActionMeta) => {
-    // onBlur => issue onPVChange with a current input value
-    if (action === 'input-blur') {
-      onOperatorChange(toOption(operatorInputValue));
-    }
-
-    // onInputChange => update inputValue
-    if (action === 'input-change') {
-      setOperatorInputValue(inputValue);
-    }
-  };
-
   const loadPVSuggestions = (value: string) => {
     const templateSrv = getTemplateSrv();
     const replacedQuery = templateSrv.replace(value, undefined, 'regex');
     const { regex } = query;
     const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
     return datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
-      const suggestions: Array<SelectableValue<string>> = res.map(toSelectableValue);
+      const suggestions: Array<ComboboxOption<string>> = res.map(toComboboxOption);
       return suggestions;
     });
   };
@@ -137,7 +102,14 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const query_ = defaults(query, defaultQuery);
   const defaultOperator = datasource.defaultOperator || 'mean';
   const useLiveUpdate = datasource.useLiveUpdate || false;
-  const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
+  const customStyles = useStyles2(getStyles);
+
+  const pvInputClass = cx({
+    [customStyles.inputRegexp]: query_.regex,
+  });
+  const aliasInputClass = cx({
+    [customStyles.inputRegexp]: Boolean(query_.aliasPattern),
+  });
 
   return (
     <>
@@ -153,24 +125,17 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <AsyncSelect
-            width={56}
-            value={pvOptionValue}
-            inputValue={pvInputValue}
-            defaultOptions
-            allowCustomValue
-            isClearable
-            createOptionPosition="first"
-            components={{
-              Input: SelectInput,
-            }}
-            onInputChange={onPVInputChange}
-            loadOptions={debounceLoadSuggestions}
-            onChange={onPVChange}
-            placeholder="PV name"
-            key={JSON.stringify(pvOptionValue)}
-            className={query.regex ? customStyles.regexinput : ''}
-          />
+          <div className={pvInputClass}>
+            <Combobox
+              width={56}
+              value={pvOptionValue}
+              options={debounceLoadSuggestions}
+              createCustomValue
+              isClearable
+              onChange={onPVChange}
+              placeholder="PV name"
+            />
+          </div>
         </InlineField>
         <InlineField
           labelWidth={12}
@@ -207,19 +172,13 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <Select
+          <Combobox
             width={56}
             value={operatorOptionValue}
-            inputValue={operatorInputValue}
             options={operatorOptions}
             onChange={onOperatorChange}
-            onInputChange={onOperatorInputChange}
-            allowCustomValue
+            createCustomValue
             isClearable
-            createOptionPosition="first"
-            components={{
-              Input: SelectInput,
-            }}
             placeholder={defaultOperator}
           />
         </InlineField>
@@ -283,10 +242,10 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             value={query.alias}
             width={56}
             placeholder="Alias"
-            style={aliasInputStyle}
             onChange={onAliasChange}
             onBlur={onRunQuery}
             onKeyDown={onKeydownEnter}
+            className={aliasInputClass}
           />
         </InlineField>
         <InlineField
@@ -313,10 +272,10 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             value={query.aliasPattern}
             width={52}
             placeholder="Alias regex pattern"
-            style={{ color: colorYellow }}
             onChange={onAliaspatternChange}
             onBlur={onRunQuery}
             onKeyDown={onKeydownEnter}
+            className={customStyles.inputRegexp}
           />
         </InlineField>
       </InlineFieldRow>
@@ -325,8 +284,12 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   );
 };
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  regexinput: css`
-    color: ${colorYellow};
-  `,
-});
+export const getStyles = (theme: GrafanaTheme2) => {
+  return {
+    inputRegexp: css`
+      input {
+        color: ${theme.colors.warning.main};
+      }
+    `,
+  };
+};
