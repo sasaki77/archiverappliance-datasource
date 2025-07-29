@@ -1,49 +1,38 @@
 import defaults from 'lodash/defaults';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { components } from 'react-select';
-import { InlineSwitch, AsyncSelect, InputActionMeta, Input, InlineField, Combobox, ComboboxOption } from '@grafana/ui';
-import { QueryEditorProps, SelectableValue, toOption } from '@grafana/data';
-import { GrafanaTheme2 } from '@grafana/data';
-import { InlineFieldRow, useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
+import { InlineSwitch, Input, InlineField, Combobox, ComboboxOption } from '@grafana/ui';
+import { QueryEditorProps } from '@grafana/data';
+import { InlineFieldRow } from '@grafana/ui';
 import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescriptor } from '../types';
 
 import { Functions } from './Functions';
-import { toSelectableValue } from './toSelectableValue';
 import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
 const colorYellow = '#d69e2e';
 const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
-const SelectInput = (props: any) => <components.Input {...props} isHidden={false} />;
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
-  const defaultPvOption = query.target ? toOption(query.target) : undefined;
+  const defaultPvOption = query.target ? toComboboxOption(query.target) : undefined;
   const defaultOperatorOption = query.operator && query.operator != '' ? toComboboxOption(query.operator) : undefined;
 
-  // These states are used to control PV name suggestions with AsyncSelect.
-  // The following web pages were consulted.
-  // How to set current value or how to enable edit of the selected tag? · Issue #1558 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1558
-  // How to force reload of options? · Issue #1581 · JedWatson/react-select https://github.com/JedWatson/react-select/issues/1581
   const [pvOptionValue, setPVOptionValue] = useState(defaultPvOption);
-  const [pvInputValue, setPVInputValue] = useState(query.target);
   const [operatorOptionValue, setOperatorOptionValue] = useState(defaultOperatorOption);
 
-  const customStyles = useStyles2(getStyles);
-
-  const onPVChange = (option: SelectableValue) => {
-    const changedTarget = option ? option.value : '';
-    onChange({ ...query, target: changedTarget });
-    setPVInputValue(changedTarget);
-    setPVOptionValue(option);
-
-    if (option && option.value !== null) {
-      onRunQuery();
+  const onPVChange = (option: ComboboxOption | null) => {
+    if (option === null) {
+      onChange({ ...query, target: '' });
+      setPVOptionValue(undefined);
+    } else {
+      onChange({ ...query, target: option.value });
+      setPVOptionValue(option);
     }
+
+    onRunQuery();
   };
 
   const onRegexChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -99,25 +88,13 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     }
   };
 
-  const onPVInputChange = (inputValue: string, { action }: InputActionMeta) => {
-    // onBlur => issue onPVChange with a current input value
-    if (action === 'input-blur') {
-      onPVChange(toOption(pvInputValue));
-    }
-
-    // onInputChange => update inputValue
-    if (action === 'input-change') {
-      setPVInputValue(inputValue);
-    }
-  };
-
   const loadPVSuggestions = (value: string) => {
     const templateSrv = getTemplateSrv();
     const replacedQuery = templateSrv.replace(value, undefined, 'regex');
     const { regex } = query;
     const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
     return datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
-      const suggestions: Array<SelectableValue<string>> = res.map(toSelectableValue);
+      const suggestions: Array<ComboboxOption<string>> = res.map(toComboboxOption);
       return suggestions;
     });
   };
@@ -142,23 +119,14 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <AsyncSelect
+          <Combobox
             width={56}
             value={pvOptionValue}
-            inputValue={pvInputValue}
-            defaultOptions
-            allowCustomValue
+            options={debounceLoadSuggestions}
+            createCustomValue
             isClearable
-            createOptionPosition="first"
-            components={{
-              Input: SelectInput,
-            }}
-            onInputChange={onPVInputChange}
-            loadOptions={debounceLoadSuggestions}
             onChange={onPVChange}
             placeholder="PV name"
-            key={JSON.stringify(pvOptionValue)}
-            className={query.regex ? customStyles.regexinput : ''}
           />
         </InlineField>
         <InlineField
@@ -307,9 +275,3 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     </>
   );
 };
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  regexinput: css`
-    color: ${colorYellow};
-  `,
-});
