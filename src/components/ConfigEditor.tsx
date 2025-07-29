@@ -1,10 +1,11 @@
 import React, { PureComponent, ChangeEvent } from 'react';
-import { DataSourceHttpSettings, InlineSwitch, InlineField, Select } from '@grafana/ui';
-import { DataSourcePluginOptionsEditorProps, toOption, SelectableValue } from '@grafana/data';
+import { DataSourceHttpSettings, InlineSwitch, InlineField, Combobox, ComboboxOption } from '@grafana/ui';
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { AADataSourceOptions, operatorList } from '../types';
+import { toComboboxOption } from './utils';
 
 const LABEL_WIDTH = 26;
-const operatorOptions: Array<SelectableValue<string>> = operatorList.map(toOption);
+const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 
 export type Props = DataSourcePluginOptionsEditorProps<AADataSourceOptions>;
 
@@ -22,7 +23,7 @@ export class ConfigEditor extends PureComponent<Props> {
     onOptionsChange({ ...options, jsonData });
   };
 
-  onOperatorChange = (option: SelectableValue) => {
+  onOperatorChange = (option: ComboboxOption) => {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
       ...options.jsonData,
@@ -97,7 +98,7 @@ export class ConfigEditor extends PureComponent<Props> {
             </p>
           }
         >
-          <Select
+          <Combobox
             value={options.jsonData.defaultOperator}
             options={operatorOptions}
             onChange={this.onOperatorChange}
