@@ -1,9 +1,9 @@
 import defaults from 'lodash/defaults';
+import { css, cx } from '@emotion/css';
 import debounce from 'debounce-promise';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { InlineSwitch, Input, InlineField, Combobox, ComboboxOption } from '@grafana/ui';
-import { QueryEditorProps } from '@grafana/data';
-import { InlineFieldRow } from '@grafana/ui';
+import { InlineFieldRow, InlineSwitch, Input, InlineField, Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
+import { QueryEditorProps, GrafanaTheme2 } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, AAQuery, defaultQuery, operatorList, FunctionDescriptor } from '../types';
@@ -13,7 +13,6 @@ import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
 
-const colorYellow = '#d69e2e';
 const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
@@ -103,7 +102,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
   const query_ = defaults(query, defaultQuery);
   const defaultOperator = datasource.defaultOperator || 'mean';
   const useLiveUpdate = datasource.useLiveUpdate || false;
-  const aliasInputStyle = query_.aliasPattern ? { color: colorYellow } : {};
+  const customStyles = useStyles2(getStyles);
+
+  const inputClass = cx({
+    [customStyles.inputRegexp]: Boolean(query_.aliasPattern),
+  });
 
   return (
     <>
@@ -234,10 +237,10 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             value={query.alias}
             width={56}
             placeholder="Alias"
-            style={aliasInputStyle}
             onChange={onAliasChange}
             onBlur={onRunQuery}
             onKeyDown={onKeydownEnter}
+            className={inputClass}
           />
         </InlineField>
         <InlineField
@@ -264,14 +267,24 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             value={query.aliasPattern}
             width={52}
             placeholder="Alias regex pattern"
-            style={{ color: colorYellow }}
             onChange={onAliaspatternChange}
             onBlur={onRunQuery}
             onKeyDown={onKeydownEnter}
+            className={customStyles.inputRegexp}
           />
         </InlineField>
       </InlineFieldRow>
       <Functions funcs={query.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
     </>
   );
+};
+
+export const getStyles = (theme: GrafanaTheme2) => {
+  return {
+    inputRegexp: css`
+      input {
+        color: ${theme.colors.warning.main};
+      }
+    `,
+  };
 };
