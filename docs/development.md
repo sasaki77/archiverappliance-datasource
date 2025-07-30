@@ -5,9 +5,9 @@ This data source plugin consists of both frontend and backend components.
 
 ### Front-end Development
 
-Node version v12.x is recommended. If you're new to the Node.js ecosystem, [Node Version Manager](https://github.com/nvm-sh/nvm) is a good place to start for managing different Node.js installations and environments.
+LTS version of Node.js is recommended. If you're new to the Node.js ecosystem, [Node Version Manager](https://github.com/nvm-sh/nvm) is a good place to start for managing different Node.js installations and environments.
 
-[grafana-toolkit](https://grafana.com/developers/plugin-tools/) is used to develop the plugin. Please refer grafana-toolkit documentation for more information.
+[Grafana's plugin tools](https://grafana.com/developers/plugin-tools/) is used to develop the plugin. Please refer the documentation for more information.
 
 1. Begin by installing Yarn ([https://yarnpkg.com/](https://yarnpkg.com/))
     ```bash
