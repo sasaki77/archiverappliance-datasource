@@ -1,4 +1,14 @@
 # Release Notes
+## 2.1.0
+
+**2025-08-04**
+
+### Enhancements
+- **Frontend**: Migrate the UI components from the deprecated one
+
+### Breaking changes
+- Grafana v11.X.X or earlier is not supported from this version
+
 ## 2.0.2
 
 **2025-03-17**
