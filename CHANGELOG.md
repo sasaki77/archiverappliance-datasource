@@ -1,4 +1,10 @@
 # Change Log
+
+## 2.1.1 (2025-10-26)
+
+### Bug fixes
+- **Backend**: Fix to properly close the socket on a GET request
+
 ## 2.1.0 (2025-08-04)
 
 ### Enhancements
