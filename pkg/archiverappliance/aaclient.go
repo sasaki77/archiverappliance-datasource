@@ -136,17 +136,26 @@ func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) 
 func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
 	// Make the GET request
 	httpResponse, getErr := http.Get(queryUrl)
+
 	if getErr != nil {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
 		return nil, getErr
 	}
+
+	// Return if response is valid
+	if httpResponse.StatusCode == http.StatusOK {
+		return httpResponse.Body, nil
+	}
+
+	// Error handling
+	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
 		err := fmt.Errorf("required=200, received=%d: %w", httpResponse.StatusCode, errResponseStatusCode)
 		return nil, err
 	}
 
-	return httpResponse.Body, nil
+	return nil, fmt.Errorf("get request has failed with unexpected error")
 }
 
 func buildRegexUrl(regex string, baseURL string, limit int) string {
@@ -186,10 +195,10 @@ func archiverRegexQuery(queryUrl string) ([]byte, error) {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
 		return jsonAsBytes, getErr
 	}
+	defer httpResponse.Body.Close()
 
 	// Convert get request response to variable and close the file
 	jsonAsBytes, ioErr := io.ReadAll(httpResponse.Body)
-	httpResponse.Body.Close()
 	if ioErr != nil {
 		log.DefaultLogger.Warn("Parsing of incoming data has failed", "Error", ioErr)
 		return jsonAsBytes, ioErr
