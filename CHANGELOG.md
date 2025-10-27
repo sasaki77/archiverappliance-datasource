@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.2 (2025-10-27)
+
+### Bug fixes
+- **Frontend**: Show an error when the plugin fails to fetch streaming data
+
 ## 2.1.1 (2025-10-26)
 
 ### Bug fixes
