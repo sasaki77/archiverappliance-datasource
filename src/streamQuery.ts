@@ -27,24 +27,32 @@ export class StreamQuery {
       const id = uuidv4();
       const cirFrames: { [key: string]: CircularDataFrame<any> } = {};
 
-      doQueryStream(this.aaclient, targets, cirFrames).then((data) => {
-        subscriber.next(data);
+      doQueryStream(this.aaclient, targets, cirFrames)
+        .then((data) => {
+          subscriber.next(data);
 
-        const interval = streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue) || intervalMs;
+          const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue)) || intervalMs;
 
-        // Create new targets to update interval time
-        const new_t = _.map(targets, (target) => {
-          const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
-          const int = interval >= 1000 ? t_int : '';
+          // Create new targets to update interval time
+          const new_t = _.map(targets, (target) => {
+            const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
+            const int = interval >= 1000 ? t_int : '';
 
-          return {
-            ...target,
-            interval: int,
-          };
+            return {
+              ...target,
+              interval: int,
+            };
+          });
+
+          this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, new_t, id, cirFrames, interval);
+        })
+        .catch((err) => {
+          subscriber.error({
+            message: 'Failed to fetch streaming data',
+            status: 'error',
+            statusText: err.data.message || err.message || 'Unknown error',
+          });
         });
-
-        this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, new_t, id, cirFrames, interval);
-      });
 
       return () => {
         this.timerClear(id);
@@ -60,11 +68,19 @@ export class StreamQuery {
     interval: number
   ) => {
     updateTargetDate(targets);
-    const data = await doQueryStream(this.aaclient, targets, frames);
+    try {
+      const data = await doQueryStream(this.aaclient, targets, frames);
 
-    subscriber.next(data);
-    if (id in this.timerIDs) {
-      this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, targets, id, frames, interval);
+      subscriber.next(data);
+      if (id in this.timerIDs) {
+        this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, targets, id, frames, interval);
+      }
+    } catch (err) {
+      subscriber.error({
+        message: 'Failed to fetch streaming data',
+        status: 'error',
+        statusText: 'Failed to fetch streaming data',
+      });
     }
   };
 
