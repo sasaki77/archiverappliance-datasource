@@ -143,6 +143,7 @@ func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
 	}
 
 	// Return if response is valid
+	// httpResponse must be closed by caller
 	if httpResponse.StatusCode == http.StatusOK {
 		return httpResponse.Body, nil
 	}
@@ -150,12 +151,8 @@ func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
 	// Error handling
 	defer httpResponse.Body.Close()
 
-	if httpResponse.StatusCode != http.StatusOK {
-		err := fmt.Errorf("required=200, received=%d: %w", httpResponse.StatusCode, errResponseStatusCode)
-		return nil, err
-	}
-
-	return nil, fmt.Errorf("get request has failed with unexpected error")
+	err := fmt.Errorf("required=200, received=%d: %w", httpResponse.StatusCode, errResponseStatusCode)
+	return nil, err
 }
 
 func buildRegexUrl(regex string, baseURL string, limit int) string {
