@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
+	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/testhelper"
 )
@@ -217,7 +218,8 @@ func TestSingleQueryWithout200StatusCode(t *testing.T) {
 		},
 	))
 	defer mockServer.Close()
-	_, err := archiverSingleQuery(mockServer.URL)
+	client := new(http.Client)
+	_, err := archiverSingleQuery(mockServer.URL, client)
 
 	if err == nil {
 		t.Errorf("archiverSingleQuery should return error for error status code")
@@ -257,7 +259,8 @@ func TestLiveOnly(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			ctx := context.Background()
-			client, _ := NewAAClient(ctx, "url")
+			httpOptions := httpclient.Options{Timeouts: &httpclient.TimeoutOptions{Timeout: 5 * time.Second}}
+			client, _ := NewAAClient(ctx, "url", httpOptions)
 			result, _ := client.ExecuteSingleQuery(testCase.target, testCase.qm)
 			pvname := "PV:NAME"
 
