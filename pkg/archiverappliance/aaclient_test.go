@@ -218,8 +218,9 @@ func TestSingleQueryWithout200StatusCode(t *testing.T) {
 		},
 	))
 	defer mockServer.Close()
+	ctx := context.Background()
 	client := new(http.Client)
-	_, err := archiverSingleQuery(mockServer.URL, client)
+	_, err := archiverSingleQuery(ctx, mockServer.URL, client)
 
 	if err == nil {
 		t.Errorf("archiverSingleQuery should return error for error status code")
@@ -261,7 +262,7 @@ func TestLiveOnly(t *testing.T) {
 			ctx := context.Background()
 			httpOptions := httpclient.Options{Timeouts: &httpclient.TimeoutOptions{Timeout: 5 * time.Second}}
 			client, _ := NewAAClient(ctx, "url", httpOptions)
-			result, _ := client.ExecuteSingleQuery(testCase.target, testCase.qm)
+			result, _ := client.ExecuteSingleQuery(ctx, testCase.target, testCase.qm)
 			pvname := "PV:NAME"
 
 			if result.Name != pvname {
