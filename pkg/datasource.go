@@ -21,17 +21,17 @@ type ArchiverDatasource struct {
 }
 
 func newArchiverDataSource(ctx context.Context, settings backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	config, err := models.LoadSettings(settings)
+	config, err := models.LoadSettings(ctx, settings)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := archiverappliance.NewAAClient(ctx, config.URL)
+	client, err := archiverappliance.NewAAClient(ctx, config.URL, config.HttpOptions)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ArchiverDatasource{config: config, client: client}, nil
+	return &ArchiverDatasource{config: *config, client: client}, nil
 }
 
 func (td *ArchiverDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {

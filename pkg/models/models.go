@@ -1,12 +1,14 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
+	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
@@ -193,8 +195,9 @@ type DatasourceSettings struct {
 	UseLiveUpdate      bool   `json:"useLiveUpdate"`
 	LiveUpdateURI      string `json:"liveUpdateURI"`
 
-	URL string `json:"-"`
-	UID string `json:"-"`
+	URL         string             `json:"-"`
+	UID         string             `json:"-"`
+	HttpOptions httpclient.Options `json:"-"`
 }
 
 func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (ArchiverQueryModel, error) {
@@ -241,19 +244,26 @@ func ReadQueryModel(query backend.DataQuery, config DatasourceSettings) (Archive
 	return model, nil
 }
 
-func LoadSettings(settings backend.DataSourceInstanceSettings) (DatasourceSettings, error) {
+func LoadSettings(ctx context.Context, settings backend.DataSourceInstanceSettings) (*DatasourceSettings, error) {
 	model := DatasourceSettings{}
 
 	err := json.Unmarshal(settings.JSONData, &model)
 
 	if err != nil {
-		return model, fmt.Errorf("error reading datasource instance settings: %s", err.Error())
+		return &model, fmt.Errorf("error reading datasource instance settings: %s", err.Error())
 	}
+
+	httpOpts, err := settings.HTTPClientOptions(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting HTTP options: %w", err)
+	}
+
+	model.HttpOptions = httpOpts
 
 	model.URL = settings.URL
 	model.UID = settings.UID
 
-	return model, nil
+	return &model, nil
 }
 
 func loadInterval(qm ArchiverQueryModel) (int, error) {

@@ -37,9 +37,9 @@ type queryResponse struct {
 	err      error
 }
 
-func singleQuery(_ context.Context, qm models.ArchiverQueryModel, client Client, config models.DatasourceSettings) backend.DataResponse {
+func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client Client, config models.DatasourceSettings) backend.DataResponse {
 
-	targetPvList := makeTargetPVList(client, qm.Target, qm.Regex, qm.MaxNumPVs)
+	targetPvList := makeTargetPVList(ctx, client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
 	// execute the individual queries
 	responseData := make([]*models.SingleData, 0, len(targetPvList))
@@ -53,7 +53,7 @@ func singleQuery(_ context.Context, qm models.ArchiverQueryModel, client Client,
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
 		go func(targetPv string, pipe chan queryResponse) {
-			parsedResponse, err := client.ExecuteSingleQuery(targetPv, qm)
+			parsedResponse, err := client.ExecuteSingleQuery(ctx, targetPv, qm)
 			pipe <- queryResponse{response: parsedResponse, err: err}
 		}(targetPv, responsePipe)
 	}
@@ -159,7 +159,7 @@ func dataExtrapol(singleResponse *models.SingleData, qm models.ArchiverQueryMode
 	return newResponse
 }
 
-func makeTargetPVList(client Client, target string, regex bool, maxNum int) []string {
+func makeTargetPVList(ctx context.Context, client Client, target string, regex bool, maxNum int) []string {
 	// PV name isolation for syntax like "(PV:NAME:1|PV:NAME:2|...)" is always required even if regex is enabled.
 	// That's because AA sever doesn't support full regular expression.
 	isolatedPvList := isolateBasicQuery(target)
@@ -170,7 +170,7 @@ func makeTargetPVList(client Client, target string, regex bool, maxNum int) []st
 		// assemble the list of PVs to be queried for
 		var regexPvList []string
 		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(v, maxNum)
+			pvs, _ := client.FetchRegexTargetPVs(ctx, v, maxNum)
 			regexPvList = append(regexPvList, pvs...)
 		}
 		targetPvList = regexPvList

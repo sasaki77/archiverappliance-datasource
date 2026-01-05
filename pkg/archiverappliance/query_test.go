@@ -17,7 +17,7 @@ import (
 type fakeClient struct {
 }
 
-func (f fakeClient) FetchRegexTargetPVs(regex string, limit int) ([]string, error) {
+func (f fakeClient) FetchRegexTargetPVs(ctx context.Context, regex string, limit int) ([]string, error) {
 	if regex == ".*1" {
 		return []string{"PV:NAME1"}, nil
 	} else if regex == ".*2" {
@@ -27,7 +27,7 @@ func (f fakeClient) FetchRegexTargetPVs(regex string, limit int) ([]string, erro
 	}
 }
 
-func (f fakeClient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
+func (f fakeClient) ExecuteSingleQuery(ctx context.Context, target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
 	if target == "invalid" || target == "invalid2" {
 		return models.SingleData{}, errors.New("test error")
 	}
@@ -788,7 +788,8 @@ func TestMakeTargetPVList(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := makeTargetPVList(f, testCase.input, testCase.regex, 100)
+			ctx := context.Background()
+			result := makeTargetPVList(ctx, f, testCase.input, testCase.regex, 100)
 			if diff := cmp.Diff(testCase.output, result); diff != "" {
 				t.Errorf("Compare value is mismatch (-v1 +v2):%s\n", diff)
 			}

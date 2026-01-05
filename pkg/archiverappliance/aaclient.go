@@ -10,34 +10,49 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
 type Client interface {
-	FetchRegexTargetPVs(regex string, limit int) ([]string, error)
-	ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error)
+	FetchRegexTargetPVs(ctx context.Context, regex string, limit int) ([]string, error)
+	ExecuteSingleQuery(ctx context.Context, target string, qm models.ArchiverQueryModel) (models.SingleData, error)
 }
 
 type AAclient struct {
-	baseURL string
+	baseURL    string
+	httpClient *http.Client
 }
 
-func NewAAClient(ctx context.Context, url string) (*AAclient, error) {
+func NewAAClient(ctx context.Context, url string, httpOptions httpclient.Options) (*AAclient, error) {
+	client, err := httpclient.New(httpOptions)
+	if err != nil {
+		return nil, err
+	}
 	return &AAclient{
-		baseURL: url,
+		baseURL:    url,
+		httpClient: client,
 	}, nil
 }
 
-func (client AAclient) FetchRegexTargetPVs(regex string, limit int) ([]string, error) {
+func (client AAclient) FetchRegexTargetPVs(ctx context.Context, regex string, limit int) ([]string, error) {
 	regexUrl := buildRegexUrl(regex, client.baseURL, limit)
-	regexQueryResponse, _ := archiverRegexQuery(regexUrl)
-	pvList, _ := archiverRegexQueryParser(regexQueryResponse)
+
+	regexQueryResponse, err := archiverRegexQuery(ctx, regexUrl, client.httpClient)
+	if err != nil {
+		return nil, err
+	}
+
+	pvList, err := archiverRegexQueryParser(regexQueryResponse)
+	if err != nil {
+		return nil, err
+	}
 
 	return pvList, nil
 }
 
-func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
+func (client AAclient) ExecuteSingleQuery(ctx context.Context, target string, qm models.ArchiverQueryModel) (models.SingleData, error) {
 	// wrap together the individual operations build a query, execute the query, and compile the data into a singleData structure
 	// target: This is the PV to be queried for. As the "query" argument may be a regular expression, the specific PV desired must be specified
 
@@ -51,7 +66,7 @@ func (client AAclient) ExecuteSingleQuery(target string, qm models.ArchiverQuery
 	}
 
 	queryUrl := buildQueryUrl(target, client.baseURL, qm)
-	queryResponse, err := archiverSingleQuery(queryUrl)
+	queryResponse, err := archiverSingleQuery(ctx, queryUrl, client.httpClient)
 
 	if err != nil {
 		err = fmt.Errorf("url = %q: %w", queryUrl, err)
@@ -133,9 +148,14 @@ func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) 
 	return u.String()
 }
 
-func archiverSingleQuery(queryUrl string) (io.ReadCloser, error) {
+func archiverSingleQuery(ctx context.Context, queryUrl string, httpClient *http.Client) (io.ReadCloser, error) {
 	// Make the GET request
-	httpResponse, getErr := http.Get(queryUrl)
+	httpReq, getErr := http.NewRequestWithContext(ctx, "GET", queryUrl, nil)
+	if getErr != nil {
+		return nil, getErr
+	}
+
+	httpResponse, getErr := httpClient.Do(httpReq)
 
 	if getErr != nil {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
@@ -182,12 +202,17 @@ func buildRegexUrl(regex string, baseURL string, limit int) string {
 	return u.String()
 }
 
-func archiverRegexQuery(queryUrl string) ([]byte, error) {
+func archiverRegexQuery(ctx context.Context, queryUrl string, httpClient *http.Client) ([]byte, error) {
 	// Make the GET request  for the JSON list of matching PVs, parse it, and return a list of strings
 	var jsonAsBytes []byte
 
 	// Make the GET request
-	httpResponse, getErr := http.Get(queryUrl)
+	httpReq, getErr := http.NewRequestWithContext(ctx, "GET", queryUrl, nil)
+	if getErr != nil {
+		return nil, getErr
+	}
+
+	httpResponse, getErr := httpClient.Do(httpReq)
 	if getErr != nil {
 		log.DefaultLogger.Warn("Get request has failed", "Error", getErr)
 		return jsonAsBytes, getErr
