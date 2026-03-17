@@ -1,4 +1,13 @@
 # Release Notes
+## 2.1.3
+
+**2026-03-17**
+
+### Enhancements
+
+- **Backend**: Fix to use httpclient from the Grafana Go SDK, ensuring proper handling of timeout parameters defined in the data source settings.
+
+
 ## 2.1.2
 
 **2025-10-27**

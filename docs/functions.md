@@ -318,7 +318,7 @@ disableExtrapol(false)
 ```
 
 Hide the sample data whose severity is invalid with a null value.
-[Default setting](configuration.md#misc) can be overwritten by this function.
+[Default setting](configuration.md#data-retrieval-options) can be overwritten by this function.
 This function is only effective if you are using the backend data retrieval and data is not string or array.
 
 Examples:
