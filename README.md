@@ -149,9 +149,8 @@ If the Mage build tool is not already installed, you may install it using the in
 ```bash
 python -m venv env
 source env/bin/activate
-pip install sphinx myst-parser sphinx_rtd_theme
-cd docs
-make html
+pip install -r docs/requirements.txt
+sphinx-multiversion docs docs/_build/html
 ```
 
 ## Development Environment
