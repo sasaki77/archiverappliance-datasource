@@ -1,4 +1,4 @@
-Sphinx>=8.2.3
+Sphinx<9,>=8.2.3
 myst-parser>=4.0.1
 sphinx-rtd-theme>=3.0.2
 sphinx-multiversion>=0.2.4
