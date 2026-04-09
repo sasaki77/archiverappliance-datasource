@@ -1,76 +1,73 @@
-name: publish-release.yml
+name: Publish Release
+
 on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
+
 jobs:
-  build-and-test-plugin:
+  publish-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     env:
-      zip-name: archiverappliance-datasource
+      ZIP_NAME: archiverappliance-datasource
+      NODE_VERSION: '20'
+      GO_VERSION: 'stable'
+      MAGE_VERSION: 'latest'
+
     steps:
-      - name: Checkout Github repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
-      - name: Setup NodeJS environment
-        uses: actions/setup-node@v3
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
-      - name: Setup Go environment
-        uses: actions/setup-go@v3
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install dependencies
         run: yarn install --immutable --prefer-offline
 
-      - name: Build and test frontend
+      - name: Build frontend
         run: yarn build
 
-      - name: Run Go tests using Mage
-        uses: magefile/mage-action@v2
+      - name: Run Go tests via Mage
+        uses: magefile/mage-action@v3
         with:
-          version: latest
+          version: ${{ env.MAGE_VERSION }}
           args: vtest
 
-      - name: Build backend
-        uses: magefile/mage-action@v2
+      - name: Build backend via Mage
+        uses: magefile/mage-action@v3
         with:
-          version: latest
+          version: ${{ env.MAGE_VERSION }}
           args: -v buildAll
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            This release as been been automatically generated.
-          draft: false
-          prerelease: true
-
-      - name: Prepare Release
-        env:
-          ZIP_NAME: ${{ env.zip-name }}
+      - name: Archive Release Files
         run: |
           REPO_DIRECTORY=${PWD##*/}
-          ls
           pushd ../
-          zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
+          zip -r $REPO_DIRECTORY/${{ env.ZIP_NAME }}.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
 
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+      - name: Publish GitHub Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./${{ env.zip-name }}.zip
-          asset_name: ${{ env.zip-name }}.zip
-          asset_content_type: application/zip
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Use the tag name from the push event
+          TAG=${{ github.ref_name }}
+
+          gh release create "$TAG" ./${{ env.ZIP_NAME }}.zip \
+            --title "$TAG" \
+            --notes "This release has been automatically generated." \
+            --generate-notes
+            --prerelease
