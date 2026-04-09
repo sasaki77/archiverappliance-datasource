@@ -1,66 +1,72 @@
-name: nightly-builds.yml
+name: Nightly Release
+
 on:
   schedule:
     - cron: '0 17 * * *'
   workflow_dispatch:
+
 jobs:
   nightly-builds:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     env:
-      zip-name: archiverappliance-datasource
-    strategy:
-      matrix:
-        node: [20]
-        continue-on-error: [false]
-    continue-on-error: ${{ matrix.continue-on-error }}
+      ZIP_NAME: archiverappliance-datasource
+      TAG_NAME: nightly
+      NODE_VERSION: '24'
+      GO_VERSION: 'stable'
+
     steps:
       - name: Checkout Github repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Move nightly tag
-        uses: EndBug/latest-tag@latest
+          fetch-depth: 0
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
         with:
-          ref: nightly
-          description: 'For nightly build'
-          force-branch: false
-      - name: Setup NodeJS environment
-        uses: actions/setup-node@v1
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          node-version: ${{ matrix.node }}
-      - name: Setup Go environment
-        uses: actions/setup-go@v2
-      - name: Run Go tests using Mage
-        uses: magefile/mage-action@v1
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build and Test
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: vtest
-      - name: Build backend
-        uses: magefile/mage-action@v1
-        with:
-          version: latest
-          args: -v buildAll
-      - name: Install frontend tools
+
+      - name: Build Frontend
         run: |
-          npm install -g yarn
-          yarn install
-      - name: List all Yarn packages
-        run: |
-          yarn list
-      - name: Build frontend
-        run: |
+          yarn install --frozen-lockfile
           yarn build
-      - name: Prepare Release
-        env:
-          ZIP_NAME: ${{ env.zip-name }}
+
+      - name: Prepare Release Artifact
         run: |
           REPO_DIRECTORY=${PWD##*/}
-          ls
           pushd ../
-          zip -r $REPO_DIRECTORY/$ZIP_NAME.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
+          zip -r $REPO_DIRECTORY/${{ env.ZIP_NAME }}.zip $REPO_DIRECTORY -x @$REPO_DIRECTORY/exclude.txt
           popd
-      - name: Upload nightly builds
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: 'nightly'
-          files: ${{ env.zip-name }}.zip
+
+      - name: Update Tag and Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Force update the 'nightly' tag to the current commit
+          git tag -f ${{ env.TAG_NAME }}
+          git push origin ${{ env.TAG_NAME }} --force
+
+          # Re-create the release using GitHub CLI
+          # --prerelease: Marks as a non-production ready release
+          # --yes: Confirms deletion without prompts
+          gh release delete ${{ env.TAG_NAME }} --yes || true
+
+          gh release create ${{ env.TAG_NAME }} ./${{ env.ZIP_NAME }}.zip \
+            --title "Nightly Build (${{ env.TAG_NAME }})" \
+            --notes "Automated build generated on $(date -u +'%Y-%m-%d %H:%M:%S UTC')" \
+            --prerelease
