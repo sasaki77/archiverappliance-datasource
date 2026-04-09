@@ -14,7 +14,7 @@ jobs:
     env:
       ZIP_NAME: archiverappliance-datasource
       TAG_NAME: nightly
-      NODE_VERSION: '24'
+      NODE_VERSION: '20'
       GO_VERSION: 'stable'
 
     steps:
