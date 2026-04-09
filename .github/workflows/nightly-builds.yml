@@ -61,12 +61,10 @@ jobs:
           git tag -f ${{ env.TAG_NAME }}
           git push origin ${{ env.TAG_NAME }} --force
 
-          # Re-create the release using GitHub CLI
-          # --prerelease: Marks as a non-production ready release
-          # --yes: Confirms deletion without prompts
-          gh release delete ${{ env.TAG_NAME }} --yes || true
+          # Try to update existing release, otherwise create a new one
+          gh release upload ${{ env.TAG_NAME }} ./${{ env.ZIP_NAME }}.zip --clobber || \
+          gh release create ${{ env.TAG_NAME }} ./${{ env.ZIP_NAME }}.zip --prerelease
 
-          gh release create ${{ env.TAG_NAME }} ./${{ env.ZIP_NAME }}.zip \
+          gh release edit ${{ env.TAG_NAME }} \
             --title "Nightly Build (${{ env.TAG_NAME }})" \
-            --notes "Automated build generated on $(date -u +'%Y-%m-%d %H:%M:%S UTC')" \
-            --prerelease
+            --notes "Automated build generated on $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
