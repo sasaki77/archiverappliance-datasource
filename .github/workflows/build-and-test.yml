@@ -1,41 +1,63 @@
-name: build-and-test.yml
-on: [push]
+name: Build and Test
+
+on:
+  pull_request:
+    paths-ignore: ['docs/**', 'README.md']
+  push:
+    branches: [master]
+    paths-ignore: ['docs/**', 'README.md']
+
 jobs:
-  build-and-test-plugin:
+  build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      NODE_VERSION: '20'
+      GO_VERSION: 'stable'
+      MAGE_VERSION: 'latest'
+
     steps:
-      - name: Checkout Github repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Setup NodeJS environment
-        uses: actions/setup-node@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+
       - name: Install dependencies
         run: yarn install --immutable --prefer-offline
 
-      - name: Check types
+      - name: Type check
         run: yarn typecheck
+
       - name: Lint
         run: yarn lint
+
       - name: Unit tests
         run: yarn test:ci
+
       - name: Build frontend
         run: yarn build
 
-      - name: Setup Go environment
-        uses: actions/setup-go@v3
-
-      - name: Run Go tests using Mage
-        uses: magefile/mage-action@v2
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          version: latest
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Run Go tests via Mage
+        uses: magefile/mage-action@v3
+        with:
+          version: ${{ env.MAGE_VERSION }}
           args: vtest
 
-      - name: Build backend
-        uses: magefile/mage-action@v2
+      - name: Build backend via Mage
+        uses: magefile/mage-action@v3
         with:
-          version: latest
+          version: ${{ env.MAGE_VERSION }}
           args: -v buildAll
