@@ -39,7 +39,7 @@ jobs:
         uses: magefile/mage-action@v3
         with:
           version: latest
-          args: vtest buildAll
+          args: vtest
 
       - name: Build backend
         uses: magefile/mage-action@v3
