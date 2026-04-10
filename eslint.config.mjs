@@ -1,0 +1,41 @@
+import { defineConfig } from 'eslint/config';
+import baseConfig from './.config/eslint.config.mjs';
+
+export default defineConfig([
+  {
+    ignores: [
+      '**/node_modules',
+      '**/npm-debug.log',
+      '**/coverage/',
+      '**/.aws-config.json',
+      '**/awsconfig',
+      'emails/dist',
+      'public_gen',
+      'tmp',
+      'vendor/phantomjs/phantomjs',
+      '**/env/',
+      'docs/AWS_S3_BUCKET',
+      'docs/GIT_BRANCH',
+      'docs/VERSION',
+      'docs/GITCOMMIT',
+      'docs/changed-files',
+      'docs/_build',
+      'public/css/*.min.css',
+      '**/*.sublime-workspace',
+      '**/*.swp',
+      '**/.idea/',
+      '**/*.iml',
+      'data/*',
+      'bin/*',
+      'conf/custom.ini',
+      '**/fig.yml',
+      '**/profile.cov',
+      '**/grafana',
+      '**/.notouch',
+      '**/.eslintcache',
+      'dist',
+      '**/*.DS_store',
+    ],
+  },
+  ...baseConfig,
+]);
