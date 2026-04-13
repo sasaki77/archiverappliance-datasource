@@ -6,7 +6,7 @@ import { TargetQuery, AADataQueryData, AADataQueryResponse, isNumberArray } from
 
 import { STREAM_FROM_MARGIN_MS } from './streamQuery';
 
-export function responseParse(responses: AADataQueryResponse[], target: TargetQuery, stream: boolean = false) {
+export function responseParse(responses: AADataQueryResponse[], target: TargetQuery, stream = false) {
   const dataFramesArray = _.map(responses, (response) => {
     const dataFrames = _.map(response.data, (targetRes) => {
       if (targetRes.meta.waveform) {
@@ -32,7 +32,7 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
   // Extrapolation for raw operator
   const to_msec = target.to.getTime();
   const extrapolationDataFrames = _.map(dataFrames, (dataframe) => {
-    if (dataframe.fields[0].name != 'time') {
+    if (dataframe.fields[0].name !== 'time') {
       return dataframe;
     }
 
@@ -100,15 +100,15 @@ function parseArrayResponseToScalar(
 
 function parseArrayResponse(targetRes: AADataQueryData, target: TargetQuery) {
   let fields;
-  if (target.options.arrayFormat == 'dt-space') {
+  if (target.options.arrayFormat === 'dt-space') {
     fields = makeDtSpaceArrayFields(targetRes);
-  } else if (target.options.arrayFormat == 'index') {
+  } else if (target.options.arrayFormat === 'index') {
     fields = makeIndexArrayFields(targetRes);
   } else {
     fields = makeTimeseriesArrayFields(targetRes);
   }
 
-  if (fields.length == 0) {
+  if (fields.length === 0) {
     return createDataFrame({ fields: [] });
   }
 
@@ -236,7 +236,7 @@ function parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): D
 // https://stackoverflow.com/questions/17415579/how-to-iso-8601-format-a-date-with-timezone-offset-in-javascript
 // https://qiita.com/h53/items/05139982c6fd81212b08
 function toISOStringWithTimezone(date: Date): string {
-  const pad = function (str: string, num: number = 2): string {
+  const pad = function (str: string, num = 2): string {
     return ('0' + str).slice(-1 * num);
   };
 
@@ -249,7 +249,7 @@ function toISOStringWithTimezone(date: Date): string {
   const milli = pad(date.getMilliseconds().toString(), 3);
   const tz = -date.getTimezoneOffset();
 
-  if (tz == 0) {
+  if (tz === 0) {
     return `${year}-${month}-${day}T${hour}:${min}:${sec}.${milli}Z`;
   }
 

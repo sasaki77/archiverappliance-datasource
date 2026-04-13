@@ -49,13 +49,13 @@ export function locateOuterParen(data: string): { phrases: string[]; idxs: numbe
   const chars = [...data];
 
   chars.forEach((char, pos) => {
-    if (char == '(') {
-      if (nestCounter == 0) {
+    if (char === '(') {
+      if (nestCounter === 0) {
         stashInitPos = pos;
       }
       nestCounter++;
-    } else if (char == ')') {
-      if (nestCounter == 1) {
+    } else if (char === ')') {
+      if (nestCounter === 1) {
         phrases.push(data.slice(stashInitPos, pos + 1));
         idxs.push([stashInitPos, pos + 1]);
       }

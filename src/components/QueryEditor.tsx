@@ -17,7 +17,7 @@ const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toCombob
 
 export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props): React.JSX.Element => {
   const defaultPvOption = query.target ? toComboboxOption(query.target) : undefined;
-  const defaultOperatorOption = query.operator && query.operator != '' ? toComboboxOption(query.operator) : undefined;
+  const defaultOperatorOption = query.operator && query.operator !== '' ? toComboboxOption(query.operator) : undefined;
 
   const [pvOptionValue, setPVOptionValue] = useState(defaultPvOption);
   const [operatorOptionValue, setOperatorOptionValue] = useState(defaultOperatorOption);
