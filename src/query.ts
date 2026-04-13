@@ -6,7 +6,7 @@ import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
 import { responseParse } from 'responseParse';
 
-export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ data: Array<DataFrame> }> {
+export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ data: DataFrame[] }> {
   // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
   const urlsArray = _.map(targets, (target) => aaclient.buildUrls(target));
 

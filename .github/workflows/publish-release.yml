@@ -13,7 +13,7 @@ jobs:
 
     env:
       ZIP_NAME: archiverappliance-datasource
-      NODE_VERSION: '20'
+      NODE_VERSION: '24'
       GO_VERSION: 'stable'
       MAGE_VERSION: 'latest'
 
