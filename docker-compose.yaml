@@ -1,11 +1,9 @@
-version: '3.0'
-
 services:
   grafana:
     build:
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0}
+        grafana_version: ${GRAFANA_VERSION:-13.0.0}
     networks:
       - archapplnet
     ports:
