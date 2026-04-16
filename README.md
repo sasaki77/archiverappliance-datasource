@@ -22,13 +22,13 @@ See [Archiver Appliance site](https://epicsarchiver.readthedocs.io) for more inf
 1. Install the plugin with Grafana CLI. Execute Grafana CLI as following:
 ```bash
 # Install latest version. You can also use this command to update the plugin to the latest version.
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/latest/download/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/latest/download/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
 
 # Install particular version. This example will install v1.4.2.
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/1.4.2/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/1.4.2/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
 
 # Install nightly builds.
-grafana-cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/nightly/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
+grafana cli --pluginUrl https://github.com/sasaki77/archiverappliance-datasource/releases/download/nightly/archiverappliance-datasource.zip plugins install sasaki77-archiverappliance-datasource
 ```
 2. This plugin is unsigned. It must be specially listed by name in the Grafana `grafana.ini` file to allow Grafana to use it. Add `sasaki77-archiverappliance-datasource` to the `allow_loading_unsigned_plugins` parameter in the `[plugins]` section. See [Configure Grafana | Grafana documentation](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/) for more detail on `grafana.ini`.
 
