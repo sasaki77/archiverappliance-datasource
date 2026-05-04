@@ -101,7 +101,7 @@
     "react-dom": "19.2.5",
     "react-router-dom": "^7.14.0",
     "tslib": "2.8.1",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "packageManager": "yarn@1.22.22"
 }
