@@ -9,9 +9,6 @@ reviews:
   review_status: true
   review_details: false
   suggested_reviewers: false
-  path_filters:
-    - "!**/*.lock"
-    - "!**/go.sum"
   auto_review:
     enabled: true
     drafts: false
