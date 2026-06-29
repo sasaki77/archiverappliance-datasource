@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import ms, { StringValue } from 'ms';
-import { CircularDataFrame, DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
+import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
@@ -11,6 +11,11 @@ import { applyFunctions, setAlias } from 'query';
 
 export const STREAM_FROM_MARGIN_MS = 2000;
 export const STREAM_TO_MARGIN_MS = 500;
+
+type StreamBuffer = {
+  fields: { [key: string]: any[] };
+  capacity: number;
+};
 
 export class StreamQuery {
   aaclient: AAclient;
@@ -23,18 +28,29 @@ export class StreamQuery {
 
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
     return new Observable<DataQueryResponse>((subscriber) => {
-      // Create new targets to disable auto Extrapolation
       const id = uuidv4();
-      const cirFrames: { [key: string]: CircularDataFrame<any> } = {};
 
-      doQueryStream(this.aaclient, targets, cirFrames)
+      // Buffer structure per time series (mutable internal state)
+      //
+      // buffers = {
+      //   "PV:NAME": {
+      //     fields: {
+      //       time:  [t1, t2, t3, ...],
+      //       value: [v1, v2, v3, ...],
+      //       ... (other fields)
+      //     }
+      //     capacity: 1000
+      //   }
+      // }
+      const buffers: { [key: string]: StreamBuffer } = {};
+
+      doQueryStream(this.aaclient, targets, buffers)
         .then((data) => {
           subscriber.next(data);
 
           const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue)) || intervalMs;
 
-          // Create new targets to update interval time
-          const new_t = _.map(targets, (target) => {
+          const newTargets = _.map(targets, (target) => {
             const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
             const int = interval >= 1000 ? t_int : '';
 
@@ -44,13 +60,13 @@ export class StreamQuery {
             };
           });
 
-          this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, new_t, id, cirFrames, interval);
+          this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, newTargets, id, buffers, interval);
         })
         .catch((err) => {
           subscriber.error({
             message: 'Failed to fetch streaming data',
             status: 'error',
-            statusText: err.data.message || err.message || 'Unknown error',
+            statusText: err.data?.message || err.message || 'Unknown error',
           });
         });
 
@@ -64,16 +80,18 @@ export class StreamQuery {
     subscriber: Subscriber<DataQueryResponse>,
     targets: TargetQuery[],
     id: string,
-    frames: { [key: string]: CircularDataFrame },
+    buffers: { [key: string]: StreamBuffer },
     interval: number
   ) => {
-    updateTargetDate(targets);
+    const updatedTargets = updateTargetDate(targets);
+
     try {
-      const data = await doQueryStream(this.aaclient, targets, frames);
+      const data = await doQueryStream(this.aaclient, updatedTargets, buffers);
 
       subscriber.next(data);
+
       if (id in this.timerIDs) {
-        this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, targets, id, frames, interval);
+        this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, updatedTargets, id, buffers, interval);
       }
     } catch (err) {
       subscriber.error({
@@ -95,7 +113,7 @@ export class StreamQuery {
 function doQueryStream(
   aaclient: AAclient,
   targets: TargetQuery[],
-  frames: { [key: string]: CircularDataFrame }
+  buffers: { [key: string]: StreamBuffer }
 ): Promise<DataQueryResponse> {
   // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
   const urlsArray = _.map(targets, (target) => aaclient.buildUrls(target));
@@ -109,7 +127,7 @@ function doQueryStream(
     const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
       return Promise.all(responsePromises)
         .then((responses) => responseParse(responses, targets[i], true))
-        .then((dataFrames) => mergeResToCirFrames(dataFrames, frames, targets[i]))
+        .then((dataFrames) => mergeToBuffers(dataFrames, buffers, targets[i]))
         .then((dataFrames) => setAlias(dataFrames, targets[i]))
         .then((dataFrames) => applyFunctions(dataFrames, targets[i]));
     });
@@ -123,73 +141,102 @@ function doQueryStream(
 
 function streamPostProcess(dataFramesArray: DataFrame[][]) {
   const dataFrames = _.flatten(dataFramesArray);
-
   return { data: dataFrames, state: LoadingState.Streaming };
 }
 
 function updateTargetDate(targets: TargetQuery[]) {
-  return _.map(targets, (target) => {
+  return _.map(targets, (target) => ({
     // AA should probably not able to return latest data near the "now".
     // So, the time range is set from 2 secs ago from last update date and to 500 msecs ago from "now".
-    target.from = new Date(target.to.getTime() - STREAM_FROM_MARGIN_MS);
-    target.to = new Date(Date.now() - STREAM_TO_MARGIN_MS);
-    return target;
-  });
+    ...target,
+    from: new Date(target.to.getTime() - STREAM_FROM_MARGIN_MS),
+    to: new Date(Date.now() - STREAM_TO_MARGIN_MS),
+  }));
 }
 
-function mergeResToCirFrames(
+function mergeToBuffers(
   dataFrames: DataFrame[],
-  cirFrames: { [key: string]: CircularDataFrame },
+  buffers: Record<string, StreamBuffer>,
   target: TargetQuery
 ): Promise<DataFrame[]> {
-  const to = target.to.getTime();
-  const d = _.filter(dataFrames, (frame) => frame.name !== undefined);
+  const toTimestamp = target.to.getTime();
 
-  const frames = _.map(d, (frame) => {
-    if (frame.name === undefined) {
-      return frame;
-    }
+  const resultFrames = dataFrames
+    .filter((f) => f.name !== undefined)
+    .map((frame) => {
+      const name = frame.name!;
+      let buffer = buffers[name];
 
-    // Create frame for new arrival data
-    if (!(frame.name in cirFrames)) {
-      cirFrames[frame.name] = createStreamFrame(target, frame);
-      return cirFrames[frame.name];
-    }
+      // --- Initialize buffer (if first time) ---
+      if (!buffer) {
+        const defaultCap = Math.max(target.maxDataPoints, frame.length);
+        const capacity = parseInt(target.strmCap, 10) || defaultCap;
 
-    const last_time = cirFrames[frame.name].get(cirFrames[frame.name].length - 1)['time'];
+        buffer = {
+          fields: {},
+          capacity,
+        };
 
-    // Update frame data
-    for (let i = 0; i < frame.length; i++) {
-      const fields: { [name: string]: any } = {};
-      for (const field of frame.fields) {
-        fields[field.name] = field.values[i];
+        for (const field of frame.fields) {
+          buffer.fields[field.name] = [...field.values];
+        }
+
+        buffers[name] = buffer;
+
+        // --- Build immutable DataFrame ---
+        return buildDataFrame(frame, buffer);
       }
 
-      if (fields['time'] <= last_time || fields['time'] > to) {
-        continue;
-      }
-      cirFrames[frame.name].add(fields);
-    }
-    return cirFrames[frame.name];
-  });
+      const timeArray = buffer.fields['time'];
 
-  return Promise.resolve(frames);
+      // --- Append new data (diff update) ---
+      for (let i = 0; i < frame.length; i++) {
+        // Extract row
+        const row: Record<string, any> = {};
+        for (const field of frame.fields) {
+          row[field.name] = field.values[i];
+        }
+
+        // Skip future data
+        if (row.time > toTimestamp) {
+          continue;
+        }
+
+        // Skip duplicate or old data
+        if (timeArray && timeArray.length > 0) {
+          const lastTime = timeArray[timeArray.length - 1];
+          if (row.time <= lastTime) {
+            continue;
+          }
+        }
+
+        // Append row to buffer
+        for (const field of frame.fields) {
+          buffer.fields[field.name].push(row[field.name]);
+        }
+      }
+
+      // --- Trim buffer (capacity control) ---
+      for (const [fieldName, values] of Object.entries(buffer.fields)) {
+        if (values.length > buffer.capacity) {
+          buffer.fields[fieldName] = values.slice(values.length - buffer.capacity);
+        }
+      }
+
+      // --- Build immutable DataFrame ---
+      return buildDataFrame(frame, buffer);
+    });
+
+  return Promise.resolve(resultFrames);
 }
 
-function createStreamFrame(target: TargetQuery, dataFrame: DataFrame) {
-  const c = parseInt(target.strmCap, 10);
-  const defaultCap = target.maxDataPoints > dataFrame.length ? target.maxDataPoints : dataFrame.length;
-  const cap = dataFrame.refId ? c || defaultCap : defaultCap;
-
-  const new_frame = new CircularDataFrame({
-    append: 'tail',
-    capacity: cap,
-  });
-
-  new_frame.name = dataFrame.name;
-  for (const field of dataFrame.fields) {
-    new_frame.addField(field);
-  }
-
-  return new_frame;
+function buildDataFrame(frame: DataFrame, buffer: StreamBuffer): DataFrame {
+  return {
+    ...frame,
+    fields: frame.fields.map((field) => ({
+      ...field,
+      values: [...(buffer.fields[field.name] || [])],
+    })),
+    length: buffer.fields['time'].length,
+  };
 }

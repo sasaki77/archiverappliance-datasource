@@ -3,7 +3,7 @@ services:
     build:
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-13.0.0}
+        grafana_version: ${GRAFANA_VERSION:-13.1.0}
     networks:
       - archapplnet
     ports:
@@ -51,7 +51,7 @@ services:
       - ./devenv:/home
     stdin_open: true
     tty: true
-    command: ['softIocPVA', '-d', '/home/test.db']
+    command: [ "softIocPVA", "-d", "/home/test.db" ]
 
 networks:
   archapplnet:
