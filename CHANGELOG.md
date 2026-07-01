@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.4 (2026-07-01)
+
+### Bug fixes
+- **Frontend**: Replace CircularDataFrame with immutable buffer to fix streaming mode compatibility with Grafana v13.1.
+
 ## 2.1.3 (2026-03-17)
 
 ### Enhancements
