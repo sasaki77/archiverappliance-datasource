@@ -73,5 +73,5 @@ jobs:
           gh release create "$TAG" ./${{ env.ZIP_NAME }}.zip \
             --title "$TAG" \
             --notes "This release has been automatically generated." \
-            --generate-notes
+            --generate-notes \
             --prerelease
