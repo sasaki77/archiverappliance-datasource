@@ -53,7 +53,7 @@ jobs:
 
       - name: Build Frontend
         run: |
-          yarn install --frozen-lockfile
+          yarn install  --immutable
           yarn build
 
       - name: Prepare Release Artifact
