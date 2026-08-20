@@ -52,7 +52,7 @@ cd docs && make html
 ### Local dev environment
 `docker-compose.yaml` (via `yarn server` / `docker compose up --build`) spins up four containers: `grafana`, `mariadb`, `archappl` (Archiver Appliance), and `ioc` (a softIoc that auto-runs). No PVs are archived by default — register them manually. Add a datasource in the `grafana` container pointing at `http://archappl:8080/retrieval`. A `.devcontainer/` config is also available for VS Code Dev Containers.
 
-CI (`.github/workflows/build-and-test.yml`) runs, in order: `yarn typecheck`, `yarn lint`, `yarn test:ci`, `yarn build`, then Go tests via `mage` — mirror this sequence locally before pushing.
+CI (`.github/workflows/build-and-test.yml`) runs, in order: `yarn install --immutable`, `yarn typecheck`, `yarn lint`, `yarn test:ci`, `yarn build`, then Go tests via `mage` — mirror this sequence locally before pushing.
 
 ## Commit message conventions
 
