@@ -11,7 +11,10 @@ ALLOWED_DOMAINS=(
 
 for domain in "${ALLOWED_DOMAINS[@]}"; do
     for ip in $(dig +short A "$domain"); do
-        ipset add allowed-domains "$ip" 2>/dev/null || true
+        if ! ipset add allowed-domains "$ip" -exist 2>/dev/null; then
+            echo "ERROR: Failed to add ${ip} (resolved from ${domain}) to allowed-domains ipset" >&2
+            exit 1
+        fi
     done
 done
 
