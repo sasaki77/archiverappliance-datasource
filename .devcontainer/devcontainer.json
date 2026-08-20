@@ -6,9 +6,17 @@
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/devcontainers/features/python:1": {}
+		"ghcr.io/devcontainers/features/node:2.1.0": {},
+		"ghcr.io/devcontainers/features/python:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
 	},
+	"runArgs": [
+		"--cap-add=NET_ADMIN",
+		"--cap-add=NET_RAW"
+	],
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	// Use 'postCreateCommand' to run commands after the container is created.
 	"mounts": [
 		{
 			"source": "aad-node-modules",
@@ -19,14 +27,20 @@
 			"source": "aad-python-env",
 			"target": "/workspaces/archiverappliance-datasource/env",
 			"type": "volume"
+		},
+		{
+			"source": "claude-code-config-${devcontainerId}",
+			"target": "/home/vscode/.claude",
+			"type": "volume"
 		}
 	],
+	"postCreateCommand": "bash .devcontainer/postCreate.sh",
+	"postStartCommand": "sudo /usr/local/bin/init-firewall.sh"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "go install github.com/magefile/mage@latest"
 	//"postStartCommand": "sudo chown -R vscode:vscode /workspaces/archiverappliance-datasource/node_modules"
 	// Configure tool-specific properties.
 	// "customizations": {},
