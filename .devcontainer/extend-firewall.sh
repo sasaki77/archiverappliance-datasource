@@ -20,7 +20,7 @@ done
 
 echo "Verifying Go proxy access..."
 for domain in "${ALLOWED_DOMAINS[@]}"; do
-    if ! curl --connect-timeout 5 -s -o /dev/null "https://${domain}"; then
+    if ! curl --connect-timeout 5 --max-time 10 -s -o /dev/null "https://${domain}"; then
         echo "ERROR: Firewall verification failed - unable to reach https://${domain}"
         exit 1
     fi
