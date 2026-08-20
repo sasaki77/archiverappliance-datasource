@@ -6,6 +6,7 @@ ALLOWED_DOMAINS=(
     sum.golang.org
     storage.googleapis.com
     repo.yarnpkg.com
+    registry.yarnpkg.com
 )
 
 for domain in "${ALLOWED_DOMAINS[@]}"; do
