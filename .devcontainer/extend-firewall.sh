@@ -7,9 +7,10 @@ set -euo pipefail
 # SSH exception; SSH to hosts already in allowed-domains (e.g. GitHub, needed
 # for a git+ssh npm dependency) still works via the generic allowed-domains
 # match init-firewall.sh appends for all protocols/ports.
-mapfile -t DNS_SERVERS < <(awk '/^nameserver/ {print $2}' /etc/resolv.conf)
+mapfile -t DNS_SERVERS < <(awk '/^nameserver/ {print $2}' /etc/resolv.conf |
+    grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
 if [ "${#DNS_SERVERS[@]}" -eq 0 ]; then
-    echo "ERROR: No nameserver found in /etc/resolv.conf" >&2
+    echo "ERROR: No IPv4 nameserver found in /etc/resolv.conf" >&2
     exit 1
 fi
 
@@ -22,6 +23,7 @@ for dns in "${DNS_SERVERS[@]}"; do
     echo "Allowing DNS to resolver ${dns}"
     iptables -I OUTPUT 1 -p udp --dport 53 -d "$dns" -j ACCEPT
     iptables -I INPUT 1 -p udp --sport 53 -s "$dns" -j ACCEPT
+    iptables -I OUTPUT 1 -p tcp --dport 53 -d "$dns" -j ACCEPT
 done
 
 # init-firewall.sh only manages IPv4, leaving every ip6tables policy at ACCEPT.
