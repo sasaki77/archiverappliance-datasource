@@ -35,7 +35,7 @@
 		}
 	],
 	"postCreateCommand": "bash .devcontainer/postCreate.sh",
-	"postStartCommand": "sudo /usr/local/bin/init-firewall.sh && sudo bash .devcontainer/extend-firewall.sh",
+	"postStartCommand": "sudo /usr/local/bin/init-firewall.sh && sudo /usr/local/bin/extend-firewall.sh && /usr/local/bin/verify-firewall.sh --post-start",
 	"waitFor": "postStartCommand"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
