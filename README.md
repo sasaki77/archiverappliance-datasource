@@ -144,6 +144,69 @@ If the Mage build tool is not already installed, you may install it using the in
     mage -l
     ```
 
+### Benchmarks
+
+The backend carries a set of Go benchmarks covering the three stages of the query pipeline:
+parsing the Archiver Appliance protocol buffer response, applying processing functions, and
+converting the result into a Grafana data frame. They live next to the code they measure:
+
+| File | Covers |
+| --- | --- |
+| `pkg/archiverappliance/pbparse_bench_test.go` | PB response parsing (scalar, waveform, string, meta fields) |
+| `pkg/models/scalars_bench_test.go` | `Scalars` transforms (scale, offset, delta, moving average, ranking) |
+| `pkg/models/singledata_bench_test.go` | `SingleData` to `data.Frame` conversion for each array format |
+| `pkg/functions/functions_bench_test.go` | The processing-function pipeline, including sort and array-to-scalar functions |
+
+1. Run every benchmark:
+    ```bash
+    mage bench
+    ```
+
+2. Run a subset. The argument is a regular expression, and a sub-benchmark is selected with a
+   slash:
+    ```bash
+    mage abench 'BenchmarkPBparseOneday$'
+    mage abench 'MovingAverage/Window1000'
+    ```
+
+Both targets report memory statistics. Watch `allocs/op` in particular: the parser and the
+transform functions run once per archived sample, so a constant allocation cost per sample
+dominates on raw queries that return hundreds of thousands of points.
+
+To compare a change against its baseline, take several runs of each and compare the medians.
+A single run is too noisy to draw conclusions from:
+
+```bash
+# measure the baseline
+git stash
+go test ./pkg/... -run '^$' -bench . -benchmem -count=5 > before.txt
+
+# measure the change
+git stash pop
+go test ./pkg/... -run '^$' -bench . -benchmem -count=5 > after.txt
+
+benchstat before.txt after.txt
+```
+
+Both runs have to execute the same benchmark code, so commit any benchmark changes before
+stashing, or keep the benchmark files untracked (`git stash` leaves untracked files alone).
+
+[benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) is installed with
+`go install golang.org/x/perf/cmd/benchstat@latest`.
+
+To find where the time or the allocations go, collect a profile from a single benchmark:
+
+```bash
+go test ./pkg/archiverappliance/ -run '^$' -bench PBparseOneday -cpuprofile=cpu.out
+go tool pprof -top -nodecount=20 cpu.out
+
+go test ./pkg/archiverappliance/ -run '^$' -bench PBparseOneday -memprofile=mem.out
+go tool pprof -sample_index=alloc_objects -top -nodecount=20 mem.out
+```
+
+`-sample_index=alloc_objects` ranks by allocation count rather than by bytes, which is what
+matters when the goal is to remove per-sample allocations.
+
 ## Build documentation
 
 ```bash
