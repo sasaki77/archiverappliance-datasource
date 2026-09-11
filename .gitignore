@@ -35,6 +35,11 @@ profile.cov
 grafana
 .notouch
 
+# Go test binaries and benchmark profiling output
+*.test
+cpu.out
+mem.out
+
 .eslintcache
 
 # Production files
