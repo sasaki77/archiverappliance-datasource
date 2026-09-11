@@ -594,15 +594,3 @@ func TestParseEmptyData(t *testing.T) {
 		t.Fatalf("parser should return response empty error: %v", err)
 	}
 }
-
-func BenchmarkPBparseOneday(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		f, err := os.Open("../test_data/pb/onedaysdbrdouble")
-		if err != nil {
-			return
-		}
-		defer f.Close()
-		_, _ = archiverPBSingleQueryParser(f, "pvname", 1000, false)
-	}
-}
