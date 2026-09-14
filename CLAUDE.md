@@ -41,9 +41,8 @@ Benchmarks live next to the code they measure (`pbparse_bench_test.go`, `scalars
 `singledata_bench_test.go`, `functions_bench_test.go`) and cover the three stages of the query
 pipeline: PB parsing, processing functions, and `SingleData` to `data.Frame` conversion. `allocs/op`
 is the metric to watch — the parser and the transform functions run once per archived sample, so a
-constant factor per sample dominates on raw queries returning hundreds of thousands of points. For
-before/after comparisons run with `-count=5` and compare medians:
-`go test ./pkg/... -run '^$' -bench . -benchmem -count=5`.
+constant factor per sample dominates on raw queries returning hundreds of thousands of points. See the
+Benchmarks section of [README.md](README.md) for before/after comparison with `benchstat`.
 
 ### End-to-end tests
 ```bash

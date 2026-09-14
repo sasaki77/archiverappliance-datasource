@@ -146,9 +146,8 @@ If the Mage build tool is not already installed, you may install it using the in
 
 ### Benchmarks
 
-The backend carries a set of Go benchmarks covering the three stages of the query pipeline:
-parsing the Archiver Appliance protocol buffer response, applying processing functions, and
-converting the result into a Grafana data frame. They live next to the code they measure:
+The backend benchmarks cover the three stages of the query pipeline and live next to the code
+they measure:
 
 | File | Covers |
 | --- | --- |
@@ -157,55 +156,50 @@ converting the result into a Grafana data frame. They live next to the code they
 | `pkg/models/singledata_bench_test.go` | `SingleData` to `data.Frame` conversion for each array format |
 | `pkg/functions/functions_bench_test.go` | The processing-function pipeline, including sort and array-to-scalar functions |
 
-1. Run every benchmark:
-    ```bash
-    mage bench
-    ```
+```bash
+mage bench                             # everything
+mage abench 'BenchmarkPBparseOneday$'  # a subset; the argument is a regular expression
+mage abench 'MovingAverage/Window1000' # a sub-benchmark, selected with a slash
+```
 
-2. Run a subset. The argument is a regular expression, and a sub-benchmark is selected with a
-   slash:
-    ```bash
-    mage abench 'BenchmarkPBparseOneday$'
-    mage abench 'MovingAverage/Window1000'
-    ```
+Both targets report memory statistics. Watch `allocs/op`: the parser and the transform
+functions run once per archived sample, so a constant allocation cost per sample dominates on
+raw queries that return hundreds of thousands of points.
 
-Both targets report memory statistics. Watch `allocs/op` in particular: the parser and the
-transform functions run once per archived sample, so a constant allocation cost per sample
-dominates on raw queries that return hundreds of thousands of points.
+#### Comparing against a baseline
 
-To compare a change against its baseline, take several runs of each and compare the medians.
-A single run is too noisy to draw conclusions from:
+A single run is too noisy to draw conclusions from. Take several runs of each side and compare
+them with [benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat), installed with
+`go install golang.org/x/perf/cmd/benchstat@latest`.
+
+For uncommitted work:
 
 ```bash
-# measure the baseline
 git stash
-go test ./pkg/... -run '^$' -bench . -benchmem -count=5 > before.txt
-
-# measure the change
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > before.txt
 git stash pop
-go test ./pkg/... -run '^$' -bench . -benchmem -count=5 > after.txt
-
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > after.txt
 benchstat before.txt after.txt
 ```
 
-Both runs have to execute the same benchmark code, so commit any benchmark changes before
-stashing, or keep the benchmark files untracked (`git stash` leaves untracked files alone).
-
-[benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) is installed with
-`go install golang.org/x/perf/cmd/benchstat@latest`.
-
-To find where the time or the allocations go, collect a profile from a single benchmark:
+For a change that is already committed, check the baseline out into a throwaway worktree, so
+the two runs need no stashing and cannot disturb each other:
 
 ```bash
-go test ./pkg/archiverappliance/ -run '^$' -bench PBparseOneday -cpuprofile=cpu.out
-go tool pprof -top -nodecount=20 cpu.out
+WORKTREE=$(mktemp -d)/base   # not ../base: the parent of the repo is not always writable
+git worktree add --detach "$WORKTREE" "$(git merge-base HEAD master)"
 
-go test ./pkg/archiverappliance/ -run '^$' -bench PBparseOneday -memprofile=mem.out
-go tool pprof -sample_index=alloc_objects -top -nodecount=20 mem.out
+(cd "$WORKTREE" && go test ./pkg/... -run '^$' -bench . -benchmem -count=10) > before.txt
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > after.txt
+benchstat before.txt after.txt
+
+git worktree remove --force "$WORKTREE"   # `git worktree prune` if the directory is gone
 ```
 
-`-sample_index=alloc_objects` ranks by allocation count rather than by bytes, which is what
-matters when the goal is to remove per-sample allocations.
+Benchstat matches benchmarks by name, which cuts two ways. One that exists on a single side is
+dropped from the comparison, which is what you want for a benchmark added alongside the change.
+One whose *body* changed still lines up by name and is compared anyway — ignore those rows, or
+move the baseline to a commit from after that benchmark settled.
 
 ## Build documentation
 
