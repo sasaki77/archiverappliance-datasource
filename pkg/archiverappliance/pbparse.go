@@ -62,6 +62,12 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	}
 
 	var values models.Values
+
+	// The payload type is fixed for the whole of a chunk, so one message is
+	// allocated per chunk and reused for every sample in it. proto.Unmarshal
+	// resets the message before decoding into it.
+	var message proto.Message
+
 	for {
 		lineWithDelim, err := reader.ReadBytes('\n')
 		if err != nil {
@@ -92,6 +98,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			inChunk = true
 			dataType = info.GetType()
 			year = info.GetYear()
+			message = initPBMessage(dataType)
 
 			messageType, _ := getMessageType(dataType, field)
 
@@ -117,9 +124,9 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, sec, nano, err = getNumericValue(unescapedLine, dataType, hideInvalid)
+				value, sec, nano, err = getNumericValue(unescapedLine, message, hideInvalid)
 			} else {
-				value, sec, nano, err = getMetaValue(unescapedLine, dataType, field)
+				value, sec, nano, err = getMetaValue(unescapedLine, message, field)
 			}
 
 			if err != nil {
@@ -128,21 +135,25 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Arrays:
-			value, sec, nano, err := getArrayValue(unescapedLine, dataType)
+			value, sec, nano, err := getArrayValue(unescapedLine, message)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
 			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Strings:
-			value, sec, nano, err := getStringValue(unescapedLine)
+			strMessage, ok := message.(*pb.ScalarString)
+			if !ok {
+				return sD, errIllegalPayloadType
+			}
+			value, sec, nano, err := getStringValue(unescapedLine, strMessage)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
 			t := calcTime(year, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
-			value, sec, nano, err := getMetaValue(unescapedLine, dataType, field)
+			value, sec, nano, err := getMetaValue(unescapedLine, message, field)
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
@@ -205,19 +216,17 @@ func unescapeLine(line []byte) []byte {
 	return buf
 }
 
-func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getMetaValue(line []byte, message proto.Message, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
+	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.MetaFieldData)
+	sample, ok := message.(pb.MetaFieldData)
 
 	if !ok {
 		return nil, 0, 0, errIllegalPayloadType
@@ -242,19 +251,17 @@ func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) 
 	return val, sec, nano, nil
 }
 
-func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
+	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.NumericSamepleData)
+	sample, ok := message.(pb.NumericSamepleData)
 
 	if !ok {
 		return nil, 0, 0, errIllegalPayloadType
@@ -275,8 +282,10 @@ func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (va
 	return val, sec, nano, nil
 }
 
-func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error) {
-	message := &pb.ScalarString{}
+func getStringValue(line []byte, message *pb.ScalarString) (val string, sec uint32, nano uint32, err error) {
+	if message == nil {
+		return "", 0, 0, errIllegalPayloadType
+	}
 
 	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
@@ -290,19 +299,17 @@ func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error
 	return val, sec, nano, nil
 }
 
-func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getArrayValue(line []byte, message proto.Message) (val []float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return []float64{}, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
+	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return []float64{}, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.ArraySamepleData)
+	sample, ok := message.(pb.ArraySamepleData)
 
 	if !ok {
 		return []float64{}, 0, 0, errIllegalPayloadType
@@ -315,7 +322,7 @@ func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uin
 	return val, sec, nano, nil
 }
 
-func initPBMessage(dataType pb.PayloadType) *proto.Message {
+func initPBMessage(dataType pb.PayloadType) proto.Message {
 	var m proto.Message
 
 	switch dataType {
@@ -351,7 +358,7 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 		return nil
 	}
 
-	return &m
+	return m
 }
 
 func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageType, error) {
