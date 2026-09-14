@@ -280,3 +280,40 @@ func TestLiveOnly(t *testing.T) {
 		})
 	}
 }
+
+func TestInitialCapacity(t *testing.T) {
+	var tests = []struct {
+		name string
+		qm   models.ArchiverQueryModel
+		want int
+	}{
+		{
+			name: "last returns one sample regardless of the panel width",
+			qm:   models.ArchiverQueryModel{Operator: "last", MaxDataPoints: 2000},
+			want: 1,
+		},
+		{
+			name: "a binned query is bounded by the panel width",
+			qm:   models.ArchiverQueryModel{Operator: "mean", MaxDataPoints: 2000},
+			want: 2000,
+		},
+		{
+			name: "raw keeps the panel width as a starting point",
+			qm:   models.ArchiverQueryModel{Operator: "raw", MaxDataPoints: 1000},
+			want: 1000,
+		},
+		{
+			name: "a negative panel width cannot reach make",
+			qm:   models.ArchiverQueryModel{Operator: "raw", MaxDataPoints: -1},
+			want: 0,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			if got := initialCapacity(testCase.qm); got != testCase.want {
+				t.Errorf("initialCapacity() = %v, want %v", got, testCase.want)
+			}
+		})
+	}
+}

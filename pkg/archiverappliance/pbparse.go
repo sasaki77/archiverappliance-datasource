@@ -2,6 +2,7 @@ package archiverappliance
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"time"
 
@@ -45,13 +46,16 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	info := &pb.PayloadInfo{}
 	inChunk := false
 	var dataType pb.PayloadType = -1
-	var year int32 = -1
 
-	// Use ReadBytes insetead of bufioc.Scanner to handle large size array
-	reader := bufio.NewReader(in)
+	// Sample timestamps are an offset into the chunk's year, which only
+	// changes at a chunk boundary.
+	var yearStart time.Time
+
+	// bufio.Scanner cannot handle the long lines a waveform PV produces.
+	reader := newLineReader(in)
 
 	// Check if response data is valid
-	_, err := reader.Peek(1)
+	_, err := reader.peek()
 	if err != nil {
 		// Peek(1) returns EOF error if its size is 0
 		if err == io.EOF {
@@ -62,16 +66,21 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	}
 
 	var values models.Values
+
+	// The payload type is fixed for the whole of a chunk, so one message is
+	// allocated per chunk and reused for every sample in it. proto.Unmarshal
+	// resets the message before decoding into it.
+	var message proto.Message
+
 	for {
-		lineWithDelim, err := reader.ReadBytes('\n')
+		line, err := reader.readLine()
 		if err != nil {
 			if err != io.EOF {
-				log.DefaultLogger.Error("Failed to read pb message:", err)
+				log.DefaultLogger.Error("Failed to read pb message", "error", err)
 				return sD, errFailedToParsePBFormat
 			}
 			break
 		}
-		line := lineWithDelim[:len(lineWithDelim)-1]
 
 		// length of a line is 0 if chunk is end
 		if len(line) <= 0 {
@@ -85,12 +94,14 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		// Find a chunk
 		if !inChunk {
 			if err := proto.Unmarshal(unescapedLine, info); err != nil {
-				log.DefaultLogger.Error("Failed to parse paylod info:", err)
+				log.DefaultLogger.Error("Failed to parse payload info", "error", err)
+				return sD, errFailedToParsePBFormat
 			}
 
 			inChunk = true
-			dataType = *info.Type
-			year = *info.Year
+			dataType = info.GetType()
+			yearStart = startOfYear(info.GetYear())
+			message = initPBMessage(dataType)
 
 			messageType, _ := getMessageType(dataType, field)
 
@@ -116,32 +127,36 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, sec, nano, err = getNumericValue(unescapedLine, dataType, hideInvalid)
+				value, sec, nano, err = getNumericValue(unescapedLine, message, hideInvalid)
 			} else {
-				value, sec, nano, err = getMetaValue(unescapedLine, dataType, field)
+				value, sec, nano, err = getMetaValue(unescapedLine, message, field)
 			}
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Arrays:
-			value, sec, nano, err := getArrayValue(unescapedLine, dataType)
+			value, sec, nano, err := getArrayValue(unescapedLine, message)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Strings:
-			value, sec, nano, err := getStringValue(unescapedLine)
+			strMessage, ok := message.(*pb.ScalarString)
+			if !ok {
+				return sD, errIllegalPayloadType
+			}
+			value, sec, nano, err := getStringValue(unescapedLine, strMessage)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
-			value, sec, nano, err := getMetaValue(unescapedLine, dataType, field)
+			value, sec, nano, err := getMetaValue(unescapedLine, message, field)
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
@@ -149,7 +164,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			if value == nil {
 				continue
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(int16(*value), t)
 		default:
 			return sD, errIllegalPayloadType
@@ -168,8 +183,73 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	return sD, nil
 }
 
+// lineReader hands out one line at a time without allocating per line, which
+// matters because the parser reads one line per archived sample.
+type lineReader struct {
+	reader *bufio.Reader
+
+	// joined holds lines too long for the reader's buffer. A waveform PV
+	// produces one such line per sample, so the buffer is kept and regrown
+	// rather than allocated each time.
+	joined []byte
+}
+
+func newLineReader(in io.Reader) *lineReader {
+	return &lineReader{reader: bufio.NewReader(in)}
+}
+
+func (r *lineReader) peek() ([]byte, error) {
+	return r.reader.Peek(1)
+}
+
+// readLine returns the next line without its delimiter. The result aliases
+// either the reader's buffer or the joined buffer, so it is only valid until
+// the next call, which is all the parser needs.
+func (r *lineReader) readLine() ([]byte, error) {
+	line, err := r.reader.ReadSlice('\n')
+	if err == nil {
+		return line[:len(line)-1], nil
+	}
+
+	if err != bufio.ErrBufferFull {
+		// ReadSlice returns what it has along with io.EOF for a final line
+		// with no delimiter. The archiver always terminates its lines, so
+		// treat a partial tail as the end of the stream.
+		return nil, err
+	}
+
+	// The line is longer than the reader's buffer, so collect it a bufferful
+	// at a time. Each fragment has to be copied out before the next read
+	// refills the buffer over it. ReadSlice hands back the bytes it managed
+	// to read even when it reports an error, so append before inspecting err.
+	r.joined = append(r.joined[:0], line...)
+	for err == bufio.ErrBufferFull {
+		line, err = r.reader.ReadSlice('\n')
+		r.joined = append(r.joined, line...)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.joined[:len(r.joined)-1], nil
+}
+
+// unescapeLine reverses the escaping the archiver applies to sample lines.
+//
+// It runs once per sample, so the common case matters: real data rarely
+// contains an escape sequence, and such a line is returned untouched. Every
+// rule either drops a byte or turns two into one, so the result is never
+// longer than the input and can be written back over line in place. The
+// returned slice therefore aliases line, which the caller must not need
+// afterwards.
 func unescapeLine(line []byte) []byte {
-	buf := make([]byte, 0, len(line))
+	if bytes.IndexByte(line, byte(EscapeCharType_ESCAPE_CHAR)) < 0 &&
+		bytes.IndexByte(line, byte(EscapeCharType_NEWLINE_CHAR)) < 0 {
+		return line
+	}
+
+	buf := line[:0]
 	escaped := false
 
 	for _, b := range line {
@@ -204,19 +284,17 @@ func unescapeLine(line []byte) []byte {
 	return buf
 }
 
-func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getMetaValue(line []byte, message proto.Message, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+	if err := proto.Unmarshal(line, message); err != nil {
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.MetaFieldData)
+	sample, ok := message.(pb.MetaFieldData)
 
 	if !ok {
 		return nil, 0, 0, errIllegalPayloadType
@@ -241,19 +319,17 @@ func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) 
 	return val, sec, nano, nil
 }
 
-func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+	if err := proto.Unmarshal(line, message); err != nil {
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.NumericSamepleData)
+	sample, ok := message.(pb.NumericSamepleData)
 
 	if !ok {
 		return nil, 0, 0, errIllegalPayloadType
@@ -274,11 +350,13 @@ func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (va
 	return val, sec, nano, nil
 }
 
-func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error) {
-	message := &pb.ScalarString{}
+func getStringValue(line []byte, message *pb.ScalarString) (val string, sec uint32, nano uint32, err error) {
+	if message == nil {
+		return "", 0, 0, errIllegalPayloadType
+	}
 
 	if err := proto.Unmarshal(line, message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return "", 0, 0, errIllegalPayloadType
 	}
 
@@ -289,19 +367,17 @@ func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error
 	return val, sec, nano, nil
 }
 
-func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uint32, nano uint32, err error) {
-	message := initPBMessage(dataType)
-
+func getArrayValue(line []byte, message proto.Message) (val []float64, sec uint32, nano uint32, err error) {
 	if message == nil {
 		return []float64{}, 0, 0, errIllegalPayloadType
 	}
 
-	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+	if err := proto.Unmarshal(line, message); err != nil {
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return []float64{}, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := (*message).(pb.ArraySamepleData)
+	sample, ok := message.(pb.ArraySamepleData)
 
 	if !ok {
 		return []float64{}, 0, 0, errIllegalPayloadType
@@ -314,7 +390,7 @@ func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uin
 	return val, sec, nano, nil
 }
 
-func initPBMessage(dataType pb.PayloadType) *proto.Message {
+func initPBMessage(dataType pb.PayloadType) proto.Message {
 	var m proto.Message
 
 	switch dataType {
@@ -350,7 +426,7 @@ func initPBMessage(dataType pb.PayloadType) *proto.Message {
 		return nil
 	}
 
-	return &m
+	return m
 }
 
 func getMessageType(dataType pb.PayloadType, field models.FieldName) (MessageType, error) {
@@ -413,6 +489,12 @@ func getInitializedValues(mtype MessageType, field models.FieldName, capacity in
 	return values, nil
 }
 
-func calcTime(year int32, sec uint32, nano uint32) time.Time {
-	return time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+func startOfYear(year int32) time.Time {
+	return time.Date(int(year), 1, 1, 0, 0, 0, 0, time.UTC)
+}
+
+// offsetIntoYear resolves a sample's timestamp. Adding to the start of the
+// year keeps time.Date's calendar normalisation out of the per-sample path.
+func offsetIntoYear(yearStart time.Time, sec uint32, nano uint32) time.Time {
+	return yearStart.Add(time.Duration(sec)*time.Second + time.Duration(nano)*time.Nanosecond)
 }

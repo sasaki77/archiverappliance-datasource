@@ -32,8 +32,17 @@ mage -v                       # build backend binaries for Linux/Windows/Darwin 
 mage -l                       # list all available Mage targets
 mage vtest                     # go test -v ./pkg/... (verbose, doesn't stop on first failure)
 mage atest <TestName>            # go test -v ./pkg/... -run <TestName>  (single test by name)
-go test ./pkg/...                 # plain go test across all backend packages
+mage bench                        # run all backend benchmarks with -benchmem
+mage abench <BenchPattern>         # run matching benchmarks (regex; "Name/Sub" selects a sub-benchmark)
+go test ./pkg/...                   # plain go test across all backend packages
 ```
+
+Benchmarks live next to the code they measure (`pbparse_bench_test.go`, `scalars_bench_test.go`,
+`singledata_bench_test.go`, `functions_bench_test.go`) and cover the three stages of the query
+pipeline: PB parsing, processing functions, and `SingleData` to `data.Frame` conversion. `allocs/op`
+is the metric to watch — the parser and the transform functions run once per archived sample, so a
+constant factor per sample dominates on raw queries returning hundreds of thousands of points. See the
+Benchmarks section of [README.md](README.md) for before/after comparison with `benchstat`.
 
 ### End-to-end tests
 ```bash
@@ -68,12 +77,15 @@ Prefix every commit's subject line with one of NumPy's standard acronyms (see [N
 | `DEV` | development tool or utility |
 | `DOC` | documentation |
 | `ENH` | enhancement |
-| `MAINT` | maintenance commit (refactoring, typos, etc.) |
+| `MNT` | maintenance commit (refactoring, typos, etc.) |
 | `REL` | related to releasing |
 | `REV` | revert an earlier commit |
 | `STY` | style fix (whitespace, formatting, etc., no logic change) |
 | `TST` | addition or modification of tests |
 | `TYP` | static typing |
+
+Note that `MNT` departs from NumPy, which spells it `MAINT`. This repository
+used `MAINT` until mid-2025 and has used `MNT` since; follow the table.
 
 ## Backend architecture (`pkg/`)
 

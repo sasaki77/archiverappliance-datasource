@@ -32,5 +32,24 @@ func Atest(ctx context.Context, targetTest string) error {
 }
 
 
+// Bench() runs all backend benchmarks with memory statistics reported.
+// The -run '^$' filter matches no unit test, so only benchmarks are executed.
+func Bench() error {
+	if err := sh.RunV("go", "test", "./pkg/...", "-run", "^$", "-bench", ".", "-benchmem"); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Abench() runs the benchmarks whose names match targetBench, with memory
+// statistics reported. targetBench is a regular expression, so a sub-benchmark
+// can be selected with a slash, e.g. "MovingAverage/Window1000".
+func Abench(ctx context.Context, targetBench string) error {
+	if err := sh.RunV("go", "test", "./pkg/...", "-run", "^$", "-bench", targetBench, "-benchmem"); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Default configures the default target.
 var Default = build.BuildAll

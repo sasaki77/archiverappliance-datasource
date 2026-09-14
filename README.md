@@ -144,6 +144,63 @@ If the Mage build tool is not already installed, you may install it using the in
     mage -l
     ```
 
+### Benchmarks
+
+The backend benchmarks cover the three stages of the query pipeline and live next to the code
+they measure:
+
+| File | Covers |
+| --- | --- |
+| `pkg/archiverappliance/pbparse_bench_test.go` | PB response parsing (scalar, waveform, string, meta fields) |
+| `pkg/models/scalars_bench_test.go` | `Scalars` transforms (scale, offset, delta, moving average, ranking) |
+| `pkg/models/singledata_bench_test.go` | `SingleData` to `data.Frame` conversion for each array format |
+| `pkg/functions/functions_bench_test.go` | The processing-function pipeline, including sort and array-to-scalar functions |
+
+```bash
+mage bench                             # everything
+mage abench 'BenchmarkPBparseOneday$'  # a subset; the argument is a regular expression
+mage abench 'MovingAverage/Window1000' # a sub-benchmark, selected with a slash
+```
+
+Both targets report memory statistics. Watch `allocs/op`: the parser and the transform
+functions run once per archived sample, so a constant allocation cost per sample dominates on
+raw queries that return hundreds of thousands of points.
+
+#### Comparing against a baseline
+
+A single run is too noisy to draw conclusions from. Take several runs of each side and compare
+them with [benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat), installed with
+`go install golang.org/x/perf/cmd/benchstat@latest`.
+
+For uncommitted work:
+
+```bash
+git stash
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > before.txt
+git stash pop
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > after.txt
+benchstat before.txt after.txt
+```
+
+For a change that is already committed, check the baseline out into a throwaway worktree, so
+the two runs need no stashing and cannot disturb each other:
+
+```bash
+WORKTREE=$(mktemp -d)/base   # not ../base: the parent of the repo is not always writable
+git worktree add --detach "$WORKTREE" "$(git merge-base HEAD master)"
+
+(cd "$WORKTREE" && go test ./pkg/... -run '^$' -bench . -benchmem -count=10) > before.txt
+go test ./pkg/... -run '^$' -bench . -benchmem -count=10 > after.txt
+benchstat before.txt after.txt
+
+git worktree remove --force "$WORKTREE"   # `git worktree prune` if the directory is gone
+```
+
+Benchstat matches benchmarks by name, which cuts two ways. One that exists on a single side is
+dropped from the comparison, which is what you want for a benchmark added alongside the change.
+One whose *body* changed still lines up by name and is compared anyway — ignore those rows, or
+move the baseline to a commit from after that benchmark settled.
+
 ## Build documentation
 
 ```bash

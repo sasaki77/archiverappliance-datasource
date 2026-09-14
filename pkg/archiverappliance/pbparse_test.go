@@ -1,6 +1,9 @@
 package archiverappliance
 
 import (
+	"bufio"
+	"bytes"
+	"io"
 	"math"
 	"os"
 	"testing"
@@ -595,14 +598,157 @@ func TestParseEmptyData(t *testing.T) {
 	}
 }
 
-func BenchmarkPBparseOneday(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		f, err := os.Open("../test_data/pb/onedaysdbrdouble")
+func TestParseInvalidPayloadInfo(t *testing.T) {
+	// A chunk header that is not a valid PayloadInfo message. The parser used
+	// to log the failure and carry on, then dereference info.Type and
+	// info.Year on the unpopulated message.
+	in := bytes.NewReader([]byte{0x00, 0x01, 0x02, '\n', 0x03, 0x04, '\n'})
+
+	_, err := archiverPBSingleQueryParser(in, models.FIELD_NAME_VAL, 1000, false)
+	if err != errFailedToParsePBFormat {
+		t.Errorf("parser should reject an invalid payload info, got %v", err)
+	}
+}
+
+func TestUnescapeLine(t *testing.T) {
+	esc := byte(EscapeCharType_ESCAPE_CHAR)
+
+	var tests = []struct {
+		name  string
+		input []byte
+		want  []byte
+	}{
+		{
+			name:  "no escape sequence is returned unchanged",
+			input: []byte{0x41, 0x42, 0x43},
+			want:  []byte{0x41, 0x42, 0x43},
+		},
+		{
+			name:  "empty line",
+			input: []byte{},
+			want:  []byte{},
+		},
+		{
+			name:  "escaped escape character",
+			input: []byte{0x41, esc, byte(EscapeCharType_ESCAPE_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, esc, 0x42},
+		},
+		{
+			name:  "escaped newline",
+			input: []byte{0x41, esc, byte(EscapeCharType_NEWLINE_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+		},
+		{
+			name:  "escaped carriage return",
+			input: []byte{0x41, esc, byte(EscapeCharType_CARRIAGERETURN_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, byte(EscapeCharType_CARRIAGERETURN_CHAR), 0x42},
+		},
+		{
+			name:  "unknown escape code keeps the escaped byte",
+			input: []byte{0x41, esc, 0x7F, 0x42},
+			want:  []byte{0x41, 0x7F, 0x42},
+		},
+		{
+			name:  "a bare newline byte is dropped",
+			input: []byte{0x41, byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+			want:  []byte{0x41, 0x42},
+		},
+		{
+			name:  "several sequences in one line",
+			input: []byte{esc, byte(EscapeCharType_NEWLINE_ESCAPE_CHAR), 0x41, esc, byte(EscapeCharType_ESCAPE_ESCAPE_CHAR), byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+			want:  []byte{byte(EscapeCharType_NEWLINE_CHAR), 0x41, esc, 0x42},
+		},
+		{
+			name:  "trailing escape character with nothing after it",
+			input: []byte{0x41, esc},
+			want:  []byte{0x41},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			// unescapeLine writes over its input, so keep a copy to report.
+			original := make([]byte, len(testCase.input))
+			copy(original, testCase.input)
+
+			result := unescapeLine(testCase.input)
+
+			if !bytes.Equal(result, testCase.want) {
+				t.Errorf("unescapeLine(%v) = %v, want %v", original, result, testCase.want)
+			}
+		})
+	}
+}
+
+func TestReadLine(t *testing.T) {
+	// A line longer than the buffer takes readLine's fragment-joining path,
+	// which the fixtures never reach with the parser's 64 KiB buffer.
+	const bufSize = 16
+	long := bytes.Repeat([]byte{0x41}, 300)
+	exact := bytes.Repeat([]byte{0x42}, bufSize-1)
+
+	input := []byte("short\n")
+	input = append(append(input, long...), '\n')
+	input = append(append(input, exact...), '\n')
+	input = append(input, '\n')
+
+	reader := &lineReader{reader: bufio.NewReaderSize(bytes.NewReader(input), bufSize)}
+
+	want := [][]byte{[]byte("short"), long, exact, {}}
+	for idx, expected := range want {
+		line, err := reader.readLine()
 		if err != nil {
-			return
+			t.Fatalf("line %v: unexpected error %v", idx, err)
 		}
-		defer f.Close()
-		_, _ = archiverPBSingleQueryParser(f, "pvname", 1000, false)
+		if !bytes.Equal(line, expected) {
+			t.Errorf("line %v: got %v bytes %q, want %v bytes", idx, len(line), line, len(expected))
+		}
+	}
+
+	if _, err := reader.readLine(); err != io.EOF {
+		t.Errorf("readLine at end of input should return io.EOF, got %v", err)
+	}
+}
+
+func TestReadLineDiscardsUnterminatedTail(t *testing.T) {
+	// The archiver terminates every line. A trailing fragment without a
+	// delimiter is treated as the end of the stream, as it was when the parser
+	// used ReadBytes.
+	reader := &lineReader{reader: bufio.NewReaderSize(bytes.NewReader([]byte("done\npartial")), 16)}
+
+	if _, err := reader.readLine(); err != nil {
+		t.Fatalf("unexpected error %v", err)
+	}
+	if _, err := reader.readLine(); err != io.EOF {
+		t.Errorf("unterminated tail should return io.EOF, got %v", err)
+	}
+}
+
+func TestOffsetIntoYear(t *testing.T) {
+	// offsetIntoYear replaces a per-sample time.Date call. The results have to
+	// be identical, including their internal representation, because callers
+	// compare timestamps with ==.
+	years := []int32{1970, 2020, 2021, 2024, 2100}
+	offsets := []struct {
+		sec  uint32
+		nano uint32
+	}{
+		{0, 0},
+		{0, 1},
+		{1, 999999999},
+		{86399, 999999999},    // end of the first day
+		{5097600, 0},          // past the leap day of a leap year
+		{31535999, 999999999}, // last second of a common year
+	}
+
+	for _, year := range years {
+		for _, offset := range offsets {
+			want := time.Date(int(year), 1, 1, 0, 0, int(offset.sec), int(offset.nano), time.UTC)
+			got := offsetIntoYear(startOfYear(year), offset.sec, offset.nano)
+
+			if got != want {
+				t.Errorf("offsetIntoYear(%v, %v, %v) = %v, want %v", year, offset.sec, offset.nano, got, want)
+			}
+		}
 	}
 }
