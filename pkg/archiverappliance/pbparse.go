@@ -46,7 +46,10 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	info := &pb.PayloadInfo{}
 	inChunk := false
 	var dataType pb.PayloadType = -1
-	var year int32 = -1
+
+	// Sample timestamps are an offset into the chunk's year, which only
+	// changes at a chunk boundary.
+	var yearStart time.Time
 
 	// bufio.Scanner cannot handle the long lines a waveform PV produces.
 	reader := newLineReader(in)
@@ -97,7 +100,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 
 			inChunk = true
 			dataType = info.GetType()
-			year = info.GetYear()
+			yearStart = startOfYear(info.GetYear())
 			message = initPBMessage(dataType)
 
 			messageType, _ := getMessageType(dataType, field)
@@ -132,14 +135,14 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Arrays:
 			value, sec, nano, err := getArrayValue(unescapedLine, message)
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Strings:
 			strMessage, ok := message.(*pb.ScalarString)
@@ -150,7 +153,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
 			value, sec, nano, err := getMetaValue(unescapedLine, message, field)
@@ -161,7 +164,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			if value == nil {
 				continue
 			}
-			t := calcTime(year, sec, nano)
+			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(int16(*value), t)
 		default:
 			return sD, errIllegalPayloadType
@@ -486,6 +489,12 @@ func getInitializedValues(mtype MessageType, field models.FieldName, capacity in
 	return values, nil
 }
 
-func calcTime(year int32, sec uint32, nano uint32) time.Time {
-	return time.Date(int(year), 1, 1, 0, 0, int(sec), int(nano), time.UTC)
+func startOfYear(year int32) time.Time {
+	return time.Date(int(year), 1, 1, 0, 0, 0, 0, time.UTC)
+}
+
+// offsetIntoYear resolves a sample's timestamp. Adding to the start of the
+// year keeps time.Date's calendar normalisation out of the per-sample path.
+func offsetIntoYear(yearStart time.Time, sec uint32, nano uint32) time.Time {
+	return yearStart.Add(time.Duration(sec)*time.Second + time.Duration(nano)*time.Nanosecond)
 }

@@ -723,3 +723,32 @@ func TestReadLineDiscardsUnterminatedTail(t *testing.T) {
 		t.Errorf("unterminated tail should return io.EOF, got %v", err)
 	}
 }
+
+func TestOffsetIntoYear(t *testing.T) {
+	// offsetIntoYear replaces a per-sample time.Date call. The results have to
+	// be identical, including their internal representation, because callers
+	// compare timestamps with ==.
+	years := []int32{1970, 2020, 2021, 2024, 2100}
+	offsets := []struct {
+		sec  uint32
+		nano uint32
+	}{
+		{0, 0},
+		{0, 1},
+		{1, 999999999},
+		{86399, 999999999},    // end of the first day
+		{5097600, 0},          // past the leap day of a leap year
+		{31535999, 999999999}, // last second of a common year
+	}
+
+	for _, year := range years {
+		for _, offset := range offsets {
+			want := time.Date(int(year), 1, 1, 0, 0, int(offset.sec), int(offset.nano), time.UTC)
+			got := offsetIntoYear(startOfYear(year), offset.sec, offset.nano)
+
+			if got != want {
+				t.Errorf("offsetIntoYear(%v, %v, %v) = %v, want %v", year, offset.sec, offset.nano, got, want)
+			}
+		}
+	}
+}
