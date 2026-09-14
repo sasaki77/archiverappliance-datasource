@@ -66,7 +66,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		lineWithDelim, err := reader.ReadBytes('\n')
 		if err != nil {
 			if err != io.EOF {
-				log.DefaultLogger.Error("Failed to read pb message:", err)
+				log.DefaultLogger.Error("Failed to read pb message", "error", err)
 				return sD, errFailedToParsePBFormat
 			}
 			break
@@ -85,12 +85,13 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		// Find a chunk
 		if !inChunk {
 			if err := proto.Unmarshal(unescapedLine, info); err != nil {
-				log.DefaultLogger.Error("Failed to parse paylod info:", err)
+				log.DefaultLogger.Error("Failed to parse payload info", "error", err)
+				return sD, errFailedToParsePBFormat
 			}
 
 			inChunk = true
-			dataType = *info.Type
-			year = *info.Year
+			dataType = info.GetType()
+			year = info.GetYear()
 
 			messageType, _ := getMessageType(dataType, field)
 
@@ -212,7 +213,7 @@ func getMetaValue(line []byte, dataType pb.PayloadType, field models.FieldName) 
 	}
 
 	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
@@ -249,7 +250,7 @@ func getNumericValue(line []byte, dataType pb.PayloadType, hideInvalid bool) (va
 	}
 
 	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return nil, 0, 0, errIllegalPayloadType
 	}
 
@@ -278,7 +279,7 @@ func getStringValue(line []byte) (val string, sec uint32, nano uint32, err error
 	message := &pb.ScalarString{}
 
 	if err := proto.Unmarshal(line, message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return "", 0, 0, errIllegalPayloadType
 	}
 
@@ -297,7 +298,7 @@ func getArrayValue(line []byte, dataType pb.PayloadType) (val []float64, sec uin
 	}
 
 	if err := proto.Unmarshal(line, *message); err != nil {
-		log.DefaultLogger.Error("Failed to parse paylod data:", err)
+		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return []float64{}, 0, 0, errIllegalPayloadType
 	}
 

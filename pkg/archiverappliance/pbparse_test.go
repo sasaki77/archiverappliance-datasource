@@ -1,6 +1,7 @@
 package archiverappliance
 
 import (
+	"bytes"
 	"math"
 	"os"
 	"testing"
@@ -592,5 +593,17 @@ func TestParseEmptyData(t *testing.T) {
 	_, err = archiverPBSingleQueryParser(f, models.FIELD_NAME_VAL, 1000, false)
 	if err != errEmptyResponse {
 		t.Fatalf("parser should return response empty error: %v", err)
+	}
+}
+
+func TestParseInvalidPayloadInfo(t *testing.T) {
+	// A chunk header that is not a valid PayloadInfo message. The parser used
+	// to log the failure and carry on, then dereference info.Type and
+	// info.Year on the unpopulated message.
+	in := bytes.NewReader([]byte{0x00, 0x01, 0x02, '\n', 0x03, 0x04, '\n'})
+
+	_, err := archiverPBSingleQueryParser(in, models.FIELD_NAME_VAL, 1000, false)
+	if err != errFailedToParsePBFormat {
+		t.Errorf("parser should reject an invalid payload info, got %v", err)
 	}
 }
