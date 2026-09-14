@@ -78,12 +78,15 @@ Prefix every commit's subject line with one of NumPy's standard acronyms (see [N
 | `DEV` | development tool or utility |
 | `DOC` | documentation |
 | `ENH` | enhancement |
-| `MAINT` | maintenance commit (refactoring, typos, etc.) |
+| `MNT` | maintenance commit (refactoring, typos, etc.) |
 | `REL` | related to releasing |
 | `REV` | revert an earlier commit |
 | `STY` | style fix (whitespace, formatting, etc., no logic change) |
 | `TST` | addition or modification of tests |
 | `TYP` | static typing |
+
+Note that `MNT` departs from NumPy, which spells it `MAINT`. This repository
+used `MAINT` until mid-2025 and has used `MNT` since; follow the table.
 
 ## Backend architecture (`pkg/`)
 
