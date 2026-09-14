@@ -75,7 +75,7 @@ func (client AAclient) ExecuteSingleQuery(ctx context.Context, target string, qm
 
 	defer queryResponse.Close()
 
-	parsedResponse, err := archiverPBSingleQueryParser(queryResponse, models.FieldName(qm.FieldName), qm.MaxDataPoints, qm.HideInvalid)
+	parsedResponse, err := archiverPBSingleQueryParser(queryResponse, models.FieldName(qm.FieldName), initialCapacity(qm), qm.HideInvalid)
 	if err != nil {
 		err = fmt.Errorf("target = %q: %w", target, err)
 		return parsedResponse, err
@@ -85,6 +85,23 @@ func (client AAclient) ExecuteSingleQuery(ctx context.Context, target string, qm
 	parsedResponse.PVname = target
 
 	return parsedResponse, err
+}
+
+// initialCapacity sizes the containers the parser fills. MaxDataPoints is the
+// width of the panel, which bounds a binned query's result but says nothing
+// about a raw one.
+func initialCapacity(qm models.ArchiverQueryModel) int {
+	// The archiver returns a single sample, so a panel's worth of capacity
+	// would be allocated and thrown away for every PV of the query.
+	if qm.Operator == "last" {
+		return 1
+	}
+
+	if qm.MaxDataPoints < 0 {
+		return 0
+	}
+
+	return qm.MaxDataPoints
 }
 
 func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) string {
