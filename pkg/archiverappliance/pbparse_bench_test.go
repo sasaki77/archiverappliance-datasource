@@ -105,20 +105,31 @@ func BenchmarkPBparseString(b *testing.B) {
 
 // unescapeLine runs once per sample. The fast path for lines containing no
 // escape sequences (the common case in real archiver data) is measured here.
+//
+// unescapeLine unescapes in place, so each iteration restores its input from a
+// pristine copy. The restore is a 64-byte copy and is included in both
+// measurements, which keeps the two sub-benchmarks comparable with each other.
 func BenchmarkUnescapeLine(b *testing.B) {
 	plain := bytes.Repeat([]byte{0x41}, 64)
-	escaped := append(bytes.Repeat([]byte{0x41}, 32), append([]byte{0x1B, 0x01}, bytes.Repeat([]byte{0x41}, 30)...)...)
+	escaped := append(bytes.Repeat([]byte{0x41}, 32),
+		append([]byte{byte(EscapeCharType_ESCAPE_CHAR), byte(EscapeCharType_ESCAPE_ESCAPE_CHAR)},
+			bytes.Repeat([]byte{0x41}, 30)...)...)
 
-	b.Run("NoEscape", func(b *testing.B) {
-		b.ReportAllocs()
-		for b.Loop() {
-			_ = unescapeLine(plain)
-		}
-	})
-	b.Run("WithEscape", func(b *testing.B) {
-		b.ReportAllocs()
-		for b.Loop() {
-			_ = unescapeLine(escaped)
-		}
-	})
+	for _, tc := range []struct {
+		name  string
+		input []byte
+	}{
+		{"NoEscape", plain},
+		{"WithEscape", escaped},
+	} {
+		b.Run(tc.name, func(b *testing.B) {
+			line := make([]byte, len(tc.input))
+			b.ReportAllocs()
+			for b.Loop() {
+				line = line[:len(tc.input)]
+				copy(line, tc.input)
+				_ = unescapeLine(line)
+			}
+		})
+	}
 }

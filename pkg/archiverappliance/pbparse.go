@@ -2,6 +2,7 @@ package archiverappliance
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"time"
 
@@ -180,8 +181,21 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	return sD, nil
 }
 
+// unescapeLine reverses the escaping the archiver applies to sample lines.
+//
+// It runs once per sample, so the common case matters: real data rarely
+// contains an escape sequence, and such a line is returned untouched. Every
+// rule either drops a byte or turns two into one, so the result is never
+// longer than the input and can be written back over line in place. The
+// returned slice therefore aliases line, which the caller must not need
+// afterwards.
 func unescapeLine(line []byte) []byte {
-	buf := make([]byte, 0, len(line))
+	if bytes.IndexByte(line, byte(EscapeCharType_ESCAPE_CHAR)) < 0 &&
+		bytes.IndexByte(line, byte(EscapeCharType_NEWLINE_CHAR)) < 0 {
+		return line
+	}
+
+	buf := line[:0]
 	escaped := false
 
 	for _, b := range line {

@@ -607,3 +607,73 @@ func TestParseInvalidPayloadInfo(t *testing.T) {
 		t.Errorf("parser should reject an invalid payload info, got %v", err)
 	}
 }
+
+func TestUnescapeLine(t *testing.T) {
+	esc := byte(EscapeCharType_ESCAPE_CHAR)
+
+	var tests = []struct {
+		name  string
+		input []byte
+		want  []byte
+	}{
+		{
+			name:  "no escape sequence is returned unchanged",
+			input: []byte{0x41, 0x42, 0x43},
+			want:  []byte{0x41, 0x42, 0x43},
+		},
+		{
+			name:  "empty line",
+			input: []byte{},
+			want:  []byte{},
+		},
+		{
+			name:  "escaped escape character",
+			input: []byte{0x41, esc, byte(EscapeCharType_ESCAPE_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, esc, 0x42},
+		},
+		{
+			name:  "escaped newline",
+			input: []byte{0x41, esc, byte(EscapeCharType_NEWLINE_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+		},
+		{
+			name:  "escaped carriage return",
+			input: []byte{0x41, esc, byte(EscapeCharType_CARRIAGERETURN_ESCAPE_CHAR), 0x42},
+			want:  []byte{0x41, byte(EscapeCharType_CARRIAGERETURN_CHAR), 0x42},
+		},
+		{
+			name:  "unknown escape code keeps the escaped byte",
+			input: []byte{0x41, esc, 0x7F, 0x42},
+			want:  []byte{0x41, 0x7F, 0x42},
+		},
+		{
+			name:  "a bare newline byte is dropped",
+			input: []byte{0x41, byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+			want:  []byte{0x41, 0x42},
+		},
+		{
+			name:  "several sequences in one line",
+			input: []byte{esc, byte(EscapeCharType_NEWLINE_ESCAPE_CHAR), 0x41, esc, byte(EscapeCharType_ESCAPE_ESCAPE_CHAR), byte(EscapeCharType_NEWLINE_CHAR), 0x42},
+			want:  []byte{byte(EscapeCharType_NEWLINE_CHAR), 0x41, esc, 0x42},
+		},
+		{
+			name:  "trailing escape character with nothing after it",
+			input: []byte{0x41, esc},
+			want:  []byte{0x41},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			// unescapeLine writes over its input, so keep a copy to report.
+			original := make([]byte, len(testCase.input))
+			copy(original, testCase.input)
+
+			result := unescapeLine(testCase.input)
+
+			if !bytes.Equal(result, testCase.want) {
+				t.Errorf("unescapeLine(%v) = %v, want %v", original, result, testCase.want)
+			}
+		})
+	}
+}
