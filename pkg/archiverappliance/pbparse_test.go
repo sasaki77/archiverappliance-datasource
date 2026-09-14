@@ -1,7 +1,9 @@
 package archiverappliance
 
 import (
+	"bufio"
 	"bytes"
+	"io"
 	"math"
 	"os"
 	"testing"
@@ -675,5 +677,49 @@ func TestUnescapeLine(t *testing.T) {
 				t.Errorf("unescapeLine(%v) = %v, want %v", original, result, testCase.want)
 			}
 		})
+	}
+}
+
+func TestReadLine(t *testing.T) {
+	// A line longer than the buffer takes readLine's fragment-joining path,
+	// which the fixtures never reach with the parser's 64 KiB buffer.
+	const bufSize = 16
+	long := bytes.Repeat([]byte{0x41}, 300)
+	exact := bytes.Repeat([]byte{0x42}, bufSize-1)
+
+	input := []byte("short\n")
+	input = append(append(input, long...), '\n')
+	input = append(append(input, exact...), '\n')
+	input = append(input, '\n')
+
+	reader := &lineReader{reader: bufio.NewReaderSize(bytes.NewReader(input), bufSize)}
+
+	want := [][]byte{[]byte("short"), long, exact, {}}
+	for idx, expected := range want {
+		line, err := reader.readLine()
+		if err != nil {
+			t.Fatalf("line %v: unexpected error %v", idx, err)
+		}
+		if !bytes.Equal(line, expected) {
+			t.Errorf("line %v: got %v bytes %q, want %v bytes", idx, len(line), line, len(expected))
+		}
+	}
+
+	if _, err := reader.readLine(); err != io.EOF {
+		t.Errorf("readLine at end of input should return io.EOF, got %v", err)
+	}
+}
+
+func TestReadLineDiscardsUnterminatedTail(t *testing.T) {
+	// The archiver terminates every line. A trailing fragment without a
+	// delimiter is treated as the end of the stream, as it was when the parser
+	// used ReadBytes.
+	reader := &lineReader{reader: bufio.NewReaderSize(bytes.NewReader([]byte("done\npartial")), 16)}
+
+	if _, err := reader.readLine(); err != nil {
+		t.Fatalf("unexpected error %v", err)
+	}
+	if _, err := reader.readLine(); err != io.EOF {
+		t.Errorf("unterminated tail should return io.EOF, got %v", err)
 	}
 }

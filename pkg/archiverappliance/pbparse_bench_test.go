@@ -2,10 +2,13 @@ package archiverappliance
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 
+	"github.com/sasaki77/archiverappliance-datasource/pkg/archiverappliance/pb"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
+	"google.golang.org/protobuf/proto"
 )
 
 // Benchmarks for the PB parsing hot path.
@@ -93,10 +96,101 @@ func BenchmarkPBparseSevr(b *testing.B) {
 	benchmarkPBparse(b, "onedaysdbrdouble", models.FIELD_NAME_SEVR, 1000, false)
 }
 
-// Waveform data: lines are large, so this is the case the bufio buffer size
-// and the per-sample array conversion affect most.
+// Waveform data: lines are large, so this is the case the read buffer and the
+// per-sample array conversion affect most.
 func BenchmarkPBparseWaveform(b *testing.B) {
 	benchmarkPBparse(b, "WAVEFORM_BYTE_sampledata", models.FIELD_NAME_VAL, 1000, false)
+}
+
+// buildWaveformPB encodes a chunk of double waveform samples in the archiver's
+// line format, so that a realistic number of oversized lines can be measured.
+// The checked-in waveform fixture holds two samples, which is too few to show
+// what the read path costs per sample.
+func buildWaveformPB(b *testing.B, samples int, width int) []byte {
+	b.Helper()
+
+	pvname := "TEST:WAVEFORM"
+	year := int32(2021)
+	elementCount := int32(width)
+	payloadType := pb.PayloadType_WAVEFORM_DOUBLE
+
+	appendLine := func(out []byte, m proto.Message) []byte {
+		encoded, err := proto.Marshal(m)
+		if err != nil {
+			b.Fatalf("failed to encode message: %v", err)
+		}
+		return append(escapeLine(out, encoded), '\n')
+	}
+
+	out := appendLine(nil, &pb.PayloadInfo{
+		Type:         &payloadType,
+		Pvname:       &pvname,
+		Year:         &year,
+		ElementCount: &elementCount,
+	})
+
+	val := make([]float64, width)
+	for i := range val {
+		val[i] = float64(i)
+	}
+	for i := 0; i < samples; i++ {
+		sec := uint32(i)
+		nano := uint32(0)
+		out = appendLine(out, &pb.VectorDouble{
+			Secondsintoyear: &sec,
+			Nano:            &nano,
+			Val:             val,
+		})
+	}
+
+	return out
+}
+
+// escapeLine is the inverse of unescapeLine, used only to build test data.
+func escapeLine(out []byte, line []byte) []byte {
+	for _, c := range line {
+		switch EscapeCharType(c) {
+		case EscapeCharType_ESCAPE_CHAR:
+			out = append(out, byte(EscapeCharType_ESCAPE_CHAR), byte(EscapeCharType_ESCAPE_ESCAPE_CHAR))
+		case EscapeCharType_NEWLINE_CHAR:
+			out = append(out, byte(EscapeCharType_ESCAPE_CHAR), byte(EscapeCharType_NEWLINE_ESCAPE_CHAR))
+		case EscapeCharType_CARRIAGERETURN_CHAR:
+			out = append(out, byte(EscapeCharType_ESCAPE_CHAR), byte(EscapeCharType_CARRIAGERETURN_ESCAPE_CHAR))
+		default:
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+// Widths either side of bufio's 4 KiB default buffer, so that both the direct
+// and the fragment-joining read paths are covered.
+func BenchmarkPBparseWaveformSynthetic(b *testing.B) {
+	for _, width := range []int{100, 2000} {
+		b.Run(fmt.Sprintf("Width%d", width), func(b *testing.B) {
+			const samples = 1000
+			payload := buildWaveformPB(b, samples, width)
+			reader := bytes.NewReader(payload)
+
+			sD, err := archiverPBSingleQueryParser(reader, models.FIELD_NAME_VAL, 1000, false)
+			if err != nil {
+				b.Fatalf("parse failed: %v", err)
+			}
+			if got := valuesLen(sD.Values); got != samples {
+				b.Fatalf("parsed %v samples, want %v", got, samples)
+			}
+
+			b.SetBytes(int64(len(payload)))
+			b.ReportAllocs()
+
+			for b.Loop() {
+				reader.Reset(payload)
+				if _, err := archiverPBSingleQueryParser(reader, models.FIELD_NAME_VAL, 1000, false); err != nil {
+					b.Fatalf("parse failed: %v", err)
+				}
+			}
+		})
+	}
 }
 
 func BenchmarkPBparseString(b *testing.B) {

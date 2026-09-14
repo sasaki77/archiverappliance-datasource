@@ -48,11 +48,11 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	var dataType pb.PayloadType = -1
 	var year int32 = -1
 
-	// Use ReadBytes insetead of bufioc.Scanner to handle large size array
-	reader := bufio.NewReader(in)
+	// bufio.Scanner cannot handle the long lines a waveform PV produces.
+	reader := newLineReader(in)
 
 	// Check if response data is valid
-	_, err := reader.Peek(1)
+	_, err := reader.peek()
 	if err != nil {
 		// Peek(1) returns EOF error if its size is 0
 		if err == io.EOF {
@@ -70,7 +70,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	var message proto.Message
 
 	for {
-		lineWithDelim, err := reader.ReadBytes('\n')
+		line, err := reader.readLine()
 		if err != nil {
 			if err != io.EOF {
 				log.DefaultLogger.Error("Failed to read pb message", "error", err)
@@ -78,7 +78,6 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			}
 			break
 		}
-		line := lineWithDelim[:len(lineWithDelim)-1]
 
 		// length of a line is 0 if chunk is end
 		if len(line) <= 0 {
@@ -179,6 +178,58 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 	sD.Values = values
 
 	return sD, nil
+}
+
+// lineReader hands out one line at a time without allocating per line, which
+// matters because the parser reads one line per archived sample.
+type lineReader struct {
+	reader *bufio.Reader
+
+	// joined holds lines too long for the reader's buffer. A waveform PV
+	// produces one such line per sample, so the buffer is kept and regrown
+	// rather than allocated each time.
+	joined []byte
+}
+
+func newLineReader(in io.Reader) *lineReader {
+	return &lineReader{reader: bufio.NewReader(in)}
+}
+
+func (r *lineReader) peek() ([]byte, error) {
+	return r.reader.Peek(1)
+}
+
+// readLine returns the next line without its delimiter. The result aliases
+// either the reader's buffer or the joined buffer, so it is only valid until
+// the next call, which is all the parser needs.
+func (r *lineReader) readLine() ([]byte, error) {
+	line, err := r.reader.ReadSlice('\n')
+	if err == nil {
+		return line[:len(line)-1], nil
+	}
+
+	if err != bufio.ErrBufferFull {
+		// ReadSlice returns what it has along with io.EOF for a final line
+		// with no delimiter. The archiver always terminates its lines, so
+		// treat a partial tail as the end of the stream.
+		return nil, err
+	}
+
+	// The line is longer than the reader's buffer, so collect it a bufferful
+	// at a time. Each fragment has to be copied out before the next read
+	// refills the buffer over it. ReadSlice hands back the bytes it managed
+	// to read even when it reports an error, so append before inspecting err.
+	r.joined = append(r.joined[:0], line...)
+	for err == bufio.ErrBufferFull {
+		line, err = r.reader.ReadSlice('\n')
+		r.joined = append(r.joined, line...)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.joined[:len(r.joined)-1], nil
 }
 
 // unescapeLine reverses the escaping the archiver applies to sample lines.
