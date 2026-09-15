@@ -35,8 +35,19 @@ func (v *Scalars) AppendConcrete(val float64, t time.Time) {
 	v.Times = append(v.Times, t)
 }
 
+// SetValConcrete overwrites a value in place. No two entries share a pointer, so
+// this cannot touch a neighbour, and ToFrame runs last -- a frame shares these
+// floats rather than copying them, so no transform may run after one is built.
 func (v *Scalars) SetValConcrete(idx int, val float64) {
-	v.Values[idx] = &val
+	if p := v.Values[idx]; p != nil {
+		*p = val
+		return
+	}
+
+	// Addressing the parameter would make it escape on every call, including the
+	// path above that does not need it.
+	nv := val
+	v.Values[idx] = &nv
 }
 
 func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*data.Field {
