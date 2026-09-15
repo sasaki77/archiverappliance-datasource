@@ -122,21 +122,27 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 		// Handle chunk data
 		switch v := values.(type) {
 		case *models.Scalars:
-			var value *float64
+			var value float64
+			var ok bool
 			var sec, nano uint32
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, sec, nano, err = getNumericValue(unescapedLine, message, hideInvalid)
+				value, ok, sec, nano, err = getNumericValue(unescapedLine, message, hideInvalid)
 			} else {
-				value, sec, nano, err = getMetaValue(unescapedLine, message, field)
+				value, ok, sec, nano, err = getMetaValue(unescapedLine, message, field)
 			}
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
 			t := offsetIntoYear(yearStart, sec, nano)
-			v.Append(value, t)
+			if !ok {
+				// hideInvalid dropped this sample; the nil draws the gap.
+				v.Append(nil, t)
+				continue
+			}
+			v.AppendConcrete(value, t)
 		case *models.Arrays:
 			value, sec, nano, err := getArrayValue(unescapedLine, message)
 			if err != nil {
@@ -156,16 +162,16 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
-			value, sec, nano, err := getMetaValue(unescapedLine, message, field)
+			value, ok, sec, nano, err := getMetaValue(unescapedLine, message, field)
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
 			}
-			if value == nil {
+			if !ok {
 				continue
 			}
 			t := offsetIntoYear(yearStart, sec, nano)
-			v.Append(int16(*value), t)
+			v.Append(int16(value), t)
 		default:
 			return sD, errIllegalPayloadType
 		}
@@ -284,55 +290,59 @@ func unescapeLine(line []byte) []byte {
 	return buf
 }
 
-func getMetaValue(line []byte, message proto.Message, field models.FieldName) (val *float64, sec uint32, nano uint32, err error) {
+// getMetaValue returns a plain float64 for the same reason as getNumericValue.
+// ok is always true on success here; it exists so both call sites are identical.
+func getMetaValue(line []byte, message proto.Message, field models.FieldName) (val float64, ok bool, sec uint32, nano uint32, err error) {
 	if message == nil {
-		return nil, 0, 0, errIllegalPayloadType
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
 	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
-		return nil, 0, 0, errIllegalPayloadType
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := message.(pb.MetaFieldData)
+	sample, isMeta := message.(pb.MetaFieldData)
 
-	if !ok {
-		return nil, 0, 0, errIllegalPayloadType
+	if !isMeta {
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
-	var v float64
 	switch field {
 	case models.FIELD_NAME_SEVR,
 		models.FIELD_NAME_SEVR_AS_ENUM:
-		v = float64(sample.GetSeverity())
+		val = float64(sample.GetSeverity())
 	case models.FIELD_NAME_STAT,
 		models.FIELD_NAME_STAT_AS_ENUM:
-		v = float64(sample.GetStatus())
+		val = float64(sample.GetStatus())
 	default:
-		return nil, 0, 0, errIllegalFieldName
+		return 0, false, 0, 0, errIllegalFieldName
 	}
 
-	val = &v
 	sec = sample.GetSecondsintoyear()
 	nano = sample.GetNano()
 
-	return val, sec, nano, nil
+	return val, true, sec, nano, nil
 }
 
-func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val *float64, sec uint32, nano uint32, err error) {
+// getNumericValue returns a plain float64, not a pointer, so that the container
+// can place the value in its own block storage: a pointer here would cost one
+// allocation per archived sample. ok is false when hideInvalid drops a sample,
+// which the caller records as a gap.
+func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val float64, ok bool, sec uint32, nano uint32, err error) {
 	if message == nil {
-		return nil, 0, 0, errIllegalPayloadType
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
 	if err := proto.Unmarshal(line, message); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
-		return nil, 0, 0, errIllegalPayloadType
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
-	sample, ok := message.(pb.NumericSamepleData)
+	sample, isNumeric := message.(pb.NumericSamepleData)
 
-	if !ok {
-		return nil, 0, 0, errIllegalPayloadType
+	if !isNumeric {
+		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
 	sec = sample.GetSecondsintoyear()
@@ -341,13 +351,11 @@ func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val 
 	if hideInvalid {
 		sev := EPICSSeverity(sample.GetSeverity())
 		if sev == EPICSSeverity_INVALID {
-			return nil, sec, nano, nil
+			return 0, false, sec, nano, nil
 		}
 	}
-	v := sample.GetValAsFloat64()
-	val = &v
 
-	return val, sec, nano, nil
+	return sample.GetValAsFloat64(), true, sec, nano, nil
 }
 
 func getStringValue(line []byte, message *pb.ScalarString) (val string, sec uint32, nano uint32, err error) {

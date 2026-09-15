@@ -87,21 +87,28 @@ func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.Functi
 		return []*models.SingleData{}, errors.New(errMsg)
 	}
 
-	var newData []*models.SingleData
+	newData := make([]*models.SingleData, 0, len(responseData))
 	for _, oneData := range responseData {
 		values, ok := oneData.Values.(*models.Arrays)
 		if !ok {
 			continue
 		}
 
-		var vs []*float64
-		for _, val := range values.Values {
-			v, _ := f(val)
-			vs = append(vs, &v)
+		// Arrays.Append keeps the two in step, so this only catches a container
+		// assembled by hand.
+		if len(values.Times) != len(values.Values) {
+			errMsg := fmt.Sprintf("%v: %v timestamps for %v waveforms", fname, len(values.Times), len(values.Values))
+			log.DefaultLogger.Warn(errMsg)
+			return []*models.SingleData{}, errors.New(errMsg)
 		}
 
-		//newValues := models.Scalars{Times: values.Times, Values: vs}
-		newValues := models.NewSclarsWithValues(values.Times, vs)
+		// Build through the container so the values come from its block storage
+		// rather than one allocation per waveform.
+		newValues := models.NewSclars(len(values.Values))
+		for idx, val := range values.Values {
+			v, _ := f(val)
+			newValues.AppendConcrete(v, values.Times[idx])
+		}
 
 		var d models.SingleData
 		d.PVname = oneData.PVname

@@ -9,9 +9,26 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
+// Scalars holds one PV's scalar samples. Values carries a pointer per sample
+// because that is what the Grafana SDK takes for a nullable field, where a nil
+// draws a gap, so the type cannot simply become []float64. The arena supplies
+// what those pointers point at, a block at a time, which brings a raw query down
+// to one allocation per 4096 samples without changing the type or any caller.
+//
+// Three things follow from splitting the pointers from the storage:
+//
+//   - The arena backs only the values this container made itself, through
+//     AppendConcrete. Entries that arrived already as pointers, from Append or
+//     NewSclarsWithValues, point somewhere else entirely.
+//   - Values is what keeps the blocks alive. The arena only remembers the block
+//     it is currently filling; earlier ones survive because Values still points
+//     into them, and are collected once it no longer does. Nothing frees them.
+//   - The transforms write through the pointers in Values, straight into that
+//     storage, which is how they rewrite a series without allocating.
 type Scalars struct {
 	Times  []time.Time
 	Values []*float64
+	arena  valueBlock
 }
 
 func NewSclars(length int) *Scalars {
@@ -31,12 +48,54 @@ func (v *Scalars) Append(val *float64, t time.Time) {
 }
 
 func (v *Scalars) AppendConcrete(val float64, t time.Time) {
-	v.Values = append(v.Values, &val)
+	v.Values = append(v.Values, v.arena.add(val))
 	v.Times = append(v.Times, t)
 }
 
+// SetValConcrete overwrites a value in place. No two entries share a pointer, so
+// this cannot touch a neighbour, and ToFrame runs last -- a frame shares these
+// floats rather than copying them, so no transform may run after one is built.
 func (v *Scalars) SetValConcrete(idx int, val float64) {
-	v.Values[idx] = &val
+	if p := v.Values[idx]; p != nil {
+		*p = val
+		return
+	}
+
+	// Addressing the parameter would make it escape on every call, including the
+	// path above that does not need it.
+	nv := val
+	v.Values[idx] = &nv
+}
+
+// defaultValueBlock is the block size used when the count is not known up front.
+const defaultValueBlock = 4096
+
+// valueBlock hands out pointers into slices it owns. A full block is replaced
+// rather than grown, which is what keeps the pointers already handed out valid;
+// nothing frees a block, it lives as long as a pointer into it. The zero value
+// is usable.
+type valueBlock struct {
+	block []float64
+
+	// size is the next block's capacity, 0 for defaultValueBlock. A caller that
+	// knows its length passes it, so the whole series fits one block.
+	size int
+}
+
+func newValueBlock(size int) *valueBlock {
+	return &valueBlock{size: size}
+}
+
+func (b *valueBlock) add(val float64) *float64 {
+	if len(b.block) == cap(b.block) {
+		size := b.size
+		if size <= 0 {
+			size = defaultValueBlock
+		}
+		b.block = make([]float64, 0, size)
+	}
+	b.block = append(b.block, val)
+	return &b.block[len(b.block)-1]
 }
 
 func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*data.Field {
@@ -76,7 +135,9 @@ func (v *Scalars) Extrapolation(t time.Time) {
 		return
 	}
 
-	v.Append(val, t)
+	// Copy rather than repeat the pointer: transforms write through these, so two
+	// entries sharing one would alias.
+	v.AppendConcrete(*val, t)
 }
 
 func (v *Scalars) Scale(factor float64) {
@@ -100,6 +161,8 @@ func (v *Scalars) Offset(delta float64) {
 func (v *Scalars) Delta() {
 	newValues := make([]*float64, 0, len(v.Values))
 	newTimes := make([]time.Time, 0, len(v.Times))
+	// Sized for the worst case, so one block holds the whole result.
+	block := newValueBlock(len(v.Values))
 	for idx, val := range v.Values {
 		if idx == 0 {
 			continue
@@ -109,14 +172,12 @@ func (v *Scalars) Delta() {
 			continue
 		}
 
-		var nv = *v.Values[idx] - *v.Values[idx-1]
-		newValues = append(newValues, &nv)
+		newValues = append(newValues, block.add(*v.Values[idx]-*v.Values[idx-1]))
 		newTimes = append(newTimes, v.Times[idx])
 	}
 	if len(newValues) == 0 {
 		// handle 1-length data
-		var zero float64 = 0
-		newValues = append(newValues, &zero)
+		newValues = append(newValues, block.add(0))
 		newTimes = append(newTimes, v.Times[0])
 	}
 	v.Times = newTimes
@@ -142,6 +203,7 @@ func (v *Scalars) Fluctuation() {
 
 func (v *Scalars) MovingAverage(windowSize int) {
 	newValues := make([]*float64, len(v.Values))
+	block := newValueBlock(len(v.Values))
 
 	for idx := range v.Values {
 		if v.Values[idx] == nil {
@@ -163,8 +225,7 @@ func (v *Scalars) MovingAverage(windowSize int) {
 			size = size + 1
 			total = total + *v.Values[idx-i]
 		}
-		nv := total / size
-		newValues[idx] = &nv
+		newValues[idx] = block.add(total / size)
 	}
 
 	v.Values = newValues

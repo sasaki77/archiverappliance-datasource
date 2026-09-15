@@ -386,11 +386,14 @@ func TestArrayFunctionSelector(t *testing.T) {
 			},
 		},
 		{
+			// Two waveforms, so two timestamps: Arrays.Append always adds a row
+			// and its timestamp together, and a Scalars whose Times and Values
+			// differ in length cannot be turned into a valid frame.
 			name: "toScalarByStd test",
 			inputSd: []*models.SingleData{
 				{
 					Values: &models.Arrays{
-						Times:  testhelper.TimeArrayHelper(0, 3),
+						Times:  testhelper.TimeArrayHelper(0, 2),
 						Values: [][]float64{{10, 10, 20, 20}, {5, 5, 10, 10}},
 					},
 				},
@@ -405,7 +408,7 @@ func TestArrayFunctionSelector(t *testing.T) {
 				{
 					Name: "(std)",
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 3),
+						Times:  testhelper.TimeArrayHelper(0, 2),
 						Values: testhelper.InitFloat64SlicePointer([]float64{5, 2.5}),
 					},
 				},
@@ -421,6 +424,29 @@ func TestArrayFunctionSelector(t *testing.T) {
 			}
 			models.SingleDataCompareHelper(result, testCase.output, t)
 		})
+	}
+}
+
+// Arrays.Append keeps Times and Values in step, so a mismatch means the
+// container was built by hand. Report it rather than indexing past the end.
+func TestArrayFunctionSelectorMismatchedLengths(t *testing.T) {
+	inputSd := []*models.SingleData{
+		{
+			Values: &models.Arrays{
+				Times:  testhelper.TimeArrayHelper(0, 1),
+				Values: [][]float64{{1, 2, 3}, {4, 5, 6}},
+			},
+		},
+	}
+	inputFdqm := models.FunctionDescriptorQueryModel{
+		Def: models.FuncDefQueryModel{
+			Category: models.FunctionCategory("Array to Scalar"),
+			Name:     "toScalarByAvg",
+		},
+	}
+
+	if _, err := arrayFunctionSelector(inputSd, inputFdqm); err == nil {
+		t.Error("Expected an error for a container with fewer times than waveforms")
 	}
 }
 
