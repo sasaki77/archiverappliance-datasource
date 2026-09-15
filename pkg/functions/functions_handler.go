@@ -87,21 +87,20 @@ func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.Functi
 		return []*models.SingleData{}, errors.New(errMsg)
 	}
 
-	var newData []*models.SingleData
+	newData := make([]*models.SingleData, 0, len(responseData))
 	for _, oneData := range responseData {
 		values, ok := oneData.Values.(*models.Arrays)
 		if !ok {
 			continue
 		}
 
-		var vs []*float64
-		for _, val := range values.Values {
+		// Build through the container so the values come from its block storage
+		// rather than one allocation per waveform.
+		newValues := models.NewSclars(len(values.Values))
+		for idx, val := range values.Values {
 			v, _ := f(val)
-			vs = append(vs, &v)
+			newValues.AppendConcrete(v, values.Times[idx])
 		}
-
-		//newValues := models.Scalars{Times: values.Times, Values: vs}
-		newValues := models.NewSclarsWithValues(values.Times, vs)
 
 		var d models.SingleData
 		d.PVname = oneData.PVname

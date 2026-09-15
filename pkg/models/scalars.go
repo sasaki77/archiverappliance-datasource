@@ -9,9 +9,26 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
+// Scalars holds one PV's scalar samples. Values carries a pointer per sample
+// because that is what the Grafana SDK takes for a nullable field, where a nil
+// draws a gap, so the type cannot simply become []float64. The arena supplies
+// what those pointers point at, a block at a time, which brings a raw query down
+// to one allocation per 4096 samples without changing the type or any caller.
+//
+// Three things follow from splitting the pointers from the storage:
+//
+//   - The arena backs only the values this container made itself, through
+//     AppendConcrete. Entries that arrived already as pointers, from Append or
+//     NewSclarsWithValues, point somewhere else entirely.
+//   - Values is what keeps the blocks alive. The arena only remembers the block
+//     it is currently filling; earlier ones survive because Values still points
+//     into them, and are collected once it no longer does. Nothing frees them.
+//   - The transforms write through the pointers in Values, straight into that
+//     storage, which is how they rewrite a series without allocating.
 type Scalars struct {
 	Times  []time.Time
 	Values []*float64
+	arena  valueBlock
 }
 
 func NewSclars(length int) *Scalars {
@@ -31,7 +48,7 @@ func (v *Scalars) Append(val *float64, t time.Time) {
 }
 
 func (v *Scalars) AppendConcrete(val float64, t time.Time) {
-	v.Values = append(v.Values, &val)
+	v.Values = append(v.Values, v.arena.add(val))
 	v.Times = append(v.Times, t)
 }
 
