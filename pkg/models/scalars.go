@@ -50,6 +50,37 @@ func (v *Scalars) SetValConcrete(idx int, val float64) {
 	v.Values[idx] = &nv
 }
 
+// defaultValueBlock is the block size used when the count is not known up front.
+const defaultValueBlock = 4096
+
+// valueBlock hands out pointers into slices it owns. A full block is replaced
+// rather than grown, which is what keeps the pointers already handed out valid;
+// nothing frees a block, it lives as long as a pointer into it. The zero value
+// is usable.
+type valueBlock struct {
+	block []float64
+
+	// size is the next block's capacity, 0 for defaultValueBlock. A caller that
+	// knows its length passes it, so the whole series fits one block.
+	size int
+}
+
+func newValueBlock(size int) *valueBlock {
+	return &valueBlock{size: size}
+}
+
+func (b *valueBlock) add(val float64) *float64 {
+	if len(b.block) == cap(b.block) {
+		size := b.size
+		if size <= 0 {
+			size = defaultValueBlock
+		}
+		b.block = make([]float64, 0, size)
+	}
+	b.block = append(b.block, val)
+	return &b.block[len(b.block)-1]
+}
+
 func (v *Scalars) ToFields(pvname string, name string, format FormatOption) []*data.Field {
 	// ToFields doesn't use FormatOption in Scalars for now
 
@@ -113,6 +144,8 @@ func (v *Scalars) Offset(delta float64) {
 func (v *Scalars) Delta() {
 	newValues := make([]*float64, 0, len(v.Values))
 	newTimes := make([]time.Time, 0, len(v.Times))
+	// Sized for the worst case, so one block holds the whole result.
+	block := newValueBlock(len(v.Values))
 	for idx, val := range v.Values {
 		if idx == 0 {
 			continue
@@ -122,14 +155,12 @@ func (v *Scalars) Delta() {
 			continue
 		}
 
-		var nv = *v.Values[idx] - *v.Values[idx-1]
-		newValues = append(newValues, &nv)
+		newValues = append(newValues, block.add(*v.Values[idx]-*v.Values[idx-1]))
 		newTimes = append(newTimes, v.Times[idx])
 	}
 	if len(newValues) == 0 {
 		// handle 1-length data
-		var zero float64 = 0
-		newValues = append(newValues, &zero)
+		newValues = append(newValues, block.add(0))
 		newTimes = append(newTimes, v.Times[0])
 	}
 	v.Times = newTimes
@@ -155,6 +186,7 @@ func (v *Scalars) Fluctuation() {
 
 func (v *Scalars) MovingAverage(windowSize int) {
 	newValues := make([]*float64, len(v.Values))
+	block := newValueBlock(len(v.Values))
 
 	for idx := range v.Values {
 		if v.Values[idx] == nil {
@@ -176,8 +208,7 @@ func (v *Scalars) MovingAverage(windowSize int) {
 			size = size + 1
 			total = total + *v.Values[idx-i]
 		}
-		nv := total / size
-		newValues[idx] = &nv
+		newValues[idx] = block.add(total / size)
 	}
 
 	v.Values = newValues
