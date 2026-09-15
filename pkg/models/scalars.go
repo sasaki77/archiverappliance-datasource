@@ -76,7 +76,9 @@ func (v *Scalars) Extrapolation(t time.Time) {
 		return
 	}
 
-	v.Append(val, t)
+	// Copy rather than repeat the pointer: transforms write through these, so two
+	// entries sharing one would alias.
+	v.AppendConcrete(*val, t)
 }
 
 func (v *Scalars) Scale(factor float64) {

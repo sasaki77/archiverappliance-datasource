@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/data"
@@ -45,8 +46,9 @@ func (v *Arrays) Extrapolation(t time.Time) {
 		return
 	}
 
-	v.Values = append(v.Values, v.Values[len(v.Values)-1])
-	v.Times = append(v.Times, t)
+	// Clone rather than repeat the row, so the two entries do not share a
+	// backing array.
+	v.Append(slices.Clone(v.Values[len(v.Values)-1]), t)
 }
 
 func (v *Arrays) makeDtSpaceFields(pvname string, name string) []*data.Field {
