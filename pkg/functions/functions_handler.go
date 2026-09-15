@@ -94,6 +94,14 @@ func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.Functi
 			continue
 		}
 
+		// Arrays.Append keeps the two in step, so this only catches a container
+		// assembled by hand.
+		if len(values.Times) != len(values.Values) {
+			errMsg := fmt.Sprintf("%v: %v timestamps for %v waveforms", fname, len(values.Times), len(values.Values))
+			log.DefaultLogger.Warn(errMsg)
+			return []*models.SingleData{}, errors.New(errMsg)
+		}
+
 		// Build through the container so the values come from its block storage
 		// rather than one allocation per waveform.
 		newValues := models.NewSclars(len(values.Values))

@@ -427,6 +427,29 @@ func TestArrayFunctionSelector(t *testing.T) {
 	}
 }
 
+// Arrays.Append keeps Times and Values in step, so a mismatch means the
+// container was built by hand. Report it rather than indexing past the end.
+func TestArrayFunctionSelectorMismatchedLengths(t *testing.T) {
+	inputSd := []*models.SingleData{
+		{
+			Values: &models.Arrays{
+				Times:  testhelper.TimeArrayHelper(0, 1),
+				Values: [][]float64{{1, 2, 3}, {4, 5, 6}},
+			},
+		},
+	}
+	inputFdqm := models.FunctionDescriptorQueryModel{
+		Def: models.FuncDefQueryModel{
+			Category: models.FunctionCategory("Array to Scalar"),
+			Name:     "toScalarByAvg",
+		},
+	}
+
+	if _, err := arrayFunctionSelector(inputSd, inputFdqm); err == nil {
+		t.Error("Expected an error for a container with fewer times than waveforms")
+	}
+}
+
 func TestFunctionSelector(t *testing.T) {
 	var tests = []struct {
 		inputSd   []*models.SingleData
