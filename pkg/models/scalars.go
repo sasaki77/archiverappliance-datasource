@@ -18,8 +18,7 @@ import (
 // Three things follow from splitting the pointers from the storage:
 //
 //   - The arena backs only the values this container made itself. Entries that
-//     arrived already as pointers, from Append or NewSclarsWithValues, point
-//     somewhere else entirely.
+//     arrived already as pointers, from Append, point somewhere else entirely.
 //   - Values is what keeps the blocks alive. The arena only remembers the block
 //     it is currently filling; earlier ones survive because Values still points
 //     into them, and are collected once it no longer does. Nothing frees them.
@@ -36,10 +35,6 @@ func NewSclars(length int) *Scalars {
 		Times:  make([]time.Time, 0, length),
 		Values: make([]*float64, 0, length),
 	}
-}
-
-func NewSclarsWithValues(t []time.Time, v []*float64) *Scalars {
-	return &Scalars{Times: t, Values: v}
 }
 
 func (v *Scalars) Append(val *float64, t time.Time) {

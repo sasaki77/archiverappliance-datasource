@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
-	"github.com/montanaflynn/stats"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
 )
 
@@ -59,27 +58,34 @@ func applyScalarFunctions(responseData []*models.SingleData, qm models.ArchiverQ
 
 func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.FunctionDescriptorQueryModel) ([]*models.SingleData, error) {
 	name := fdqm.Def.Name
-	var f func(values stats.Float64Data) (float64, error)
+	var f func(values []float64) float64
 	var fname string
 
 	switch name {
 	case "toScalarByAvg":
-		f = stats.Mean
+		f = mean
 		fname = "avg"
 	case "toScalarByMax":
-		f = stats.Max
+		f = maximum
 		fname = "max"
 	case "toScalarByMin":
-		f = stats.Min
+		f = minimum
 		fname = "min"
 	case "toScalarBySum":
-		f = stats.Sum
+		f = sum
 		fname = "sum"
 	case "toScalarByMed":
-		f = stats.Median
+		// One buffer for the whole series: medianOver sorts into it rather
+		// than copying each waveform.
+		var scratch []float64
+		f = func(values []float64) float64 {
+			var m float64
+			m, scratch = medianOver(values, scratch)
+			return m
+		}
 		fname = "median"
 	case "toScalarByStd":
-		f = stats.StandardDeviation
+		f = standardDeviation
 		fname = "std"
 	default:
 		errMsg := fmt.Sprintf("Function %v is not a recognized array function", name)
@@ -106,8 +112,7 @@ func arrayFunctionSelector(responseData []*models.SingleData, fdqm models.Functi
 		// rather than one allocation per waveform.
 		newValues := models.NewSclars(len(values.Values))
 		for idx, val := range values.Values {
-			v, _ := f(val)
-			newValues.AppendConcrete(v, values.Times[idx])
+			newValues.AppendConcrete(f(val), values.Times[idx])
 		}
 
 		var d models.SingleData
