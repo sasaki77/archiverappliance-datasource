@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
@@ -33,6 +32,9 @@ func Query(ctx context.Context, q backend.DataQuery, c Client, config models.Dat
 	return res
 }
 
+// Bounds one whole query, not each PV request.
+const queryTimeout = 30 * time.Second
+
 type queryResponse struct {
 	response models.SingleData
 	err      error
@@ -44,12 +46,14 @@ func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client Clien
 
 	// execute the individual queries
 	responseData := make([]*models.SingleData, 0, len(targetPvList))
-	responsePipe := make(chan queryResponse)
+	// A late response still needs somewhere to go: the collector can break out
+	// early, and an unbuffered send would then block its goroutine forever.
+	responsePipe := make(chan queryResponse, len(targetPvList))
 
-	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
-	timeoutDurationSeconds := 30 // units are seconds
-	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
-	timeoutPipe := time.After(timeoutDuration)
+	// On the context, not only the collector, so giving up also aborts the
+	// transfers still in flight.
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
 
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
@@ -77,8 +81,8 @@ responseCollector:
 				continue
 			}
 			responseData = append(responseData, &response.response)
-		case <-timeoutPipe:
-			log.DefaultLogger.Warn("Timeout limit for query has been reached")
+		case <-ctx.Done():
+			log.DefaultLogger.Warn("Query was cut short", "error", ctx.Err())
 			break responseCollector
 		}
 	}
