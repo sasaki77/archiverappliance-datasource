@@ -61,7 +61,6 @@ func TestQuery(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
 		name   string
-		ctx    context.Context
 		req    backend.DataQuery
 		config models.DatasourceSettings
 		out    *backend.QueryDataResponse
@@ -297,7 +296,7 @@ func TestQuery(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			result := Query(context.Background(), testCase.req, f, testCase.config)
 			for i, frame := range result.Frames {
 				out := testCase.out.Responses["A"].Frames[i]
 
@@ -339,7 +338,6 @@ func TestLiveQuery(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
 		name   string
-		ctx    context.Context
 		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
@@ -380,7 +378,7 @@ func TestLiveQuery(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			result := Query(context.Background(), testCase.req, f, testCase.config)
 			for _, frame := range result.Frames {
 				path := "ds/uuid/PV=NAME1"
 				if frame.Meta.Channel != path {
@@ -395,7 +393,6 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
 		name   string
-		ctx    context.Context
 		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
@@ -434,7 +431,7 @@ func TestQueryWithInvalidResponse(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			result := Query(context.Background(), testCase.req, f, testCase.config)
 			if result.Error == nil {
 				t.Errorf("An unexpected error has occurred")
 			}
@@ -452,7 +449,6 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 	TIME_FORMAT := "2006-01-02T15:04:05.000-07:00"
 	var tests = []struct {
 		name   string
-		ctx    context.Context
 		req    backend.DataQuery
 		config models.DatasourceSettings
 	}{
@@ -511,7 +507,7 @@ func TestQueryWithEmptyResponse(t *testing.T) {
 	f := fakeClient{}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := Query(testCase.ctx, testCase.req, f, testCase.config)
+			result := Query(context.Background(), testCase.req, f, testCase.config)
 			if !errors.Is(result.Error, errEmptyResponse) {
 				t.Errorf("An unexpected error has occurred")
 			}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
@@ -33,6 +32,9 @@ func Query(ctx context.Context, q backend.DataQuery, c Client, config models.Dat
 	return res
 }
 
+// Bounds one whole query, not each PV request.
+const queryTimeout = 30 * time.Second
+
 type queryResponse struct {
 	response models.SingleData
 	err      error
@@ -40,16 +42,18 @@ type queryResponse struct {
 
 func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client Client, config models.DatasourceSettings) backend.DataResponse {
 
+	// On the context, not only the collector, so giving up also aborts the
+	// transfers still in flight.
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
 	targetPvList := makeTargetPVList(ctx, client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
 	// execute the individual queries
 	responseData := make([]*models.SingleData, 0, len(targetPvList))
-	responsePipe := make(chan queryResponse)
-
-	// Create timeout. If any request routines take longer than timeoutDurationSeconds to execute, they will be dropped.
-	timeoutDurationSeconds := 30 // units are seconds
-	timeoutDuration, _ := time.ParseDuration(strconv.Itoa(timeoutDurationSeconds) + "s")
-	timeoutPipe := time.After(timeoutDuration)
+	// A late response still needs somewhere to go: the collector can break out
+	// early, and an unbuffered send would then block its goroutine forever.
+	responsePipe := make(chan queryResponse, len(targetPvList))
 
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
@@ -77,8 +81,8 @@ responseCollector:
 				continue
 			}
 			responseData = append(responseData, &response.response)
-		case <-timeoutPipe:
-			log.DefaultLogger.Warn("Timeout limit for query has been reached")
+		case <-ctx.Done():
+			log.DefaultLogger.Warn("Query was cut short", "error", ctx.Err())
 			break responseCollector
 		}
 	}
@@ -171,7 +175,10 @@ func makeTargetPVList(ctx context.Context, client Client, target string, regex b
 		// assemble the list of PVs to be queried for
 		var regexPvList []string
 		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(ctx, v, maxNum)
+			pvs, err := client.FetchRegexTargetPVs(ctx, v, maxNum)
+			if err != nil {
+				log.DefaultLogger.Warn("Failed to resolve a target", "target", v, "error", err)
+			}
 			regexPvList = append(regexPvList, pvs...)
 		}
 		targetPvList = regexPvList
