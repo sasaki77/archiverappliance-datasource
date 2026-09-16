@@ -270,7 +270,11 @@ func TestLiveOnly(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			ctx := context.Background()
 			httpOptions := httpclient.Options{Timeouts: &httpclient.TimeoutOptions{Timeout: 5 * time.Second}}
-			client, _ := NewAAClient(ctx, "url", httpOptions)
+			client, err := NewAAClient(ctx, "http://localhost:3396/retrieval", httpOptions)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			result, _ := client.ExecuteSingleQuery(ctx, testCase.target, testCase.qm)
 			pvname := "PV:NAME"
 
@@ -340,6 +344,12 @@ func TestNewAAClientRejectsAnUnusableURL(t *testing.T) {
 		{name: "space in the host", url: "http://local host/retrieval"},
 		{name: "bad percent escape", url: "http://localhost/%zz"},
 		{name: "no scheme", url: "://localhost/retrieval"},
+		// These parse. The first becomes an opaque URL whose host is empty, so
+		// the path built on it is dropped; the second addresses no host at all.
+		{name: "scheme missing, so the host reads as one", url: "localhost:3396/retrieval"},
+		{name: "path only", url: "/retrieval"},
+		// Left alone: a datasource can be saved before its URL is filled in.
+		{name: "empty", url: "", ok: true},
 	}
 
 	for _, testCase := range tests {

@@ -36,6 +36,14 @@ func NewAAClient(ctx context.Context, baseURL string, httpOptions httpclient.Opt
 		return nil, fmt.Errorf("datasource URL %q: %w", baseURL, err)
 	}
 
+	// "localhost:3396/retrieval" parses, but as an opaque URL with no host, and
+	// the path built on it is then dropped rather than used. An empty URL keeps
+	// failing at query time as it always has, since a datasource can be saved
+	// before it is filled in.
+	if baseURL != "" && (u.Scheme == "" || u.Host == "") {
+		return nil, fmt.Errorf("datasource URL %q needs a scheme and a host", baseURL)
+	}
+
 	return &AAclient{
 		baseURL:    u,
 		httpClient: client,
