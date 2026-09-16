@@ -52,8 +52,12 @@ func (v *Arrays) Extrapolation(t time.Time) {
 }
 
 func (v *Arrays) makeDtSpaceFields(pvname string, name string) []*data.Field {
-	var times []time.Time
-	var vals []float64
+	n := 0
+	for _, row := range v.Values {
+		n += len(row)
+	}
+	times := make([]time.Time, 0, n)
+	vals := make([]float64, 0, n)
 
 	for i, row := range v.Values {
 		for j, column := range row {
