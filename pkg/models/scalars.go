@@ -159,29 +159,42 @@ func (v *Scalars) Offset(delta float64) {
 }
 
 func (v *Scalars) Delta() {
-	newValues := make([]*float64, 0, len(v.Values))
-	newTimes := make([]time.Time, 0, len(v.Times))
-	// Sized for the worst case, so one block holds the whole result.
-	block := newValueBlock(len(v.Values))
-	for idx, val := range v.Values {
-		if idx == 0 {
-			continue
-		}
-
-		if val == nil || v.Values[idx-1] == nil {
-			continue
-		}
-
-		newValues = append(newValues, block.add(*v.Values[idx]-*v.Values[idx-1]))
-		newTimes = append(newTimes, v.Times[idx])
+	if len(v.Values) == 0 || len(v.Times) == 0 {
+		return
 	}
-	if len(newValues) == 0 {
-		// handle 1-length data
-		newValues = append(newValues, block.add(0))
-		newTimes = append(newTimes, v.Times[0])
+
+	// A single sample has nothing to be differenced against.
+	if len(v.Values) < 2 {
+		v.SetValConcrete(0, 0)
+		v.Values = v.Values[:1]
+		v.Times = v.Times[:1]
+		return
 	}
-	v.Times = newTimes
-	v.Values = newValues
+
+	var previous float64
+	previousHasValue := v.Values[0] != nil
+	if previousHasValue {
+		previous = *v.Values[0]
+	}
+
+	for idx := 1; idx < len(v.Values); idx++ {
+		p := v.Values[idx]
+
+		if p == nil || !previousHasValue {
+			v.Values[idx-1] = nil
+		} else {
+			v.SetValConcrete(idx-1, *p-previous)
+		}
+		v.Times[idx-1] = v.Times[idx]
+
+		previousHasValue = p != nil
+		if previousHasValue {
+			previous = *p
+		}
+	}
+
+	v.Values = v.Values[:len(v.Values)-1]
+	v.Times = v.Times[:len(v.Times)-1]
 }
 
 func (v *Scalars) Fluctuation() {

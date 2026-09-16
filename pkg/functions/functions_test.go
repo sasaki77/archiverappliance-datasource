@@ -174,6 +174,9 @@ func TestDelta(t *testing.T) {
 				},
 			},
 		},
+		// A nil leaves the pair it belongs to without a difference, but the
+		// position stays and carries a nil, so the panel draws a gap there
+		// rather than a line straight across it.
 		{
 			inputSd: []*models.SingleData{
 				{
@@ -188,8 +191,8 @@ func TestDelta(t *testing.T) {
 				{
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
-						Times:  []time.Time{testhelper.TimeHelper(2)},
-						Values: testhelper.InitFloat64SlicePointer([]float64{0}),
+						Times:  []time.Time{testhelper.TimeHelper(1), testhelper.TimeHelper(2)},
+						Values: append([]*float64{nil}, testhelper.InitFloat64SlicePointer([]float64{0})...),
 					},
 				},
 			},
