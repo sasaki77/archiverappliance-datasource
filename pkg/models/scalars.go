@@ -17,9 +17,9 @@ import (
 //
 // Three things follow from splitting the pointers from the storage:
 //
-//   - The arena backs only the values this container made itself, through
-//     AppendConcrete. Entries that arrived already as pointers, from Append or
-//     NewSclarsWithValues, point somewhere else entirely.
+//   - The arena backs only the values this container made itself. Entries that
+//     arrived already as pointers, from Append or NewSclarsWithValues, point
+//     somewhere else entirely.
 //   - Values is what keeps the blocks alive. The arena only remembers the block
 //     it is currently filling; earlier ones survive because Values still points
 //     into them, and are collected once it no longer does. Nothing frees them.
@@ -61,14 +61,10 @@ func (v *Scalars) SetValConcrete(idx int, val float64) {
 		return
 	}
 
-	// Addressing the parameter would make it escape on every call, including the
-	// path above that does not need it.
-	nv := val
-	v.Values[idx] = &nv
+	v.Values[idx] = v.arena.add(val)
 }
 
-// defaultValueBlock is the block size used when the count is not known up front.
-const defaultValueBlock = 4096
+const valueBlockSize = 4096
 
 // valueBlock hands out pointers into slices it owns. A full block is replaced
 // rather than grown, which is what keeps the pointers already handed out valid;
@@ -76,23 +72,11 @@ const defaultValueBlock = 4096
 // is usable.
 type valueBlock struct {
 	block []float64
-
-	// size is the next block's capacity, 0 for defaultValueBlock. A caller that
-	// knows its length passes it, so the whole series fits one block.
-	size int
-}
-
-func newValueBlock(size int) *valueBlock {
-	return &valueBlock{size: size}
 }
 
 func (b *valueBlock) add(val float64) *float64 {
 	if len(b.block) == cap(b.block) {
-		size := b.size
-		if size <= 0 {
-			size = defaultValueBlock
-		}
-		b.block = make([]float64, 0, size)
+		b.block = make([]float64, 0, valueBlockSize)
 	}
 	b.block = append(b.block, val)
 	return &b.block[len(b.block)-1]

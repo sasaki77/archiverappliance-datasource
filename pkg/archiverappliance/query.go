@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"sort"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -89,7 +90,7 @@ responseCollector:
 		log.DefaultLogger.Warn("Error applying alias")
 	}
 
-	sort.Slice(responseData, func(i, j int) bool { return responseData[i].Name < responseData[j].Name })
+	slices.SortFunc(responseData, func(a, b *models.SingleData) int { return strings.Compare(a.Name, b.Name) })
 
 	// Apply Functions to the data
 	var funcErr error

@@ -9,7 +9,6 @@ import (
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
 
 type ArchiverQueryModel struct {
@@ -90,103 +89,6 @@ type ArchiverResponseModel struct {
 		PREC     json.Number `json:"PREC"`
 	} `json:"meta"`
 	Data json.RawMessage `json:"data"`
-}
-
-type SingleArrayResponseModel struct {
-	Millis *json.Number `json:"millis,omitempty"`
-	Nanos  *json.Number `json:"nanos,omitempty"`
-	Secs   *json.Number `json:"secs,omitempty"`
-	Val    []float64    `json:"val"`
-}
-
-type SingleScalarResponseModel struct {
-	Millis *json.Number `json:"millis,omitempty"`
-	Nanos  *json.Number `json:"nanos,omitempty"`
-	Secs   *json.Number `json:"secs,omitempty"`
-	Val    json.Number  `json:"val"`
-}
-
-type SingleStringResponseModel struct {
-	Millis *json.Number `json:"millis,omitempty"`
-	Nanos  *json.Number `json:"nanos,omitempty"`
-	Secs   *json.Number `json:"secs,omitempty"`
-	Val    string       `json:"val"`
-}
-
-type ScalarResponseModel []SingleScalarResponseModel
-type StringResponseModel []SingleStringResponseModel
-type ArrayResponseModel []SingleArrayResponseModel
-
-type DataResponse interface {
-	ToSingleDataValues() (Values, error)
-}
-
-func (response ScalarResponseModel) ToSingleDataValues() (Values, error) {
-	// Build output data block
-	dataSize := len(response)
-
-	// initialize the slices with their final size so append operations are not necessary
-	times := make([]time.Time, dataSize)
-	values := make([]*float64, dataSize)
-
-	for idx, dataPt := range response {
-		times[idx] = convertNanosec(dataPt.Millis)
-
-		valCache, valErr := dataPt.Val.Float64()
-		if valErr != nil {
-			log.DefaultLogger.Warn("Conversion of val to float64 has failed", "Error", valErr)
-		}
-		values[idx] = &valCache
-	}
-
-	return NewSclarsWithValues(times, values), nil
-}
-
-func (response StringResponseModel) ToSingleDataValues() (Values, error) {
-	// Build output data block
-	dataSize := len(response)
-
-	// initialize the slices with their final size so append operations are not necessary
-	times := make([]time.Time, dataSize)
-	values := make([]string, dataSize)
-
-	for idx, dataPt := range response {
-		times[idx] = convertNanosec(dataPt.Millis)
-		values[idx] = dataPt.Val
-	}
-
-	return &Strings{Times: times, Values: values}, nil
-}
-
-func (response ArrayResponseModel) ToSingleDataValues() (Values, error) {
-	// Build output data block
-	dataSize := len(response)
-
-	// initialize the slices with their final size so append operations are not necessary
-	times := make([]time.Time, dataSize)
-	values := make([][]float64, dataSize)
-
-	arraySize := len(response[0].Val)
-	for i := range values {
-		values[i] = make([]float64, arraySize)
-	}
-
-	for idx, dataPt := range response {
-		times[idx] = convertNanosec(dataPt.Millis)
-		values[idx] = dataPt.Val
-	}
-
-	return &Arrays{Times: times, Values: values}, nil
-}
-
-func convertNanosec(number *json.Number) time.Time {
-	millisCache, millisErr := number.Int64()
-	if millisErr != nil {
-		log.DefaultLogger.Warn("Conversion of millis to int64 has failed", "Error", millisErr)
-	}
-
-	// use convert to nanoseconds
-	return time.Unix(0, 1e6*millisCache).UTC()
 }
 
 type DatasourceSettings struct {

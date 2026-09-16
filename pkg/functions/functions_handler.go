@@ -30,7 +30,7 @@ func applyArrayFunctions(responseData []*models.SingleData, qm models.ArchiverQu
 		return responseData
 	}
 
-	var newData []*models.SingleData
+	newData := make([]*models.SingleData, 0, len(functions)*len(responseData))
 	for _, fdqm := range functions {
 		d, err := arrayFunctionSelector(responseData, fdqm)
 		if err != nil {

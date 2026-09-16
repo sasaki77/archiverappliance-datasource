@@ -1,10 +1,11 @@
 package functions
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"regexp"
-	"sort"
+	"slices"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/sasaki77/archiverappliance-datasource/pkg/models"
@@ -77,12 +78,12 @@ func sortCore(allData []*models.SingleData, value string, order string) ([]*mode
 		}
 	}
 	if order == "asc" {
-		sort.SliceStable(ordered, func(i, j int) bool {
-			return ordered[i].rank < ordered[j].rank
+		slices.SortStableFunc(ordered, func(a, b singleDataOrder) int {
+			return cmp.Compare(a.rank, b.rank)
 		})
 	} else if order == "desc" {
-		sort.SliceStable(ordered, func(i, j int) bool {
-			return ordered[i].rank > ordered[j].rank
+		slices.SortStableFunc(ordered, func(a, b singleDataOrder) int {
+			return cmp.Compare(b.rank, a.rank)
 		})
 	} else {
 		errMsg := fmt.Sprintf("Order %v not recognized", order)
