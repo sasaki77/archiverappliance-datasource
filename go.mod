@@ -6,7 +6,6 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/grafana/grafana-plugin-sdk-go v0.291.0
 	github.com/magefile/mage v1.16.1
-	github.com/montanaflynn/stats v0.9.0
 	google.golang.org/protobuf v1.36.11
 	nhooyr.io/websocket v1.8.17
 )
