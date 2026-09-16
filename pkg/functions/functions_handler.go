@@ -30,7 +30,7 @@ func applyArrayFunctions(responseData []*models.SingleData, qm models.ArchiverQu
 		return responseData
 	}
 
-	var newData []*models.SingleData
+	newData := make([]*models.SingleData, 0, len(functions)*len(responseData))
 	for _, fdqm := range functions {
 		d, err := arrayFunctionSelector(responseData, fdqm)
 		if err != nil {
@@ -150,6 +150,11 @@ func functionSelector(responseData []*models.SingleData, fdqm models.FunctionDes
 		windowSize, windowSizeErr := fdqm.ExtractParamInt("windowSize")
 		if windowSizeErr != nil {
 			return responseData, windowSizeErr
+		}
+		if windowSize < 1 {
+			errMsg := fmt.Sprintf("movingAverage: window size must be at least 1, got %v", windowSize)
+			log.DefaultLogger.Warn(errMsg)
+			return responseData, errors.New(errMsg)
 		}
 		newData := movingAverage(responseData, windowSize)
 		return newData, nil

@@ -450,6 +450,38 @@ func TestArrayFunctionSelectorMismatchedLengths(t *testing.T) {
 	}
 }
 
+// A window below 1 has no meaning. Reporting it tells the user what is wrong,
+// where the series it would otherwise produce would not.
+func TestFunctionSelectorRejectsWindowBelowOne(t *testing.T) {
+	inputSd := []*models.SingleData{
+		{
+			Values: &models.Scalars{
+				Times:  testhelper.TimeArrayHelper(0, 3),
+				Values: testhelper.InitFloat64SlicePointer([]float64{1, 2, 3}),
+			},
+		},
+	}
+
+	for _, windowSize := range []string{"0", "-1"} {
+		inputFdqm := models.FunctionDescriptorQueryModel{
+			Def: models.FuncDefQueryModel{
+				Category: "Transform",
+				Name:     "movingAverage",
+				Params:   []models.FuncDefParamQueryModel{{Name: "windowSize", Type: "int"}},
+			},
+			Params: []string{windowSize},
+		}
+
+		result, err := functionSelector(inputSd, inputFdqm)
+		if err == nil {
+			t.Errorf("window %s: expected an error", windowSize)
+		}
+		if v := result[0].Values.(*models.Scalars); *v.Values[0] != 1 {
+			t.Errorf("window %s: the data should come back untouched, got %v", windowSize, *v.Values[0])
+		}
+	}
+}
+
 func TestFunctionSelector(t *testing.T) {
 	var tests = []struct {
 		inputSd   []*models.SingleData
