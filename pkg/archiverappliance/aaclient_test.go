@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 
@@ -141,7 +142,12 @@ func TestBuildQueryUrl(t *testing.T) {
 	// fmt.Println(tests)
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := buildQueryUrl(testCase.target, testCase.url, testCase.qm)
+			base, err := url.Parse(testCase.url)
+			if err != nil {
+				t.Fatalf("test URL %q does not parse: %v", testCase.url, err)
+			}
+
+			result := buildQueryUrl(testCase.target, base, testCase.qm)
 			if testCase.output != result {
 				t.Errorf("got %v, want %v", result, testCase.output)
 			}
@@ -150,7 +156,10 @@ func TestBuildQueryUrl(t *testing.T) {
 }
 
 func TestBuildRegexUrl(t *testing.T) {
-	base_url := string("http://localhost:3396/retrieval")
+	base_url, err := url.Parse("http://localhost:3396/retrieval")
+	if err != nil {
+		t.Fatalf("test URL does not parse: %v", err)
+	}
 	var tests = []struct {
 		name   string
 		regex  string
@@ -261,7 +270,11 @@ func TestLiveOnly(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			ctx := context.Background()
 			httpOptions := httpclient.Options{Timeouts: &httpclient.TimeoutOptions{Timeout: 5 * time.Second}}
-			client, _ := NewAAClient(ctx, "url", httpOptions)
+			client, err := NewAAClient(ctx, "http://localhost:3396/retrieval", httpOptions)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			result, _ := client.ExecuteSingleQuery(ctx, testCase.target, testCase.qm)
 			pvname := "PV:NAME"
 
@@ -313,6 +326,48 @@ func TestInitialCapacity(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			if got := initialCapacity(testCase.qm); got != testCase.want {
 				t.Errorf("initialCapacity() = %v, want %v", got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestNewAAClientRejectsAnUnusableURL(t *testing.T) {
+	var tests = []struct {
+		name string
+		url  string
+		ok   bool
+	}{
+		{name: "usable", url: "http://localhost:3396/retrieval", ok: true},
+		// Each of these used to be accepted here and then dereferenced as a nil
+		// *url.URL once a query reached buildQueryUrl.
+		{name: "port is not a number", url: "http://localhost:port/retrieval"},
+		{name: "space in the host", url: "http://local host/retrieval"},
+		{name: "bad percent escape", url: "http://localhost/%zz"},
+		{name: "no scheme", url: "://localhost/retrieval"},
+		// These parse. The first becomes an opaque URL whose host is empty, so
+		// the path built on it is dropped; the second addresses no host at all.
+		{name: "scheme missing, so the host reads as one", url: "localhost:3396/retrieval"},
+		{name: "path only", url: "/retrieval"},
+		// Left alone: a datasource can be saved before its URL is filled in.
+		{name: "empty", url: "", ok: true},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			client, err := NewAAClient(context.Background(), testCase.url, httpclient.Options{})
+
+			if testCase.ok {
+				if err != nil {
+					t.Fatalf("got %v, want a client", err)
+				}
+				if client.baseURL == nil {
+					t.Fatal("client has no base URL")
+				}
+				return
+			}
+
+			if err == nil {
+				t.Fatalf("got a client for %q, want an error", testCase.url)
 			}
 		})
 	}
