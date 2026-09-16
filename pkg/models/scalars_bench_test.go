@@ -76,8 +76,8 @@ func BenchmarkScalarsDelta(b *testing.B) {
 	}
 }
 
-// MovingAverage is currently O(n * windowSize); the window sizes below show
-// how the cost scales with a user-supplied window.
+// MovingAverage carries a running sum, so the window sizes below should all cost
+// about the same. A result that grows with the window is a regression.
 func BenchmarkScalarsMovingAverage(b *testing.B) {
 	for _, window := range []int{10, 100, 1000} {
 		b.Run(windowName(window), func(b *testing.B) {
