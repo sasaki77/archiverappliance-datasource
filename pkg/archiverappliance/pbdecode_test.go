@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/sasaki77/archiverappliance-datasource/pkg/archiverappliance/pb"
+	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -161,6 +162,11 @@ func TestDecodeAgreesOnRejection(t *testing.T) {
 		{name: "truncated tag", line: []byte{0x08, 0x05, 0xff}},
 		{name: "empty", line: []byte{}},
 		{name: "duplicate value keeps the last", line: append(append([]byte{}, full...), 0x19, 0, 0, 0, 0, 0, 0, 0, 0x40)},
+		// A known number carrying the wrong wire type is an unknown field, not
+		// an error, so an optional falls back to its default and a required one
+		// is missed.
+		{name: "optional with the wrong wire type", line: wrongWireType(full[:13], 4, protowire.Fixed32Type)},
+		{name: "required with the wrong wire type", line: wrongWireType(full[2:], 1, protowire.Fixed32Type)},
 	}
 
 	var s sample
@@ -187,4 +193,11 @@ func TestDecodeAgreesOnRejection(t *testing.T) {
 			}
 		})
 	}
+}
+
+// wrongWireType appends field num to line carrying four bytes under a wire type
+// the .proto does not give it.
+func wrongWireType(line []byte, num protowire.Number, typ protowire.Type) []byte {
+	out := append(append([]byte{}, line...), protowire.AppendTag(nil, num, typ)...)
+	return append(out, 1, 0, 0, 0)
 }
