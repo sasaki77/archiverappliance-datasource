@@ -67,10 +67,11 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 
 	var values models.Values
 
-	// The payload type is fixed for the whole of a chunk, so one message is
-	// allocated per chunk and reused for every sample in it. proto.Unmarshal
-	// resets the message before decoding into it.
+	// pbdecode.go says why the scalar paths do not use this.
 	var message proto.Message
+
+	// Refilled per line. The scalar paths copy out of it before the next line.
+	var s sample
 
 	for {
 		line, err := reader.readLine()
@@ -101,9 +102,17 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			inChunk = true
 			dataType = info.GetType()
 			yearStart = startOfYear(info.GetYear())
-			message = initPBMessage(dataType)
 
 			messageType, _ := getMessageType(dataType, field)
+
+			// Building one for the scalar paths, which no longer read it, cost
+			// an allocation per chunk for nothing.
+			switch messageType {
+			case MessageType_Array, MessageType_String:
+				message = initPBMessage(dataType)
+			default:
+				message = nil
+			}
 
 			// values is already initialized
 			if values != nil {
@@ -128,9 +137,9 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			var err error
 
 			if field == models.FIELD_NAME_VAL {
-				value, ok, sec, nano, err = getNumericValue(unescapedLine, message, hideInvalid)
+				value, ok, sec, nano, err = getNumericValue(unescapedLine, dataType, &s, hideInvalid)
 			} else {
-				value, ok, sec, nano, err = getMetaValue(unescapedLine, message, field)
+				value, ok, sec, nano, err = getMetaValue(unescapedLine, dataType, &s, field)
 			}
 
 			if err != nil {
@@ -162,7 +171,7 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			t := offsetIntoYear(yearStart, sec, nano)
 			v.Append(value, t)
 		case *models.Enums:
-			value, ok, sec, nano, err := getMetaValue(unescapedLine, message, field)
+			value, ok, sec, nano, err := getMetaValue(unescapedLine, dataType, &s, field)
 
 			if err != nil {
 				return sD, errFailedToParsePBFormat
@@ -292,70 +301,46 @@ func unescapeLine(line []byte) []byte {
 
 // getMetaValue returns a plain float64 for the same reason as getNumericValue.
 // ok is always true on success here; it exists so both call sites are identical.
-func getMetaValue(line []byte, message proto.Message, field models.FieldName) (val float64, ok bool, sec uint32, nano uint32, err error) {
-	if message == nil {
-		return 0, false, 0, 0, errIllegalPayloadType
-	}
-
-	if err := proto.Unmarshal(line, message); err != nil {
+func getMetaValue(line []byte, dataType pb.PayloadType, s *sample, field models.FieldName) (val float64, ok bool, sec uint32, nano uint32, err error) {
+	if err := decodeMeta(line, dataType, s); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
-		return 0, false, 0, 0, errIllegalPayloadType
-	}
-
-	sample, isMeta := message.(pb.MetaFieldData)
-
-	if !isMeta {
 		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
 	switch field {
 	case models.FIELD_NAME_SEVR,
 		models.FIELD_NAME_SEVR_AS_ENUM:
-		val = float64(sample.GetSeverity())
+		val = float64(s.severity)
 	case models.FIELD_NAME_STAT,
 		models.FIELD_NAME_STAT_AS_ENUM:
-		val = float64(sample.GetStatus())
+		val = float64(s.status)
 	default:
 		return 0, false, 0, 0, errIllegalFieldName
 	}
 
-	sec = sample.GetSecondsintoyear()
-	nano = sample.GetNano()
-
-	return val, true, sec, nano, nil
+	return val, true, s.secondsintoyear, s.nano, nil
 }
 
 // getNumericValue returns a plain float64, not a pointer, so that the container
 // can place the value in its own block storage: a pointer here would cost one
 // allocation per archived sample. ok is false when hideInvalid drops a sample,
 // which the caller records as a gap.
-func getNumericValue(line []byte, message proto.Message, hideInvalid bool) (val float64, ok bool, sec uint32, nano uint32, err error) {
-	if message == nil {
-		return 0, false, 0, 0, errIllegalPayloadType
-	}
-
-	if err := proto.Unmarshal(line, message); err != nil {
+func getNumericValue(line []byte, dataType pb.PayloadType, s *sample, hideInvalid bool) (val float64, ok bool, sec uint32, nano uint32, err error) {
+	if err := decodeSample(line, dataType, s); err != nil {
 		log.DefaultLogger.Error("Failed to parse payload data", "error", err)
 		return 0, false, 0, 0, errIllegalPayloadType
 	}
 
-	sample, isNumeric := message.(pb.NumericSamepleData)
-
-	if !isNumeric {
-		return 0, false, 0, 0, errIllegalPayloadType
-	}
-
-	sec = sample.GetSecondsintoyear()
-	nano = sample.GetNano()
+	sec = s.secondsintoyear
+	nano = s.nano
 
 	if hideInvalid {
-		sev := EPICSSeverity(sample.GetSeverity())
-		if sev == EPICSSeverity_INVALID {
+		if EPICSSeverity(s.severity) == EPICSSeverity_INVALID {
 			return 0, false, sec, nano, nil
 		}
 	}
 
-	return sample.GetValAsFloat64(), true, sec, nano, nil
+	return s.val, true, sec, nano, nil
 }
 
 func getStringValue(line []byte, message *pb.ScalarString) (val string, sec uint32, nano uint32, err error) {
