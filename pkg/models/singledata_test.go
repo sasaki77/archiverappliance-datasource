@@ -443,6 +443,72 @@ func TestToFrameIndexArrayInJST(t *testing.T) {
 	}
 }
 
+// An EPICS waveform can change length between samples, and a response can hold
+// a chunk header with no samples after it.
+func TestToFrameArrayUnevenOrEmpty(t *testing.T) {
+	times := []time.Time{testhelper.TimeHelper(0), testhelper.TimeHelper(1)}
+
+	var tests = []struct {
+		name   string
+		values *Arrays
+		format FunctionCategory
+		// Each field of the frame, in order.
+		want [][]float64
+	}{
+		{
+			name:   "timeseries, later row shorter",
+			values: &Arrays{Times: times, Values: [][]float64{{1, 2, 3}, {4, 5}}},
+			format: FORMAT_TIMESERIES,
+			want:   [][]float64{{1, 4}, {2, 5}},
+		},
+		{
+			name:   "index, later row shorter",
+			values: &Arrays{Times: times, Values: [][]float64{{1, 2, 3}, {4, 5}}},
+			format: FORMAT_INDEX,
+			want:   [][]float64{{1, 2}, {4, 5}},
+		},
+		{
+			name:   "dt-space, later row shorter",
+			values: &Arrays{Times: times, Values: [][]float64{{1, 2, 3}, {4, 5}}},
+			format: FORMAT_DTSPACE,
+			want:   [][]float64{{1, 2, 3, 4, 5}},
+		},
+		{name: "timeseries, empty", values: &Arrays{}, format: FORMAT_TIMESERIES},
+		{name: "index, empty", values: &Arrays{}, format: FORMAT_INDEX},
+		{name: "dt-space, empty", values: &Arrays{}, format: FORMAT_DTSPACE, want: [][]float64{{}}},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sD := SingleData{Name: "name", PVname: "pvname", Values: testCase.values}
+			frame := sD.ToFrame(FormatOption(testCase.format))
+
+			// The first field is the time or index dimension.
+			values := frame.Fields[1:]
+			if len(values) != len(testCase.want) {
+				t.Fatalf("got %d value fields, want %d", len(values), len(testCase.want))
+			}
+
+			for _, field := range frame.Fields {
+				if field.Len() != frame.Fields[0].Len() {
+					t.Fatalf("field %q has %d rows, %q has %d", field.Name, field.Len(), frame.Fields[0].Name, frame.Fields[0].Len())
+				}
+			}
+
+			for idx, want := range testCase.want {
+				if values[idx].Len() != len(want) {
+					t.Fatalf("field %d: got %d rows, want %d", idx, values[idx].Len(), len(want))
+				}
+				for row := range want {
+					if got := values[idx].CopyAt(row); got != want[row] {
+						t.Errorf("field %d row %d: got %v, want %v", idx, row, got, want[row])
+					}
+				}
+			}
+		})
+	}
+}
+
 func TestToFrameEnum(t *testing.T) {
 	var tests = []struct {
 		sD       SingleData

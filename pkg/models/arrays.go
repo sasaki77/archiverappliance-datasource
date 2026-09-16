@@ -82,7 +82,7 @@ func (v *Arrays) makeIndexFields(pvname string) []*data.Field {
 	var fields []*data.Field
 
 	//add the index field
-	dataLen := len(v.Values[0])
+	dataLen := commonWidth(v.Values)
 	numbers := make([]int64, dataLen)
 	for i := 0; i < dataLen; i++ {
 		numbers[i] = int64(i)
@@ -124,8 +124,24 @@ func (v *Arrays) makeTimeseriesFields(pvname string, name string) []*data.Field 
 	return fields
 }
 
+// commonWidth is the length every row has. A waveform can change length between
+// samples, and the fields of a frame must all be the same length, so longer rows
+// are cut to it.
+func commonWidth(rows [][]float64) int {
+	if len(rows) == 0 {
+		return 0
+	}
+
+	width := len(rows[0])
+	for _, row := range rows[1:] {
+		width = min(width, len(row))
+	}
+
+	return width
+}
+
 func transpose(slice [][]float64) [][]float64 {
-	x := len(slice[0])
+	x := commonWidth(slice)
 	y := len(slice)
 
 	result := make([][]float64, x)
