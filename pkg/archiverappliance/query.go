@@ -42,6 +42,11 @@ type queryResponse struct {
 
 func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client Client, config models.DatasourceSettings) backend.DataResponse {
 
+	// On the context, not only the collector, so giving up also aborts the
+	// transfers still in flight.
+	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	defer cancel()
+
 	targetPvList := makeTargetPVList(ctx, client, qm.Target, qm.Regex, qm.MaxNumPVs)
 
 	// execute the individual queries
@@ -49,11 +54,6 @@ func singleQuery(ctx context.Context, qm models.ArchiverQueryModel, client Clien
 	// A late response still needs somewhere to go: the collector can break out
 	// early, and an unbuffered send would then block its goroutine forever.
 	responsePipe := make(chan queryResponse, len(targetPvList))
-
-	// On the context, not only the collector, so giving up also aborts the
-	// transfers still in flight.
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
-	defer cancel()
 
 	// create goroutines for individual requests
 	for _, targetPv := range targetPvList {
@@ -175,7 +175,10 @@ func makeTargetPVList(ctx context.Context, client Client, target string, regex b
 		// assemble the list of PVs to be queried for
 		var regexPvList []string
 		for _, v := range isolatedPvList {
-			pvs, _ := client.FetchRegexTargetPVs(ctx, v, maxNum)
+			pvs, err := client.FetchRegexTargetPVs(ctx, v, maxNum)
+			if err != nil {
+				log.DefaultLogger.Warn("Failed to resolve a target", "target", v, "error", err)
+			}
 			regexPvList = append(regexPvList, pvs...)
 		}
 		targetPvList = regexPvList
