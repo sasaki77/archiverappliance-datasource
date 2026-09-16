@@ -181,38 +181,19 @@ func bottom(allData []*models.SingleData, number int, value string) ([]*models.S
 }
 
 func exclude(allData []*models.SingleData, pattern string) ([]*models.SingleData, error) {
-	var newData []*models.SingleData
-	var err error
-
-	// in preparation for regexp.Compile in case it panics
-	defer func() {
-		if recoveryState := recover(); recoveryState != nil {
-			switch x := recoveryState.(type) {
-			case string:
-				err = errors.New(x)
-			case error:
-				err = x
-			default:
-				err = errors.New("unknown panic")
-			}
-
-		}
-		newData = allData
-	}()
-
-	finder, compileErr := regexp.Compile(pattern)
-
-	if compileErr != nil {
-		return allData, compileErr
+	finder, err := regexp.Compile(pattern)
+	if err != nil {
+		return allData, err
 	}
 
+	newData := make([]*models.SingleData, 0, len(allData))
 	for _, data := range allData {
 		if !finder.MatchString(data.Name) {
 			newData = append(newData, data)
 		}
 	}
 
-	return newData, err
+	return newData, nil
 }
 
 // Sort Functions
