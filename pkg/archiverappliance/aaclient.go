@@ -21,17 +21,23 @@ type Client interface {
 }
 
 type AAclient struct {
-	baseURL    string
+	baseURL    *url.URL
 	httpClient *http.Client
 }
 
-func NewAAClient(ctx context.Context, url string, httpOptions httpclient.Options) (*AAclient, error) {
+func NewAAClient(ctx context.Context, baseURL string, httpOptions httpclient.Options) (*AAclient, error) {
 	client, err := httpclient.New(httpOptions)
 	if err != nil {
 		return nil, err
 	}
+
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("datasource URL %q: %w", baseURL, err)
+	}
+
 	return &AAclient{
-		baseURL:    url,
+		baseURL:    u,
 		httpClient: client,
 	}, nil
 }
@@ -104,17 +110,13 @@ func initialCapacity(qm models.ArchiverQueryModel) int {
 	return qm.MaxDataPoints
 }
 
-func buildQueryUrl(target string, baseURL string, qm models.ArchiverQueryModel) string {
+func buildQueryUrl(target string, baseURL *url.URL, qm models.ArchiverQueryModel) string {
 	// Build the URL to query the archiver built from Grafana's configuration
 	// Set some constants
 	const TIME_FORMAT = "2006-01-02T15:04:05.000-07:00"
 	const RAW_DATA_URL = "data/getData.raw"
 
-	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		log.DefaultLogger.Warn("err", "err", err)
-	}
+	u := *baseURL
 
 	// apply an operator to the PV string if one (not "raw" or "last") is provided
 	opQuery, opErr := createOperatorQuery(qm)
@@ -192,15 +194,11 @@ func archiverSingleQuery(ctx context.Context, queryUrl string, httpClient *http.
 	return nil, err
 }
 
-func buildRegexUrl(regex string, baseURL string, limit int) string {
+func buildRegexUrl(regex string, baseURL *url.URL, limit int) string {
 	// Construct the request URL for the regex search of PVs and return it as a string
 	const REGEX_URL = "bpl/getMatchingPVs"
 
-	// Unpack the configured URL for the datasource and use that as the base for assembling the query URL
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		log.DefaultLogger.Warn("err", "err", err)
-	}
+	u := *baseURL
 
 	// amend the incomplete path
 	var pathBuilder strings.Builder
