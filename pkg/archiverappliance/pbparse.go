@@ -102,9 +102,17 @@ func archiverPBSingleQueryParser(in io.Reader, field models.FieldName, initialCa
 			inChunk = true
 			dataType = info.GetType()
 			yearStart = startOfYear(info.GetYear())
-			message = initPBMessage(dataType)
 
 			messageType, _ := getMessageType(dataType, field)
+
+			// Building one for the scalar paths, which no longer read it, cost
+			// an allocation per chunk for nothing.
+			switch messageType {
+			case MessageType_Array, MessageType_String:
+				message = initPBMessage(dataType)
+			default:
+				message = nil
+			}
 
 			// values is already initialized
 			if values != nil {
