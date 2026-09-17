@@ -33,24 +33,21 @@ func isolateBasicQuery(unparsed string) []string {
 	// list of all the configurations for the in-order phrases to be inserted
 	phraseCase := permuteQuery(phraseParts)
 
+	// Substituting the phrase combinations resolves only the outermost level.
+	// A result that still expands is replaced by its expansion, which goes after
+	// the results that do not, in order.
 	result := make([]string, 0, len(phraseCase))
-
-	// Build results by substituting all phrase combinations in place for 1st-level substitutions
+	var expanded []string
 	for _, phrase := range phraseCase {
 		createdString := selectiveInsert(unparsed_clean, phraseIdxs, phrase)
-		result = append(result, createdString)
-	}
-
-	// For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
-	for pos, chunk := range result {
-		parseAttempt := isolateBasicQuery(chunk)
-		if len(parseAttempt) > 1 {
-			result = append(result[:pos], result[pos+1:]...) // pop partially parsed entry
-			result = append(result, parseAttempt...)         // add new entires at the end of the list.
+		if parseAttempt := isolateBasicQuery(createdString); len(parseAttempt) > 1 {
+			expanded = append(expanded, parseAttempt...)
+		} else {
+			result = append(result, createdString)
 		}
 	}
 
-	return result
+	return append(result, expanded...)
 }
 
 func splitLowestLevelOnly(inputData string) []string {

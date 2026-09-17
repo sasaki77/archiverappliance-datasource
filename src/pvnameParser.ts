@@ -25,19 +25,22 @@ export function parseTargetPV(targetPV: string): string[] {
   // list of all the configurations for the in-order phrases to be inserted
   const phraseCase = permuteQuery(phraseParts);
 
-  //// Build results by substituting all phrase combinations in place for 1st-level substitutions
-  const result = _.map(phraseCase, (phrase) => selectiveInsert(targetPV, parenPhraseData.idxs, phrase));
-
-  // For any phrase that has sub-phrases in need of parsing, call this function again on the sub-phrase and append the results to the end of the current output.
-  result.forEach((chunk, pos) => {
-    const parseAttempt = parseTargetPV(chunk);
+  // Substituting the phrase combinations resolves only the outermost level.
+  // A result that still expands is replaced by its expansion, which goes after
+  // the results that do not, in order.
+  const result: string[] = [];
+  const expanded: string[] = [];
+  for (const phrase of phraseCase) {
+    const createdString = selectiveInsert(targetPV, parenPhraseData.idxs, phrase);
+    const parseAttempt = parseTargetPV(createdString);
     if (parseAttempt.length > 1) {
-      result.splice(pos, 1); // pop partially parsed entry
-      result.push(...parseAttempt); // add new entires at the end of the list.
+      expanded.push(...parseAttempt);
+    } else {
+      result.push(createdString);
     }
-  });
+  }
 
-  return result;
+  return result.concat(expanded);
 }
 
 export function locateOuterParen(data: string): { phrases: string[]; idxs: number[][] } {

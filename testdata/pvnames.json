@@ -15,5 +15,9 @@
     "input": "prefix:((this|that):is:1|this:is:2)",
     "output": ["prefix:this:is:2", "prefix:this:is:1", "prefix:that:is:1"]
   },
-  { "input": "(prefix):(this):(is):(1|2)", "output": ["prefix:this:is:1", "prefix:this:is:2"] }
+  { "input": "(prefix):(this):(is):(1|2)", "output": ["prefix:this:is:1", "prefix:this:is:2"] },
+  { "input": "(A(1|2)|B(3|4))", "output": ["A1", "A2", "B3", "B4"] },
+  { "input": "(X|A(1|2)|B(3|4))", "output": ["X", "A1", "A2", "B3", "B4"] },
+  { "input": "(A(1|2)|B(3|4)|C(5|6))", "output": ["A1", "A2", "B3", "B4", "C5", "C6"] },
+  { "input": "pre:(A(1|(x|y))|B)", "output": ["pre:B", "pre:A1", "pre:Ax", "pre:Ay"] }
 ]
