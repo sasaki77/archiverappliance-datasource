@@ -1,40 +1,34 @@
 package archiverappliance
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"slices"
 	"testing"
 )
 
+// The cases are shared with src/specs/pvnames.test.ts, so that both query paths
+// expand a target into the same PVs.
 func TestIsolateBasicQuery(t *testing.T) {
-	var tests = []struct {
-		inputUnparsed string
-		output        []string
-	}{
-		{inputUnparsed: "(this:is:1|this:is:2)", output: []string{"this:is:1", "this:is:2"}},
-		{inputUnparsed: "(this:is:1)", output: []string{"this:is:1"}},
-		{inputUnparsed: "this:is:1", output: []string{"this:is:1"}},
-		{inputUnparsed: "(this):is:1", output: []string{"this:is:1"}},
-		{inputUnparsed: "before:(this)", output: []string{"before:this"}},
-		{inputUnparsed: "before:(this|that):is:1", output: []string{"before:this:is:1", "before:that:is:1"}},
-		{inputUnparsed: "before:(this|that):(is|was):1", output: []string{"before:this:is:1", "before:this:was:1", "before:that:is:1", "before:that:was:1"}},
-		{inputUnparsed: "()", output: []string{""}},
-		{inputUnparsed: "((this|that):is:1|this:is:2)", output: []string{"this:is:2", "this:is:1", "that:is:1"}},
-		{inputUnparsed: "prefix:((this|that):is:1|this:is:2)", output: []string{"prefix:this:is:2", "prefix:this:is:1", "prefix:that:is:1"}},
-		{inputUnparsed: "(prefix):(this):(is):(1|2)", output: []string{"prefix:this:is:1", "prefix:this:is:2"}},
+	raw, err := os.ReadFile("../../testdata/pvnames.json")
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	for idx, testCase := range tests {
-		testName := fmt.Sprintf("%d: %s, %s", idx, testCase.inputUnparsed, testCase.output)
-		t.Run(testName, func(t *testing.T) {
-			// result := testCase.output
-			result := isolateBasicQuery(testCase.inputUnparsed)
-			if len(result) != len(testCase.output) {
-				t.Fatalf("Lengths differ - Wanted: %v Got: %v", testCase.output, result)
-			}
-			for idx := range testCase.output {
-				if testCase.output[idx] != result[idx] {
-					t.Errorf("got %v, want %v", result, testCase.output)
-				}
+	var tests []struct {
+		Input  string   `json:"input"`
+		Output []string `json:"output"`
+	}
+	if err := json.Unmarshal(raw, &tests); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.Input, func(t *testing.T) {
+			result := isolateBasicQuery(testCase.Input)
+			if !slices.Equal(result, testCase.Output) {
+				t.Errorf("got %q, want %q", result, testCase.Output)
 			}
 		})
 	}
