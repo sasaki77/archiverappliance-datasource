@@ -1,0 +1,276 @@
+[
+  {
+    "name": "top keeps the highest ranked series, highest first",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [1, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [5, 5] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [3, 3] }
+    ],
+    "functions": [{ "name": "top", "params": ["2", "avg"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000, 2000], "values": [5, 5] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [3, 3] }
+    ]
+  },
+  {
+    "name": "bottom keeps the lowest ranked series, lowest first",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [1, 9] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [5, 6] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [3, 4] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["2", "max"] }],
+    "output": [
+      { "name": "PV:C", "times": [1000, 2000], "values": [3, 4] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [5, 6] }
+    ]
+  },
+  {
+    "name": "top keeps the first of series with equal rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [1] }]
+  },
+  {
+    "name": "bottom keeps the first of series with equal rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [1] }]
+  },
+  {
+    "name": "top keeps nothing for a count of zero",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["0", "avg"] }],
+    "output": []
+  },
+  {
+    "name": "bottom keeps nothing for a count of zero",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["0", "avg"] }],
+    "output": []
+  },
+  {
+    "name": "top leaves the series alone for a negative count",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["-1", "avg"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "bottom leaves the series alone for a negative count",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["-1", "avg"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "exclude drops the series whose name matches",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "exclude", "params": ["B$"] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [1] }]
+  },
+  {
+    "name": "exclude leaves the series alone for a pattern that does not compile",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "exclude", "params": ["("] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "top leaves the series alone for an unknown rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "foo"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "bottom leaves the series alone for an unknown rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "foo"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "top and bottom by min: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "min"] }],
+    "output": [{ "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }]
+  },
+  {
+    "name": "top and bottom by min: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "min"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }]
+  },
+  {
+    "name": "top and bottom by max: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "max"] }],
+    "output": [{ "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }]
+  },
+  {
+    "name": "top and bottom by max: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "max"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }]
+  },
+  {
+    "name": "top and bottom by absoluteMin: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "absoluteMin"] }],
+    "output": [{ "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }]
+  },
+  {
+    "name": "top and bottom by absoluteMin: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "absoluteMin"] }],
+    "output": [{ "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }]
+  },
+  {
+    "name": "top and bottom by absoluteMax: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "absoluteMax"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }]
+  },
+  {
+    "name": "top and bottom by absoluteMax: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "absoluteMax"] }],
+    "output": [{ "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }]
+  },
+  {
+    "name": "top and bottom by sum: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "sum"] }],
+    "output": [{ "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }]
+  },
+  {
+    "name": "top and bottom by sum: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "sum"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }]
+  },
+  {
+    "name": "top and bottom by avg: top",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }]
+  },
+  {
+    "name": "top and bottom by avg: bottom",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }]
+  },
+  {
+    "name": "exclude matches an anchored pattern",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "exclude", "params": ["^PV:B"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ]
+  },
+  {
+    "name": "exclude matches a character class",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "exclude", "params": ["PV:[AC]"] }],
+    "output": [{ "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }]
+  }
+]

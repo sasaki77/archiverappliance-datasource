@@ -1,0 +1,126 @@
+[
+  {
+    "name": "sortByAvg desc",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [1, 3] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [4, 6] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 0] }
+    ],
+    "functions": [{ "name": "sortByAvg", "params": ["desc"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000, 2000], "values": [4, 6] },
+      { "name": "PV:A", "times": [1000, 2000], "values": [1, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 0] }
+    ]
+  },
+  {
+    "name": "sortBySum asc",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [5, 5] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [1, 2] }
+    ],
+    "functions": [{ "name": "sortBySum", "params": ["asc"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000, 2000], "values": [1, 2] },
+      { "name": "PV:A", "times": [1000, 2000], "values": [5, 5] }
+    ]
+  },
+  {
+    "name": "sortByMin asc ranks by the lowest value",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [0, 10] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [-5, 7] }
+    ],
+    "functions": [{ "name": "sortByMin", "params": ["asc"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000, 2000], "values": [-5, 7] },
+      { "name": "PV:A", "times": [1000, 2000], "values": [0, 10] }
+    ]
+  },
+  {
+    "name": "sortByAbsMax ranks by magnitude",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [3, 4] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [-9, 1] }
+    ],
+    "functions": [{ "name": "sortByAbsMax", "params": ["desc"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000, 2000], "values": [-9, 1] },
+      { "name": "PV:A", "times": [1000, 2000], "values": [3, 4] }
+    ]
+  },
+  {
+    "name": "sortByAbsMin ranks by magnitude",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-1, 4] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }
+    ],
+    "functions": [{ "name": "sortByAbsMin", "params": ["asc"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-1, 4] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] }
+    ]
+  },
+  {
+    "name": "sortByAvg desc keeps series of equal rank in their original order",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "sortByAvg", "params": ["desc"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ]
+  },
+  {
+    "name": "sortByAvg ranks an empty series below every other",
+    "input": [
+      { "name": "PV:A", "times": [], "values": [] },
+      { "name": "PV:B", "times": [1000], "values": [-1] }
+    ],
+    "functions": [{ "name": "sortByAvg", "params": ["desc"] }],
+    "output": [
+      { "name": "PV:B", "times": [1000], "values": [-1] },
+      { "name": "PV:A", "times": [], "values": [] }
+    ]
+  },
+  {
+    "name": "sortByMax ranks an empty series as zero",
+    "input": [
+      { "name": "PV:A", "times": [], "values": [] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "sortByMax", "params": ["asc"] }],
+    "output": [
+      { "name": "PV:A", "times": [], "values": [] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ]
+  },
+  {
+    "name": "sortByAvg leaves the series alone for an unknown order",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "sortByAvg", "params": ["foo"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "sortByMax desc",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] }
+    ],
+    "functions": [{ "name": "sortByMax", "params": ["desc"] }],
+    "output": [
+      { "name": "PV:C", "times": [1000, 2000], "values": [0, 10] },
+      { "name": "PV:B", "times": [1000, 2000], "values": [2, 3] },
+      { "name": "PV:A", "times": [1000, 2000], "values": [-12, 1] }
+    ]
+  }
+]

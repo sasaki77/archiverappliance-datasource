@@ -63,8 +63,7 @@ func minimum(values []float64) float64 {
 }
 
 // standardDeviation is the population deviation, dividing by n rather than
-// n-1. The frontend's own toScalarByStd uses the sample deviation, so the two
-// query paths disagree; this keeps the backend as it was.
+// n-1.
 func standardDeviation(values []float64) float64 {
 	if len(values) == 0 {
 		return math.NaN()

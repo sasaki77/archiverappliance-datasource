@@ -49,7 +49,7 @@ function fluctuation(times: number[], values: number[]) {
 }
 
 function movingAverage(windowSize: number, times: number[], values: number[]) {
-  if (values.length < windowSize) {
+  if (windowSize < 1) {
     return {
       times: times,
       values: values,
@@ -99,7 +99,13 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
 
 // Filter Series
 function exclude(pattern: string, dataFrames: DataFrame[]) {
-  const regex = new RegExp(pattern);
+  let regex: RegExp;
+  try {
+    regex = new RegExp(pattern);
+  } catch {
+    return dataFrames;
+  }
+
   return _.filter(dataFrames, (dataFrame) => {
     const valfield = dataFrame.fields[1];
     const displayName = getFieldDisplayName(valfield, dataFrame);
@@ -125,59 +131,56 @@ function datapointsSum(values: number[]) {
   return _.sum(values);
 }
 
-function datapointsAbsMin(values: number[]) {
-  const minPoint = _.minBy(values, (value) => Math.abs(value));
+// Mirrors Scalars.Rank and cmp.Compare in the backend: an empty series ranks as
+// 0, except by avg, where its NaN ranks below every number.
+const rankFuncs = new Map<string, (values: number[]) => number>([
+  ['avg', (values) => _.mean(values)],
+  ['min', (values) => _.min(values) ?? 0],
+  ['max', (values) => _.max(values) ?? 0],
+  ['sum', (values) => _.sum(values)],
+  ['absoluteMin', (values) => _.min(values.map(Math.abs)) ?? 0],
+  ['absoluteMax', (values) => _.max(values.map(Math.abs)) ?? 0],
+]);
 
-  if (minPoint === undefined) {
-    return minPoint;
+function compareRank(a: number, b: number) {
+  if (Number.isNaN(a)) {
+    return Number.isNaN(b) ? 0 : -1;
   }
-  return Math.abs(minPoint);
+  if (Number.isNaN(b)) {
+    return 1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
-function datapointsAbsMax(values: number[]) {
-  const maxPoint = _.maxBy(values, (value) => Math.abs(value));
-
-  if (maxPoint === undefined) {
-    return maxPoint;
+function sortByRank(dataFrames: DataFrame[], rankFunc: string, descending: boolean) {
+  const rank = rankFuncs.get(rankFunc);
+  if (!rank) {
+    return dataFrames;
   }
-  return Math.abs(maxPoint);
-}
 
-const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefined } = {
-  avg: datapointsAvg,
-  min: datapointsMin,
-  max: datapointsMax,
-  sum: datapointsSum,
-  absoluteMin: datapointsAbsMin,
-  absoluteMax: datapointsAbsMax,
-};
+  return dataFrames
+    .map((frame) => ({ frame, rank: rank(frame.fields[1].values) }))
+    .sort((a, b) => (descending ? compareRank(b.rank, a.rank) : compareRank(a.rank, b.rank)))
+    .map(({ frame }) => frame);
+}
 
 // [Support Funcs] Wrapper function for top and bottom function
 
 function extraction(order: string, n: number, orderFunc: string, dataFrames: DataFrame[]) {
-  const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
-
-  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
-  if (order === 'bottom') {
-    return _.slice(sortedTsData, 0, n);
+  if (n < 0 || !rankFuncs.has(orderFunc)) {
+    return dataFrames;
   }
 
-  return _.reverse(_.slice(sortedTsData, -n));
+  return sortByRank(dataFrames, orderFunc, order === 'top').slice(0, n);
 }
 
 // [Support Funcs] Wrapper function for sort by AggFuncs
 function sortByAggFuncs(orderFunc: string, order: string, dataFrames: DataFrame[]) {
-  const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
-
-  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
-
-  if (order === 'asc') {
-    return sortedTsData;
+  if (order !== 'asc' && order !== 'desc') {
+    return dataFrames;
   }
 
-  return _.reverse(sortedTsData);
+  return sortByRank(dataFrames, orderFunc, order !== 'asc');
 }
 
 // Function list
@@ -202,13 +205,18 @@ const functions = {
   sortByAbsMin: _.partial(sortByAggFuncs, 'absoluteMin'),
 };
 
+// An empty waveform reduces to NaN, as in the backend, which draws a gap.
+function nonEmpty(reduce: (values: number[]) => number | undefined) {
+  return (values: number[]) => (values.length === 0 ? NaN : reduce(values));
+}
+
 const arrayFunctions: { [key: string]: { func: any; label: string } } = {
-  toScalarByAvg: { func: datapointsAvg, label: 'avg' },
-  toScalarByMax: { func: datapointsMax, label: 'max' },
-  toScalarByMin: { func: datapointsMin, label: 'min' },
-  toScalarBySum: { func: datapointsSum, label: 'sum' },
-  toScalarByMed: { func: math.median, label: 'median' },
-  toScalarByStd: { func: math.std, label: 'std' },
+  toScalarByAvg: { func: nonEmpty(datapointsAvg), label: 'avg' },
+  toScalarByMax: { func: nonEmpty(datapointsMax), label: 'max' },
+  toScalarByMin: { func: nonEmpty(datapointsMin), label: 'min' },
+  toScalarBySum: { func: nonEmpty(datapointsSum), label: 'sum' },
+  toScalarByMed: { func: nonEmpty(math.median), label: 'median' },
+  toScalarByStd: { func: nonEmpty((values) => math.std(values, 'uncorrected') as number), label: 'std' },
 };
 
 export { functions as seriesFunctions, arrayFunctions };

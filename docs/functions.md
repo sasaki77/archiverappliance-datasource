@@ -108,7 +108,7 @@ Converts the array data to the scalar data with the median value.
 .. function:: toScalarByStd()
 ```
 
-Converts the array data to the scalar data with the standard deviation value.
+Converts the array data to the scalar data with the population standard deviation value.
 
 ## Filter Series Functions
 

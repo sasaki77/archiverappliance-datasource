@@ -1,0 +1,149 @@
+[
+  {
+    "name": "toScalarByAvg reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByAvg", "params": [] }],
+    "output": [{ "name": "PV:A(avg)", "times": [1000, 2000], "values": [4, 4] }]
+  },
+  {
+    "name": "toScalarByMax reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMax", "params": [] }],
+    "output": [{ "name": "PV:A(max)", "times": [1000, 2000], "values": [10, 4] }]
+  },
+  {
+    "name": "toScalarByMin reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMin", "params": [] }],
+    "output": [{ "name": "PV:A(min)", "times": [1000, 2000], "values": [1, 4] }]
+  },
+  {
+    "name": "toScalarBySum reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarBySum", "params": [] }],
+    "output": [{ "name": "PV:A(sum)", "times": [1000, 2000], "values": [16, 16] }]
+  },
+  {
+    "name": "toScalarByMed reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMed", "params": [] }],
+    "output": [{ "name": "PV:A(median)", "times": [1000, 2000], "values": [2.5, 4] }]
+  },
+  {
+    "name": "toScalarByStd takes the population standard deviation",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [2, 4, 4, 4, 5, 5, 7, 9],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByStd", "params": [] }],
+    "output": [{ "name": "PV:A(std)", "times": [1000, 2000], "values": [2, 0] }]
+  },
+  {
+    "name": "toScalar functions each add a series",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [
+      { "name": "toScalarByMin", "params": [] },
+      { "name": "toScalarByMax", "params": [] }
+    ],
+    "output": [
+      { "name": "PV:A(min)", "times": [1000, 2000], "values": [1, 4] },
+      { "name": "PV:A(max)", "times": [1000, 2000], "values": [10, 4] }
+    ]
+  },
+  {
+    "name": "toScalarByAvg reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarByAvg", "params": [] }],
+    "output": [{ "name": "PV:A(avg)", "times": [1000, 2000], "values": [2, "NaN"] }]
+  },
+  {
+    "name": "toScalarByMax reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarByMax", "params": [] }],
+    "output": [{ "name": "PV:A(max)", "times": [1000, 2000], "values": [3, "NaN"] }]
+  },
+  {
+    "name": "toScalarByMin reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarByMin", "params": [] }],
+    "output": [{ "name": "PV:A(min)", "times": [1000, 2000], "values": [1, "NaN"] }]
+  },
+  {
+    "name": "toScalarBySum reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarBySum", "params": [] }],
+    "output": [{ "name": "PV:A(sum)", "times": [1000, 2000], "values": [4, "NaN"] }]
+  },
+  {
+    "name": "toScalarByMed reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarByMed", "params": [] }],
+    "output": [{ "name": "PV:A(median)", "times": [1000, 2000], "values": [2, "NaN"] }]
+  },
+  {
+    "name": "toScalarByStd reduces an empty waveform to NaN",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [[1, 3], []] }],
+    "functions": [{ "name": "toScalarByStd", "params": [] }],
+    "output": [{ "name": "PV:A(std)", "times": [1000, 2000], "values": [1, "NaN"] }]
+  }
+]

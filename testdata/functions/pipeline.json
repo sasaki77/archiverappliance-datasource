@@ -1,0 +1,38 @@
+[
+  {
+    "name": "transforms run before a filter that follows them",
+    "input": [
+      { "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 8] },
+      { "name": "PV:B", "times": [1000, 2000, 3000], "values": [100, 100, 100] }
+    ],
+    "functions": [
+      { "name": "offset", "params": ["2"] },
+      { "name": "scale", "params": ["3"] },
+      { "name": "bottom", "params": ["1", "avg"] }
+    ],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [9, 12, 30] }]
+  },
+  {
+    "name": "a transform applies to every series toScalar produces",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000, 3000],
+        "values": [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9, 10]
+        ]
+      }
+    ],
+    "functions": [
+      { "name": "toScalarByAvg", "params": [] },
+      { "name": "toScalarByMax", "params": [] },
+      { "name": "scale", "params": ["2"] }
+    ],
+    "output": [
+      { "name": "PV:A(avg)", "times": [1000, 2000, 3000], "values": [4, 10, 17] },
+      { "name": "PV:A(max)", "times": [1000, 2000, 3000], "values": [6, 12, 20] }
+    ]
+  }
+]

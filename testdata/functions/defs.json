@@ -1,0 +1,144 @@
+[
+  {
+    "name": "scale",
+    "category": "Transform",
+    "params": [{ "name": "factor", "type": "float" }],
+    "defaultParams": ["100"]
+  },
+  {
+    "name": "offset",
+    "category": "Transform",
+    "params": [{ "name": "delta", "type": "float" }],
+    "defaultParams": ["100"]
+  },
+  { "name": "delta", "category": "Transform", "params": [], "defaultParams": [] },
+  { "name": "fluctuation", "category": "Transform", "params": [], "defaultParams": [] },
+  {
+    "name": "movingAverage",
+    "category": "Transform",
+    "params": [{ "name": "windowSize", "type": "int" }],
+    "defaultParams": ["10"]
+  },
+  { "name": "toScalarByAvg", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  { "name": "toScalarByMax", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  { "name": "toScalarByMin", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  { "name": "toScalarBySum", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  { "name": "toScalarByMed", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  { "name": "toScalarByStd", "category": "Array to Scalar", "params": [], "defaultParams": [] },
+  {
+    "name": "top",
+    "category": "Filter Series",
+    "params": [
+      { "name": "number", "type": "int" },
+      { "name": "value", "type": "string", "options": ["avg", "min", "max", "absoluteMin", "absoluteMax", "sum"] }
+    ],
+    "defaultParams": ["5", "avg"]
+  },
+  {
+    "name": "bottom",
+    "category": "Filter Series",
+    "params": [
+      { "name": "number", "type": "int" },
+      { "name": "value", "type": "string", "options": ["avg", "min", "max", "absoluteMin", "absoluteMax", "sum"] }
+    ],
+    "defaultParams": ["5", "avg"]
+  },
+  {
+    "name": "exclude",
+    "category": "Filter Series",
+    "params": [{ "name": "pattern", "type": "string" }],
+    "defaultParams": [""]
+  },
+  {
+    "name": "sortByAvg",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "sortByMax",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "sortByMin",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "sortBySum",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "sortByAbsMax",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "sortByAbsMin",
+    "category": "Sort",
+    "params": [{ "name": "order", "type": "string", "options": ["desc", "asc"] }],
+    "defaultParams": ["desc"]
+  },
+  {
+    "name": "fieldName",
+    "category": "Options",
+    "params": [
+      { "name": "name", "type": "string", "options": ["VAL", "SEVR", "STAT", "SEVR as Enum", "STAT as Enum"] }
+    ],
+    "defaultParams": ["SEVR"]
+  },
+  {
+    "name": "maxNumPVs",
+    "category": "Options",
+    "params": [{ "name": "number", "type": "int" }],
+    "defaultParams": ["100"]
+  },
+  {
+    "name": "binInterval",
+    "category": "Options",
+    "params": [{ "name": "interval", "type": "int" }],
+    "defaultParams": ["900"]
+  },
+  {
+    "name": "disableAutoRaw",
+    "category": "Options",
+    "params": [{ "name": "boolean", "type": "string", "options": ["true", "false"] }],
+    "defaultParams": ["true"]
+  },
+  {
+    "name": "disableExtrapol",
+    "category": "Options",
+    "params": [{ "name": "boolean", "type": "string", "options": ["true", "false"] }],
+    "defaultParams": ["true"]
+  },
+  {
+    "name": "hideInvalid",
+    "category": "Options",
+    "params": [{ "name": "boolean", "type": "string", "options": ["true", "false"] }],
+    "defaultParams": ["true"]
+  },
+  {
+    "name": "arrayFormat",
+    "category": "Options",
+    "params": [{ "name": "format", "type": "string", "options": ["timeseries", "index", "dt-space"] }],
+    "defaultParams": ["timeseries"]
+  },
+  {
+    "name": "ignoreEmptyErr",
+    "category": "Options",
+    "params": [{ "name": "boolean", "type": "string", "options": ["true", "false"] }],
+    "defaultParams": ["true"]
+  },
+  {
+    "name": "liveOnly",
+    "category": "Options",
+    "params": [{ "name": "boolean", "type": "string", "options": ["true", "false"] }],
+    "defaultParams": ["true"]
+  }
+]

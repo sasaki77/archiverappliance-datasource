@@ -27,14 +27,18 @@ func TestMovingAverageWindowBelowTwo(t *testing.T) {
 	}
 }
 
-// Delta used to index Times[0] to build its one-element fallback, which panicked
-// when there was nothing to index.
-func TestDeltaOnEmptyScalars(t *testing.T) {
-	v := NewSclars(0)
+func TestDeltaWithoutAPair(t *testing.T) {
+	for _, n := range []int{0, 1} {
+		v := NewSclars(n)
+		base := time.Date(2021, time.January, 10, 0, 0, 0, 0, time.UTC)
+		for i := range n {
+			v.AppendConcrete(float64(i), base.Add(time.Duration(i)*time.Second))
+		}
 
-	v.Delta()
+		v.Delta()
 
-	if len(v.Values) != 0 || len(v.Times) != 0 {
-		t.Errorf("wanted an empty series, got %d values and %d times", len(v.Values), len(v.Times))
+		if len(v.Values) != 0 || len(v.Times) != 0 {
+			t.Errorf("%d samples: wanted an empty series, got %d values and %d times", n, len(v.Values), len(v.Times))
+		}
 	}
 }

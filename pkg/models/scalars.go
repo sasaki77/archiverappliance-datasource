@@ -138,15 +138,9 @@ func (v *Scalars) Offset(delta float64) {
 }
 
 func (v *Scalars) Delta() {
-	if len(v.Values) == 0 || len(v.Times) == 0 {
-		return
-	}
-
-	// A single sample has nothing to be differenced against.
-	if len(v.Values) < 2 {
-		v.SetValConcrete(0, 0)
-		v.Values = v.Values[:1]
-		v.Times = v.Times[:1]
+	if len(v.Values) < 2 || len(v.Times) < 2 {
+		v.Values = v.Values[:0]
+		v.Times = v.Times[:0]
 		return
 	}
 
