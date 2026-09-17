@@ -482,6 +482,47 @@ func TestFunctionSelectorRejectsWindowBelowOne(t *testing.T) {
 	}
 }
 
+func TestFunctionSelectorRejectsNegativeCount(t *testing.T) {
+	for _, name := range []string{"top", "bottom"} {
+		inputSd := []*models.SingleData{
+			{
+				Name: "PV:A",
+				Values: &models.Scalars{
+					Times:  testhelper.TimeArrayHelper(0, 1),
+					Values: testhelper.InitFloat64SlicePointer([]float64{1}),
+				},
+			},
+			{
+				Name: "PV:B",
+				Values: &models.Scalars{
+					Times:  testhelper.TimeArrayHelper(0, 1),
+					Values: testhelper.InitFloat64SlicePointer([]float64{2}),
+				},
+			},
+		}
+
+		inputFdqm := models.FunctionDescriptorQueryModel{
+			Def: models.FuncDefQueryModel{
+				Category: "Filter Series",
+				Name:     name,
+				Params: []models.FuncDefParamQueryModel{
+					{Name: "number", Type: "int"},
+					{Name: "value", Type: "string"},
+				},
+			},
+			Params: []string{"-1", "avg"},
+		}
+
+		result, err := functionSelector(inputSd, inputFdqm)
+		if err == nil {
+			t.Errorf("%s: expected an error", name)
+		}
+		if len(result) != 2 || result[0].Name != "PV:A" || result[1].Name != "PV:B" {
+			t.Errorf("%s: the data should come back untouched, got %d series", name, len(result))
+		}
+	}
+}
+
 func TestFunctionSelector(t *testing.T) {
 	var tests = []struct {
 		inputSd   []*models.SingleData

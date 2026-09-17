@@ -160,6 +160,9 @@ func movingAverage(allData []*models.SingleData, windowSize int) []*models.Singl
 // Filter Series Functions
 
 func top(allData []*models.SingleData, number int, value string) ([]*models.SingleData, error) {
+	if number < 0 {
+		return allData, fmt.Errorf("top: number must not be negative, got %v", number)
+	}
 	result, sortErr := sortCore(allData, value, "desc")
 	if sortErr != nil {
 		return allData, sortErr
@@ -171,6 +174,9 @@ func top(allData []*models.SingleData, number int, value string) ([]*models.Sing
 }
 
 func bottom(allData []*models.SingleData, number int, value string) ([]*models.SingleData, error) {
+	if number < 0 {
+		return allData, fmt.Errorf("bottom: number must not be negative, got %v", number)
+	}
 	result, sortErr := sortCore(allData, value, "asc")
 	if sortErr != nil {
 		return allData, sortErr
