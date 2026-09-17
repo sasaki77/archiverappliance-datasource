@@ -99,8 +99,10 @@ function parseArrayResponse(targetRes: AADataQueryData, target: TargetQuery) {
     fields = makeTimeseriesArrayFields(targetRes);
   }
 
+  // A waveform that is not numeric has no fields to show. A frame without them
+  // would break extrapolation and setAlias, which both read the first field.
   if (fields.length === 0) {
-    return createDataFrame({ fields: [] });
+    return [];
   }
 
   const frame = createDataFrame({

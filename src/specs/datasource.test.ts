@@ -9,7 +9,7 @@ import {
   LoadingState,
   dateTime,
 } from '@grafana/data';
-import { from, timer } from 'rxjs';
+import { from, lastValueFrom, timer } from 'rxjs';
 
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
@@ -883,6 +883,34 @@ describe('Archiverappliance Datasource', () => {
         expect(pv4).toBe('PV4');
         done();
       });
+    });
+
+    it.each([
+      ['with an alias', 'alias', '2010-01-01T01:00:00.000Z'],
+      ['with extrapolation', '', '2010-01-01T00:00:30.000Z'],
+      ['with an alias and extrapolation', 'alias', '2010-01-01T00:00:30.000Z'],
+    ])('should leave out a string waveform %s', async (_title, alias, to) => {
+      fetchMock.mockImplementation(() =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0', waveform: true },
+                data: [{ millis: 1262304000123, val: ['a', 'b'] }],
+              },
+            ],
+          },
+        ])
+      );
+
+      const query = {
+        targets: [{ target: 'PV', refId: 'A', alias }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date(to) },
+        maxDataPoints: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const result = await lastValueFrom(ds.query(query));
+      expect(result.data).toHaveLength(0);
     });
 
     it('should return the server results with alias pattern', (done) => {
