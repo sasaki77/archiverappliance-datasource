@@ -9,7 +9,7 @@ import {
   LoadingState,
   dateTime,
 } from '@grafana/data';
-import { from, timer } from 'rxjs';
+import { from, lastValueFrom, timer } from 'rxjs';
 
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
@@ -537,8 +537,8 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray2[2]).toBe(8);
         expect(valArray2[3]).toBe(8);
 
-        expect(valArray4[0]).toBe(undefined);
-        expect(valArray4[1]).toBe(undefined);
+        expect(valArray4[0]).toBeNull();
+        expect(valArray4[1]).toBeNull();
         expect(valArray4[2]).toBe(10);
         expect(valArray4[3]).toBe(10);
         done();
@@ -672,10 +672,11 @@ describe('Archiverappliance Datasource', () => {
           expect(seriesName).toBe('header:PV1');
 
           const indexArray = dataFrame.fields[0].values;
-          expect(indexArray).toHaveLength(3);
+          expect(indexArray).toHaveLength(4);
           expect(indexArray[0]).toBe(0);
           expect(indexArray[1]).toBe(1);
           expect(indexArray[2]).toBe(2);
+          expect(indexArray[3]).toBe(3);
 
           const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
           const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -690,13 +691,15 @@ describe('Archiverappliance Datasource', () => {
           const valArray2 = dataFrame.fields[2].values;
           const valArray3 = dataFrame.fields[3].values;
 
-          expect(valArray1).toHaveLength(3);
-          expect(valArray2).toHaveLength(3);
-          expect(valArray3).toHaveLength(3);
+          expect(valArray1).toHaveLength(4);
+          expect(valArray2).toHaveLength(4);
+          expect(valArray3).toHaveLength(4);
 
           expect(valArray1[0]).toBe(1);
           expect(valArray1[1]).toBe(2);
           expect(valArray1[2]).toBe(3);
+          expect(valArray1[3]).toBeNull();
+          expect(valArray3[3]).toBe(10);
 
           done();
         });
@@ -883,6 +886,114 @@ describe('Archiverappliance Datasource', () => {
         expect(pv4).toBe('PV4');
         done();
       });
+    });
+
+    it.each([
+      ['with an alias', 'alias', '2010-01-01T01:00:00.000Z'],
+      ['with extrapolation', '', '2010-01-01T00:00:30.000Z'],
+      ['with an alias and extrapolation', 'alias', '2010-01-01T00:00:30.000Z'],
+    ])('should leave out a string waveform %s', async (_title, alias, to) => {
+      fetchMock.mockImplementation(() =>
+        from([
+          {
+            data: [
+              {
+                meta: { name: 'PV', PREC: '0', waveform: true },
+                data: [{ millis: 1262304000123, val: ['a', 'b'] }],
+              },
+            ],
+          },
+        ])
+      );
+
+      const query = {
+        targets: [{ target: 'PV', refId: 'A', alias }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date(to) },
+        maxDataPoints: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const result = await lastValueFrom(ds.query(query));
+      expect(result.data).toHaveLength(0);
+    });
+
+    describe('waveform whose first sample is empty', () => {
+      const waveformQuery = (functions: string[][]) =>
+        ({
+          targets: [
+            {
+              target: 'PV',
+              refId: 'A',
+              functions: functions.map(([name, ...params]) =>
+                aafunc.createFuncDescriptor(aafunc.getFuncDef(name), params)
+              ),
+            },
+          ],
+          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:00.000Z') },
+          maxDataPoints: 1000,
+        }) as unknown as DataQueryRequest<AAQuery>;
+
+      beforeEach(() => {
+        fetchMock.mockImplementation(() =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'PV', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000000, val: [] },
+                    { millis: 1262304001000, val: [1, 2] },
+                  ],
+                },
+              ],
+            },
+          ])
+        );
+      });
+
+      it('should return it as timeseries', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields.map((f: any) => f.name)).toEqual(['time', 'PV[0]', 'PV[1]']);
+        expect(result.data[0].fields[1].values).toEqual([null, 1]);
+        expect(result.data[0].fields[2].values).toEqual([null, 2]);
+      });
+
+      it('should return it as index', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['arrayFormat', 'index']])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields.map((f: any) => f.values)).toEqual([
+          [0, 1],
+          [null, null],
+          [1, 2],
+        ]);
+      });
+
+      it('should return it as dt-space', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['arrayFormat', 'dt-space']])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields[1].values).toEqual([1, 2]);
+      });
+
+      it('should reduce it with toScalar', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['toScalarByAvg']])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields[1].values).toEqual([NaN, 1.5]);
+      });
+    });
+
+    it('should leave out a waveform with no samples', async () => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0', waveform: true }, data: [] }] }])
+      );
+
+      const query = {
+        targets: [{ target: 'PV', refId: 'A' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:00.000Z') },
+        maxDataPoints: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const result = await lastValueFrom(ds.query(query));
+      expect(result.data).toHaveLength(0);
     });
 
     it('should return the server results with alias pattern', (done) => {
