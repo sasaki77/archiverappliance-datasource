@@ -205,13 +205,18 @@ const functions = {
   sortByAbsMin: _.partial(sortByAggFuncs, 'absoluteMin'),
 };
 
+// An empty waveform reduces to NaN, as in the backend, which draws a gap.
+function nonEmpty(reduce: (values: number[]) => number | undefined) {
+  return (values: number[]) => (values.length === 0 ? NaN : reduce(values));
+}
+
 const arrayFunctions: { [key: string]: { func: any; label: string } } = {
-  toScalarByAvg: { func: datapointsAvg, label: 'avg' },
-  toScalarByMax: { func: datapointsMax, label: 'max' },
-  toScalarByMin: { func: datapointsMin, label: 'min' },
-  toScalarBySum: { func: datapointsSum, label: 'sum' },
-  toScalarByMed: { func: math.median, label: 'median' },
-  toScalarByStd: { func: (values: number[]) => math.std(values, 'uncorrected'), label: 'std' },
+  toScalarByAvg: { func: nonEmpty(datapointsAvg), label: 'avg' },
+  toScalarByMax: { func: nonEmpty(datapointsMax), label: 'max' },
+  toScalarByMin: { func: nonEmpty(datapointsMin), label: 'min' },
+  toScalarBySum: { func: nonEmpty(datapointsSum), label: 'sum' },
+  toScalarByMed: { func: nonEmpty(math.median), label: 'median' },
+  toScalarByStd: { func: nonEmpty((values) => math.std(values, 'uncorrected') as number), label: 'std' },
 };
 
 export { functions as seriesFunctions, arrayFunctions };
