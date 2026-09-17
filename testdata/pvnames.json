@@ -1,0 +1,19 @@
+[
+  { "input": "(this:is:1|this:is:2)", "output": ["this:is:1", "this:is:2"] },
+  { "input": "(this:is:1)", "output": ["this:is:1"] },
+  { "input": "this:is:1", "output": ["this:is:1"] },
+  { "input": "(this):is:1", "output": ["this:is:1"] },
+  { "input": "before:(this)", "output": ["before:this"] },
+  { "input": "before:(this|that):is:1", "output": ["before:this:is:1", "before:that:is:1"] },
+  {
+    "input": "before:(this|that):(is|was):1",
+    "output": ["before:this:is:1", "before:this:was:1", "before:that:is:1", "before:that:was:1"]
+  },
+  { "input": "()", "output": [""] },
+  { "input": "((this|that):is:1|this:is:2)", "output": ["this:is:2", "this:is:1", "that:is:1"] },
+  {
+    "input": "prefix:((this|that):is:1|this:is:2)",
+    "output": ["prefix:this:is:2", "prefix:this:is:1", "prefix:that:is:1"]
+  },
+  { "input": "(prefix):(this):(is):(1|2)", "output": ["prefix:this:is:1", "prefix:this:is:2"] }
+]
