@@ -6,7 +6,7 @@ import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
-import { responseParse } from 'responseParse';
+import { isExtrapolated, responseParse } from 'responseParse';
 import { applyFunctions, setAlias } from 'query';
 
 export const STREAM_FROM_MARGIN_MS = 2000;
@@ -14,7 +14,7 @@ export const STREAM_TO_MARGIN_MS = 500;
 
 type StreamBuffer = {
   fields: { [key: string]: any[] };
-  capacity: number;
+  capacities: { [refId: string]: number };
 };
 
 export class StreamQuery {
@@ -33,13 +33,13 @@ export class StreamQuery {
       // Buffer structure per time series (mutable internal state)
       //
       // buffers = {
-      //   "PV:NAME": {
+      //   "PV:NAME\0mean\0...": {
       //     fields: {
       //       time:  [t1, t2, t3, ...],
       //       value: [v1, v2, v3, ...],
       //       ... (other fields)
       //     }
-      //     capacity: 1000
+      //     capacities: { A: 1000, B: 500 }
       //   }
       // }
       const buffers: { [key: string]: StreamBuffer } = {};
@@ -47,6 +47,11 @@ export class StreamQuery {
       doQueryStream(this.aaclient, targets, buffers)
         .then((data) => {
           subscriber.next(data);
+
+          // next() may have run the teardown, before there was a timer to clear.
+          if (subscriber.closed) {
+            return;
+          }
 
           const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue)) || intervalMs;
 
@@ -103,10 +108,8 @@ export class StreamQuery {
   };
 
   private timerClear(id: string) {
-    if (id in this.timerIDs) {
-      clearTimeout(this.timerIDs[id]);
-    }
-    this.timerIDs = {};
+    clearTimeout(this.timerIDs[id]);
+    delete this.timerIDs[id];
   }
 }
 
@@ -128,6 +131,7 @@ function doQueryStream(
       return Promise.all(responsePromises)
         .then((responses) => responseParse(responses, targets[i], true))
         .then((dataFrames) => mergeToBuffers(dataFrames, buffers, targets[i]))
+        .then((dataFrames) => extrapolate(dataFrames, targets[i]))
         .then((dataFrames) => setAlias(dataFrames, targets[i]))
         .then((dataFrames) => applyFunctions(dataFrames, targets[i]));
     });
@@ -154,6 +158,45 @@ function updateTargetDate(targets: TargetQuery[]) {
   }));
 }
 
+// Only the frame handed out carries the extrapolated point: in the buffer it
+// would pile up one fake sample per tick while the PV does not change. It stops
+// short of the last STREAM_FROM_MARGIN_MS, which the next query fetches again
+// because the archiver may not have those samples yet.
+function extrapolate(dataFrames: DataFrame[], target: TargetQuery): DataFrame[] {
+  if (!isExtrapolated(target)) {
+    return dataFrames;
+  }
+
+  const extrapolatedTime = target.to.getTime() - STREAM_FROM_MARGIN_MS - 1;
+
+  for (const frame of dataFrames) {
+    const last = frame.length - 1;
+    if (frame.fields[0]?.name !== 'time' || last < 0 || frame.fields[0].values[last] > extrapolatedTime) {
+      continue;
+    }
+
+    // buildDataFrame gave this frame its own copy of the values.
+    frame.fields.forEach((field, i) => field.values.push(i === 0 ? extrapolatedTime : field.values[last]));
+    frame.length += 1;
+  }
+
+  return dataFrames;
+}
+
+// Targets that fetch the same series share a buffer, since what differs between
+// them (alias, functions) is applied after the merge. The auto interval is left
+// out: it changes after the first query, and it is the same for every target.
+function bufferKey(frame: DataFrame, target: TargetQuery) {
+  return [
+    frame.name,
+    target.operator,
+    target.options.binInterval ?? '',
+    target.options.disableAutoRaw ?? '',
+    target.options.arrayFormat ?? '',
+    frame.fields[1]?.config?.displayName ?? '',
+  ].join('\u0000');
+}
+
 function mergeToBuffers(
   dataFrames: DataFrame[],
   buffers: Record<string, StreamBuffer>,
@@ -164,27 +207,30 @@ function mergeToBuffers(
   const resultFrames = dataFrames
     .filter((f) => f.name !== undefined)
     .map((frame) => {
-      const name = frame.name!;
-      let buffer = buffers[name];
+      const key = bufferKey(frame, target);
+      const capacity = parseInt(target.strmCap, 10) || Math.max(target.maxDataPoints, frame.length);
+      let buffer = buffers[key];
 
       // --- Initialize buffer (if first time) ---
       if (!buffer) {
-        const defaultCap = Math.max(target.maxDataPoints, frame.length);
-        const capacity = parseInt(target.strmCap, 10) || defaultCap;
-
         buffer = {
           fields: {},
-          capacity,
+          capacities: { [target.refId]: capacity },
         };
 
         for (const field of frame.fields) {
           buffer.fields[field.name] = [...field.values];
         }
 
-        buffers[name] = buffer;
+        buffers[key] = buffer;
 
         // --- Build immutable DataFrame ---
         return buildDataFrame(frame, buffer);
+      }
+
+      const firstMerge = !(target.refId in buffer.capacities);
+      if (firstMerge) {
+        buffer.capacities[target.refId] = capacity;
       }
 
       const timeArray = buffer.fields['time'];
@@ -217,26 +263,30 @@ function mergeToBuffers(
       }
 
       // --- Trim buffer (capacity control) ---
+      const bufferCapacity = Math.max(...Object.values(buffer.capacities));
       for (const [fieldName, values] of Object.entries(buffer.fields)) {
-        if (values.length > buffer.capacity) {
-          buffer.fields[fieldName] = values.slice(values.length - buffer.capacity);
+        if (values.length > bufferCapacity) {
+          buffer.fields[fieldName] = values.slice(values.length - bufferCapacity);
         }
       }
 
       // --- Build immutable DataFrame ---
-      return buildDataFrame(frame, buffer);
+      return buildDataFrame(frame, buffer, firstMerge ? undefined : buffer.capacities[target.refId]);
     });
 
   return Promise.resolve(resultFrames);
 }
 
-function buildDataFrame(frame: DataFrame, buffer: StreamBuffer): DataFrame {
+// Without a capacity the whole buffer is returned, so that a target's initial
+// query is shown in full even when it holds more points than the capacity.
+function buildDataFrame(frame: DataFrame, buffer: StreamBuffer, capacity = Infinity): DataFrame {
+  const start = Math.max(0, buffer.fields['time'].length - capacity);
   return {
     ...frame,
     fields: frame.fields.map((field) => ({
       ...field,
-      values: [...(buffer.fields[field.name] || [])],
+      values: (buffer.fields[field.name] || []).slice(start),
     })),
-    length: buffer.fields['time'].length,
+    length: buffer.fields['time'].length - start,
   };
 }

@@ -8,12 +8,13 @@ import {
   DataQueryRequest,
   LoadingState,
 } from '@grafana/data';
-import { from } from 'rxjs';
+import { from, timer } from 'rxjs';
 
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
+import * as aafunc from '../aafunc';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
-import { take, toArray } from 'rxjs/operators';
+import { map, take, toArray } from 'rxjs/operators';
 
 const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -1195,8 +1196,12 @@ describe('Archiverappliance Datasource', () => {
         const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
-        expect(valArray).toEqual([0, 0, 0, 0]);
-        expect(timesArray).toHaveLength(4);
+        expect(valArray).toEqual([0, 0]);
+        expect(timesArray).toHaveLength(2);
+
+        const lastUrl = fetchMock.mock.calls[fetchMock.mock.calls.length - 1][0].url;
+        const lastTo = new Date(unescape(split(lastUrl, /to=(.*Z)/)[1])).getTime();
+        expect(timesArray[1]).toBe(lastTo - 2001);
 
         done();
       });
@@ -1519,6 +1524,139 @@ describe('Archiverappliance Datasource', () => {
       d.subscribe((results: any[]) => {
         done();
       });
+    });
+  });
+
+  describe('Stream lifecycle tests', () => {
+    const streamQuery = (refId: string) =>
+      ({
+        targets: [{ target: 'PV', refId, stream: true, strmInt: '50' }],
+        range: { from: new Date(Date.now() - 1000 * 1000), to: new Date() },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+      }) as unknown as DataQueryRequest<AAQuery>;
+
+    beforeEach(() => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 3000, val: 0 }] }] }])
+      );
+    });
+
+    it('should keep a stream running when another stream on the datasource stops', (done) => {
+      ds.query(streamQuery('B'))
+        .pipe(take(4), toArray())
+        .subscribe((results) => {
+          expect(results).toHaveLength(4);
+          done();
+        });
+
+      ds.query(streamQuery('A')).pipe(take(1)).subscribe();
+    }, 3000);
+
+    it('should not keep querying for a stream unsubscribed before its first response', async () => {
+      fetchMock.mockImplementation(() =>
+        timer(100).pipe(
+          map(() => ({ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 3000, val: 0 }] }] }))
+        )
+      );
+
+      ds.query(streamQuery('A')).subscribe().unsubscribe();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should keep separate buffers for the same PV read with two operators', (done) => {
+      fetchMock.mockImplementation((request) => {
+        const val = request.url.includes('mean_') ? 10 : 20;
+        return from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 1000, val }] }] }]);
+      });
+
+      const binInterval = aafunc.createFuncDescriptor(aafunc.getFuncDef('binInterval'), ['1']);
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          { target: 'PV', refId: 'A', operator: 'mean', stream: true, strmInt: '50', functions: [binInterval] },
+          { target: 'PV', refId: 'B', operator: 'max', stream: true, strmInt: '50', functions: [binInterval] },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(3), toArray())
+        .subscribe((results) => {
+          const [frameA, frameB] = results[2].data;
+          expect(frameA.fields[1].values).toEqual([10, 10, 10]);
+          expect(frameB.fields[1].values).toEqual([20, 20, 20]);
+          done();
+        });
+    }, 3000);
+
+    it('should show each target its own capacity when two targets read the same data', (done) => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 1000, val: 1 }] }] }])
+      );
+
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          { target: 'PV', refId: 'A', operator: 'raw', stream: true, strmInt: '50', strmCap: '2' },
+          { target: 'PV', refId: 'B', operator: 'raw', stream: true, strmInt: '50', strmCap: '4' },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(6), toArray())
+        .subscribe((results) => {
+          const [frameA, frameB] = results[5].data;
+          expect(frameA.fields[1].values).toHaveLength(2);
+          expect(frameB.fields[1].values).toHaveLength(4);
+          done();
+        });
+    }, 3000);
+
+    it('should keep separate buffers for each toScalar series of a target', (done) => {
+      fetchMock.mockImplementation(() =>
+        from([
+          {
+            data: [
+              { meta: { name: 'PV', PREC: '0', waveform: true }, data: [{ millis: Date.now() - 1000, val: [1, 5] }] },
+            ],
+          },
+        ])
+      );
+
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          {
+            target: 'PV',
+            refId: 'A',
+            stream: true,
+            strmInt: '50',
+            functions: [
+              aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMin'), []),
+              aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMax'), []),
+            ],
+          },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(3), toArray())
+        .subscribe((results) => {
+          const [frameMin, frameMax] = results[2].data;
+          expect(frameMin.fields[1].values.every((v: number) => v === 1)).toBe(true);
+          expect(frameMax.fields[1].values.every((v: number) => v === 5)).toBe(true);
+          done();
+        });
+    }, 3000);
+
+    it('should not keep querying for a stream unsubscribed on its first response', async () => {
+      ds.query(streamQuery('A')).pipe(take(1)).subscribe();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
   });
 
