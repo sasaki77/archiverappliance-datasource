@@ -913,6 +913,79 @@ describe('Archiverappliance Datasource', () => {
       expect(result.data).toHaveLength(0);
     });
 
+    describe('waveform whose first sample is empty', () => {
+      const waveformQuery = (functions: string[][]) =>
+        ({
+          targets: [
+            {
+              target: 'PV',
+              refId: 'A',
+              functions: functions.map(([name, ...params]) =>
+                aafunc.createFuncDescriptor(aafunc.getFuncDef(name), params)
+              ),
+            },
+          ],
+          range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:00.000Z') },
+          maxDataPoints: 1000,
+        }) as unknown as DataQueryRequest<AAQuery>;
+
+      beforeEach(() => {
+        fetchMock.mockImplementation(() =>
+          from([
+            {
+              data: [
+                {
+                  meta: { name: 'PV', PREC: '0', waveform: true },
+                  data: [
+                    { millis: 1262304000000, val: [] },
+                    { millis: 1262304001000, val: [1, 2] },
+                  ],
+                },
+              ],
+            },
+          ])
+        );
+      });
+
+      it('should return it as timeseries', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields.map((f: any) => f.name)).toEqual(['time', 'PV[0]', 'PV[1]']);
+      });
+
+      it('should return it as index', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['arrayFormat', 'index']])));
+        expect(result.data).toHaveLength(1);
+      });
+
+      it('should return it as dt-space', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['arrayFormat', 'dt-space']])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields[1].values).toEqual([1, 2]);
+      });
+
+      it('should reduce it with toScalar', async () => {
+        const result = await lastValueFrom(ds.query(waveformQuery([['toScalarByAvg']])));
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields[1].values).toEqual([NaN, 1.5]);
+      });
+    });
+
+    it('should leave out a waveform with no samples', async () => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0', waveform: true }, data: [] }] }])
+      );
+
+      const query = {
+        targets: [{ target: 'PV', refId: 'A' }],
+        range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T01:00:00.000Z') },
+        maxDataPoints: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const result = await lastValueFrom(ds.query(query));
+      expect(result.data).toHaveLength(0);
+    });
+
     it('should return the server results with alias pattern', (done) => {
       fetchMock.mockImplementation((request) =>
         from([

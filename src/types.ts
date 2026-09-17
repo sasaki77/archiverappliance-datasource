@@ -125,11 +125,10 @@ export function isNumberArray(response: AADataQueryData): response is AADataQuer
     return false;
   }
 
-  if (Array.isArray(response.data[0].val)) {
-    return typeof response.data[0].val[0] === 'number';
-  }
-
-  return false;
+  // A waveform can be archived with no elements (NORD of 0), so the type is read
+  // from the first sample that has one.
+  const sample = response.data.find((d) => !Array.isArray(d.val) || d.val.length > 0);
+  return sample !== undefined && Array.isArray(sample.val) && typeof sample.val[0] === 'number';
 }
 
 /**
