@@ -131,32 +131,34 @@ function datapointsSum(values: number[]) {
   return _.sum(values);
 }
 
-function datapointsAbsMin(values: number[]) {
-  const minPoint = _.minBy(values, (value) => Math.abs(value));
-
-  if (minPoint === undefined) {
-    return minPoint;
-  }
-  return Math.abs(minPoint);
-}
-
-function datapointsAbsMax(values: number[]) {
-  const maxPoint = _.maxBy(values, (value) => Math.abs(value));
-
-  if (maxPoint === undefined) {
-    return maxPoint;
-  }
-  return Math.abs(maxPoint);
-}
-
-const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefined } = {
-  avg: datapointsAvg,
-  min: datapointsMin,
-  max: datapointsMax,
-  sum: datapointsSum,
-  absoluteMin: datapointsAbsMin,
-  absoluteMax: datapointsAbsMax,
+// Mirrors Scalars.Rank and cmp.Compare in the backend: an empty series ranks as
+// 0, except by avg, where its NaN ranks below every number.
+const rankFuncs: { [key: string]: (values: number[]) => number } = {
+  avg: (values) => _.mean(values),
+  min: (values) => _.min(values) ?? 0,
+  max: (values) => _.max(values) ?? 0,
+  sum: (values) => _.sum(values),
+  absoluteMin: (values) => _.min(values.map(Math.abs)) ?? 0,
+  absoluteMax: (values) => _.max(values.map(Math.abs)) ?? 0,
 };
+
+function compareRank(a: number, b: number) {
+  if (Number.isNaN(a)) {
+    return Number.isNaN(b) ? 0 : -1;
+  }
+  if (Number.isNaN(b)) {
+    return 1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+function sortByRank(dataFrames: DataFrame[], rankFunc: string, descending: boolean) {
+  const rank = rankFuncs[rankFunc];
+  return dataFrames
+    .map((frame) => ({ frame, rank: rank(frame.fields[1].values) }))
+    .sort((a, b) => (descending ? compareRank(b.rank, a.rank) : compareRank(a.rank, b.rank)))
+    .map(({ frame }) => frame);
+}
 
 // [Support Funcs] Wrapper function for top and bottom function
 
@@ -165,29 +167,12 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Dat
     return dataFrames;
   }
 
-  const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
-
-  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
-  if (order === 'bottom') {
-    return _.slice(sortedTsData, 0, n);
-  }
-
-  return _.reverse(sortedTsData).slice(0, n);
+  return sortByRank(dataFrames, orderFunc, order === 'top').slice(0, n);
 }
 
 // [Support Funcs] Wrapper function for sort by AggFuncs
 function sortByAggFuncs(orderFunc: string, order: string, dataFrames: DataFrame[]) {
-  const orderByCallback = datapointsAggFuncs[orderFunc];
-  const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
-
-  const sortedTsData = _.sortBy(dataFrames, sortByIteratee);
-
-  if (order === 'asc') {
-    return sortedTsData;
-  }
-
-  return _.reverse(sortedTsData);
+  return sortByRank(dataFrames, orderFunc, order !== 'asc');
 }
 
 // Function list

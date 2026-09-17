@@ -26,6 +26,24 @@
     ]
   },
   {
+    "name": "top keeps the first of series with equal rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "top", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [1] }]
+  },
+  {
+    "name": "bottom keeps the first of series with equal rank",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [1] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["1", "avg"] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [1] }]
+  },
+  {
     "name": "top keeps nothing for a count of zero",
     "input": [
       { "name": "PV:A", "times": [1000], "values": [1] },
