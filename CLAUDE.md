@@ -24,6 +24,8 @@ yarn lint:fix              # eslint --fix + prettier --write
 yarn test                 # jest --watch --onlyChanged
 yarn test:ci                # jest, non-interactive, used in CI
 ```
+Frontend benchmarks: `yarn bench` runs `src/bench/*.bench.ts` (stream buffer merging, waveform layout, transform functions), which `yarn test`/`yarn test:ci` leave out. Each prints time per op and, for stateful cases such as a stream buffer, the heap it retains; compare runs before and after a change by eye, since there is no benchstat counterpart.
+
 Run a single frontend test file: `yarn jest src/specs/aafunc.test.ts` (or point `jest` at any path/pattern; the `test`/`test:ci` scripts wrap the same jest config in [.config/jest.config.js](.config/jest.config.js)).
 
 ### Backend (Go, uses Mage as the build tool)

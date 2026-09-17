@@ -113,7 +113,7 @@ export class StreamQuery {
   }
 }
 
-function doQueryStream(
+export function doQueryStream(
   aaclient: AAclient,
   targets: TargetQuery[],
   buffers: { [key: string]: StreamBuffer }
