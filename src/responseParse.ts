@@ -88,7 +88,7 @@ function parseArrayResponseToScalar(
           name: 'value',
           type: FieldType.number,
           values: values,
-          config: { displayName: `${targetRes.meta.name} (${func.label})` },
+          config: { displayName: `${targetRes.meta.name}(${func.label})` },
         },
       ],
     });

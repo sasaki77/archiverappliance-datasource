@@ -1,0 +1,98 @@
+[
+  {
+    "name": "toScalarByAvg reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByAvg", "params": [] }],
+    "output": [{ "name": "PV:A(avg)", "times": [1000, 2000], "values": [4, 4] }]
+  },
+  {
+    "name": "toScalarByMax reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMax", "params": [] }],
+    "output": [{ "name": "PV:A(max)", "times": [1000, 2000], "values": [10, 4] }]
+  },
+  {
+    "name": "toScalarByMin reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMin", "params": [] }],
+    "output": [{ "name": "PV:A(min)", "times": [1000, 2000], "values": [1, 4] }]
+  },
+  {
+    "name": "toScalarBySum reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarBySum", "params": [] }],
+    "output": [{ "name": "PV:A(sum)", "times": [1000, 2000], "values": [16, 16] }]
+  },
+  {
+    "name": "toScalarByMed reduces each waveform and names the series after it",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByMed", "params": [] }],
+    "output": [{ "name": "PV:A(median)", "times": [1000, 2000], "values": [2.5, 4] }]
+  },
+  {
+    "name": "toScalar functions each add a series",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [1, 2, 3, 10],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [
+      { "name": "toScalarByMin", "params": [] },
+      { "name": "toScalarByMax", "params": [] }
+    ],
+    "output": [
+      { "name": "PV:A(min)", "times": [1000, 2000], "values": [1, 4] },
+      { "name": "PV:A(max)", "times": [1000, 2000], "values": [10, 4] }
+    ]
+  }
+]

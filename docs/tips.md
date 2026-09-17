@@ -31,11 +31,11 @@ This table format called [wide format data frame](https://grafana.com/docs/grafa
 The plugin also supports conversion from array data to scalar data with the [Array to Scalar](functions.md#array-to-scalar-functions) functions.
 Above array data becomes as following with [toScalarByMin](functions.md#toscalarbymin):
 
-| time                | PV:NAME (min) |
-| ------------------- | ------------- |
-| 2020-01-02 03:04:00 | 1             |
-| 2020-01-02 03:05:00 | 4             |
-| 2020-01-02 03:06:00 | 7             |
+| time                | PV:NAME(min) |
+| ------------------- | ------------ |
+| 2020-01-02 03:04:00 | 1            |
+| 2020-01-02 03:05:00 | 4            |
+| 2020-01-02 03:06:00 | 7            |
 
 You can use as many `Array to Scalar` functions as you need for same array data.
 The other functions except `Options` are not supported for array data.

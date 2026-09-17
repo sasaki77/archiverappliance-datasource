@@ -395,12 +395,12 @@ describe('Archiverappliance Functions', () => {
       const nameSum = getFieldDisplayName(dataFrameSum.fields[1], dataFrameSum);
       const nameMed = getFieldDisplayName(dataFrameMed.fields[1], dataFrameMed);
       const nameStd = getFieldDisplayName(dataFrameStd.fields[1], dataFrameStd);
-      expect(nameAvg).toBe('header:PV1 (avg)');
-      expect(nameMax).toBe('header:PV1 (max)');
-      expect(nameMin).toBe('header:PV1 (min)');
-      expect(nameSum).toBe('header:PV1 (sum)');
-      expect(nameMed).toBe('header:PV1 (median)');
-      expect(nameStd).toBe('header:PV1 (std)');
+      expect(nameAvg).toBe('header:PV1(avg)');
+      expect(nameMax).toBe('header:PV1(max)');
+      expect(nameMin).toBe('header:PV1(min)');
+      expect(nameSum).toBe('header:PV1(sum)');
+      expect(nameMed).toBe('header:PV1(median)');
+      expect(nameStd).toBe('header:PV1(std)');
 
       const timesArrayAvg = dataFrameAvg.fields[0].values;
       const timesArrayMax = dataFrameMax.fields[0].values;
