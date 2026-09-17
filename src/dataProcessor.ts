@@ -99,7 +99,13 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
 
 // Filter Series
 function exclude(pattern: string, dataFrames: DataFrame[]) {
-  const regex = new RegExp(pattern);
+  let regex: RegExp;
+  try {
+    regex = new RegExp(pattern);
+  } catch {
+    return dataFrames;
+  }
+
   return _.filter(dataFrames, (dataFrame) => {
     const valfield = dataFrame.fields[1];
     const displayName = getFieldDisplayName(valfield, dataFrame);
