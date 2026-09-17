@@ -387,7 +387,7 @@ describe('Archiverappliance Functions', () => {
       expect(valArrayMin[0]).toBe(1);
       expect(valArraySum[0]).toBe(6);
       expect(valArrayMed[0]).toBe(2);
-      expect(valArrayStd[0]).toBe(1);
+      expect(valArrayStd[0]).toBeCloseTo(Math.sqrt(2 / 3));
 
       const nameAvg = getFieldDisplayName(dataFrameAvg.fields[1], dataFrameAvg);
       const nameMax = getFieldDisplayName(dataFrameMax.fields[1], dataFrameMax);

@@ -211,7 +211,7 @@ const arrayFunctions: { [key: string]: { func: any; label: string } } = {
   toScalarByMin: { func: datapointsMin, label: 'min' },
   toScalarBySum: { func: datapointsSum, label: 'sum' },
   toScalarByMed: { func: math.median, label: 'median' },
-  toScalarByStd: { func: math.std, label: 'std' },
+  toScalarByStd: { func: (values: number[]) => math.std(values, 'uncorrected'), label: 'std' },
 };
 
 export { functions as seriesFunctions, arrayFunctions };

@@ -75,6 +75,21 @@
     "output": [{ "name": "PV:A(median)", "times": [1000, 2000], "values": [2.5, 4] }]
   },
   {
+    "name": "toScalarByStd takes the population standard deviation",
+    "input": [
+      {
+        "name": "PV:A",
+        "times": [1000, 2000],
+        "values": [
+          [2, 4, 4, 4, 5, 5, 7, 9],
+          [4, 4, 4, 4]
+        ]
+      }
+    ],
+    "functions": [{ "name": "toScalarByStd", "params": [] }],
+    "output": [{ "name": "PV:A(std)", "times": [1000, 2000], "values": [2, 0] }]
+  },
+  {
     "name": "toScalar functions each add a series",
     "input": [
       {
