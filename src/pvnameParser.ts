@@ -26,8 +26,9 @@ export function parseTargetPV(targetPV: string): string[] {
   const phraseCase = permuteQuery(phraseParts);
 
   // Substituting the phrase combinations resolves only the outermost level.
-  // A result that still expands is replaced by its expansion, which goes after
-  // the results that do not, in order.
+  // A result that still expands into several is replaced by its expansion,
+  // which goes after the others, in order; one that expands into a single
+  // name, such as "A(1)", keeps its place.
   const result: string[] = [];
   const expanded: string[] = [];
   for (const phrase of phraseCase) {
@@ -36,7 +37,7 @@ export function parseTargetPV(targetPV: string): string[] {
     if (parseAttempt.length > 1) {
       expanded.push(...parseAttempt);
     } else {
-      result.push(createdString);
+      result.push(parseAttempt[0]);
     }
   }
 

@@ -19,5 +19,8 @@
   { "input": "(A(1|2)|B(3|4))", "output": ["A1", "A2", "B3", "B4"] },
   { "input": "(X|A(1|2)|B(3|4))", "output": ["X", "A1", "A2", "B3", "B4"] },
   { "input": "(A(1|2)|B(3|4)|C(5|6))", "output": ["A1", "A2", "B3", "B4", "C5", "C6"] },
-  { "input": "pre:(A(1|(x|y))|B)", "output": ["pre:B", "pre:A1", "pre:Ax", "pre:Ay"] }
+  { "input": "pre:(A(1|(x|y))|B)", "output": ["pre:B", "pre:A1", "pre:Ax", "pre:Ay"] },
+  { "input": "(A(1)|B)", "output": ["A1", "B"] },
+  { "input": "(A(1))", "output": ["A1"] },
+  { "input": "pre:(A(1)|B(2|3))", "output": ["pre:A1", "pre:B2", "pre:B3"] }
 ]

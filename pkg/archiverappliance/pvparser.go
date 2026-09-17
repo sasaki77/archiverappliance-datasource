@@ -34,8 +34,9 @@ func isolateBasicQuery(unparsed string) []string {
 	phraseCase := permuteQuery(phraseParts)
 
 	// Substituting the phrase combinations resolves only the outermost level.
-	// A result that still expands is replaced by its expansion, which goes after
-	// the results that do not, in order.
+	// A result that still expands into several is replaced by its expansion,
+	// which goes after the others, in order; one that expands into a single
+	// name, such as "A(1)", keeps its place.
 	result := make([]string, 0, len(phraseCase))
 	var expanded []string
 	for _, phrase := range phraseCase {
@@ -43,7 +44,7 @@ func isolateBasicQuery(unparsed string) []string {
 		if parseAttempt := isolateBasicQuery(createdString); len(parseAttempt) > 1 {
 			expanded = append(expanded, parseAttempt...)
 		} else {
-			result = append(result, createdString)
+			result = append(result, parseAttempt[0])
 		}
 	}
 
