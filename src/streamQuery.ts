@@ -48,6 +48,11 @@ export class StreamQuery {
         .then((data) => {
           subscriber.next(data);
 
+          // next() may have run the teardown, before there was a timer to clear.
+          if (subscriber.closed) {
+            return;
+          }
+
           const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue)) || intervalMs;
 
           const newTargets = _.map(targets, (target) => {

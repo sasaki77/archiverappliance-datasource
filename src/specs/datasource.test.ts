@@ -8,12 +8,12 @@ import {
   DataQueryRequest,
   LoadingState,
 } from '@grafana/data';
-import { from } from 'rxjs';
+import { from, timer } from 'rxjs';
 
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
-import { take, toArray } from 'rxjs/operators';
+import { map, take, toArray } from 'rxjs/operators';
 
 const fetchMock = jest.fn().mockResolvedValue(createDefaultResponse());
 
@@ -1548,6 +1548,26 @@ describe('Archiverappliance Datasource', () => {
 
       ds.query(streamQuery('A')).pipe(take(1)).subscribe();
     }, 3000);
+
+    it('should not keep querying for a stream unsubscribed before its first response', async () => {
+      fetchMock.mockImplementation(() =>
+        timer(100).pipe(
+          map(() => ({ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 3000, val: 0 }] }] }))
+        )
+      );
+
+      ds.query(streamQuery('A')).subscribe().unsubscribe();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not keep querying for a stream unsubscribed on its first response', async () => {
+      ds.query(streamQuery('A')).pipe(take(1)).subscribe();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('PV name find query tests', () => {
