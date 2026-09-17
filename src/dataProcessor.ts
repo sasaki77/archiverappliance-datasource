@@ -155,6 +155,10 @@ const datapointsAggFuncs: { [key: string]: (values: number[]) => number | undefi
 // [Support Funcs] Wrapper function for top and bottom function
 
 function extraction(order: string, n: number, orderFunc: string, dataFrames: DataFrame[]) {
+  if (n < 0) {
+    return dataFrames;
+  }
+
   const orderByCallback = datapointsAggFuncs[orderFunc];
   const sortByIteratee = (dataFrame: DataFrame) => orderByCallback(dataFrame.fields[1].values);
 
@@ -163,7 +167,7 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Dat
     return _.slice(sortedTsData, 0, n);
   }
 
-  return _.reverse(_.slice(sortedTsData, -n));
+  return _.reverse(sortedTsData).slice(0, n);
 }
 
 // [Support Funcs] Wrapper function for sort by AggFuncs

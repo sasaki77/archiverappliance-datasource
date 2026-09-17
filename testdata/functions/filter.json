@@ -26,6 +26,48 @@
     ]
   },
   {
+    "name": "top keeps nothing for a count of zero",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["0", "avg"] }],
+    "output": []
+  },
+  {
+    "name": "bottom keeps nothing for a count of zero",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["0", "avg"] }],
+    "output": []
+  },
+  {
+    "name": "top leaves the series alone for a negative count",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["-1", "avg"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "bottom leaves the series alone for a negative count",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "bottom", "params": ["-1", "avg"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
     "name": "exclude drops the series whose name matches",
     "input": [
       { "name": "PV:A", "times": [1000], "values": [1] },
