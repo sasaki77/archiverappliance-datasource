@@ -1,0 +1,41 @@
+[
+  {
+    "name": "scale multiplies every value",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": ["2"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [2, 4, 6] }]
+  },
+  {
+    "name": "offset adds to every value",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "offset", "params": ["-1.5"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [-0.5, 0.5, 1.5] }]
+  },
+  {
+    "name": "transforms apply in the order given",
+    "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [1, 2] }],
+    "functions": [
+      { "name": "offset", "params": ["1"] },
+      { "name": "scale", "params": ["10"] }
+    ],
+    "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [20, 30] }]
+  },
+  {
+    "name": "delta differences each pair and drops the first timestamp",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, 3, 6, 10] }],
+    "functions": [{ "name": "delta", "params": [] }],
+    "output": [{ "name": "PV:A", "times": [2000, 3000, 4000], "values": [2, 3, 4] }]
+  },
+  {
+    "name": "fluctuation measures from the first value",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [5, 7, 4] }],
+    "functions": [{ "name": "fluctuation", "params": [] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [0, 2, -1] }]
+  },
+  {
+    "name": "movingAverage averages the trailing window",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, 2, 3, 4] }],
+    "functions": [{ "name": "movingAverage", "params": ["2"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, 1.5, 2.5, 3.5] }]
+  }
+]
