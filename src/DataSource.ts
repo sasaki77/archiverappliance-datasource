@@ -143,12 +143,12 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
       return [];
     }
 
-    const from = new Date(String(query.range.from));
-    const to_ = new Date(String(query.range.to));
+    const from = new Date(query.range.from.valueOf());
+    const to_ = new Date(query.range.to.valueOf());
     const rangeMsec = to_.getTime() - from.getTime();
 
-    // If "from" == "to" in seconds then "to" should be "to + 1 second"
-    const to = rangeMsec >= 1 ? to_ : new Date(to_.getTime() + 1000);
+    // A range shorter than 1 second is extended by 1 second, as in the backend
+    const to = rangeMsec >= 1000 ? to_ : new Date(to_.getTime() + 1000);
 
     const maxDataPoints = query.maxDataPoints || 2000;
     const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));

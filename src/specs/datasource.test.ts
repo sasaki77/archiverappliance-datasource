@@ -7,6 +7,7 @@ import {
   DataSourceInstanceSettings,
   DataQueryRequest,
   LoadingState,
+  dateTime,
 } from '@grafana/data';
 import { from, timer } from 'rxjs';
 
@@ -346,7 +347,7 @@ describe('Archiverappliance Datasource', () => {
       done();
     });
 
-    it('should return 1 second range when from == to in seconds', (done) => {
+    it('should extend to by 1 second when the range is shorter than 1 second', (done) => {
       const options = {
         targets: [{ target: 'PV1', refId: 'A' }],
         range: { from: new Date('2010-01-01T00:00:00.000Z'), to: new Date('2010-01-01T00:00:00.100Z') },
@@ -357,7 +358,21 @@ describe('Archiverappliance Datasource', () => {
 
       expect(targets).toHaveLength(1);
       expect(targets[0].from.getTime()).toBe(new Date('2010-01-01T00:00:00.000Z').getTime());
-      expect(targets[0].to.getTime()).toBe(new Date('2010-01-01T00:00:01.000Z').getTime());
+      expect(targets[0].to.getTime()).toBe(new Date('2010-01-01T00:00:01.100Z').getTime());
+      done();
+    });
+
+    it('should keep the milliseconds of the time range', (done) => {
+      const options = {
+        targets: [{ target: 'PV1', refId: 'A' }],
+        range: { from: dateTime('2010-01-01T00:00:00.123Z'), to: dateTime('2010-01-01T01:00:00.789Z') },
+        maxDataPoints: 1800,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const targets = ds.buildQueryParameters(options);
+
+      expect(targets[0].from.toISOString()).toBe('2010-01-01T00:00:00.123Z');
+      expect(targets[0].to.toISOString()).toBe('2010-01-01T01:00:00.789Z');
       done();
     });
   });
