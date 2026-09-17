@@ -1,0 +1,56 @@
+[
+  {
+    "name": "scale reads a float in exponent form",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": ["1e3"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1000, 2000, 3000] }]
+  },
+  {
+    "name": "scale leaves the series alone for a factor that is not a number",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": ["abc"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }]
+  },
+  {
+    "name": "scale leaves the series alone for an empty factor",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": [""] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }]
+  },
+  {
+    "name": "scale leaves the series alone for a factor out of float64 range",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": ["1e400"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }]
+  },
+  {
+    "name": "movingAverage leaves the series alone for a window that is not an integer",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "movingAverage", "params": ["2.5"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }]
+  },
+  {
+    "name": "top leaves the series alone for a count that is not an integer",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "top", "params": ["1.5", "avg"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
+  },
+  {
+    "name": "scale leaves the series alone when its parameter is missing",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": [] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }]
+  },
+  {
+    "name": "scale ignores a parameter it does not define",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [1, 2, 3] }],
+    "functions": [{ "name": "scale", "params": ["2", "extra"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [2, 4, 6] }]
+  }
+]

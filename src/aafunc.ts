@@ -37,6 +37,30 @@ function pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], requireC
   return pickedFuncDefs;
 }
 
+function parseParam(value: string | undefined, type: string): string | number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (type === 'int') {
+    const n = Number(value);
+    return /^[+-]?\d+$/.test(value) && Number.isSafeInteger(n) ? n : undefined;
+  }
+
+  if (type === 'float') {
+    if (/^[+-]?inf(inity)?$/i.test(value)) {
+      return value.startsWith('-') ? -Infinity : Infinity;
+    }
+    if (/^nan$/i.test(value)) {
+      return NaN;
+    }
+    const n = Number(value);
+    return /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(value) && Number.isFinite(n) ? n : undefined;
+  }
+
+  return value;
+}
+
 function bindFunction(
   metricFunctions: { [key: string]: (...args: any[]) => DataFrame[] },
   funcDef: FunctionDescriptor
@@ -47,19 +71,12 @@ function bindFunction(
     throw new Error(`Method not found ${funcDef.def.name}`);
   }
 
-  // Bind function arguments
-  let bindedFunc = func;
-  let param;
-  for (let i = 0; i < funcDef.params.length; i += 1) {
-    param = funcDef.params[i];
-
-    // Convert numeric params
-    if (funcDef.def.params[i].type === 'int' || funcDef.def.params[i].type === 'float') {
-      param = Number(param);
-    }
-    bindedFunc = _.partial(bindedFunc, param);
+  const args = funcDef.def.params.map((param, i) => parseParam(funcDef.params[i], param.type));
+  if (args.includes(undefined)) {
+    return undefined;
   }
-  return bindedFunc;
+
+  return (dataFrames: DataFrame[]) => func(...args, dataFrames);
 }
 
 // Transform
@@ -315,7 +332,7 @@ export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames
       prevPromise.then((res) => {
         const bindedFunc = bindFunction(seriesFunctions, func);
 
-        return Promise.resolve(bindedFunc(res));
+        return Promise.resolve(bindedFunc ? bindedFunc(res) : res);
       }),
     Promise.resolve(dataFrames)
   );

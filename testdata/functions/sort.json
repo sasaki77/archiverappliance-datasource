@@ -96,5 +96,17 @@
       { "name": "PV:A", "times": [], "values": [] },
       { "name": "PV:B", "times": [1000], "values": [1] }
     ]
+  },
+  {
+    "name": "sortByAvg leaves the series alone for an unknown order",
+    "input": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ],
+    "functions": [{ "name": "sortByAvg", "params": ["foo"] }],
+    "output": [
+      { "name": "PV:A", "times": [1000], "values": [1] },
+      { "name": "PV:B", "times": [1000], "values": [2] }
+    ]
   }
 ]

@@ -133,14 +133,14 @@ function datapointsSum(values: number[]) {
 
 // Mirrors Scalars.Rank and cmp.Compare in the backend: an empty series ranks as
 // 0, except by avg, where its NaN ranks below every number.
-const rankFuncs: { [key: string]: (values: number[]) => number } = {
-  avg: (values) => _.mean(values),
-  min: (values) => _.min(values) ?? 0,
-  max: (values) => _.max(values) ?? 0,
-  sum: (values) => _.sum(values),
-  absoluteMin: (values) => _.min(values.map(Math.abs)) ?? 0,
-  absoluteMax: (values) => _.max(values.map(Math.abs)) ?? 0,
-};
+const rankFuncs = new Map<string, (values: number[]) => number>([
+  ['avg', (values) => _.mean(values)],
+  ['min', (values) => _.min(values) ?? 0],
+  ['max', (values) => _.max(values) ?? 0],
+  ['sum', (values) => _.sum(values)],
+  ['absoluteMin', (values) => _.min(values.map(Math.abs)) ?? 0],
+  ['absoluteMax', (values) => _.max(values.map(Math.abs)) ?? 0],
+]);
 
 function compareRank(a: number, b: number) {
   if (Number.isNaN(a)) {
@@ -153,7 +153,11 @@ function compareRank(a: number, b: number) {
 }
 
 function sortByRank(dataFrames: DataFrame[], rankFunc: string, descending: boolean) {
-  const rank = rankFuncs[rankFunc];
+  const rank = rankFuncs.get(rankFunc);
+  if (!rank) {
+    return dataFrames;
+  }
+
   return dataFrames
     .map((frame) => ({ frame, rank: rank(frame.fields[1].values) }))
     .sort((a, b) => (descending ? compareRank(b.rank, a.rank) : compareRank(a.rank, b.rank)))
@@ -163,7 +167,7 @@ function sortByRank(dataFrames: DataFrame[], rankFunc: string, descending: boole
 // [Support Funcs] Wrapper function for top and bottom function
 
 function extraction(order: string, n: number, orderFunc: string, dataFrames: DataFrame[]) {
-  if (n < 0) {
+  if (n < 0 || !rankFuncs.has(orderFunc)) {
     return dataFrames;
   }
 
@@ -172,6 +176,10 @@ function extraction(order: string, n: number, orderFunc: string, dataFrames: Dat
 
 // [Support Funcs] Wrapper function for sort by AggFuncs
 function sortByAggFuncs(orderFunc: string, order: string, dataFrames: DataFrame[]) {
+  if (order !== 'asc' && order !== 'desc') {
+    return dataFrames;
+  }
+
   return sortByRank(dataFrames, orderFunc, order !== 'asc');
 }
 
