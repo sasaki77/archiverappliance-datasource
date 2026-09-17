@@ -168,8 +168,8 @@ func TestDelta(t *testing.T) {
 				{
 					Name: "TEST:PV:NAME",
 					Values: &models.Scalars{
-						Times:  testhelper.TimeArrayHelper(0, 1),
-						Values: testhelper.InitFloat64SlicePointer([]float64{0}),
+						Times:  []time.Time{},
+						Values: []*float64{},
 					},
 				},
 			},
