@@ -305,7 +305,7 @@ describe('Archiverappliance Functions', () => {
       const timesArray2 = dataFrame2.fields[0].values;
       expect(timesArray2).toHaveLength(7);
       expect(valArray2).toHaveLength(7);
-      expect(valArray2[6]).toBe(7);
+      expect(valArray2[6]).toBe(4);
       done();
     });
   });

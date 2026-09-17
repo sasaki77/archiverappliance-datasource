@@ -49,7 +49,7 @@ function fluctuation(times: number[], values: number[]) {
 }
 
 function movingAverage(windowSize: number, times: number[], values: number[]) {
-  if (values.length < windowSize) {
+  if (windowSize < 1) {
     return {
       times: times,
       values: values,
