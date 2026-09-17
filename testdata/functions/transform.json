@@ -39,6 +39,12 @@
     "output": [{ "name": "PV:A", "times": [1000, 2000, 3000], "values": [0, 2, -1] }]
   },
   {
+    "name": "fluctuation of a single sample is zero",
+    "input": [{ "name": "PV:A", "times": [1000], "values": [7] }],
+    "functions": [{ "name": "fluctuation", "params": [] }],
+    "output": [{ "name": "PV:A", "times": [1000], "values": [0] }]
+  },
+  {
     "name": "movingAverage averages the trailing window",
     "input": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, 2, 3, 4] }],
     "functions": [{ "name": "movingAverage", "params": ["2"] }],
