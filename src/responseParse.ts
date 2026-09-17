@@ -4,8 +4,11 @@ import { createDataFrame, DataFrame, FieldType, addRow } from '@grafana/data';
 import { getToScalarFuncs } from './aafunc';
 import { TargetQuery, AADataQueryData, AADataQueryResponse, isNumberArray } from './types';
 
-import { STREAM_FROM_MARGIN_MS } from './streamQuery';
+export function isExtrapolated(target: TargetQuery) {
+  return (target.operator === 'raw' || target.interval === '') && target.options.disableExtrapol !== 'true';
+}
 
+// A stream extrapolates after merging into its buffer, not here.
 export function responseParse(responses: AADataQueryResponse[], target: TargetQuery, stream = false) {
   const dataFramesArray = _.map(responses, (response) => {
     const dataFrames = _.map(response.data, (targetRes) => {
@@ -24,8 +27,7 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
 
   const dataFrames = _.flatten(dataFramesArray);
 
-  // Except for raw operator or extrapolation is disabled
-  if ((target.operator !== 'raw' && target.interval !== '') || target.options.disableExtrapol === 'true') {
+  if (stream || !isExtrapolated(target)) {
     return Promise.resolve(dataFrames);
   }
 
@@ -45,18 +47,7 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
     }
 
     // first field of newRow is time field
-    if (stream) {
-      // for stream query
-      // extrapolation is performed if there is no sample point in the margin
-      const streamLastTime = to_msec - STREAM_FROM_MARGIN_MS - 1;
-      if (newRow[0] > streamLastTime) {
-        return dataframe;
-      }
-      newRow[0] = streamLastTime;
-    } else {
-      // for normal query
-      newRow[0] = to_msec;
-    }
+    newRow[0] = to_msec;
 
     addRow(dataframe, newRow);
 

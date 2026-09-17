@@ -6,7 +6,7 @@ import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
 import { AAclient } from 'aaclient';
-import { responseParse } from 'responseParse';
+import { isExtrapolated, responseParse } from 'responseParse';
 import { applyFunctions, setAlias } from 'query';
 
 export const STREAM_FROM_MARGIN_MS = 2000;
@@ -131,6 +131,7 @@ function doQueryStream(
       return Promise.all(responsePromises)
         .then((responses) => responseParse(responses, targets[i], true))
         .then((dataFrames) => mergeToBuffers(dataFrames, buffers, targets[i]))
+        .then((dataFrames) => extrapolate(dataFrames, targets[i]))
         .then((dataFrames) => setAlias(dataFrames, targets[i]))
         .then((dataFrames) => applyFunctions(dataFrames, targets[i]));
     });
@@ -155,6 +156,31 @@ function updateTargetDate(targets: TargetQuery[]) {
     from: new Date(target.to.getTime() - STREAM_FROM_MARGIN_MS),
     to: new Date(Date.now() - STREAM_TO_MARGIN_MS),
   }));
+}
+
+// Only the frame handed out carries the extrapolated point: in the buffer it
+// would pile up one fake sample per tick while the PV does not change. It stops
+// short of the last STREAM_FROM_MARGIN_MS, which the next query fetches again
+// because the archiver may not have those samples yet.
+function extrapolate(dataFrames: DataFrame[], target: TargetQuery): DataFrame[] {
+  if (!isExtrapolated(target)) {
+    return dataFrames;
+  }
+
+  const extrapolatedTime = target.to.getTime() - STREAM_FROM_MARGIN_MS - 1;
+
+  for (const frame of dataFrames) {
+    const last = frame.length - 1;
+    if (frame.fields[0]?.name !== 'time' || last < 0 || frame.fields[0].values[last] > extrapolatedTime) {
+      continue;
+    }
+
+    // buildDataFrame gave this frame its own copy of the values.
+    frame.fields.forEach((field, i) => field.values.push(i === 0 ? extrapolatedTime : field.values[last]));
+    frame.length += 1;
+  }
+
+  return dataFrames;
 }
 
 // Targets that fetch the same series share a buffer, since what differs between

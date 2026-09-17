@@ -1196,8 +1196,12 @@ describe('Archiverappliance Datasource', () => {
         const timesArray = dataFrame.fields[0].values;
         const valArray = dataFrame.fields[1].values.toArray();
 
-        expect(valArray).toEqual([0, 0, 0, 0]);
-        expect(timesArray).toHaveLength(4);
+        expect(valArray).toEqual([0, 0]);
+        expect(timesArray).toHaveLength(2);
+
+        const lastUrl = fetchMock.mock.calls[fetchMock.mock.calls.length - 1][0].url;
+        const lastTo = new Date(unescape(split(lastUrl, /to=(.*Z)/)[1])).getTime();
+        expect(timesArray[1]).toBe(lastTo - 2001);
 
         done();
       });
