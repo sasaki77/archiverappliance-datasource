@@ -103,10 +103,8 @@ export class StreamQuery {
   };
 
   private timerClear(id: string) {
-    if (id in this.timerIDs) {
-      clearTimeout(this.timerIDs[id]);
-    }
-    this.timerIDs = {};
+    clearTimeout(this.timerIDs[id]);
+    delete this.timerIDs[id];
   }
 }
 

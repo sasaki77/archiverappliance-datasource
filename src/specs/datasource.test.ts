@@ -1522,6 +1522,34 @@ describe('Archiverappliance Datasource', () => {
     });
   });
 
+  describe('Stream lifecycle tests', () => {
+    const streamQuery = (refId: string) =>
+      ({
+        targets: [{ target: 'PV', refId, stream: true, strmInt: '50' }],
+        range: { from: new Date(Date.now() - 1000 * 1000), to: new Date() },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+      }) as unknown as DataQueryRequest<AAQuery>;
+
+    beforeEach(() => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 3000, val: 0 }] }] }])
+      );
+    });
+
+    it('should keep a stream running when another stream on the datasource stops', (done) => {
+      ds.query(streamQuery('B'))
+        .pipe(take(4), toArray())
+        .subscribe((results) => {
+          expect(results).toHaveLength(4);
+          done();
+        });
+
+      ds.query(streamQuery('A')).pipe(take(1)).subscribe();
+    }, 3000);
+  });
+
   describe('PV name find query tests', () => {
     it('should return the pv name results when a target is null', (done) => {
       fetchMock.mockImplementation((request) => from([{ data: ['metric_0', 'metric_1', 'metric_2'] }]));
