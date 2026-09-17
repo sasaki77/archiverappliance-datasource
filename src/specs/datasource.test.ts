@@ -12,6 +12,7 @@ import { from, timer } from 'rxjs';
 
 import * as runtime from '@grafana/runtime';
 import { DataSource } from '../DataSource';
+import * as aafunc from '../aafunc';
 import { AADataSourceOptions, TargetQuery, AAQuery } from '../types';
 import { map, take, toArray } from 'rxjs/operators';
 
@@ -1561,6 +1562,91 @@ describe('Archiverappliance Datasource', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
+
+    it('should keep separate buffers for the same PV read with two operators', (done) => {
+      fetchMock.mockImplementation((request) => {
+        const val = request.url.includes('mean_') ? 10 : 20;
+        return from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 1000, val }] }] }]);
+      });
+
+      const binInterval = aafunc.createFuncDescriptor(aafunc.getFuncDef('binInterval'), ['1']);
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          { target: 'PV', refId: 'A', operator: 'mean', stream: true, strmInt: '50', functions: [binInterval] },
+          { target: 'PV', refId: 'B', operator: 'max', stream: true, strmInt: '50', functions: [binInterval] },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(3), toArray())
+        .subscribe((results) => {
+          const [frameA, frameB] = results[2].data;
+          expect(frameA.fields[1].values).toEqual([10, 10, 10]);
+          expect(frameB.fields[1].values).toEqual([20, 20, 20]);
+          done();
+        });
+    }, 3000);
+
+    it('should show each target its own capacity when two targets read the same data', (done) => {
+      fetchMock.mockImplementation(() =>
+        from([{ data: [{ meta: { name: 'PV', PREC: '0' }, data: [{ millis: Date.now() - 1000, val: 1 }] }] }])
+      );
+
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          { target: 'PV', refId: 'A', operator: 'raw', stream: true, strmInt: '50', strmCap: '2' },
+          { target: 'PV', refId: 'B', operator: 'raw', stream: true, strmInt: '50', strmCap: '4' },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(6), toArray())
+        .subscribe((results) => {
+          const [frameA, frameB] = results[5].data;
+          expect(frameA.fields[1].values).toHaveLength(2);
+          expect(frameB.fields[1].values).toHaveLength(4);
+          done();
+        });
+    }, 3000);
+
+    it('should keep separate buffers for each toScalar series of a target', (done) => {
+      fetchMock.mockImplementation(() =>
+        from([
+          {
+            data: [
+              { meta: { name: 'PV', PREC: '0', waveform: true }, data: [{ millis: Date.now() - 1000, val: [1, 5] }] },
+            ],
+          },
+        ])
+      );
+
+      const query = {
+        ...streamQuery('A'),
+        targets: [
+          {
+            target: 'PV',
+            refId: 'A',
+            stream: true,
+            strmInt: '50',
+            functions: [
+              aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMin'), []),
+              aafunc.createFuncDescriptor(aafunc.getFuncDef('toScalarByMax'), []),
+            ],
+          },
+        ],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      ds.query(query)
+        .pipe(take(3), toArray())
+        .subscribe((results) => {
+          const [frameMin, frameMax] = results[2].data;
+          expect(frameMin.fields[1].values.every((v: number) => v === 1)).toBe(true);
+          expect(frameMax.fields[1].values.every((v: number) => v === 5)).toBe(true);
+          done();
+        });
+    }, 3000);
 
     it('should not keep querying for a stream unsubscribed on its first response', async () => {
       ds.query(streamQuery('A')).pipe(take(1)).subscribe();

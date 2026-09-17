@@ -14,7 +14,7 @@ export const STREAM_TO_MARGIN_MS = 500;
 
 type StreamBuffer = {
   fields: { [key: string]: any[] };
-  capacity: number;
+  capacities: { [refId: string]: number };
 };
 
 export class StreamQuery {
@@ -33,13 +33,13 @@ export class StreamQuery {
       // Buffer structure per time series (mutable internal state)
       //
       // buffers = {
-      //   "PV:NAME": {
+      //   "PV:NAME\0mean\0...": {
       //     fields: {
       //       time:  [t1, t2, t3, ...],
       //       value: [v1, v2, v3, ...],
       //       ... (other fields)
       //     }
-      //     capacity: 1000
+      //     capacities: { A: 1000, B: 500 }
       //   }
       // }
       const buffers: { [key: string]: StreamBuffer } = {};
@@ -157,6 +157,20 @@ function updateTargetDate(targets: TargetQuery[]) {
   }));
 }
 
+// Targets that fetch the same series share a buffer, since what differs between
+// them (alias, functions) is applied after the merge. The auto interval is left
+// out: it changes after the first query, and it is the same for every target.
+function bufferKey(frame: DataFrame, target: TargetQuery) {
+  return [
+    frame.name,
+    target.operator,
+    target.options.binInterval ?? '',
+    target.options.disableAutoRaw ?? '',
+    target.options.arrayFormat ?? '',
+    frame.fields[1]?.config?.displayName ?? '',
+  ].join('\u0000');
+}
+
 function mergeToBuffers(
   dataFrames: DataFrame[],
   buffers: Record<string, StreamBuffer>,
@@ -167,27 +181,30 @@ function mergeToBuffers(
   const resultFrames = dataFrames
     .filter((f) => f.name !== undefined)
     .map((frame) => {
-      const name = frame.name!;
-      let buffer = buffers[name];
+      const key = bufferKey(frame, target);
+      const capacity = parseInt(target.strmCap, 10) || Math.max(target.maxDataPoints, frame.length);
+      let buffer = buffers[key];
 
       // --- Initialize buffer (if first time) ---
       if (!buffer) {
-        const defaultCap = Math.max(target.maxDataPoints, frame.length);
-        const capacity = parseInt(target.strmCap, 10) || defaultCap;
-
         buffer = {
           fields: {},
-          capacity,
+          capacities: { [target.refId]: capacity },
         };
 
         for (const field of frame.fields) {
           buffer.fields[field.name] = [...field.values];
         }
 
-        buffers[name] = buffer;
+        buffers[key] = buffer;
 
         // --- Build immutable DataFrame ---
         return buildDataFrame(frame, buffer);
+      }
+
+      const firstMerge = !(target.refId in buffer.capacities);
+      if (firstMerge) {
+        buffer.capacities[target.refId] = capacity;
       }
 
       const timeArray = buffer.fields['time'];
@@ -220,26 +237,30 @@ function mergeToBuffers(
       }
 
       // --- Trim buffer (capacity control) ---
+      const bufferCapacity = Math.max(...Object.values(buffer.capacities));
       for (const [fieldName, values] of Object.entries(buffer.fields)) {
-        if (values.length > buffer.capacity) {
-          buffer.fields[fieldName] = values.slice(values.length - buffer.capacity);
+        if (values.length > bufferCapacity) {
+          buffer.fields[fieldName] = values.slice(values.length - bufferCapacity);
         }
       }
 
       // --- Build immutable DataFrame ---
-      return buildDataFrame(frame, buffer);
+      return buildDataFrame(frame, buffer, firstMerge ? undefined : buffer.capacities[target.refId]);
     });
 
   return Promise.resolve(resultFrames);
 }
 
-function buildDataFrame(frame: DataFrame, buffer: StreamBuffer): DataFrame {
+// Without a capacity the whole buffer is returned, so that a target's initial
+// query is shown in full even when it holds more points than the capacity.
+function buildDataFrame(frame: DataFrame, buffer: StreamBuffer, capacity = Infinity): DataFrame {
+  const start = Math.max(0, buffer.fields['time'].length - capacity);
   return {
     ...frame,
     fields: frame.fields.map((field) => ({
       ...field,
-      values: [...(buffer.fields[field.name] || [])],
+      values: (buffer.fields[field.name] || []).slice(start),
     })),
-    length: buffer.fields['time'].length,
+    length: buffer.fields['time'].length - start,
   };
 }
