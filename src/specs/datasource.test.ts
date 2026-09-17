@@ -537,8 +537,8 @@ describe('Archiverappliance Datasource', () => {
         expect(valArray2[2]).toBe(8);
         expect(valArray2[3]).toBe(8);
 
-        expect(valArray4[0]).toBe(undefined);
-        expect(valArray4[1]).toBe(undefined);
+        expect(valArray4[0]).toBeNull();
+        expect(valArray4[1]).toBeNull();
         expect(valArray4[2]).toBe(10);
         expect(valArray4[3]).toBe(10);
         done();
@@ -672,10 +672,11 @@ describe('Archiverappliance Datasource', () => {
           expect(seriesName).toBe('header:PV1');
 
           const indexArray = dataFrame.fields[0].values;
-          expect(indexArray).toHaveLength(3);
+          expect(indexArray).toHaveLength(4);
           expect(indexArray[0]).toBe(0);
           expect(indexArray[1]).toBe(1);
           expect(indexArray[2]).toBe(2);
+          expect(indexArray[3]).toBe(3);
 
           const name0 = getFieldDisplayName(dataFrame.fields[0], dataFrame);
           const name1 = getFieldDisplayName(dataFrame.fields[1], dataFrame);
@@ -690,13 +691,15 @@ describe('Archiverappliance Datasource', () => {
           const valArray2 = dataFrame.fields[2].values;
           const valArray3 = dataFrame.fields[3].values;
 
-          expect(valArray1).toHaveLength(3);
-          expect(valArray2).toHaveLength(3);
-          expect(valArray3).toHaveLength(3);
+          expect(valArray1).toHaveLength(4);
+          expect(valArray2).toHaveLength(4);
+          expect(valArray3).toHaveLength(4);
 
           expect(valArray1[0]).toBe(1);
           expect(valArray1[1]).toBe(2);
           expect(valArray1[2]).toBe(3);
+          expect(valArray1[3]).toBeNull();
+          expect(valArray3[3]).toBe(10);
 
           done();
         });
@@ -951,11 +954,18 @@ describe('Archiverappliance Datasource', () => {
         const result = await lastValueFrom(ds.query(waveformQuery([])));
         expect(result.data).toHaveLength(1);
         expect(result.data[0].fields.map((f: any) => f.name)).toEqual(['time', 'PV[0]', 'PV[1]']);
+        expect(result.data[0].fields[1].values).toEqual([null, 1]);
+        expect(result.data[0].fields[2].values).toEqual([null, 2]);
       });
 
       it('should return it as index', async () => {
         const result = await lastValueFrom(ds.query(waveformQuery([['arrayFormat', 'index']])));
         expect(result.data).toHaveLength(1);
+        expect(result.data[0].fields.map((f: any) => f.values)).toEqual([
+          [0, 1],
+          [null, null],
+          [1, 2],
+        ]);
       });
 
       it('should return it as dt-space', async () => {

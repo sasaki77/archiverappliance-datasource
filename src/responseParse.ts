@@ -146,6 +146,17 @@ function makeDtSpaceArrayFields(targetRes: AADataQueryData) {
   return fields;
 }
 
+// A waveform changes length between samples, as its NORD does. Every sample is
+// laid out to the longest one, with null where it has no element, so that the
+// frame keeps every element that was archived.
+function waveformWidth(samples: Array<{ val: number[] }>) {
+  return samples.reduce((width, sample) => Math.max(width, sample.val.length), 0);
+}
+
+function padWaveform(val: number[], width: number): Array<number | null> {
+  return Array.from({ length: width }, (_v, i) => (i < val.length ? val[i] : null));
+}
+
 function makeIndexArrayFields(targetRes: AADataQueryData) {
   // Type check for columnValues
   if (!isNumberArray(targetRes)) {
@@ -153,30 +164,19 @@ function makeIndexArrayFields(targetRes: AADataQueryData) {
   }
 
   const targetData = targetRes.data;
+  const width = waveformWidth(targetData);
 
-  const len = targetData[0].val.length;
-  let numbers = [];
-  for (let i = 0; i < len; i++) {
-    numbers.push(i);
+  const fields: Array<{ name: string; type: FieldType; values: Array<number | null> }> = [
+    { name: 'index', type: FieldType.number, values: Array.from({ length: width }, (_v, i) => i) },
+  ];
+
+  for (const data of targetData) {
+    fields.push({
+      name: toISOStringWithTimezone(new Date(data.millis)),
+      type: FieldType.number,
+      values: padWaveform(data.val, width),
+    });
   }
-
-  const fields = [{ name: 'index', type: FieldType.number, values: numbers }];
-
-  _.reduce(
-    targetData,
-    (fields, data, i) => {
-      const date = new Date(data.millis);
-      const val = data.val.length >= len ? data.val.slice(0, len) : data.val;
-      const field = {
-        name: toISOStringWithTimezone(date),
-        type: FieldType.number,
-        values: val,
-      };
-      fields.push(field);
-      return fields;
-    },
-    fields
-  );
 
   return fields;
 }
@@ -187,26 +187,22 @@ function makeTimeseriesArrayFields(targetRes: AADataQueryData) {
     return [];
   }
 
-  const columnValues = _.map(targetRes.data, (datapoint) => datapoint.val);
+  const targetData = targetRes.data;
+  const width = waveformWidth(targetData);
 
-  const rowValues = _.unzip(columnValues);
-  const times: number[] = _.map(targetRes.data, (datapoint) => datapoint.millis);
-  const fields = [{ name: 'time', type: FieldType.time, values: times }];
+  const times: number[] = targetData.map((datapoint) => datapoint.millis);
+  const fields: Array<{ name: string; type: FieldType; values: Array<number | null> }> = [
+    { name: 'time', type: FieldType.time, values: times },
+  ];
 
   // Add fields for each waveform elements
-  _.reduce(
-    rowValues,
-    (fields, val, i) => {
-      const field = {
-        name: `${targetRes.meta.name}[${i}]`,
-        type: FieldType.number,
-        values: val,
-      };
-      fields.push(field);
-      return fields;
-    },
-    fields
-  );
+  for (let i = 0; i < width; i++) {
+    fields.push({
+      name: `${targetRes.meta.name}[${i}]`,
+      type: FieldType.number,
+      values: targetData.map((datapoint) => (i < datapoint.val.length ? datapoint.val[i] : null)),
+    });
+  }
 
   return fields;
 }
