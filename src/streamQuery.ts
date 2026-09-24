@@ -12,18 +12,6 @@ import { applyFunctions, setAlias } from 'query';
 export const STREAM_FROM_MARGIN_MS = 2000;
 export const STREAM_TO_MARGIN_MS = 500;
 
-// A ring: its arrays are allocated at the capacity and written by index, so a
-// tick neither grows them nor copies them. Only the frame handed out is copied.
-type StreamBuffer = {
-  fields: { [key: string]: any[] };
-  // One capacity per target sharing the buffer, since strmCap is set per target:
-  // the ring is as long as the largest, and a target is shown at most its own.
-  capacities: { [refId: string]: number };
-  size: number;
-  start: number;
-  length: number;
-};
-
 export class StreamQuery {
   aaclient: AAclient;
   timerIDs: { [key: string]: any };
@@ -220,29 +208,20 @@ function mergeToBuffers(
 
       // --- Initialize buffer (if first time) ---
       if (!buffer) {
-        buffer = createBuffer(frame, capacity, target.refId);
+        buffer = new StreamBuffer(frame, capacity, target.refId);
         buffers[key] = buffer;
 
         // --- Build immutable DataFrame ---
-        return buildDataFrame(frame, buffer);
+        return buffer.toDataFrame(frame);
       }
 
-      // A target absent from capacities has not been shown this buffer before,
-      // so it is given everything the buffer holds rather than its last points.
-      const firstMerge = !(target.refId in buffer.capacities);
-      if (firstMerge) {
-        buffer.capacities[target.refId] = capacity;
-      }
-
-      // --- Resize the ring (capacity control) ---
-      const bufferCapacity = Math.max(...Object.values(buffer.capacities));
-      if (buffer.size !== bufferCapacity) {
-        resizeBuffer(buffer, bufferCapacity);
-      }
+      // A target new to the buffer is shown everything it holds, rather than
+      // only the last points of its own capacity.
+      const firstMerge = buffer.addTarget(target.refId, capacity);
 
       // --- Append new data (diff update) ---
       const times = frame.fields.find((field) => field.name === 'time')?.values;
-      let lastTime = newestTime(buffer);
+      let lastTime = buffer.newestTime();
 
       for (let i = 0; i < frame.length; i++) {
         const time = times?.[i];
@@ -252,98 +231,132 @@ function mergeToBuffers(
           continue;
         }
 
-        appendRow(buffer, frame, i);
+        buffer.append(frame, i);
         lastTime = time;
       }
 
       // --- Build immutable DataFrame ---
-      return buildDataFrame(frame, buffer, firstMerge ? bufferCapacity : buffer.capacities[target.refId]);
+      return buffer.toDataFrame(frame, firstMerge ? undefined : buffer.capacityOf(target.refId));
     });
 
   return Promise.resolve(resultFrames);
 }
 
-// The ring holds the initial query in full, even when it is longer than the
-// capacity, which the first tick then cuts it back to.
-function createBuffer(frame: DataFrame, capacity: number, refId: string): StreamBuffer {
-  const size = Math.max(capacity, frame.length);
-  const fields: { [key: string]: any[] } = {};
+// The points of one time series, held in a ring: its arrays are allocated at
+// the capacity and written by index, so a tick neither grows them nor copies
+// them. Only the frame handed out is copied.
+class StreamBuffer {
+  // One capacity per target sharing the buffer, since strmCap is set per target:
+  // the ring is as long as the largest, and a target is shown at most its own.
+  private capacities: { [refId: string]: number };
+  private fields: { [name: string]: any[] } = {};
+  private size: number;
+  private start = 0;
+  private length: number;
 
-  for (const field of frame.fields) {
-    const values = new Array(size).fill(0);
-    for (let i = 0; i < frame.length; i++) {
-      values[i] = field.values[i];
+  // The ring holds the initial query in full, even when it is longer than the
+  // capacity, which the first tick then cuts it back to.
+  constructor(frame: DataFrame, capacity: number, refId: string) {
+    this.capacities = { [refId]: capacity };
+    this.size = Math.max(capacity, frame.length);
+    this.length = frame.length;
+
+    for (const field of frame.fields) {
+      const values = new Array(this.size).fill(0);
+      for (let i = 0; i < frame.length; i++) {
+        values[i] = field.values[i];
+      }
+      this.fields[field.name] = values;
     }
-    fields[field.name] = values;
   }
 
-  return { fields, capacities: { [refId]: capacity }, size, start: 0, length: frame.length };
-}
-
-function resizeBuffer(buffer: StreamBuffer, size: number) {
-  const length = Math.min(buffer.length, size);
-  const dropped = buffer.length - length;
-
-  for (const [name, values] of Object.entries(buffer.fields)) {
-    const resized = new Array(size).fill(0);
-    for (let i = 0; i < length; i++) {
-      resized[i] = values[(buffer.start + dropped + i) % buffer.size];
+  // Registers the capacity this target asks for and cuts the ring back to the
+  // largest capacity the targets sharing it ask for.
+  // Returns whether the target is new to the buffer.
+  addTarget(refId: string, capacity: number): boolean {
+    const firstMerge = !(refId in this.capacities);
+    if (firstMerge) {
+      this.capacities[refId] = capacity;
     }
-    buffer.fields[name] = resized;
+
+    const size = Math.max(...Object.values(this.capacities));
+    if (this.size !== size) {
+      this.resize(size);
+    }
+
+    return firstMerge;
   }
 
-  buffer.size = size;
-  buffer.start = 0;
-  buffer.length = length;
-}
-
-function appendRow(buffer: StreamBuffer, frame: DataFrame, row: number) {
-  const index = (buffer.start + buffer.length) % buffer.size;
-
-  for (const field of frame.fields) {
-    buffer.fields[field.name][index] = field.values[row];
+  // How many of the newest points this target is shown.
+  capacityOf(refId: string): number {
+    return this.capacities[refId];
   }
 
-  if (buffer.length < buffer.size) {
-    buffer.length += 1;
-  } else {
-    // The row just written took the place of the oldest one.
-    buffer.start = (buffer.start + 1) % buffer.size;
+  append(frame: DataFrame, row: number) {
+    const index = (this.start + this.length) % this.size;
+
+    for (const field of frame.fields) {
+      this.fields[field.name][index] = field.values[row];
+    }
+
+    if (this.length < this.size) {
+      this.length += 1;
+    } else {
+      // The row just written took the place of the oldest one.
+      this.start = (this.start + 1) % this.size;
+    }
   }
-}
 
-// The time of the newest point held, or undefined when the buffer is empty or
-// holds no time field, as the index array format does not.
-function newestTime(buffer: StreamBuffer) {
-  const times = buffer.fields['time'];
-  if (!times || buffer.length === 0) {
-    return undefined;
+  // The time of the newest point held, or undefined when the buffer is empty or
+  // holds no time field, as the index array format does not.
+  newestTime() {
+    const times = this.fields['time'];
+    if (!times || this.length === 0) {
+      return undefined;
+    }
+    return times[(this.start + this.length - 1) % this.size];
   }
-  return times[(buffer.start + buffer.length - 1) % buffer.size];
-}
 
-// Without a count the whole buffer is returned, so that a target's initial
-// query is shown in full even when it holds more points than the capacity.
-function buildDataFrame(frame: DataFrame, buffer: StreamBuffer, count = buffer.length): DataFrame {
-  const length = Math.min(count, buffer.length);
-  const from = (buffer.start + buffer.length - length) % buffer.size;
+  // Without a count the whole buffer is returned, so that a target's initial
+  // query is shown in full even when it holds more points than the capacity.
+  toDataFrame(frame: DataFrame, count = Infinity): DataFrame {
+    const length = Math.min(count, this.length);
+    const from = (this.start + this.length - length) % this.size;
 
-  return {
-    ...frame,
-    fields: frame.fields.map((field) => ({
-      ...field,
-      values: readRange(buffer, field.name, from, length),
-    })),
-    length,
-  };
-}
-
-function readRange(buffer: StreamBuffer, name: string, from: number, length: number) {
-  const values = buffer.fields[name] ?? [];
-  const end = from + length;
-
-  if (end <= buffer.size) {
-    return values.slice(from, end);
+    return {
+      ...frame,
+      fields: frame.fields.map((field) => ({
+        ...field,
+        values: this.read(field.name, from, length),
+      })),
+      length,
+    };
   }
-  return values.slice(from, buffer.size).concat(values.slice(0, end - buffer.size));
+
+  private resize(size: number) {
+    const length = Math.min(this.length, size);
+    const dropped = this.length - length;
+
+    for (const [name, values] of Object.entries(this.fields)) {
+      const resized = new Array(size).fill(0);
+      for (let i = 0; i < length; i++) {
+        resized[i] = values[(this.start + dropped + i) % this.size];
+      }
+      this.fields[name] = resized;
+    }
+
+    this.size = size;
+    this.start = 0;
+    this.length = length;
+  }
+
+  private read(name: string, from: number, length: number) {
+    const values = this.fields[name] ?? [];
+    const end = from + length;
+
+    if (end <= this.size) {
+      return values.slice(from, end);
+    }
+    return values.slice(from, this.size).concat(values.slice(0, end - this.size));
+  }
 }
