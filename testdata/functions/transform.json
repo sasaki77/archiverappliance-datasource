@@ -57,6 +57,12 @@
     "output": [{ "name": "PV:A", "times": [1000, 2000], "values": [2, 3] }]
   },
   {
+    "name": "movingAverage carries a NaN sample through the rest of the series",
+    "input": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, "NaN", 3, 4] }],
+    "functions": [{ "name": "movingAverage", "params": ["2"] }],
+    "output": [{ "name": "PV:A", "times": [1000, 2000, 3000, 4000], "values": [1, "NaN", "NaN", "NaN"] }]
+  },
+  {
     "name": "movingAverage leaves the series alone for a window of zero",
     "input": [{ "name": "PV:A", "times": [1000, 2000], "values": [1, 2] }],
     "functions": [{ "name": "movingAverage", "params": ["0"] }],
