@@ -120,27 +120,21 @@ function makeDtSpaceArrayFields(targetRes: AADataQueryData) {
     return [];
   }
 
-  const targetData = targetRes.data;
+  const times: number[] = [];
+  const vals: number[] = [];
 
-  const field_val = _.reduce(
-    targetData,
-    (fields, data, i) => {
-      fields['vals'] = fields['vals'].concat(data.val);
-
-      const len = data.val.length;
-      for (let i = 0; i < len; i++) {
-        const date = data.millis + i;
-        fields['times'].push(date);
-      }
-
-      return fields;
-    },
-    { times: [], vals: [] } as { times: number[]; vals: number[] }
-  );
+  // Every element takes a millisecond of its own, so that the samples of a
+  // waveform are spread out instead of sharing one timestamp.
+  for (const data of targetRes.data) {
+    for (let i = 0; i < data.val.length; i++) {
+      times.push(data.millis + i);
+      vals.push(data.val[i]);
+    }
+  }
 
   const fields = [
-    { name: 'time', type: FieldType.time, values: field_val['times'] },
-    { name: targetRes.meta.name, type: FieldType.number, values: field_val['vals'] },
+    { name: 'time', type: FieldType.time, values: times },
+    { name: targetRes.meta.name, type: FieldType.number, values: vals },
   ];
 
   return fields;
