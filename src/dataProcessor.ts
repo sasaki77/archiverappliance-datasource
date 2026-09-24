@@ -56,10 +56,16 @@ function movingAverage(windowSize: number, times: number[], values: number[]) {
     };
   }
 
-  const newSeries = _.map(values, (_value, i) => {
-    const window = _.slice(values, _.max([0, i - windowSize + 1]), i + 1);
-    return _.mean(window);
-  });
+  const newSeries = new Array<number>(values.length);
+  let total = 0;
+
+  for (let i = 0; i < values.length; i++) {
+    total += values[i];
+    if (i >= windowSize) {
+      total -= values[i - windowSize];
+    }
+    newSeries[i] = total / Math.min(i + 1, windowSize);
+  }
 
   return {
     times: times,
