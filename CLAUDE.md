@@ -46,12 +46,6 @@ is the metric to watch — the parser and the transform functions run once per a
 constant factor per sample dominates on raw queries returning hundreds of thousands of points. See the
 Benchmarks section of [README.md](README.md) for before/after comparison with `benchstat`.
 
-### End-to-end tests
-```bash
-yarn e2e                # cypress install + grafana-e2e run
-yarn e2e:update           # same, but updates screenshots
-```
-
 ### Documentation (Sphinx, in docs/)
 ```bash
 python -m venv env
