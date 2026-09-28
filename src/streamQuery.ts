@@ -19,9 +19,14 @@ const INTERVAL_UNITS_MS: { [unit: string]: number } = {
   w: 7 * 24 * 60 * 60 * 1000,
 };
 
+// setTimeout counts its delay in a 32-bit signed integer and fires at once past
+// this, which would query the archiver as fast as it answers.
+const MAX_INTERVAL_MS = 2147483647;
+
 // The stream interval as the query editor takes it: milliseconds on their own,
-// or a number with a unit. Anything else, a value of zero or less included,
-// gives undefined, and the caller falls back to the interval of the panel.
+// or a number with a unit. Anything else, a value of zero or less and one past
+// MAX_INTERVAL_MS included, gives undefined, and the caller falls back to the
+// interval of the panel.
 export function parseInterval(value: string): number | undefined {
   // A number, then a unit if there is one: "500" -> 500, "1.5s" -> 1.5 and s.
   const match = /^\s*(\d+(?:\.\d+)?)\s*(ms|s|m|h|d|w)?\s*$/i.exec(value);
@@ -32,7 +37,7 @@ export function parseInterval(value: string): number | undefined {
   const unit = match[2] ? INTERVAL_UNITS_MS[match[2].toLowerCase()] : 1;
   const interval = Number(match[1]) * unit;
 
-  return interval > 0 ? interval : undefined;
+  return interval > 0 && interval <= MAX_INTERVAL_MS ? interval : undefined;
 }
 
 export class StreamQuery {
