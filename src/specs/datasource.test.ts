@@ -1,6 +1,3 @@
-import range from 'lodash/range';
-import split from 'lodash/split';
-import { min, max } from 'lodash';
 import {
   DataFrame,
   getFieldDisplayName,
@@ -159,7 +156,9 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an 100 urls', (done) => {
-      fetchMock.mockImplementation((request) => from([{ data: range(1000).map((num) => String(num)) }]));
+      fetchMock.mockImplementation((request) =>
+        from([{ data: Array.from({ length: 1000 }, (_v, num) => String(num)) }])
+      );
 
       const target = {
         target: 'PV*',
@@ -177,7 +176,9 @@ describe('Archiverappliance Datasource', () => {
     });
 
     it('should return an required number of urls', (done) => {
-      fetchMock.mockImplementation((request) => from([{ data: range(1000).map((num) => String(num)) }]));
+      fetchMock.mockImplementation((request) =>
+        from([{ data: Array.from({ length: 1000 }, (_v, num) => String(num)) }])
+      );
 
       const target = {
         target: 'PV*',
@@ -465,8 +466,8 @@ describe('Archiverappliance Datasource', () => {
         const valArray3 = dataFrame3.fields[1].values;
         const valArray4 = dataFrame4.fields[1].values;
 
-        expect(min([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(1);
-        expect(max([valArray1[0], valArray2[0], valArray3[0], valArray4[0]])).toBe(3);
+        expect(Math.min(valArray1[0], valArray2[0], valArray3[0], valArray4[0])).toBe(1);
+        expect(Math.max(valArray1[0], valArray2[0], valArray3[0], valArray4[0])).toBe(3);
         done();
       });
     });
@@ -1235,8 +1236,8 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return stream data when the stream is enabled', (done) => {
       fetchMock.mockImplementation((request) => {
-        const from_str = decodeURIComponent(split(request.url, /from=(.*Z)&to/)[1]);
-        const to_str = decodeURIComponent(split(request.url, /to=(.*Z)/)[1]);
+        const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);
+        const to_str = decodeURIComponent(request.url.split(/to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
@@ -1326,7 +1327,7 @@ describe('Archiverappliance Datasource', () => {
         expect(timesArray).toHaveLength(2);
 
         const lastUrl = fetchMock.mock.calls[fetchMock.mock.calls.length - 1][0].url;
-        const lastTo = new Date(decodeURIComponent(split(lastUrl, /to=(.*Z)/)[1])).getTime();
+        const lastTo = new Date(decodeURIComponent(lastUrl.split(/to=(.*Z)/)[1])).getTime();
         expect(timesArray[1]).toBe(lastTo - 2001);
 
         done();
@@ -1335,8 +1336,8 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return stream data with strmInt while without strmCap', (done) => {
       fetchMock.mockImplementation((request) => {
-        const from_str = decodeURIComponent(split(request.url, /from=(.*Z)&to/)[1]);
-        const to_str = decodeURIComponent(split(request.url, /to=(.*Z)/)[1]);
+        const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);
+        const to_str = decodeURIComponent(request.url.split(/to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
@@ -1389,8 +1390,8 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return stream data with strmInt while without strmCap but maxDatapoints is less than initial datapoints', (done) => {
       fetchMock.mockImplementation((request) => {
-        const from_str = decodeURIComponent(split(request.url, /from=(.*Z)&to/)[1]);
-        const to_str = decodeURIComponent(split(request.url, /to=(.*Z)/)[1]);
+        const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);
+        const to_str = decodeURIComponent(request.url.split(/to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
@@ -1443,8 +1444,8 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return stream data with unit strmInt while without strmCap', (done) => {
       fetchMock.mockImplementation((request) => {
-        const from_str = decodeURIComponent(split(request.url, /from=(.*Z)&to/)[1]);
-        const to_str = decodeURIComponent(split(request.url, /to=(.*Z)/)[1]);
+        const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);
+        const to_str = decodeURIComponent(request.url.split(/to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
@@ -1497,8 +1498,8 @@ describe('Archiverappliance Datasource', () => {
 
     it('should ignore out of range data on stream', (done) => {
       fetchMock.mockImplementation((request) => {
-        const from_str = decodeURIComponent(split(request.url, /from=(.*Z)&to/)[1]);
-        const to_str = decodeURIComponent(split(request.url, /to=(.*Z)/)[1]);
+        const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);
+        const to_str = decodeURIComponent(request.url.split(/to=(.*Z)/)[1]);
 
         const from_ms = new Date(from_str).getTime();
         const to_ms = new Date(to_str).getTime();
@@ -1844,7 +1845,7 @@ describe('Archiverappliance Datasource', () => {
 
     it('should return the pv name results for metricFindQuery with regex OR', (done) => {
       fetchMock.mockImplementation((request) =>
-        from([{ _request: request, data: [decodeURIComponent(split(request.url, /regex=(.*)/)[1])] }])
+        from([{ _request: request, data: [decodeURIComponent(request.url.split(/regex=(.*)/)[1])] }])
       );
 
       ds.metricFindQuery('PV(A|B|C):(1|2):test').then((result: any) => {

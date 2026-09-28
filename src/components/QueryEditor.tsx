@@ -1,4 +1,3 @@
-import defaults from 'lodash/defaults';
 import { css, cx } from '@emotion/css';
 import React, { ChangeEvent, KeyboardEvent, useCallback, useState } from 'react';
 import { InlineFieldRow, InlineSwitch, Input, InlineField, Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
@@ -11,6 +10,10 @@ import { Functions } from './Functions';
 import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
+
+function withoutUndefined(query: AAQuery): Partial<AAQuery> {
+  return Object.fromEntries(Object.entries(query).filter(([, value]) => value !== undefined));
+}
 
 const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 
@@ -101,7 +104,9 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     [datasource, query.regex]
   );
 
-  const query_ = defaults(query, defaultQuery);
+  // A key the query leaves undefined takes its default, which spreading the
+  // query over the defaults would instead overwrite with undefined.
+  const query_ = { ...defaultQuery, ...withoutUndefined(query) };
   const defaultOperator = datasource.defaultOperator || 'mean';
   const useLiveUpdate = datasource.useLiveUpdate || false;
   const customStyles = useStyles2(getStyles);

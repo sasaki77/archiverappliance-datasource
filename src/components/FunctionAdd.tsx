@@ -1,5 +1,4 @@
 import React from 'react';
-import { reduce, each } from 'lodash';
 import { ButtonCascader, CascaderOption } from '@grafana/ui';
 import { getCategories, getFuncDef } from '../aafunc';
 import { FuncDef } from '../types';
@@ -8,20 +7,12 @@ export interface FunctionAddProps {
   addFunc: (func: FuncDef) => void;
 }
 
-const getAllFunctionNames = (categories: { [key: string]: FuncDef[] }) => {
-  const allNames: CascaderOption[] = reduce(
-    categories,
-    (list, category, key) => {
-      const nlist: CascaderOption[] = [];
-      each(category, (func) => nlist.push({ label: func.name, value: func.name }));
-      list.push({ label: key, value: key, children: nlist });
-      return list;
-    },
-    [] as CascaderOption[]
-  );
-
-  return allNames;
-};
+const getAllFunctionNames = (categories: { [key: string]: FuncDef[] }): CascaderOption[] =>
+  Object.entries(categories).map(([key, category]) => ({
+    label: key,
+    value: key,
+    children: category.map((func) => ({ label: func.name, value: func.name })),
+  }));
 
 class FunctionAdd extends React.PureComponent<FunctionAddProps> {
   constructor(props: FunctionAddProps) {
