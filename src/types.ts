@@ -63,9 +63,8 @@ export interface AADataQueryDataNumberArray {
 }
 
 export interface AADataQueryResponse {
-  data: {
-    data: AADataQueryData;
-  };
+  // One entry per PV the request asked for.
+  data: AADataQueryData[];
   status: number;
   statusText: string;
   ok: boolean;
