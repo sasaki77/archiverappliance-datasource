@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
-import ms, { StringValue } from 'ms';
 import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
@@ -12,9 +10,40 @@ import { applyFunctions, setAlias } from 'query';
 export const STREAM_FROM_MARGIN_MS = 2000;
 export const STREAM_TO_MARGIN_MS = 500;
 
+const INTERVAL_UNITS_MS: { [unit: string]: number } = {
+  ms: 1,
+  s: 1000,
+  m: 60 * 1000,
+  h: 60 * 60 * 1000,
+  d: 24 * 60 * 60 * 1000,
+  w: 7 * 24 * 60 * 60 * 1000,
+};
+
+// setTimeout counts its delay in a 32-bit signed integer and fires at once past
+// this, which would query the archiver as fast as it answers.
+const MAX_INTERVAL_MS = 2147483647;
+
+// The stream interval as the query editor takes it: milliseconds on their own,
+// or a number with a unit. Anything else, a value of zero or less and one past
+// MAX_INTERVAL_MS included, gives undefined, and the caller falls back to the
+// interval of the panel.
+export function parseInterval(value: string): number | undefined {
+  // A number, then a unit if there is one: "500" -> 500, "1.5s" -> 1.5 and s.
+  const match = /^\s*(\d+(?:\.\d+)?)\s*(ms|s|m|h|d|w)?\s*$/i.exec(value);
+  if (!match) {
+    return undefined;
+  }
+
+  const unit = match[2] ? INTERVAL_UNITS_MS[match[2].toLowerCase()] : 1;
+  const interval = Number(match[1]) * unit;
+
+  return interval > 0 && interval <= MAX_INTERVAL_MS ? interval : undefined;
+}
+
 export class StreamQuery {
   aaclient: AAclient;
   timerIDs: { [key: string]: any };
+  private nextStreamID = 0;
 
   constructor(aaclient: AAclient) {
     this.aaclient = aaclient;
@@ -23,7 +52,7 @@ export class StreamQuery {
 
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
     return new Observable<DataQueryResponse>((subscriber) => {
-      const id = uuidv4();
+      const id = String(this.nextStreamID++);
 
       // Buffer structure per time series (mutable internal state)
       //
@@ -48,7 +77,7 @@ export class StreamQuery {
             return;
           }
 
-          const interval = (streamTargets[0].strmInt && ms(streamTargets[0].strmInt as StringValue)) || intervalMs;
+          const interval = (streamTargets[0].strmInt && parseInterval(streamTargets[0].strmInt)) || intervalMs;
 
           const newTargets = _.map(targets, (target) => {
             const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';

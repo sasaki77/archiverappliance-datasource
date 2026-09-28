@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
-import * as math from 'mathjs';
 
 // Transform
 
@@ -137,6 +136,23 @@ function datapointsSum(values: number[]) {
   return _.sum(values);
 }
 
+function datapointsMed(values: number[]) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = sorted.length >> 1;
+
+  if (sorted.length % 2 !== 0) {
+    return sorted[mid];
+  }
+  return (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function datapointsStd(values: number[]) {
+  const mean = _.mean(values);
+  const variance = values.reduce((total, value) => total + (value - mean) * (value - mean), 0);
+
+  return Math.sqrt(variance / values.length);
+}
+
 // Mirrors Scalars.Rank and cmp.Compare in the backend: an empty series ranks as
 // 0, except by avg, where its NaN ranks below every number.
 const rankFuncs = new Map<string, (values: number[]) => number>([
@@ -221,8 +237,8 @@ const arrayFunctions: { [key: string]: { func: any; label: string } } = {
   toScalarByMax: { func: nonEmpty(datapointsMax), label: 'max' },
   toScalarByMin: { func: nonEmpty(datapointsMin), label: 'min' },
   toScalarBySum: { func: nonEmpty(datapointsSum), label: 'sum' },
-  toScalarByMed: { func: nonEmpty(math.median), label: 'median' },
-  toScalarByStd: { func: nonEmpty((values) => math.std(values, 'uncorrected') as number), label: 'std' },
+  toScalarByMed: { func: nonEmpty(datapointsMed), label: 'median' },
+  toScalarByStd: { func: nonEmpty(datapointsStd), label: 'std' },
 };
 
 export { functions as seriesFunctions, arrayFunctions };
