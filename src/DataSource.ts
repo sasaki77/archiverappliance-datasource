@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Observable, from } from 'rxjs';
 import { DataSourceWithBackend, getTemplateSrv } from '@grafana/runtime';
 import { DataQueryResponse, DataQueryRequest, DataSourceInstanceSettings } from '@grafana/data';
@@ -50,7 +49,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
 
     const targets = this.buildQueryParameters(query_replaced);
 
-    const stream = _.filter(targets, (t) => t.stream);
+    const stream = targets.filter((t) => t.stream);
 
     // No stream query
     if (stream.length === 0 || !options.rangeRaw || options.rangeRaw.to !== 'now') {
@@ -96,11 +95,11 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
       }
     }
 
-    const pvnamesPromise = _.map(parsedPVs, (targetQuery) => this.pvNamesFindQuery(targetQuery, limitNum));
+    const pvnamesPromise = parsedPVs.map((targetQuery) => this.pvNamesFindQuery(targetQuery, limitNum));
 
     return Promise.all(pvnamesPromise).then((pvnamesArray) => {
-      const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, limitNum);
-      return _.map(pvnames, (pvname) => ({ text: pvname }));
+      const pvnames = [...new Set(pvnamesArray.flat())].slice(0, limitNum);
+      return pvnames.map((pvname) => ({ text: pvname }));
     });
   }
 
@@ -108,12 +107,14 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const templateSrv = getTemplateSrv();
     const query = { ...options };
 
-    query.targets = _.map(query.targets, (target) => {
+    query.targets = query.targets.map((target) => {
       const t = { ...target };
 
-      t.functions = _.map(target.functions, (func) => {
+      // A target carries no functions until one is added, and a function without
+      // parameters carries none either.
+      t.functions = (target.functions ?? []).map((func) => {
         const newFunc = func;
-        newFunc.params = _.map(newFunc.params, (param) => templateSrv.replace(param, query.scopedVars, 'regex'));
+        newFunc.params = (newFunc.params ?? []).map((param) => templateSrv.replace(param, query.scopedVars, 'regex'));
         return newFunc;
       });
       t.target = templateSrv.replace(target.target, query.scopedVars, 'regex');
@@ -133,7 +134,7 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     // 1) hidden target
     // 2) placeholder target
     // 3) undefined target
-    return _.filter(targets, (t) => !t.hide && t.target !== '' && typeof t.target !== 'undefined');
+    return targets.filter((t) => !t.hide && t.target !== '' && typeof t.target !== 'undefined');
   }
 
   buildQueryParameters(options: DataQueryRequest<AAQuery>) {
@@ -151,9 +152,9 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
     const to = rangeMsec >= 1000 ? to_ : new Date(to_.getTime() + 1000);
 
     const maxDataPoints = query.maxDataPoints || 2000;
-    const intervalSec = _.floor(rangeMsec / (maxDataPoints * 1000));
+    const intervalSec = Math.floor(rangeMsec / (maxDataPoints * 1000));
 
-    const targets: TargetQuery[] = _.map(query.targets, (target) => {
+    const targets: TargetQuery[] = query.targets.map((target) => {
       const options = getOptions(target.functions);
       const interval = intervalSec >= 1 ? String(intervalSec) : options.disableAutoRaw === 'true' ? '1' : '';
       const operator = target.operator || this.defaultOperator || 'mean';

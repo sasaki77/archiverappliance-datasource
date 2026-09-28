@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
 
@@ -55,7 +53,7 @@ export class AAclient {
     const targetPVs = parseTargetPV(target.target);
 
     // Create Promise to fetch PV names
-    const pvnamesPromise = _.map(targetPVs, (targetPV) => {
+    const pvnamesPromise = targetPVs.map((targetPV) => {
       if (target.regex) {
         return this.pvNamesFindQuery(targetPV, maxNumPVs);
       }
@@ -66,11 +64,11 @@ export class AAclient {
     return Promise.all(pvnamesPromise).then(
       (pvnamesArray) =>
         new Promise((resolve, reject) => {
-          const pvnames = _.slice(_.uniq(_.flatten(pvnamesArray)), 0, maxNumPVs);
+          const pvnames = [...new Set(pvnamesArray.flat())].slice(0, maxNumPVs);
           let urls: string[] = [];
 
           try {
-            urls = _.map(pvnames, (pvname) =>
+            urls = pvnames.map((pvname) =>
               this.buildUrl(this.url, pvname, target.operator, binInterval, target.from, target.to)
             );
           } catch (e) {
@@ -85,8 +83,8 @@ export class AAclient {
   createUrlRequests(urlsArray: string[][]) {
     const requestHash: { [key: string]: Promise<any> } = {};
 
-    const requestsArray = _.map(urlsArray, (urls) => {
-      const requests = _.map(urls, (url) => {
+    const requestsArray = urlsArray.map((urls) => {
+      const requests = urls.map((url) => {
         if (!(url in requestHash)) {
           const options = this.makeRequestOption(url);
           const response = getBackendSrv().fetch<AADataQueryData[]>(options);
@@ -113,12 +111,12 @@ export class AAclient {
 
       // Operator is usually provided even if the user doesn't provide it because of the default operator
       // This code maintains compatibility with older versions
-      if (_.includes(['', undefined], operator)) {
+      if (operator === '' || operator === undefined) {
         return `mean_${interval}(${pvname})`;
       }
 
       // Other Operator
-      if (_.includes(operatorList, operator)) {
+      if (operatorList.includes(operator)) {
         return `${operator}_${interval}(${pvname})`;
       }
 

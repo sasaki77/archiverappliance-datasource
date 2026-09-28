@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export function parseTargetPV(targetPV: string): string[] {
   // ex) A(1(2))(3|4)B
   // parenPhraseData = {phrases: [(1(2)), (3|4)], idxs: [[1,6], [7,11]]}
@@ -17,7 +15,7 @@ export function parseTargetPV(targetPV: string): string[] {
   }
 
   // A list of all the possible phrases
-  const phraseParts = _.map(parenPhrases, (phrase, i) => {
+  const phraseParts = parenPhrases.map((phrase, i) => {
     const stripedPhrase = phrase.slice(1, phrase.length - 1);
     return splitLowestLevelOnly(stripedPhrase);
   });
@@ -93,26 +91,18 @@ export function permuteQuery(input: string[][]): string[][] {
               {"b", "d", "f"}
           }
   */
-  const output = _.reduce(
-    input,
-    (permutedArray: string[][], pushStrings: string[]) => {
-      if (permutedArray.length === 0) {
-        return _.map(pushStrings, (str) => [str]);
-      }
+  const output = input.reduce((permutedArray: string[][], pushStrings: string[]) => {
+    if (permutedArray.length === 0) {
+      return pushStrings.map((str) => [str]);
+    }
 
-      return _.reduce(
-        permutedArray,
-        (newPermutedArray: string[][], permutedStrs: string[]) => {
-          for (const str of pushStrings) {
-            newPermutedArray.push([...permutedStrs, str]);
-          }
-          return newPermutedArray;
-        },
-        []
-      );
-    },
-    []
-  );
+    return permutedArray.reduce((newPermutedArray: string[][], permutedStrs: string[]) => {
+      for (const str of pushStrings) {
+        newPermutedArray.push([...permutedStrs, str]);
+      }
+      return newPermutedArray;
+    }, [] as string[][]);
+  }, [] as string[][]);
 
   return output;
 }
