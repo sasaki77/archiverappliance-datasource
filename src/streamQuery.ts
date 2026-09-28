@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 import ms, { StringValue } from 'ms';
 import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
@@ -15,6 +14,7 @@ export const STREAM_TO_MARGIN_MS = 500;
 export class StreamQuery {
   aaclient: AAclient;
   timerIDs: { [key: string]: any };
+  private nextStreamID = 0;
 
   constructor(aaclient: AAclient) {
     this.aaclient = aaclient;
@@ -23,7 +23,7 @@ export class StreamQuery {
 
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
     return new Observable<DataQueryResponse>((subscriber) => {
-      const id = uuidv4();
+      const id = String(this.nextStreamID++);
 
       // Buffer structure per time series (mutable internal state)
       //
