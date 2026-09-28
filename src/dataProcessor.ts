@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
 
 // Transform
@@ -6,14 +5,14 @@ import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
 function scale(factor: number, times: number[], values: number[]) {
   return {
     times: times,
-    values: _.map(values, (value) => value * factor),
+    values: values.map((value) => value * factor),
   };
 }
 
 function offset(delta: number, times: number[], values: number[]) {
   return {
     times: times,
-    values: _.map(values, (value) => value + delta),
+    values: values.map((value) => value + delta),
   };
 }
 
@@ -78,7 +77,7 @@ function transformWrapper(func: (...args: any) => { times: number[]; values: num
   const funcArgs = args.slice(0, -1);
   const dataFrames: DataFrame[] = args[args.length - 1];
 
-  const tsData = _.map(dataFrames, (dataFrame) => {
+  const tsData = dataFrames.map((dataFrame) => {
     const timesField = dataFrame.fields[0];
     const valField = dataFrame.fields[1];
     const vals = func(...funcArgs, timesField.values, valField.values);
@@ -111,7 +110,7 @@ function exclude(pattern: string, dataFrames: DataFrame[]) {
     return dataFrames;
   }
 
-  return _.filter(dataFrames, (dataFrame) => {
+  return dataFrames.filter((dataFrame) => {
     const valfield = dataFrame.fields[1];
     const displayName = getFieldDisplayName(valfield, dataFrame);
     return !regex.test(displayName);
@@ -120,20 +119,55 @@ function exclude(pattern: string, dataFrames: DataFrame[]) {
 
 // [Support Funcs] Datapoints aggregation functions
 
+function sum(values: number[]) {
+  let total = 0;
+  for (const value of values) {
+    total += value;
+  }
+  return total;
+}
+
+function mean(values: number[]) {
+  return sum(values) / values.length;
+}
+
+// Both walk the values as the backend does (minimum and maximum in
+// pkg/functions/arrayfuncs.go): a NaN compares neither smaller nor larger, so it
+// is carried only when it comes first. An empty series has neither.
+function minimum(values: number[]): number | undefined {
+  let min = values[0];
+  for (const value of values) {
+    if (value < min) {
+      min = value;
+    }
+  }
+  return min;
+}
+
+function maximum(values: number[]): number | undefined {
+  let max = values[0];
+  for (const value of values) {
+    if (value > max) {
+      max = value;
+    }
+  }
+  return max;
+}
+
 function datapointsAvg(values: number[]) {
-  return _.mean(values);
+  return mean(values);
 }
 
 function datapointsMin(values: number[]) {
-  return _.min(values);
+  return minimum(values);
 }
 
 function datapointsMax(values: number[]) {
-  return _.max(values);
+  return maximum(values);
 }
 
 function datapointsSum(values: number[]) {
-  return _.sum(values);
+  return sum(values);
 }
 
 function datapointsMed(values: number[]) {
@@ -147,8 +181,8 @@ function datapointsMed(values: number[]) {
 }
 
 function datapointsStd(values: number[]) {
-  const mean = _.mean(values);
-  const variance = values.reduce((total, value) => total + (value - mean) * (value - mean), 0);
+  const average = mean(values);
+  const variance = values.reduce((total, value) => total + (value - average) * (value - average), 0);
 
   return Math.sqrt(variance / values.length);
 }
@@ -156,12 +190,12 @@ function datapointsStd(values: number[]) {
 // Mirrors Scalars.Rank and cmp.Compare in the backend: an empty series ranks as
 // 0, except by avg, where its NaN ranks below every number.
 const rankFuncs = new Map<string, (values: number[]) => number>([
-  ['avg', (values) => _.mean(values)],
-  ['min', (values) => _.min(values) ?? 0],
-  ['max', (values) => _.max(values) ?? 0],
-  ['sum', (values) => _.sum(values)],
-  ['absoluteMin', (values) => _.min(values.map(Math.abs)) ?? 0],
-  ['absoluteMax', (values) => _.max(values.map(Math.abs)) ?? 0],
+  ['avg', (values) => mean(values)],
+  ['min', (values) => minimum(values) ?? 0],
+  ['max', (values) => maximum(values) ?? 0],
+  ['sum', (values) => sum(values)],
+  ['absoluteMin', (values) => minimum(values.map(Math.abs)) ?? 0],
+  ['absoluteMax', (values) => maximum(values.map(Math.abs)) ?? 0],
 ]);
 
 function compareRank(a: number, b: number) {
@@ -207,24 +241,26 @@ function sortByAggFuncs(orderFunc: string, order: string, dataFrames: DataFrame[
 
 // Function list
 
-const functions = {
+// Each entry takes the parameters of the function and the frames last, as
+// bindFunction in aafunc.ts calls it.
+const functions: { [name: string]: (...args: any[]) => DataFrame[] } = {
   // Transform
-  scale: _.partial(transformWrapper, scale),
-  offset: _.partial(transformWrapper, offset),
-  delta: _.partial(transformWrapper, delta),
-  fluctuation: _.partial(transformWrapper, fluctuation),
-  movingAverage: _.partial(transformWrapper, movingAverage),
+  scale: (factor: number, frames: DataFrame[]) => transformWrapper(scale, factor, frames),
+  offset: (delta: number, frames: DataFrame[]) => transformWrapper(offset, delta, frames),
+  delta: (frames: DataFrame[]) => transformWrapper(delta, frames),
+  fluctuation: (frames: DataFrame[]) => transformWrapper(fluctuation, frames),
+  movingAverage: (windowSize: number, frames: DataFrame[]) => transformWrapper(movingAverage, windowSize, frames),
   // Filter Series
-  top: _.partial(extraction, 'top'),
-  bottom: _.partial(extraction, 'bottom'),
+  top: (n: number, orderFunc: string, frames: DataFrame[]) => extraction('top', n, orderFunc, frames),
+  bottom: (n: number, orderFunc: string, frames: DataFrame[]) => extraction('bottom', n, orderFunc, frames),
   exclude,
   // Sort
-  sortByAvg: _.partial(sortByAggFuncs, 'avg'),
-  sortByMax: _.partial(sortByAggFuncs, 'max'),
-  sortByMin: _.partial(sortByAggFuncs, 'min'),
-  sortBySum: _.partial(sortByAggFuncs, 'sum'),
-  sortByAbsMax: _.partial(sortByAggFuncs, 'absoluteMax'),
-  sortByAbsMin: _.partial(sortByAggFuncs, 'absoluteMin'),
+  sortByAvg: (order: string, frames: DataFrame[]) => sortByAggFuncs('avg', order, frames),
+  sortByMax: (order: string, frames: DataFrame[]) => sortByAggFuncs('max', order, frames),
+  sortByMin: (order: string, frames: DataFrame[]) => sortByAggFuncs('min', order, frames),
+  sortBySum: (order: string, frames: DataFrame[]) => sortByAggFuncs('sum', order, frames),
+  sortByAbsMax: (order: string, frames: DataFrame[]) => sortByAggFuncs('absoluteMax', order, frames),
+  sortByAbsMin: (order: string, frames: DataFrame[]) => sortByAggFuncs('absoluteMin', order, frames),
 };
 
 // An empty waveform reduces to NaN, as in the backend, which draws a gap.

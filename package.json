@@ -43,7 +43,6 @@
     "@types/grafana": "github:CorpGlory/types-grafana",
     "@types/jest": "^30.0.0",
     "@types/jquery": "4.0.1",
-    "@types/lodash": "^4.17.24",
     "@types/node": "^26.0.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",

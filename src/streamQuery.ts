@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Observable, Subscriber } from 'rxjs';
 import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
@@ -79,7 +78,7 @@ export class StreamQuery {
 
           const interval = (streamTargets[0].strmInt && parseInterval(streamTargets[0].strmInt)) || intervalMs;
 
-          const newTargets = _.map(targets, (target) => {
+          const newTargets = targets.map((target) => {
             const t_int = target.interval ? Math.floor(interval / 1000).toFixed() : '';
             const int = interval >= 1000 ? t_int : '';
 
@@ -143,7 +142,7 @@ export function doQueryStream(
   buffers: { [key: string]: StreamBuffer }
 ): Promise<DataQueryResponse> {
   // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
-  const urlsArray = _.map(targets, (target) => aaclient.buildUrls(target));
+  const urlsArray = targets.map((target) => aaclient.buildUrls(target));
 
   // Wait for building URLs then create target data
   const targetProcesses = Promise.all(urlsArray).then((urlsArray) => {
@@ -151,7 +150,7 @@ export function doQueryStream(
     const responsePromisesArray = aaclient.createUrlRequests(urlsArray);
 
     // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
-    const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
+    const targetProcesses = responsePromisesArray.map((responsePromises, i) => {
       return Promise.all(responsePromises)
         .then((responses) => responseParse(responses, targets[i], true))
         .then((dataFrames) => mergeToBuffers(dataFrames, buffers, targets[i]))
@@ -168,12 +167,12 @@ export function doQueryStream(
 }
 
 function streamPostProcess(dataFramesArray: DataFrame[][]) {
-  const dataFrames = _.flatten(dataFramesArray);
+  const dataFrames = dataFramesArray.flat();
   return { data: dataFrames, state: LoadingState.Streaming };
 }
 
 function updateTargetDate(targets: TargetQuery[]) {
-  return _.map(targets, (target) => ({
+  return targets.map((target) => ({
     // AA should probably not able to return latest data near the "now".
     // So, the time range is set from 2 secs ago from last update date and to 500 msecs ago from "now".
     ...target,

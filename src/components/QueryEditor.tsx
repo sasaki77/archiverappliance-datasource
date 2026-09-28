@@ -1,4 +1,3 @@
-import defaults from 'lodash/defaults';
 import { css, cx } from '@emotion/css';
 import React, { ChangeEvent, KeyboardEvent, useCallback, useState } from 'react';
 import { InlineFieldRow, InlineSwitch, Input, InlineField, Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
@@ -11,6 +10,10 @@ import { Functions } from './Functions';
 import { toComboboxOption } from './utils';
 
 type Props = QueryEditorProps<DataSource, AAQuery, AADataSourceOptions>;
+
+function withoutUndefined(query: AAQuery): Partial<AAQuery> {
+  return Object.fromEntries(Object.entries(query).filter(([, value]) => value !== undefined));
+}
 
 const operatorOptions: Array<ComboboxOption<string>> = operatorList.map(toComboboxOption);
 
@@ -101,7 +104,10 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     [datasource, query.regex]
   );
 
-  const query_ = defaults(query, defaultQuery);
+  // What the editor shows comes from query_, so that a query saved without a
+  // key still gets its default. Spreading the query over the defaults would
+  // instead overwrite one with undefined.
+  const query_ = { ...defaultQuery, ...withoutUndefined(query) } as AAQuery;
   const defaultOperator = datasource.defaultOperator || 'mean';
   const useLiveUpdate = datasource.useLiveUpdate || false;
   const customStyles = useStyles2(getStyles);
@@ -145,11 +151,11 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
           interactive={true}
           tooltip={<p>Enable/Disable Regex mode. You can select multiple PVs using Regular Expressoins.</p>}
         >
-          <InlineSwitch value={query.regex} onChange={onRegexChange} />
+          <InlineSwitch value={query_.regex} onChange={onRegexChange} />
         </InlineField>
         {useLiveUpdate === true && (
           <InlineField labelWidth={12} label={'Live'} interactive={true} tooltip={<p>Enable/Disable Live mode.</p>}>
-            <InlineSwitch value={query.live} onChange={onLiveChange} />
+            <InlineSwitch value={query_.live} onChange={onLiveChange} />
           </InlineField>
         )}
       </InlineFieldRow>
@@ -195,7 +201,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             </p>
           }
         >
-          <InlineSwitch value={query.stream} onChange={onStreamChange} />
+          <InlineSwitch value={query_.stream} onChange={onStreamChange} />
         </InlineField>
         <InlineField
           labelWidth={12}
@@ -210,7 +216,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         >
           <Input
             width={10}
-            value={query.strmInt}
+            value={query_.strmInt}
             placeholder="auto"
             onChange={onStrmIntChange}
             onBlur={onRunQuery}
@@ -230,7 +236,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
         >
           <Input
             width={10}
-            value={query.strmCap}
+            value={query_.strmCap}
             placeholder="auto"
             onChange={onStrmCapChange}
             onBlur={onRunQuery}
@@ -241,7 +247,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
       <InlineFieldRow label="Alias">
         <InlineField labelWidth={12} label={'Alias'} interactive={true} tooltip={<p>Set alias for the legend.</p>}>
           <Input
-            value={query.alias}
+            value={query_.alias}
             width={56}
             placeholder="Alias"
             onChange={onAliasChange}
@@ -271,7 +277,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
           }
         >
           <Input
-            value={query.aliasPattern}
+            value={query_.aliasPattern}
             width={52}
             placeholder="Alias regex pattern"
             onChange={onAliaspatternChange}
@@ -281,7 +287,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
           />
         </InlineField>
       </InlineFieldRow>
-      <Functions funcs={query.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
+      <Functions funcs={query_.functions} onChange={onFuncsChange} onRunQuery={onRunQuery} />
     </>
   );
 };

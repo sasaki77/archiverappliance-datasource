@@ -1,4 +1,3 @@
-import zip from 'lodash/zip';
 import React from 'react';
 import { FunctionDescriptor } from '../types';
 
@@ -28,7 +27,7 @@ class FunctionParams extends React.PureComponent<FunctionParamsProps> {
   render() {
     const { func, onRunQuery } = this.props;
     const { params, def } = func;
-    const paramArray = zip(params, def.params);
+    const paramArray = def.params.map((paramDef, i) => [params[i], paramDef] as const);
     return (
       <>
         {paramArray &&

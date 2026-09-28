@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { createDataFrame, DataFrame, FieldType, addRow } from '@grafana/data';
 
 import { getToScalarFuncs } from './aafunc';
@@ -10,8 +9,8 @@ export function isExtrapolated(target: TargetQuery) {
 
 // A stream extrapolates after merging into its buffer, not here.
 export function responseParse(responses: AADataQueryResponse[], target: TargetQuery, stream = false) {
-  const dataFramesArray = _.map(responses, (response) => {
-    const dataFrames = _.map(response.data, (targetRes) => {
+  const dataFramesArray = responses.map((response) => {
+    const dataFrames = response.data.map((targetRes) => {
       if (targetRes.meta.waveform) {
         const toScalarFuncs = getToScalarFuncs(target.functions);
         if (toScalarFuncs.length > 0) {
@@ -22,10 +21,10 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
       return parseScalarResponse(targetRes, target);
     });
 
-    return _.flatten(dataFrames);
+    return dataFrames.flat();
   });
 
-  const dataFrames = _.flatten(dataFramesArray);
+  const dataFrames = dataFramesArray.flat();
 
   if (stream || !isExtrapolated(target)) {
     return Promise.resolve(dataFrames);
@@ -33,7 +32,7 @@ export function responseParse(responses: AADataQueryResponse[], target: TargetQu
 
   // Extrapolation for raw operator
   const to_msec = target.to.getTime();
-  const extrapolationDataFrames = _.map(dataFrames, (dataframe) => {
+  const extrapolationDataFrames = dataFrames.map((dataframe) => {
     if (dataframe.fields[0].name !== 'time') {
       return dataframe;
     }
@@ -67,9 +66,9 @@ function parseArrayResponseToScalar(
     return [];
   }
 
-  const frames = _.map(toScalarFuncs, (func) => {
-    const values = _.map(targetRes.data, (datapoint) => func.func(datapoint.val));
-    const times = _.map(targetRes.data, (datapoint) => datapoint.millis);
+  const frames = toScalarFuncs.map((func) => {
+    const values = targetRes.data.map((datapoint) => func.func(datapoint.val));
+    const times = targetRes.data.map((datapoint) => datapoint.millis);
     const frame = createDataFrame({
       refId: target.refId,
       name: targetRes.meta.name,
@@ -202,8 +201,8 @@ function makeTimeseriesArrayFields(targetRes: AADataQueryData) {
 }
 
 function parseScalarResponse(targetRes: AADataQueryData, target: TargetQuery): DataFrame {
-  const values = _.map(targetRes.data, (datapoint) => datapoint.val);
-  const times = _.map(targetRes.data, (datapoint) => datapoint.millis);
+  const values = targetRes.data.map((datapoint) => datapoint.val);
+  const times = targetRes.data.map((datapoint) => datapoint.millis);
   const frame = createDataFrame({
     refId: target.refId,
     name: targetRes.meta.name,

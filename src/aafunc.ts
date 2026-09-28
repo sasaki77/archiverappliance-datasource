@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { FuncDef, FunctionDescriptor } from './types';
 import { DataFrame } from '@grafana/data';
 import { arrayFunctions, seriesFunctions } from './dataProcessor';
@@ -26,15 +25,12 @@ function addFuncDef(newFuncDef: FuncDef) {
 }
 
 function pickFuncDefsFromCategories(functionDefs: FunctionDescriptor[], requireCatecories: string[]) {
-  const requiredCategoryFuncNames = _.reduce(
-    requireCatecories,
-    (funcNames: string[], category: string) => _.concat(funcNames, _.map(categories[category], 'name')),
-    []
+  const requiredCategoryFuncNames = new Set(
+    requireCatecories.flatMap((category) => categories[category].map((funcDef) => funcDef.name))
   );
 
-  const pickedFuncDefs = _.filter(functionDefs, (func) => _.includes(requiredCategoryFuncNames, func.def.name));
-
-  return pickedFuncDefs;
+  // A target carries no functions until one is added.
+  return (functionDefs ?? []).filter((func) => requiredCategoryFuncNames.has(func.def.name));
 }
 
 function parseParam(value: string | undefined, type: string): string | number | undefined {
@@ -326,8 +322,7 @@ export function createFuncDescriptor(funcDef: FuncDef, params?: string[]): Funct
 export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames: DataFrame[]) {
   const applyFuncDefs = pickFuncDefsFromCategories(functionDefs, ['Transform', 'Filter Series', 'Sort']);
 
-  const promises = _.reduce(
-    applyFuncDefs,
+  const promises = applyFuncDefs.reduce(
     (prevPromise, func) =>
       prevPromise.then((res) => {
         const bindedFunc = bindFunction(seriesFunctions, func);
@@ -343,24 +338,16 @@ export function applyFunctionDefs(functionDefs: FunctionDescriptor[], dataFrames
 export function getToScalarFuncs(functionDefs: FunctionDescriptor[]): any[] {
   const appliedOptionFuncs = pickFuncDefsFromCategories(functionDefs, ['Array to Scalar']);
 
-  const funcs = _.map(appliedOptionFuncs, (func) => {
-    return arrayFunctions[func.def.name];
-  });
-
-  return funcs;
+  return appliedOptionFuncs.map((func) => arrayFunctions[func.def.name]);
 }
 
 export function getOptions(functionDefs: FunctionDescriptor[]) {
   const appliedOptionFuncs = pickFuncDefsFromCategories(functionDefs, ['Options']);
 
-  const options = _.reduce(
-    appliedOptionFuncs,
-    (optionMap: { [key: string]: string }, func) => {
-      [optionMap[func.def.name]] = func.params;
-      return optionMap;
-    },
-    {}
-  );
+  const options = appliedOptionFuncs.reduce((optionMap: { [key: string]: string }, func) => {
+    [optionMap[func.def.name]] = func.params;
+    return optionMap;
+  }, {});
 
   return options;
 }

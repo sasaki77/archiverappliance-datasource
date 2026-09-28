@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { createDataFrame, DataFrame, getFieldDisplayName } from '@grafana/data';
 
 import { applyFunctionDefs } from './aafunc';
@@ -8,7 +7,7 @@ import { responseParse } from 'responseParse';
 
 export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ data: DataFrame[] }> {
   // Create promises to buil URLs for each targets: [[URLs for target 1], [URLs for target 2] , ...]
-  const urlsArray = _.map(targets, (target) => aaclient.buildUrls(target));
+  const urlsArray = targets.map((target) => aaclient.buildUrls(target));
 
   // Wait for building URLs then create target data
   const targetProcesses = Promise.all(urlsArray).then((urlsArray) => {
@@ -16,7 +15,7 @@ export function doQuery(aaclient: AAclient, targets: TargetQuery[]): Promise<{ d
     const responsePromisesArray = aaclient.createUrlRequests(urlsArray);
 
     // Data processing for each targets: [[Processed data for target 1], [Processed data for target 2], ...]
-    const targetProcesses = _.map(responsePromisesArray, (responsePromises, i) => {
+    const targetProcesses = responsePromisesArray.map((responsePromises, i) => {
       return Promise.all(responsePromises).then((responses) => targetProcess(responses, targets[i]));
     });
 
@@ -37,10 +36,10 @@ export async function setAlias(dataFrames: DataFrame[], target: TargetQuery): Pr
     pattern = new RegExp(target.aliasPattern, '');
   }
 
-  const newDataFrames = _.map(dataFrames, (dataFrame) => {
-    const valfields = _.filter(dataFrame.fields, (field) => field.name !== 'time' && field.name !== 'index');
+  const newDataFrames = dataFrames.map((dataFrame) => {
+    const valfields = dataFrame.fields.filter((field) => field.name !== 'time' && field.name !== 'index');
 
-    const newValfields = _.map(valfields, (valfield) => {
+    const newValfields = valfields.map((valfield) => {
       const displayName = getFieldDisplayName(valfield, dataFrame);
       const alias = pattern ? displayName.replace(pattern, target.alias) : target.alias;
 
@@ -81,7 +80,7 @@ function targetProcess(responses: any, target: TargetQuery) {
 }
 
 function postProcess(dataFramesArray: DataFrame[][]) {
-  const dataFrames = _.flatten(dataFramesArray);
+  const dataFrames = dataFramesArray.flat();
 
   return { data: dataFrames };
 }
