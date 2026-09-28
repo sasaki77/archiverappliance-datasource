@@ -1,7 +1,6 @@
 import defaults from 'lodash/defaults';
 import { css, cx } from '@emotion/css';
-import debounce from 'debounce-promise';
-import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useCallback, useState } from 'react';
 import { InlineFieldRow, InlineSwitch, Input, InlineField, Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
 import { QueryEditorProps, GrafanaTheme2 } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
@@ -87,17 +86,20 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
     }
   };
 
-  const loadPVSuggestions = (value: string) => {
-    const templateSrv = getTemplateSrv();
-    const replacedQuery = templateSrv.replace(value, undefined, 'regex');
-    const { regex } = query;
-    const searchQuery = regex ? replacedQuery : `.*${replacedQuery}.*`;
-    return datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
-      const suggestions: Array<ComboboxOption<string>> = res.map(toComboboxOption);
-      return suggestions;
-    });
-  };
-  const debounceLoadSuggestions = debounce((query: string) => loadPVSuggestions(query), 200);
+  // Combobox debounces the async options it is given, but drops the timer when
+  // the function changes, so this keeps the same one across renders.
+  const loadPVSuggestions = useCallback(
+    (value: string) => {
+      const templateSrv = getTemplateSrv();
+      const replacedQuery = templateSrv.replace(value, undefined, 'regex');
+      const searchQuery = query.regex ? replacedQuery : `.*${replacedQuery}.*`;
+      return datasource.pvNamesFindQuery(searchQuery, 100).then((res: any) => {
+        const suggestions: Array<ComboboxOption<string>> = res.map(toComboboxOption);
+        return suggestions;
+      });
+    },
+    [datasource, query.regex]
+  );
 
   const query_ = defaults(query, defaultQuery);
   const defaultOperator = datasource.defaultOperator || 'mean';
@@ -129,7 +131,7 @@ export const QueryEditor = ({ query, onChange, onRunQuery, datasource }: Props):
             <Combobox
               width={56}
               value={pvOptionValue}
-              options={debounceLoadSuggestions}
+              options={loadPVSuggestions}
               createCustomValue
               isClearable
               onChange={onPVChange}
