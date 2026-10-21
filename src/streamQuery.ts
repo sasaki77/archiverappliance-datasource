@@ -66,13 +66,14 @@ export class StreamQuery {
       // Buffer structure per time series (mutable internal state)
       //
       // buffers = {
-      //   "PV:NAME\0mean\0...": {
-      //     fields: {
-      //       time:  [t1, t2, t3, ...],
-      //       value: [v1, v2, v3, ...],
+      //   "PV:NAME\0mean\0...": StreamBuffer {
+      //     fields: {                      // rings of `size` slots, oldest at `start`
+      //       time:  [t4, t5, t1, t2, t3],
+      //       value: [v4, v5, v1, v2, v3],
       //       ... (other fields)
       //     }
-      //     capacities: { A: 1000, B: 500 }
+      //     size: 5, start: 2, length: 5
+      //     capacities: { A: 5, B: 3 }
       //   }
       // }
       const buffers: { [key: string]: StreamBuffer } = {};
