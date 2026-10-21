@@ -1,4 +1,4 @@
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, throwError } from 'rxjs';
 import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
@@ -50,6 +50,16 @@ export class StreamQuery {
   }
 
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
+    // Every query of the panel is buffered, not only the streamed ones, and the
+    // fields of the index array format change with every update.
+    if (targets.some((target) => target.options.arrayFormat === 'index')) {
+      return throwError(() => ({
+        message: 'Stream mode does not support the index array format',
+        status: 'error',
+        statusText: 'Use the timeseries or the dt-space format, or turn Stream off.',
+      }));
+    }
+
     return new Observable<DataQueryResponse>((subscriber) => {
       const id = String(this.nextStreamID++);
 
@@ -91,11 +101,7 @@ export class StreamQuery {
           this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, newTargets, id, buffers, interval);
         })
         .catch((err) => {
-          subscriber.error({
-            message: 'Failed to fetch streaming data',
-            status: 'error',
-            statusText: err.data?.message || err.message || 'Unknown error',
-          });
+          subscriber.error(streamError(err));
         });
 
       return () => {
@@ -122,11 +128,7 @@ export class StreamQuery {
         this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, updatedTargets, id, buffers, interval);
       }
     } catch (err) {
-      subscriber.error({
-        message: 'Failed to fetch streaming data',
-        status: 'error',
-        statusText: 'Failed to fetch streaming data',
-      });
+      subscriber.error(streamError(err));
     }
   };
 
@@ -134,6 +136,14 @@ export class StreamQuery {
     clearTimeout(this.timerIDs[id]);
     delete this.timerIDs[id];
   }
+}
+
+function streamError(err: any) {
+  return {
+    message: 'Failed to fetch streaming data',
+    status: 'error',
+    statusText: err?.data?.message || err?.message || 'Unknown error',
+  };
 }
 
 export function doQueryStream(
