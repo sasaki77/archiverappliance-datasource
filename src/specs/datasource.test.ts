@@ -1234,6 +1234,47 @@ describe('Archiverappliance Datasource', () => {
       });
     });
 
+    // A panel that streams one query streams all of them.
+    it.each([
+      ['the streamed query', [{ refId: 'A', stream: true, index: true }]],
+      [
+        'another query of the panel',
+        [
+          { refId: 'A', stream: true, index: false },
+          { refId: 'B', stream: false, index: true },
+        ],
+      ],
+    ])('should refuse a stream before it queries when %s is in the index array format', async (_title, specs) => {
+      const indexFormat = {
+        params: ['index'],
+        def: {
+          category: 'Options',
+          name: 'arrayFormat',
+          params: [{ name: 'format', type: 'string', options: ['timeseries', 'index', 'dt-space'] }],
+        },
+      };
+      const now = Date.now();
+      const query = {
+        targets: specs.map(({ refId, stream, index }) => ({
+          target: 'PV',
+          refId,
+          stream,
+          strmInt: '',
+          strmCap: '10',
+          functions: index ? [indexFormat] : [],
+        })),
+        range: { from: new Date(now - 1000 * 1000), to: new Date(now) },
+        rangeRaw: { to: 'now' },
+        maxDataPoints: 1000,
+        intervalMs: 1000,
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      await expect(lastValueFrom(ds.query(query))).rejects.toMatchObject({
+        message: expect.stringContaining('index array format'),
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it('should return stream data when the stream is enabled', (done) => {
       fetchMock.mockImplementation((request) => {
         const from_str = decodeURIComponent(request.url.split(/from=(.*Z)&to/)[1]);

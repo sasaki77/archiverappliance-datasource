@@ -1,4 +1,4 @@
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, throwError } from 'rxjs';
 import { DataQueryResponse, LoadingState, DataFrame } from '@grafana/data';
 
 import { TargetQuery } from './types';
@@ -50,19 +50,30 @@ export class StreamQuery {
   }
 
   runStream(targets: TargetQuery[], streamTargets: TargetQuery[], intervalMs: number): Observable<DataQueryResponse> {
+    // Every query of the panel is buffered, not only the streamed ones, and the
+    // fields of the index array format change with every update.
+    if (targets.some((target) => target.options.arrayFormat === 'index')) {
+      return throwError(() => ({
+        message: 'Stream mode does not support the index array format',
+        status: 'error',
+        statusText: 'Use the timeseries or the dt-space format, or turn Stream off.',
+      }));
+    }
+
     return new Observable<DataQueryResponse>((subscriber) => {
       const id = String(this.nextStreamID++);
 
       // Buffer structure per time series (mutable internal state)
       //
       // buffers = {
-      //   "PV:NAME\0mean\0...": {
-      //     fields: {
-      //       time:  [t1, t2, t3, ...],
-      //       value: [v1, v2, v3, ...],
+      //   "PV:NAME\0mean\0...": StreamBuffer {
+      //     fields: {                      // rings of `size` slots, oldest at `start`
+      //       time:  [t4, t5, t1, t2, t3],
+      //       value: [v4, v5, v1, v2, v3],
       //       ... (other fields)
       //     }
-      //     capacities: { A: 1000, B: 500 }
+      //     size: 5, start: 2, length: 5
+      //     capacities: { A: 5, B: 3 }
       //   }
       // }
       const buffers: { [key: string]: StreamBuffer } = {};
@@ -91,11 +102,7 @@ export class StreamQuery {
           this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, newTargets, id, buffers, interval);
         })
         .catch((err) => {
-          subscriber.error({
-            message: 'Failed to fetch streaming data',
-            status: 'error',
-            statusText: err.data?.message || err.message || 'Unknown error',
-          });
+          subscriber.error(streamError(err));
         });
 
       return () => {
@@ -122,11 +129,7 @@ export class StreamQuery {
         this.timerIDs[id] = setTimeout(this.timerLoop, interval, subscriber, updatedTargets, id, buffers, interval);
       }
     } catch (err) {
-      subscriber.error({
-        message: 'Failed to fetch streaming data',
-        status: 'error',
-        statusText: 'Failed to fetch streaming data',
-      });
+      subscriber.error(streamError(err));
     }
   };
 
@@ -134,6 +137,14 @@ export class StreamQuery {
     clearTimeout(this.timerIDs[id]);
     delete this.timerIDs[id];
   }
+}
+
+function streamError(err: any) {
+  return {
+    message: 'Failed to fetch streaming data',
+    status: 'error',
+    statusText: err?.data?.message || err?.message || 'Unknown error',
+  };
 }
 
 export function doQueryStream(
