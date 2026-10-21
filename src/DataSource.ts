@@ -112,11 +112,10 @@ export class DataSource extends DataSourceWithBackend<AAQuery, AADataSourceOptio
 
       // A target carries no functions until one is added, and a function without
       // parameters carries none either.
-      t.functions = (target.functions ?? []).map((func) => {
-        const newFunc = func;
-        newFunc.params = (newFunc.params ?? []).map((param) => templateSrv.replace(param, query.scopedVars, 'regex'));
-        return newFunc;
-      });
+      t.functions = (target.functions ?? []).map((func) => ({
+        ...func,
+        params: (func.params ?? []).map((param) => templateSrv.replace(param, query.scopedVars, 'regex')),
+      }));
       t.target = templateSrv.replace(target.target, query.scopedVars, 'regex');
       t.alias = templateSrv.replace(target.alias, query.scopedVars, 'regex');
       t.operator = templateSrv.replace(target.operator, query.scopedVars, 'regex');
