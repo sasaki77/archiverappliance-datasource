@@ -319,6 +319,24 @@ describe('Archiverappliance Datasource', () => {
     });
   });
 
+  describe('Replace variables tests', () => {
+    it('should leave the functions of the query it was given alone', () => {
+      jest.mocked(runtime.getTemplateSrv).mockReturnValueOnce({
+        replace: (value?: string) => (value ?? '').replace('$factor', '2'),
+      } as unknown as runtime.TemplateSrv);
+
+      const func = { def: { name: 'scale' }, params: ['$factor'] };
+      const options = {
+        targets: [{ target: 'PV', refId: 'A', functions: [func] }],
+      } as unknown as DataQueryRequest<AAQuery>;
+
+      const replaced = ds.replaceVariables(options);
+
+      expect(replaced.targets[0].functions[0].params).toEqual(['2']);
+      expect(func.params).toEqual(['$factor']);
+    });
+  });
+
   describe('Build query parameters tests', () => {
     it('should return valid interval time in integer', (done) => {
       const options = {
