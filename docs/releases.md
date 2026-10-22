@@ -1,5 +1,31 @@
 # Release Notes
 
+## 2.2.0
+
+**2026-10-22**
+
+### Enhancements
+- **Frontend**: Shrink the plugin bundle by dropping mathjs, lodash and other dependencies
+- **Frontend**: Lighten each streaming update by holding the stream buffer in a ring
+- **Frontend**: Speed up the dt-space array format and the movingAverage function
+- **Backend**: Parse archived data and apply processing functions with fewer allocations per sample
+
+### Bug fixes
+- **Frontend/Backend**: Expand nested alternatives such as `(A(1|2)|B(3|4))`, and groups with a single alternative, in a PV name
+- **Frontend**: Keep the milliseconds of the time range
+- **Frontend**: Stop the stream of one panel without stopping the others, stop querying once a panel unsubscribes, keep a separate buffer for each distinct series, and stop a raw stream from adding an extrapolated point on every update
+- **Frontend**: Show a waveform whose first sample is empty, leave out a string waveform instead of failing the query, and lay out the index and timeseries formats to the longest sample, with null where a sample has no element
+- **Frontend**: Fall back to the panel interval for a stream interval of zero, a negative one, or one past what a timer can hold (about 24.8 days)
+- **Frontend**: Show an error for a streaming panel with a query in the index array format, which failed with a TypeError, and report the reason when a streaming update fails
+- **Frontend**: Return the same results as the backend from the processing functions: top, bottom, sortBy*, exclude, delta, movingAverage (including NaN samples) and toScalar (including the population deviation in toScalarByStd and empty waveforms)
+- **Backend**: Reject a datasource URL that cannot be parsed or has no host
+- **Backend**: Count resolving the PV names against the query timeout, and stop a query that times out from leaking requests
+- **Backend**: Stop parsing a response whose PB chunk header is invalid
+- **Backend**: Report a movingAverage window or a waveform that cannot be processed, and keep the gaps delta cannot fill
+
+### Breaking changes
+- **Frontend**: With Use Backend turned off, toScalar series are named `PV(avg)` rather than `PV (avg)`, as in the backend. A field override or transformation that matches the old name needs updating
+
 ## 2.1.4
 
 **2026-07-01**
